@@ -82,85 +82,101 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
         return context
 
     def form_valid(self, form):
-        with transaction.atomic():
-            listing_type_id = self.request.session.get('selected_listing_type')
-            if not listing_type_id:
-                form.add_error(None, "Тип размещения не выбран")
-                return self.form_invalid(form)
+        try:
+            with transaction.atomic():
+                # Получаем данные из сессии один раз
+                listing_type_id = self.request.session.get('selected_listing_type')
+                if not listing_type_id:
+                    form.add_error(None, "Тип размещения не выбран")
+                    return self.form_invalid(form)
 
-            listing_type = ListingType.objects.get(id=listing_type_id)
+                # Используем select_for_update для блокировки баланса пользователя
+                user = User.objects.select_for_update().get(pk=self.request.user.pk)
+                listing_type = ListingType.objects.get(id=listing_type_id)
 
-            if self.request.user.balance < listing_type.price:
-                form.add_error(None, "Недостаточно средств на балансе")
-                return self.form_invalid(form)
+                if user.balance < listing_type.price:
+                    form.add_error(None, "Недостаточно средств на балансе")
+                    return self.form_invalid(form)
 
-            # Генерация уникального transaction_id
-            transaction_id = f"property_{uuid.uuid4()}"
+                # Создаем объект недвижимости
+                self.object = form.save(commit=False)
+                self.object.property_type = get_object_or_404(
+                    PropertyType,
+                    name=self.kwargs['property_type']
+                )
+                self.object.broker = user.broker_profile
+                self.object.is_approved = False
+                self.object.creator = user
+                self.object.listing_type = listing_type
+                self.object.listing_end_date = timezone.now() + timedelta(days=listing_type.duration_days)
+                self.object.is_featured = listing_type.is_featured
 
-            payment = Payment.objects.create(
-                user=self.request.user,
-                amount=listing_type.price,
-                payment_method='balance',
-                status='completed',
-                description=f"Оплата размещения типа: {listing_type.name}",
-                transaction_id=transaction_id  # Указываем уникальный ID
-            )
+                if not hasattr(user, 'broker_profile'):
+                    form.add_error(None, "Профиль брокера не найден. Заполните данные в разделе профиля.")
+                    return self.form_invalid(form)
 
-            self.request.user.balance -= listing_type.price
-            self.request.user.save()
+                if 'main_image' not in self.request.FILES:
+                    form.add_error('main_image', 'Главное изображение обязательно')
+                    return self.form_invalid(form)
 
-            # Остальной код остается без изменений
-            self.object = form.save(commit=False)
-            self.object.property_type = get_object_or_404(
-                PropertyType,
-                name=self.kwargs['property_type']
-            )
-            self.object.broker = self.request.user.broker_profile
-            self.object.is_approved = False
-            self.object.creator = self.request.user
-            self.object.listing_type = listing_type
-            self.object.listing_end_date = timezone.now() + timedelta(days=listing_type.duration_days)
-            self.object.is_featured = listing_type.is_featured
+                # Сохраняем объект перед обработкой изображений
+                self.object.save()
 
-            if not hasattr(self.request.user, 'broker_profile'):
-                form.add_error(None, "Профиль брокера не найден. Заполните данные в разделе профиля.")
-                return self.form_invalid(form)
+                # Обработка изображений в одном bulk-запросе
+                main_image = self.request.FILES['main_image']
+                images = self.request.FILES.getlist('images')
 
-            if 'main_image' not in self.request.FILES:
-                form.add_error('main_image', 'Главное изображение обязательно')
-                return self.form_invalid(form)
+                if len(images) > 10:
+                    form.add_error(None, "Максимальное количество изображений - 10")
+                    return self.form_invalid(form)
 
-            self.object.save()
+                # Создаем список изображений для bulk_create
+                image_objects = [
+                    PropertyImage(
+                        property=self.object,
+                        image=main_image,
+                        is_main=True
+                    )
+                ]
 
-            # Обработка изображений
-            images = self.request.FILES.getlist('images')
-            if len(images) > 10:
-                form.add_error(None, "Максимальное количество изображений - 10")
-                return self.form_invalid(form)
-
-            main_image = self.request.FILES['main_image']
-            PropertyImage.objects.create(
-                property=self.object,
-                image=main_image,
-                is_main=True
-            )
-
-            for idx, img in enumerate(images[:9], start=1):
-                PropertyImage.objects.create(
-                    property=self.object,
-                    image=img,
-                    order=idx
+                image_objects.extend(
+                    PropertyImage(
+                        property=self.object,
+                        image=img,
+                        order=idx
+                    ) for idx, img in enumerate(images[:9], start=1)
                 )
 
-            messages.success(
-                self.request,
-                f"Объект успешно создан! С вашего баланса списано {listing_type.price} ₽"
-            )
+                # Массовое создание изображений
+                PropertyImage.objects.bulk_create(image_objects)
 
-            if 'selected_listing_type' in self.request.session:
-                del self.request.session['selected_listing_type']
+                # Создаем платеж и обновляем баланс
+                transaction_id = f"property_{uuid.uuid4()}"
+                Payment.objects.create(
+                    user=user,
+                    amount=listing_type.price,
+                    payment_method='balance',
+                    status='completed',
+                    description=f"Оплата размещения типа: {listing_type.name}",
+                    transaction_id=transaction_id
+                )
 
-            return super().form_valid(form)
+                user.balance -= listing_type.price
+                user.save(update_fields=['balance'])
+
+                # Очищаем сессию
+                if 'selected_listing_type' in self.request.session:
+                    del self.request.session['selected_listing_type']
+
+                messages.success(
+                    self.request,
+                    f"Объект успешно создан! С вашего баланса списано {listing_type.price} ₽"
+                )
+
+                return super().form_valid(form)
+        except Exception as e:
+            form.add_error(None, f"Произошла ошибка: {str(e)}")
+            return self.form_invalid(form)
 
 
 
