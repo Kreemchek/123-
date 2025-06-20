@@ -4,8 +4,14 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 
+
 load_dotenv()
 
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dqgwzhywm',
+    'API_KEY': '164662831511784',
+    'API_SECRET': 'aGZYpvwhUCuFiAaYAgXeOIr-FIk',
+}
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.append(str(BASE_DIR))
@@ -26,6 +32,8 @@ CSRF_TRUSTED_ORIGINS = [
 
 
 INSTALLED_APPS = [
+    'cloudinary',
+    'cloudinary_storage',
     'accounts.apps.AccountsConfig',
     'brokers.apps.BrokersConfig',
     'developers.apps.DevelopersConfig',
@@ -43,8 +51,7 @@ INSTALLED_APPS = [
     'channels',
     'corsheaders',
     'django.contrib.humanize',
-    'cloudinary',
-    'cloudinary_storage',
+
 
 
 
@@ -142,11 +149,7 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 WHITENOISE_MAX_AGE = 86400
 #DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'dqgwzhywm',
-    'API_KEY': '164662831511784',
-    'API_SECRET': 'aGZYpvwhUCuFiAaYAgXeOIr-FIk',
-}
+
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
