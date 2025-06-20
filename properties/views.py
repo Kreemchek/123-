@@ -90,6 +90,7 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
 
             listing_type = ListingType.objects.get(id=listing_type_id)
 
+            # Проверка баланса и создание платежа
             if self.request.user.balance < listing_type.price:
                 form.add_error(None, "Недостаточно средств на балансе")
                 return self.form_invalid(form)
@@ -148,11 +149,19 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
                     order=idx
                 )
 
+            messages.success(
+                self.request,
+                f"Объект успешно создан! С вашего баланса списано {listing_type.price} ₽"
+            )
+
             # Удаляем selected_listing_type из сессии после успешного создания
             if 'selected_listing_type' in self.request.session:
                 del self.request.session['selected_listing_type']
 
             return super().form_valid(form)
+
+
+
 
 
 
@@ -293,9 +302,12 @@ class SelectListingTypeView(LoginRequiredMixin, View):
             messages.error(request, "Нет доступных типов размещения. Обратитесь к администратору.")
             return redirect('dashboard')
 
+        # Очищаем предыдущий выбор при новом входе
+        if 'selected_listing_type' in request.session:
+            del request.session['selected_listing_type']
+
         form = ListingTypeForm(user=request.user)
         return render(request, self.template_name, {'form': form})
-
 
     def post(self, request):
         form = ListingTypeForm(request.POST, user=request.user)
