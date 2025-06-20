@@ -2,16 +2,24 @@ import sys
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 
 load_dotenv()
-
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'dqgwzhywm',
     'API_KEY': '164662831511784',
     'API_SECRET': 'aGZYpvwhUCuFiAaYAgXeOIr-FIk',
 }
+
+cloudinary.config(
+    cloud_name= CLOUDINARY_STORAGE['CLOUD_NAME'],
+    api_key= CLOUDINARY_STORAGE['API_KEY'],
+    api_secret= CLOUDINARY_STORAGE['API_SECRET'],
+    secure=True
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.append(str(BASE_DIR))
@@ -20,6 +28,7 @@ sys.path.append(str(BASE_DIR))
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-ваш-резервный-ключ-для-разработки')
 
 DEBUG = False
+
 handler500 = 'accounts.views.server_error'
 ALLOWED_HOSTS = ['winwindeal.up.railway.app' ]
 
