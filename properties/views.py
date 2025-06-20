@@ -90,23 +90,26 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
 
             listing_type = ListingType.objects.get(id=listing_type_id)
 
-            # Проверка баланса и создание платежа
             if self.request.user.balance < listing_type.price:
                 form.add_error(None, "Недостаточно средств на балансе")
                 return self.form_invalid(form)
+
+            # Генерация уникального transaction_id
+            transaction_id = f"property_{uuid.uuid4()}"
 
             payment = Payment.objects.create(
                 user=self.request.user,
                 amount=listing_type.price,
                 payment_method='balance',
                 status='completed',
-                description=f"Оплата размещения типа: {listing_type.name}"
+                description=f"Оплата размещения типа: {listing_type.name}",
+                transaction_id=transaction_id  # Указываем уникальный ID
             )
 
             self.request.user.balance -= listing_type.price
             self.request.user.save()
 
-            # Создание объекта
+            # Остальной код остается без изменений
             self.object = form.save(commit=False)
             self.object.property_type = get_object_or_404(
                 PropertyType,
@@ -154,7 +157,6 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
                 f"Объект успешно создан! С вашего баланса списано {listing_type.price} ₽"
             )
 
-            # Удаляем selected_listing_type из сессии после успешного создания
             if 'selected_listing_type' in self.request.session:
                 del self.request.session['selected_listing_type']
 
