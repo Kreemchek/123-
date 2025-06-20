@@ -22,7 +22,7 @@ from accounts.models import Favorite
 from django.contrib.auth.decorators import login_required
 from payments.models import Payment
 from django.db import IntegrityError
-
+import uuid
 
 
 class PropertyListView(FilterView):
