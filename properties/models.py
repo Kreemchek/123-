@@ -234,9 +234,10 @@ class PropertyImage(models.Model):
         default=0,
         verbose_name=_('Порядок')
     )
-    main_image = CloudinaryField('main_image', blank=True, null=True)
-    # При необходимости отдельно
-    main_image.verbose_name = _('Главное изображение')
+    is_main = models.BooleanField(
+        default=False,
+        verbose_name=_('Главное изображение')
+    )
 
     class Meta:
         verbose_name = _('Изображение объекта')
