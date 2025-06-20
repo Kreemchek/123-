@@ -83,10 +83,30 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         with transaction.atomic():
-            # Сначала создаем объект Property
-            self.object = form.save(commit=False)
+            listing_type_id = self.request.session.get('selected_listing_type')
+            if not listing_type_id:
+                form.add_error(None, "Тип размещения не выбран")
+                return self.form_invalid(form)
 
-            # Устанавливаем обязательные поля
+            listing_type = ListingType.objects.get(id=listing_type_id)
+
+            if self.request.user.balance < listing_type.price:
+                form.add_error(None, "Недостаточно средств на балансе")
+                return self.form_invalid(form)
+
+            payment = Payment.objects.create(
+                user=self.request.user,
+                amount=listing_type.price,
+                payment_method='balance',
+                status='completed',
+                description=f"Оплата размещения типа: {listing_type.name}"
+            )
+
+            self.request.user.balance -= listing_type.price
+            self.request.user.save()
+
+            # Создание объекта
+            self.object = form.save(commit=False)
             self.object.property_type = get_object_or_404(
                 PropertyType,
                 name=self.kwargs['property_type']
@@ -94,27 +114,18 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
             self.object.broker = self.request.user.broker_profile
             self.object.is_approved = False
             self.object.creator = self.request.user
+            self.object.listing_type = listing_type
+            self.object.listing_end_date = timezone.now() + timedelta(days=listing_type.duration_days)
+            self.object.is_featured = listing_type.is_featured
 
-            # Получаем тип размещения из сессии
-            listing_type_id = self.request.session.get('selected_listing_type')
-            if listing_type_id:
-                listing_type = ListingType.objects.get(id=listing_type_id)
-                self.object.listing_type = listing_type
-                self.object.listing_end_date = timezone.now() + timedelta(days=listing_type.duration_days)
-                self.object.is_featured = listing_type.is_featured
-                del self.request.session['selected_listing_type']
-
-            # Проверка наличия профиля брокера
             if not hasattr(self.request.user, 'broker_profile'):
                 form.add_error(None, "Профиль брокера не найден. Заполните данные в разделе профиля.")
                 return self.form_invalid(form)
 
-            # Проверка главного изображения
             if 'main_image' not in self.request.FILES:
                 form.add_error('main_image', 'Главное изображение обязательно')
                 return self.form_invalid(form)
 
-            # Сохраняем объект
             self.object.save()
 
             # Обработка изображений
@@ -123,7 +134,6 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
                 form.add_error(None, "Максимальное количество изображений - 10")
                 return self.form_invalid(form)
 
-            # Главное изображение
             main_image = self.request.FILES['main_image']
             PropertyImage.objects.create(
                 property=self.object,
@@ -131,13 +141,16 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
                 is_main=True
             )
 
-            # Дополнительные изображения
             for idx, img in enumerate(images[:9], start=1):
                 PropertyImage.objects.create(
                     property=self.object,
                     image=img,
                     order=idx
                 )
+
+            # Удаляем selected_listing_type из сессии после успешного создания
+            if 'selected_listing_type' in self.request.session:
+                del self.request.session['selected_listing_type']
 
             return super().form_valid(form)
 
@@ -276,54 +289,19 @@ class SelectListingTypeView(LoginRequiredMixin, View):
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request):
-        # Проверяем, есть ли типы размещения в БД
         if not ListingType.objects.exists():
             messages.error(request, "Нет доступных типов размещения. Обратитесь к администратору.")
             return redirect('dashboard')
 
-        # Если в сессии уже есть выбранный тип размещения, сразу редиректим
-        if 'selected_listing_type' in request.session:
-            return redirect('select-property-type')
-
         form = ListingTypeForm(user=request.user)
         return render(request, self.template_name, {'form': form})
+
 
     def post(self, request):
         form = ListingTypeForm(request.POST, user=request.user)
         if form.is_valid():
             listing_type = form.cleaned_data['listing_type']
-
-            # Проверка баланса
-            if request.user.balance < listing_type.price:
-                messages.error(request, "Недостаточно средств на балансе")
-                return redirect('dashboard')
-
-            try:
-                with transaction.atomic():
-                    # Создаем платеж
-                    payment = Payment.objects.create(
-                        user=request.user,
-                        amount=listing_type.price,
-                        payment_method='balance',
-                        status='completed',
-                        description=f"Оплата размещения типа: {listing_type.name}"
-                    )
-
-                    # Списание средств
-                    request.user.balance -= listing_type.price
-                    request.user.save()
-
-                    # Сохраняем выбранный тип в сессии
-                    request.session['selected_listing_type'] = listing_type.id
-
-                    # Сразу редиректим на выбор типа недвижимости
-                    return redirect('select-property-type')
-
-            except IntegrityError:
-                messages.error(
-                    request,
-                    "Платеж уже был проведен ранее. Пожалуйста, проверьте историю платежей или обратитесь в поддержку."
-                )
-                return redirect('dashboard')
+            request.session['selected_listing_type'] = listing_type.id
+            return redirect('select-property-type')
 
         return render(request, self.template_name, {'form': form})
