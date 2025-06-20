@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from accounts.models import User
 from properties.models import Property
-
+from cloudinary.models import CloudinaryField
 
 
 class BrokerProfile(models.Model):
@@ -28,12 +28,9 @@ class BrokerProfile(models.Model):
         verbose_name=_('О себе'),
         blank=True
     )
-    avatar = models.ImageField(  # Добавлено новое поле
-        upload_to='broker_avatars/',
-        blank=True,
-        null=True,
-        verbose_name=_('Аватар')
-    )
+    avatar = CloudinaryField('avatar', blank=True, null=True)
+    avatar.verbose_name = _('Avatar')
+
 
     is_archived = models.BooleanField(
         default=False,

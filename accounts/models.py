@@ -1,5 +1,5 @@
 from datetime import timezone
-
+from cloudinary.models import CloudinaryField
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -76,7 +76,8 @@ class User(AbstractUser):
         verbose_name=_('User Type')
     )
 
-    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True, verbose_name=_('Avatar'))
+    avatar = CloudinaryField('avatar', blank=True, null=True)
+    avatar.verbose_name = _('Avatar')
     is_verified = models.BooleanField(default=False, verbose_name=_('Verified'))
     passport = models.CharField(_('Passport Data'), max_length=100, blank=True)
 
@@ -210,12 +211,8 @@ class Message(models.Model):
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
-    attachment = models.FileField(
-        upload_to='chat_attachments/',
-        null=True,
-        blank=True,
-        verbose_name='Вложение'
-    )
+    attachment = CloudinaryField('attachment', null=True, blank=True)
+    attachment.verbose_name = _('attachment')
     class Meta:
         ordering = ['created_at']
 

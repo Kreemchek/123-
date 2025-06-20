@@ -1,7 +1,7 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
+from cloudinary.models import CloudinaryField
 
 
 class PropertyType(models.Model):
@@ -76,11 +76,10 @@ class Property(models.Model):
     address = models.TextField(
         verbose_name=_('Полный адрес')
     )
-    main_image = models.ImageField(
-        upload_to='properties/',
-        verbose_name=_('Главное изображение'),
-        blank=False
-    )
+    main_image = CloudinaryField('main_image', blank=True, null=True)
+    # При необходимости отдельно
+    main_image.verbose_name = _('Главное изображение')
+
     status = models.CharField(
         max_length=10,
         choices=Status.choices,
@@ -228,16 +227,16 @@ class PropertyImage(models.Model):
         related_name='images',
         verbose_name=_('Объект')
     )
-    image = models.ImageField(
-        upload_to='property_images/',
-        verbose_name=_('Изображение')
-    )
+    image = CloudinaryField('image', blank=True, null=True)
+    image.verbose_name = _('Изображение')
+
     order = models.PositiveIntegerField(
         default=0,
         verbose_name=_('Порядок')
     )
-    is_main = models.BooleanField(default=False,
-                                  verbose_name='Главное изображение')
+    main_image = CloudinaryField('main_image', blank=True, null=True)
+    # При необходимости отдельно
+    main_image.verbose_name = _('Главное изображение')
 
     class Meta:
         verbose_name = _('Изображение объекта')
