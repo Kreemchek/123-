@@ -24,4 +24,4 @@ ENV PYTHONUNBUFFERED=1
 
 ENTRYPOINT ["/entrypoint.sh"]
 
-CMD ["gunicorn", "real_estate_portal.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "real_estate_portal.wsgi:application", "--bind", "0.0.0.0:8080"]
