@@ -11,7 +11,7 @@ class PropertyType(models.Model):
                 ('new_flat', 'Квартира в новостройке'),
                 ('resale_flat', 'Квартира на вторичке'),
                 ('commercial', 'Нежилое помещение'),
-                ('house', 'Дом')  # Добавлен новый тип
+                ('house', 'Загородное жилье')  # Добавлен новый тип
             ],
             unique=True,
             verbose_name='Тип объекта'

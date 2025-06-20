@@ -33,7 +33,7 @@ class PropertyListView(FilterView):
     paginate_by = 12
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().filter(is_approved=True)
         broker_id = self.request.GET.get('broker')
         if broker_id:
             queryset = queryset.filter(broker_id=broker_id)
