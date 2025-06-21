@@ -442,24 +442,11 @@
 
                     {% if user.is_authenticated %}
                     <div class="mt-6 md:mt-8 flex flex-col gap-4">
-    {% if user.is_authenticated %}
-    {% if contact_paid %}
-        <a href="#" class="btn-primary hover:bg-blue-700 transition-colors">
-            <i class="bi bi-chat-left-text mr-2"></i> Контакт оплачен
-        </a>
-    {% else %}
-        <a href="{% url 'contact_broker' broker_id=property.broker.id property_id=property.id %}"
+                <a href="{% url 'contact_broker' broker_id=property.broker.id property_id=property.id %}"
            class="btn-primary hover:bg-blue-700 transition-colors"
-           onclick="return confirm('С вашего баланса будет списан 1 рубль для связи с брокером. Продолжить?')">
+           >
             <i class="bi bi-chat-left-text mr-2"></i> Написать (1 руб.)
         </a>
-    {% endif %}
-{% else %}
-    <a href="{% url 'login' %}?next={% url 'property-detail' pk=property.id %}"
-       class="btn-primary hover:bg-blue-700 transition-colors">
-        <i class="bi bi-chat-left-text mr-2"></i> Войдите, чтобы написать
-    </a>
-{% endif %}
     <form method="POST" action="{% url 'property-favorite' property.id %}" class="w-full">
     {% csrf_token %}
     <button type="submit" class="btn-outline hover:border-blue-600 hover:text-blue-600 w-full text-center">

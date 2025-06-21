@@ -17,7 +17,7 @@ from django_filters.views import FilterView
 from .models import Property, PropertyImage, PropertyType, ListingType
 from .filters import PropertyFilter
 from .forms import PropertyForm, ListingTypeForm
-from  accounts.models import User
+from accounts.models import User, ContactRequest
 from accounts.models import Favorite
 from django.contrib.auth.decorators import login_required
 from payments.models import Payment
@@ -57,13 +57,29 @@ class PropertyDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['images'] = self.object.images.all()
+
         if self.request.user.is_authenticated:
+            # Проверка избранного
             context['is_favorite'] = Favorite.objects.filter(
                 user=self.request.user,
                 property=self.object
             ).exists()
-        return context
 
+            # Проверка, оплачен ли уже контакт
+            context['contact_paid'] = Payment.objects.filter(
+                user=self.request.user,
+                description__contains=f"Контакт с брокером {self.object.broker.id} по объекту {self.object.id}",
+                status='completed'
+            ).exists()
+
+            # Добавляем существующий запрос в контекст, если есть
+            context['existing_request'] = ContactRequest.objects.filter(
+                requester=self.request.user,
+                broker=self.object.broker.user,
+                property=self.object
+            ).first()
+
+        return context
 
 class PropertyCreateView(LoginRequiredMixin, CreateView):
     model = Property
@@ -329,8 +345,24 @@ class ContactBrokerView(LoginRequiredMixin, View):
         ).first()
 
         if existing_payment:
-            messages.info(request, "Вы уже оплатили контакт с этим брокером")
-            return redirect('property-detail', pk=property_id)
+            # Если уже оплачено, ищем существующий запрос или создаем новый
+            contact_request = ContactRequest.objects.filter(
+                requester=request.user,
+                broker_id=broker_id,
+                property_id=property_id
+            ).first()
+
+            if contact_request:
+                return redirect('contact_request_detail', pk=contact_request.pk)
+            else:
+                # Создаем новый запрос, если не найден
+                contact_request = ContactRequest.objects.create(
+                    requester=request.user,
+                    broker_id=broker_id,
+                    property_id=property_id,
+                    status='in_progress'
+                )
+                return redirect('contact_request_detail', pk=contact_request.pk)
 
         # Проверяем баланс
         if request.user.balance < 1:
@@ -353,9 +385,19 @@ class ContactBrokerView(LoginRequiredMixin, View):
                 request.user.balance -= 1
                 request.user.save()
 
-                messages.success(request, "1 рубль успешно списан. Теперь вы можете связаться с брокером.")
-                return redirect('property-detail', pk=property_id)
+                # Создаем запрос на контакт
+                contact_request = ContactRequest.objects.create(
+                    requester=request.user,
+                    broker_id=broker_id,
+                    property_id=property_id,
+                    status='in_progress'
+                )
+
+                messages.success(request, "1 рубль успешно списан. Теперь вы можете общаться с брокером.")
+                return redirect('contact_request_detail', pk=contact_request.pk)
 
         except Exception as e:
             messages.error(request, f"Ошибка при обработке платежа: {str(e)}")
             return redirect('property-detail', pk=property_id)
+
+
