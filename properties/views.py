@@ -318,3 +318,44 @@ class SelectListingTypeView(LoginRequiredMixin, View):
             return redirect('select-property-type')
 
         return render(request, self.template_name, {'form': form})
+
+
+class ContactBrokerView(LoginRequiredMixin, View):
+    def get(self, request, broker_id, property_id):
+        # Проверяем, есть ли уже платеж за этот контакт
+        existing_payment = Payment.objects.filter(
+            user=request.user,
+            description=f"Контакт с брокером {broker_id} по объекту {property_id}"
+        ).first()
+
+        if existing_payment:
+            messages.info(request, "Вы уже оплатили контакт с этим брокером")
+            return redirect('property-detail', pk=property_id)
+
+        # Проверяем баланс
+        if request.user.balance < 1:
+            messages.error(request, "Недостаточно средств на балансе")
+            return redirect('property-detail', pk=property_id)
+
+        try:
+            with transaction.atomic():
+                # Создаем платеж
+                payment = Payment.objects.create(
+                    user=request.user,
+                    amount=1,
+                    payment_method='balance',
+                    status='completed',
+                    description=f"Контакт с брокером {broker_id} по объекту {property_id}",
+                    transaction_id=f"contact_{uuid.uuid4()}"
+                )
+
+                # Списание средств
+                request.user.balance -= 1
+                request.user.save()
+
+                messages.success(request, "1 рубль успешно списан. Теперь вы можете связаться с брокером.")
+                return redirect('property-detail', pk=property_id)
+
+        except Exception as e:
+            messages.error(request, f"Ошибка при обработке платежа: {str(e)}")
+            return redirect('property-detail', pk=property_id)

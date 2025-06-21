@@ -12,4 +12,7 @@ urlpatterns = [
     path('<int:pk>/favorite/', views.toggle_favorite, name='property-favorite'),
     path('<int:pk>/delete/', PropertyDeleteView.as_view(), name='property-delete'),
     path('api/brokers/', views.BrokerSearchView.as_view(), name='broker-search'),
+    path('contact-broker/<int:broker_id>/<int:property_id>/',
+         views.ContactBrokerView.as_view(),
+         name='contact_broker'),
 ]
