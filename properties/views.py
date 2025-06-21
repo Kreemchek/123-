@@ -393,7 +393,7 @@ class ContactBrokerView(LoginRequiredMixin, View):
                     status='in_progress'
                 )
 
-                messages.success(request, "1 рубль успешно списан. Теперь вы можете общаться с брокером.")
+
                 return redirect('contact_request_detail', pk=contact_request.pk)
 
         except Exception as e:
