@@ -80,7 +80,7 @@
         margin-top: 0.5rem;
     }
 
-      .selection-title {
+    .selection-title {
         font-size: 1.75rem;
         font-weight: 600;
         color: #1f2937;
@@ -115,33 +115,68 @@
         </div>
     </div>
 
-
     <h2 class="selection-title">Выберите тип недвижимости</h2>
     <!-- Карточки типов -->
     <div class="row g-4">
-        {% for type in types %}
-        <div class="col-12 col-md-6 col-lg-4">
-            <a href="{% url 'property-create' type.name %}" class="text-decoration-none">
+        <!-- Новостройка -->
+        <div class="col-12 col-md-6 col-lg-3">
+            <a href="{% url 'property-create' 'new_flat' %}" class="text-decoration-none">
                 <div class="type-card h-100 p-4 text-center">
                     <div class="type-icon">
-                        <i class="fas fa-{{ type.icon }}"></i>
+                        <i class="fas fa-building"></i>
                     </div>
-                    <h3 class="type-title mb-2">{{ type.get_name_display }}</h3>
+                    <h3 class="type-title mb-2">Новостройка</h3>
                     <p class="type-description">
-                        {% if type.name == 'new_flat' %}
-                            Квартиры в новостройках с отделкой
-                        {% elif type.name == 'resale_flat' %}
-                            Вторичное жилье с историей
-                        {% elif type.name == 'commercial' %}
-                            Помещения для бизнеса
-                        {% else %}
-                            Частные дома и коттеджи
-                        {% endif %}
+                        Строящееся жильё
                     </p>
                 </div>
             </a>
         </div>
-        {% endfor %}
+
+        <!-- Вторичка -->
+        <div class="col-12 col-md-6 col-lg-3">
+            <a href="{% url 'property-create' 'resale_flat' %}" class="text-decoration-none">
+                <div class="type-card h-100 p-4 text-center">
+                    <div class="type-icon">
+                        <i class="fas fa-city"></i>
+                    </div>
+                    <h3 class="type-title mb-2">Вторичка</h3>
+                    <p class="type-description">
+                        Готовое жильё
+                    </p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Дом -->
+        <div class="col-12 col-md-6 col-lg-3">
+            <a href="{% url 'property-create' 'house' %}" class="text-decoration-none">
+                <div class="type-card h-100 p-4 text-center">
+                    <div class="type-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <h3 class="type-title mb-2">Дом</h3>
+                    <p class="type-description">
+                        Частный дом, коттедж, таунхаус
+                    </p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Нежилые помещения -->
+        <div class="col-12 col-md-6 col-lg-3">
+            <a href="{% url 'property-create' 'commercial' %}" class="text-decoration-none">
+                <div class="type-card h-100 p-4 text-center">
+                    <div class="type-icon">
+                        <i class="fas fa-warehouse"></i>
+                    </div>
+                    <h3 class="type-title mb-2">Нежилые помещения</h3>
+                    <p class="type-description">
+                        Коммерция, паркинг, кладовые
+                    </p>
+                </div>
+            </a>
+        </div>
     </div>
 </div>
 {% endblock %}
