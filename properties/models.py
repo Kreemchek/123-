@@ -3,18 +3,17 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from cloudinary.models import CloudinaryField
 
-
 class PropertyType(models.Model):
     name = models.CharField(
-            max_length=100,
-            choices=[
-                ('new_flat', 'Квартира в новостройке'),
-                ('resale_flat', 'Квартира на вторичке'),
-                ('commercial', 'Нежилое помещение'),
-                ('house', 'Загородное жилье')  # Добавлен новый тип
-            ],
-            unique=True,
-            verbose_name='Тип объекта'
+        max_length=100,
+        choices=[
+            ('new_flat', 'Новостройка'),
+            ('resale_flat', 'Вторичка'),
+            ('commercial', 'Нежилые помещения '),
+            ('house', 'Дом')
+        ],
+        unique=True,
+        verbose_name='Тип объекта'
     )
     description = models.TextField(
         blank=True,
@@ -39,23 +38,20 @@ class PropertyType(models.Model):
     def __str__(self):
         return self.name
 
-
-
-
 class Property(models.Model):
     class Status(models.TextChoices):
         ACTIVE = 'active', _('Активно')
         SOLD = 'sold', _('Продано')
         ARCHIVED = 'archived', _('В архиве')
 
-    title = models.CharField(
-        max_length=200,
-        blank=True,
-        verbose_name=_('Заголовок')
-    )
-    description = models.TextField(
-        verbose_name=_('Описание')
-    )
+    IS_RENTAL_CHOICES = [
+        ('no', 'Не арендное'),
+        ('monthly', 'Аренда помесячно'),
+        ('daily', 'Аренда посуточно'),
+    ]
+
+    title = models.CharField(max_length=200, blank=True, verbose_name=_('Заголовок'))
+    description = models.TextField(verbose_name=_('Описание'))
     property_type = models.ForeignKey(
         PropertyType,
         on_delete=models.PROTECT,
@@ -64,38 +60,44 @@ class Property(models.Model):
     price = models.DecimalField(
         max_digits=12,
         decimal_places=2,
-        verbose_name=_('Цена')
+        verbose_name=_('Цена'),
+        null=True,
+        blank=True
     )
-    rooms = models.PositiveIntegerField(
-        verbose_name=_('Количество комнат')
+    is_rental = models.CharField(
+        max_length=10,
+        choices=IS_RENTAL_CHOICES,
+        default='no',
+        verbose_name=_('Тип аренды')
     )
-    location = models.CharField(
-        max_length=200,
-        verbose_name=_('Расположение')
+    monthly_price = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        verbose_name=_('Цена за месяц'),
+        null=True,
+        blank=True
     )
-    address = models.TextField(
-        verbose_name=_('Полный адрес')
+    daily_price = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        verbose_name=_('Цена за сутки'),
+        null=True,
+        blank=True
     )
+    rooms = models.PositiveIntegerField(verbose_name=_('Количество комнат'))
+    location = models.CharField(max_length=200, verbose_name=_('Расположение'))
+    address = models.TextField(verbose_name=_('Полный адрес'))
     main_image = CloudinaryField('main_image', blank=True, null=True)
-    # При необходимости отдельно
-    main_image.verbose_name = _('Главное изображение')
-
     status = models.CharField(
         max_length=10,
         choices=Status.choices,
         default=Status.ACTIVE,
         verbose_name=_('Статус')
     )
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name=_('Дата создания')
-    )
-    updated_at = models.DateTimeField(
-        auto_now=True,
-        verbose_name=_('Дата обновления')
-    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Дата создания'))
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_('Дата обновления'))
     broker = models.ForeignKey(
-        'brokers.BrokerProfile',  # Ссылка на BrokerProfile вместо User
+        'brokers.BrokerProfile',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -103,30 +105,21 @@ class Property(models.Model):
         verbose_name=_('Брокер')
     )
     developer = models.ForeignKey(
-    'accounts.User',
+        'accounts.User',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name='developer_properties',
-        verbose_name = _('Застройщик')
+        verbose_name=_('Застройщик')
     )
-    is_premium = models.BooleanField(
-        default=False,
-        verbose_name=_('Премиум')
-    )
-    is_hot = models.BooleanField(
-        default=False,
-        verbose_name=_('Горячее предложение')
-    )
-    is_approved = models.BooleanField(
-        default=False,
-        verbose_name=_('Одобрено')
-    )
+    is_premium = models.BooleanField(default=False, verbose_name=_('Премиум'))
+    is_hot = models.BooleanField(default=False, verbose_name=_('Горячее предложение'))
+    is_approved = models.BooleanField(default=False, verbose_name=_('Одобрено'))
     floor = models.PositiveIntegerField(
-        verbose_name=_('Этаж'),  # Убраны blank=True и null=True
-        blank=True,  # Добавлено
+        verbose_name=_('Этаж'),
+        blank=True,
         null=True,
-        validators=[MinValueValidator(1)]  # Добавлена валидация
+        validators=[MinValueValidator(1)]
     )
     total_floors = models.PositiveIntegerField(
         verbose_name=_('Всего этажей в доме'),
@@ -145,20 +138,13 @@ class Property(models.Model):
         ],
         verbose_name=_('Тип квартиры')
     )
-
-    has_finishing = models.BooleanField(
-        verbose_name='Отделка',
-        default=False
-    )
+    has_finishing = models.BooleanField(verbose_name='Отделка', default=False)
     delivery_year = models.PositiveIntegerField(
         verbose_name='Год сдачи',
         null=True,
         blank=True
     )
-    is_delivered = models.BooleanField(
-        verbose_name='Дом сдан',
-        default=False
-    )
+    is_delivered = models.BooleanField(verbose_name='Дом сдан', default=False)
     living_area = models.DecimalField(
         verbose_name='Жилая площадь (м²)',
         max_digits=8,
@@ -177,12 +163,17 @@ class Property(models.Model):
         max_length=100,
         blank=True
     )
+
     class Meta:
         verbose_name = _('Объект недвижимости')
         verbose_name_plural = _('Объекты недвижимости')
         ordering = ['-created_at']
 
     def __str__(self):
+        if self.is_rental == 'monthly' and self.monthly_price:
+            return f"{self.title} - {self.monthly_price} ₽/мес"
+        elif self.is_rental == 'daily' and self.daily_price:
+            return f"{self.title} - {self.daily_price} ₽/сут"
         return f"{self.title} - {self.price} ₽"
 
     def get_status_color(self):
@@ -201,26 +192,49 @@ class Property(models.Model):
                 'regular': f'{self.rooms}-к. квартира'
             }
 
-            # Формируем информацию о этажах
-            floor_info = str(self.floor)  # Базовый этаж
-            if self.total_floors:
-                floor_info = f"{self.floor}/{self.total_floors}"  # Добавляем общее количество этажей
+            floor_info = str(self.floor) if self.floor else ''
+            if self.floor and self.total_floors:
+                floor_info = f"{self.floor}/{self.total_floors}"
 
-            self.title = f"{type_map.get(self.apartment_type, 'Квартира')}, {self.total_area} м², {floor_info} этаж"
+            price_info = ""
+            if self.is_rental == 'no' and self.price:
+                price_info = f" - {self.price} ₽"
+            elif self.is_rental == 'monthly' and self.monthly_price:
+                price_info = f" - {self.monthly_price} ₽/мес"
+            elif self.is_rental == 'daily' and self.daily_price:
+                price_info = f" - {self.daily_price} ₽/сут"
+
+            parts = [
+                type_map.get(self.apartment_type, 'Квартира'),
+                f"{self.total_area} м²",
+                f"{floor_info} этаж" if floor_info else None,
+                price_info if price_info else None
+            ]
+            self.title = ", ".join(filter(None, parts))
 
         elif self.property_type.name == 'house':
-            self.title = f"Дом, {self.total_area} м²"
-        else:
-            self.title = f"{self.property_type.get_name_display()}, {self.total_area} м²"
+            price_info = ""
+            if self.is_rental == 'no' and self.price:
+                price_info = f" - {self.price} ₽"
+            elif self.is_rental == 'monthly' and self.monthly_price:
+                price_info = f" - {self.monthly_price} ₽/мес"
+            elif self.is_rental == 'daily' and self.daily_price:
+                price_info = f" - {self.daily_price} ₽/сут"
+            self.title = f"Дом, {self.total_area} м²{price_info}"
 
-            #if not self.total_area or (self.property_type.name in ['new_flat', 'resale_flat'] and not self.floor):
-               # raise ValueError("Недостаточно данных для генерации заголовка")
+        else:
+            price_info = ""
+            if self.is_rental == 'no' and self.price:
+                price_info = f" - {self.price} ₽"
+            elif self.is_rental == 'monthly' and self.monthly_price:
+                price_info = f" - {self.monthly_price} ₽/мес"
+            elif self.is_rental == 'daily' and self.daily_price:
+                price_info = f" - {self.daily_price} ₽/сут"
+            self.title = f"{self.property_type.get_name_display()}, {self.total_area} м²{price_info}"
 
         super().save(*args, **kwargs)
 
-
 class PropertyImage(models.Model):
-    """Дополнительные изображения объекта"""
     property = models.ForeignKey(
         Property,
         on_delete=models.CASCADE,
@@ -228,16 +242,8 @@ class PropertyImage(models.Model):
         verbose_name=_('Объект')
     )
     image = CloudinaryField('image', blank=True, null=True)
-    image.verbose_name = _('Изображение')
-
-    order = models.PositiveIntegerField(
-        default=0,
-        verbose_name=_('Порядок')
-    )
-    is_main = models.BooleanField(
-        default=False,
-        verbose_name=_('Главное изображение')
-    )
+    order = models.PositiveIntegerField(default=0, verbose_name=_('Порядок'))
+    is_main = models.BooleanField(default=False, verbose_name=_('Главное изображение'))
 
     class Meta:
         verbose_name = _('Изображение объекта')
@@ -247,15 +253,12 @@ class PropertyImage(models.Model):
     def __str__(self):
         return f"Изображение для {self.property.title}"
 
-
 class ListingType(models.Model):
     name = models.CharField(max_length=100, verbose_name='Название')
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Цена')
     duration_days = models.PositiveIntegerField(verbose_name='Длительность (дни)')
     is_featured = models.BooleanField(default=False, verbose_name='Премиум размещение')
     description = models.TextField(verbose_name='Описание')
-
-
 
     class Meta:
         verbose_name = 'Тип размещения'

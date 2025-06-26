@@ -174,10 +174,30 @@
                 <div class="form-card">
                     <h3 class="text-lg font-semibold mb-4">Характеристики</h3>
                     <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Цена (₽)</label>
-                            {% render_field form.price class="w-full px-3 py-2 border rounded-lg" %}
-                        </div>
+                        <!-- Заменяем текущее поле цены в блоке "Характеристики" -->
+<div>
+    {% if show_apartment_fields and property_type.name == 'resale_flat' %}
+        <!-- Для вторичного жилья (с возможностью выбора типа аренды) -->
+        <div id="sale-price-field" {% if form.is_rental.value != 'no' and form.is_rental.value %}class="hidden"{% endif %}>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Цена продажи (₽)</label>
+            {% render_field form.price class="w-full px-3 py-2 border rounded-lg" %}
+        </div>
+
+        <div id="monthly-price-field" {% if form.is_rental.value != 'monthly' %}class="hidden"{% endif %}>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Цена за месяц (₽)</label>
+            {% render_field form.monthly_price class="w-full px-3 py-2 border rounded-lg" %}
+        </div>
+
+        <div id="daily-price-field" {% if form.is_rental.value != 'daily' %}class="hidden"{% endif %}>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Цена за сутки (₽)</label>
+            {% render_field form.daily_price class="w-full px-3 py-2 border rounded-lg" %}
+        </div>
+    {% else %}
+        <!-- Для других типов недвижимости - только цена продажи -->
+        <label class="block text-sm font-medium text-gray-700 mb-2">Цена (₽)</label>
+        {% render_field form.price class="w-full px-3 py-2 border rounded-lg" %}
+    {% endif %}
+</div>
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Комнат</label>
@@ -188,6 +208,28 @@
                                 {% render_field form.total_area class="w-full px-3 py-2 border rounded-lg" %}
                             </div>
                         </div>
+                        {% if show_apartment_fields and property_type.name == 'resale_flat' %}
+<div>
+    <label class="block text-sm font-medium text-gray-700 mb-2">Тип аренды</label>
+    <div class="flex items-center gap-4 mb-4">
+        <label class="inline-flex items-center">
+            <input type="radio" name="is_rental" value="no" class="form-radio rental-type"
+                   {% if form.is_rental.value == 'no' or not form.is_rental.value %}checked{% endif %}>
+            <span class="ml-2">Продажа</span>
+        </label>
+        <label class="inline-flex items-center">
+            <input type="radio" name="is_rental" value="monthly" class="form-radio rental-type"
+                   {% if form.is_rental.value == 'monthly' %}checked{% endif %}>
+            <span class="ml-2">Аренда помесячно</span>
+        </label>
+        <label class="inline-flex items-center">
+            <input type="radio" name="is_rental" value="daily" class="form-radio rental-type"
+                   {% if form.is_rental.value == 'daily' %}checked{% endif %}>
+            <span class="ml-2">Аренда посуточно</span>
+        </label>
+    </div>
+</div>
+{% endif %}
                         {% if show_apartment_fields %}
                         <div class="grid grid-cols-2 gap-4">
                             <div>
@@ -296,9 +338,9 @@
 
         <!-- Навигационные кнопки -->
         <div class="form-navigation">
-            <button type="button" class="prev-step px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-50" disabled>
-                ← Назад
-            </button>
+            <button type="button" class="prev-step px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-50">
+    ← Назад
+</button>
             <button type="button" class="next-step px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                 Далее →
             </button>
@@ -310,56 +352,204 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const steps = document.querySelectorAll('.form-step');
-    const prevBtn = document.querySelector('.prev-step');
-    const nextBtn = document.querySelector('.next-step');
-    const submitBtn = document.querySelector('.submit-btn');
-    let currentStep = 0;
+    document.addEventListener('DOMContentLoaded', function() {
+        const steps = document.querySelectorAll('.form-step');
+        const prevBtn = document.querySelector('.prev-step');
+        const nextBtn = document.querySelector('.next-step');
+        const submitBtn = document.querySelector('.submit-btn');
+        const propertyForm = document.getElementById('property-form');
+        let currentStep = 0;
 
-    function updateSteps() {
-        // Обновление индикатора шагов
-        document.querySelectorAll('.step-badge').forEach((badge, index) => {
-            badge.classList.toggle('step-active', index === currentStep);
-            badge.classList.toggle('step-inactive', index !== currentStep);
+        // Функция для проверки размеров изображения
+        function checkImageDimensions(file) {
+            return new Promise((resolve) => {
+                if (!file.type.match('image.*')) {
+                    alert('Пожалуйста, выберите файл изображения (JPEG, PNG)');
+                    resolve(false);
+                    return;
+                }
+
+                // Проверка размера файла (не более 5MB)
+                const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+                if (file.size > MAX_FILE_SIZE) {
+                    alert(`Файл ${file.name} слишком большой (${(file.size/1024/1024).toFixed(2)} MB). Максимальный размер: 5MB`);
+                    resolve(false);
+                    return;
+                }
+
+                const img = new Image();
+                const url = URL.createObjectURL(file);
+
+                img.onload = function() {
+                    const isCorrectSize = this.width <= 1280 && this.height <= 720;
+                    if (!isCorrectSize) {
+                        alert(`Изображение ${file.name} слишком большое (${this.width}x${this.height}). Максимальный размер: 1280x720 пикселей`);
+                    }
+                    URL.revokeObjectURL(url);
+                    resolve(isCorrectSize);
+                };
+
+                img.onerror = function() {
+                    alert('Ошибка загрузки изображения. Пожалуйста, выберите другой файл.');
+                    URL.revokeObjectURL(url);
+                    resolve(false);
+                };
+
+                img.src = url;
+            });
+        }
+
+        // Асинхронная валидация шага
+        async function validateStep(step) {
+            let isValid = true;
+            const inputs = steps[step].querySelectorAll('input, select, textarea');
+
+            // Проверка обычных полей
+            inputs.forEach(input => {
+                if (input.required && !input.value.trim()) {
+                    input.reportValidity();
+                    isValid = false;
+                } else if (!input.reportValidity()) {
+                    isValid = false;
+                }
+            });
+
+            // Специальная проверка для шага с изображениями
+            if (step === 1) {
+                const mainImageInput = document.querySelector('input[name="main_image"]');
+                const additionalImagesInput = document.querySelector('input[name="images"]');
+
+                // Проверка основного изображения
+                if (mainImageInput.files.length > 0) {
+                    const mainImage = mainImageInput.files[0];
+                    const isMainImageValid = await checkImageDimensions(mainImage);
+                    if (!isMainImageValid) isValid = false;
+                } else {
+                    alert('Пожалуйста, загрузите основное изображение');
+                    isValid = false;
+                }
+
+                // Проверка дополнительных изображений
+                if (additionalImagesInput && additionalImagesInput.files.length > 0) {
+                    // Проверка количества изображений (не более 10)
+                    if (additionalImagesInput.files.length > 10) {
+                        alert('Можно загрузить не более 10 дополнительных изображений');
+                        isValid = false;
+                    } else {
+                        for (let i = 0; i < additionalImagesInput.files.length; i++) {
+                            const image = additionalImagesInput.files[i];
+                            const isImageValid = await checkImageDimensions(image);
+                            if (!isImageValid) {
+                                isValid = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return isValid;
+        }
+
+        function updateSteps() {
+            // Обновление индикатора шагов
+            document.querySelectorAll('.step-badge').forEach((badge, index) => {
+                badge.classList.toggle('step-active', index === currentStep);
+                badge.classList.toggle('step-inactive', index !== currentStep);
+            });
+
+            // Показать/скрыть шаги
+            steps.forEach((step, index) => {
+                step.classList.toggle('active', index === currentStep);
+            });
+
+            // Обновление кнопок навигации
+            prevBtn.disabled = false;
+            if (currentStep === 0) {
+                prevBtn.textContent = '← На главную';
+            } else {
+                prevBtn.textContent = '← Назад';
+            }
+
+            nextBtn.classList.toggle('hidden', currentStep === steps.length - 1);
+            submitBtn.classList.toggle('hidden', currentStep !== steps.length - 1);
+        }
+
+        // Обработчик для кнопки "Назад"
+        prevBtn.addEventListener('click', function() {
+            if (currentStep === 0) {
+                window.location.href = "{% url 'dashboard' %}";
+            } else {
+                currentStep--;
+                updateSteps();
+            }
         });
 
-        // Показать/скрыть шаги
-        steps.forEach((step, index) => {
-            step.classList.toggle('active', index === currentStep);
+        // Обработчик для кнопки "Далее"
+        nextBtn.addEventListener('click', async function() {
+            if (await validateStep(currentStep)) {
+                currentStep++;
+                updateSteps();
+            }
         });
 
-        // Обновление кнопок навигации
-        prevBtn.disabled = currentStep === 0;
-        nextBtn.classList.toggle('hidden', currentStep === steps.length - 1);
-        submitBtn.classList.toggle('hidden', currentStep !== steps.length - 1);
-    }
-
-    function validateStep(step) {
-        let isValid = true;
-        const inputs = steps[step].querySelectorAll('input, select, textarea');
-        
-        inputs.forEach(input => {
-            if (!input.reportValidity()) isValid = false;
+        // Обработчик отправки формы
+        propertyForm.addEventListener('submit', async function(e) {
+            // Проверяем все шаги перед отправкой
+            for (let i = 0; i < steps.length; i++) {
+                if (!await validateStep(i)) {
+                    e.preventDefault();
+                    currentStep = i;
+                    updateSteps();
+                    return false;
+                }
+            }
         });
 
-        return isValid;
-    }
+        // Инициализация шагов
+        updateSteps();
 
-    nextBtn.addEventListener('click', function() {
-        if (validateStep(currentStep)) {
-            currentStep++;
-            updateSteps();
+        // Добавляем подсказки о требованиях к изображениям
+        const mainImageInput = document.querySelector('input[name="main_image"]');
+        if (mainImageInput) {
+            mainImageInput.insertAdjacentHTML('afterend',
+                '<small class="text-gray-500 text-xs block mt-1">Изображение должно быть не больше 1280x720 пикселей и 5MB</small>');
+        }
+
+        const additionalImagesInput = document.querySelector('input[name="images"]');
+        if (additionalImagesInput) {
+            additionalImagesInput.insertAdjacentHTML('afterend',
+                '<small class="text-gray-500 text-xs block mt-1">Максимум 10 изображений, каждое не больше 1280x720 пикселей и 5MB</small>');
         }
     });
+document.addEventListener('DOMContentLoaded', function() {
+    // Обработка переключения типа аренды
+    const rentalRadios = document.querySelectorAll('.rental-type');
+    const salePriceField = document.getElementById('sale-price-field');
+    const monthlyPriceField = document.getElementById('monthly-price-field');
+    const dailyPriceField = document.getElementById('daily-price-field');
 
-    prevBtn.addEventListener('click', function() {
-        currentStep--;
-        updateSteps();
-    });
+    if (rentalRadios.length > 0) {
+        rentalRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'no') {
+                    if (salePriceField) salePriceField.classList.remove('hidden');
+                    if (monthlyPriceField) monthlyPriceField.classList.add('hidden');
+                    if (dailyPriceField) dailyPriceField.classList.add('hidden');
+                } else if (this.value === 'monthly') {
+                    if (salePriceField) salePriceField.classList.add('hidden');
+                    if (monthlyPriceField) monthlyPriceField.classList.remove('hidden');
+                    if (dailyPriceField) dailyPriceField.classList.add('hidden');
+                } else if (this.value === 'daily') {
+                    if (salePriceField) salePriceField.classList.add('hidden');
+                    if (monthlyPriceField) monthlyPriceField.classList.add('hidden');
+                    if (dailyPriceField) dailyPriceField.classList.remove('hidden');
+                }
+            });
+        });
+    }
 
-    // Инициализация шагов
-    updateSteps();
+    // Остальной существующий код...
 });
 </script>
 {% endblock %}

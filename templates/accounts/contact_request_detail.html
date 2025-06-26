@@ -12,6 +12,12 @@
     {% endfor %}
 </div>
 {% endif %}
+    <div id="successPaymentNotification" class="fixed top-4 right-4 z-50 hidden">
+    <div class="bg-green-100 text-green-700 px-4 py-2 rounded-lg shadow-md flex items-center justify-between mb-2">
+        <span id="successPaymentMessage"></span>
+        <button onclick="this.parentElement.remove()">×</button>
+    </div>
+</div>
 
 <style>
     /* Стили для кастомного скроллбара */
@@ -35,23 +41,6 @@
         scrollbar-width: thin;
         scrollbar-color: #3b82f6 #f5f5f5;
     }
-    .rating-stars label i {
-    transition: color 0.2s ease-in-out;
-}
-  .rating-stars label i {
-    transition: all 0.2s ease-in-out;
-    -webkit-text-stroke: 1px transparent;
-    color: #d1d5db; /* Добавьте явное указание цвета по умолчанию */
-}
-
-.rating-stars label.active-star i {
-    -webkit-text-stroke: 1px #f59e0b;
-    color: #f59e0b !important;
-}
-
-.rating-stars label.hovered i {
-    -webkit-text-stroke: 1px #f59e0b;
-}
 .rating-stars label {
     cursor: pointer;
     transition: all 0.2s ease;
@@ -59,17 +48,18 @@
 
 .rating-stars label i {
     color: #d1d5db;
+    transition: all 0.2s ease-in-out;
     -webkit-text-stroke: 1px transparent;
 }
 
-.rating-stars label:hover i,
-.rating-stars label.hovered i {
+/* Наведение мыши */
+.rating-stars label i.hovered {
     color: #f59e0b !important;
     -webkit-text-stroke: 1px #f59e0b;
 }
 
-.rating-stars input:checked ~ label i,
-.rating-stars label.active-star i {
+/* Активная звезда */
+.rating-stars label i.active-star {
     color: #f59e0b !important;
     -webkit-text-stroke: 1px #f59e0b;
 }
@@ -80,8 +70,8 @@
     <!-- Заголовок -->
     <div class="text-center mb-6">
         <h1 class="text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-500">
-            <i class="fas fa-comments mr-2"></i>Чат с {{ object.broker.get_full_name }}
-        </h1>
+    <i class="fas fa-comments mr-2"></i>Чат с {% if object.broker == request.user %}{{ object.requester.get_full_name }}{% else %}{{ object.broker.get_full_name }}{% endif %}
+</h1>
         <span class="inline-block mt-2 px-4 py-1 text-sm font-semibold rounded-full border-2
                      {% if object.status == 'new' %}border-blue-500 bg-blue-50 text-blue-600
                      {% elif object.status == 'in_progress' %}border-blue-300 bg-blue-50 text-blue-500
@@ -207,50 +197,55 @@
             {% endfor %}
         </div>
     </div>
+{% if object.status == 'new' and request.user == object.requester and not object.first_message_sent %}
+<div id="paymentNotification" class="bg-blue-100 text-blue-800 p-4 rounded-lg mb-4 mt-3">
+    <i class="fas fa-info-circle mr-2"></i>
+    С вашего счета будет списано 1 рубль после отправки первого сообщения.
+    Ваш текущий баланс: {{ request.user.balance }} руб.
+</div>
+{% endif %}
 
     <!-- Форма отзыва -->
     {% if object.status == 'completed' and not has_review and request.user == object.requester %}
-    <div class="bg-yellow-50 p-6 rounded-2xl mt-6">
-        <h3 class="text-xl font-bold mb-4">Оставьте отзыв о работе брокера</h3>
-        <form method="post" action="{% url 'submit_review' object.pk %}">
-            {% csrf_token %}
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-2">Оценка:</label>
-               <div class="rating-stars flex gap-2">
-    {% for _ in "12345" %}
-        {% with counter=forloop.counter %}
-            <input type="radio"
-                   name="rating"
-                   value="{{ counter }}"
-                   id="star-{{ counter }}"
-                   class="hidden"
-                   required>
-            <label for="star-{{ counter }}"
-                   class="cursor-pointer text-2xl transition-all">
-                <i class="fas fa-star"></i>
-            </label>
-        {% endwith %}
-    {% endfor %}
+<div class="bg-yellow-50 p-6 rounded-2xl mt-6">
+    <h3 class="text-xl font-bold mb-4">Оставьте отзыв о работе брокера</h3>
+    <form method="post" action="{% url 'submit_review' object.pk %}">
+        {% csrf_token %}
+        <div class="mb-4">
+            <label class="block text-sm font-medium mb-2">Оценка:</label>
+            <div class="rating-stars flex gap-2">
+                {% for i in "12345" %}
+                <input type="radio"
+                       name="rating"
+                       value="{{ i }}"
+                       id="star-{{ i }}"
+                       class="hidden"
+                       required>
+                <label for="star-{{ i }}"
+                       class="cursor-pointer text-2xl transition-all">
+                    <i class="fas fa-star"></i>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="mb-4">
+            <textarea name="comment" rows="4"
+                class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-yellow-300"
+                placeholder="Ваш отзыв..." required></textarea>
+        </div>
+        <button type="submit"
+            class="px-6 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors">
+            Отправить отзыв
+        </button>
+    </form>
 </div>
-            </div>
-            <div class="mb-4">
-                <textarea name="comment" rows="4"
-                    class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-yellow-300"
-                    placeholder="Ваш отзыв..." required></textarea>
-            </div>
-            <button type="submit"
-                class="px-6 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors">
-                Отправить отзыв
-            </button>
-        </form>
-    </div>
-    {% endif %}
+{% endif %}
 
 </div>
 
 <script>
     // Показ имени файла
-    document.getElementById('fileInput').addEventListener('change', function () {
+    document.getElementById('fileInput')?.addEventListener('change', function () {
         const fileName = this.files[0]?.name || '';
         document.getElementById('fileName').textContent = fileName;
     });
@@ -259,112 +254,154 @@
     const container = document.querySelector('.chat-messages-container');
     if (container) container.scrollTop = container.scrollHeight;
 
-  // Обновленный обработчик рейтинга
-document.querySelectorAll('.rating-stars label').forEach(label => {
-    // Ховер-эффект
-    label.addEventListener('mouseenter', function() {
-        const hoverValue = parseInt(this.htmlFor.split('-')[1]);
-        document.querySelectorAll('.rating-stars label').forEach(l => {
-            const starNumber = parseInt(l.htmlFor.split('-')[1]);
-            l.classList.toggle('hovered', starNumber <= hoverValue);
-        });
-    });
+    // ✅ Исправленная логика работы рейтинга
+    function setupRatingStars() {
+        const ratingContainer = document.querySelector('.rating-stars');
+        if (!ratingContainer) return;
 
-    label.addEventListener('mouseleave', () => {
-        document.querySelectorAll('.rating-stars label').forEach(l => {
-            l.classList.remove('hovered');
-        });
-    });
+        const stars = Array.from(ratingContainer.querySelectorAll('label'));
+        const inputs = Array.from(ratingContainer.querySelectorAll('input[type="radio"]'));
 
-    // Клик
-    label.addEventListener('click', function() {
-        const selectedValue = parseInt(this.htmlFor.split('-')[1]);
-        document.querySelectorAll('.rating-stars label').forEach(l => {
-            const starNumber = parseInt(l.htmlFor.split('-')[1]);
-            l.classList.toggle('active-star', starNumber <= selectedValue);
-        });
-    });
-});
-
-// Инициализация при загрузке
-document.addEventListener('DOMContentLoaded', () => {
-    const checked = document.querySelector('.rating-stars input:checked');
-    if (checked) {
-        const selectedValue = parseInt(checked.value);
-        document.querySelectorAll('.rating-stars label').forEach(label => {
-            const starNumber = parseInt(label.htmlFor.split('-')[1]);
-            label.classList.toggle('active-star', starNumber <= selectedValue);
-        });
-    }
-});
-
-    // Инициализация рейтинга при загрузке
-    document.addEventListener('DOMContentLoaded', () => {
-        const checked = document.querySelector('.rating-stars input:checked');
-        if (checked) {
-            const selectedValue = parseInt(checked.value);
-            document.querySelectorAll('.rating-stars label').forEach(label => {
-                const starNumber = parseInt(label.htmlFor.split('-')[1]);
-                label.classList.toggle('active-star', starNumber <= selectedValue);
+        const updateStars = (selectedCount) => {
+            stars.forEach((star, index) => {
+                const icon = star.querySelector('i');
+                if (index < selectedCount) {
+                    icon.classList.add('active-star');
+                } else {
+                    icon.classList.remove('active-star');
+                }
+                icon.classList.remove('hovered');
             });
-        }
-    });
+        };
 
-    // Управление скроллом чата
-    const messagesContainer = document.querySelector('.chat-messages-container');
-    const scrollUpBtn = document.getElementById('scrollUpBtn');
-    const scrollDownBtn = document.getElementById('scrollDownBtn');
-
-    function updateScrollButtons() {
-        const isAtTop = messagesContainer.scrollTop === 0;
-        const isAtBottom = messagesContainer.scrollTop + messagesContainer.clientHeight >= messagesContainer.scrollHeight - 1;
-        scrollUpBtn.style.display = isAtTop ? 'none' : 'flex';
-        scrollDownBtn.style.display = isAtBottom ? 'none' : 'flex';
-    }
-
-    messagesContainer.addEventListener('scroll', updateScrollButtons);
-    window.addEventListener('resize', updateScrollButtons);
-    updateScrollButtons();
-
-    function scrollToBottom() {
-        messagesContainer.scrollTo({top: messagesContainer.scrollHeight, behavior: 'smooth'});
-    }
-
-    function scrollToTop() {
-        messagesContainer.scrollTo({top: 0, behavior: 'smooth'});
-    }
-
-    // Отправка сообщения
-    document.getElementById('messageForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const form = e.target;
-        const formData = new FormData(form);
-        const btn = document.getElementById('submitBtn');
-        const messagesContainer = document.querySelector('.chat-messages-container');
-
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Отправка...';
-
-        try {
-            const response = await fetch(form.action, {
-                method: 'POST',
-                body: formData,
-                headers: {'X-CSRFToken': '{{ csrf_token }}'}
+        stars.forEach((star, index) => {
+            // Наведение
+            star.addEventListener('mouseenter', () => {
+                stars.forEach((s, i) => {
+                    const icon = s.querySelector('i');
+                    if (i <= index) {
+                        icon.classList.add('hovered');
+                    } else {
+                        icon.classList.remove('hovered');
+                    }
+                });
             });
 
-            if (response.ok) {
-                form.reset();
-                document.getElementById('fileName').textContent = '';
-                const newMessageHtml = await response.text();
-                messagesContainer.insertAdjacentHTML('beforeend', newMessageHtml);
-                scrollToBottom();
+            // Клик
+            star.addEventListener('click', () => {
+                const inputId = star.getAttribute('for');
+                const input = document.getElementById(inputId);
+                if (input) {
+                    input.checked = true;
+                    updateStars(index + 1);
+                }
+            });
+        });
+
+        ratingContainer.addEventListener('mouseleave', () => {
+            const checkedInput = ratingContainer.querySelector('input:checked');
+            if (checkedInput) {
+                const checkedIndex = inputs.indexOf(checkedInput);
+                updateStars(checkedIndex + 1);
+            } else {
+                updateStars(0);
             }
-        } catch (error) {
-            console.error('Ошибка:', error);
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Отправить сообщение';
+        });
+
+        // Инициализация при загрузке
+        const checkedInput = ratingContainer.querySelector('input:checked');
+        if (checkedInput) {
+            const checkedIndex = inputs.indexOf(checkedInput);
+            updateStars(checkedIndex + 1);
         }
+    }
+
+    function setupChatScroll() {
+        const messagesContainer = document.querySelector('.chat-messages-container');
+        const scrollUpBtn = document.getElementById('scrollUpBtn');
+        const scrollDownBtn = document.getElementById('scrollDownBtn');
+
+        if (!messagesContainer || !scrollUpBtn || !scrollDownBtn) return;
+
+        const updateScrollButtons = () => {
+            const isAtTop = messagesContainer.scrollTop === 0;
+            const isAtBottom = messagesContainer.scrollTop + messagesContainer.clientHeight >=
+                             messagesContainer.scrollHeight - 1;
+            scrollUpBtn.style.display = isAtTop ? 'none' : 'flex';
+            scrollDownBtn.style.display = isAtBottom ? 'none' : 'flex';
+        };
+
+        messagesContainer.addEventListener('scroll', updateScrollButtons);
+        window.addEventListener('resize', updateScrollButtons);
+        updateScrollButtons();
+
+        window.scrollToBottom = () => {
+            messagesContainer.scrollTo({top: messagesContainer.scrollHeight, behavior: 'smooth'});
+        };
+
+        window.scrollToTop = () => {
+            messagesContainer.scrollTo({top: 0, behavior: 'smooth'});
+        };
+    }
+
+    function setupMessageForm() {
+        const form = document.getElementById('messageForm');
+        if (!form) return;
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const btn = document.getElementById('submitBtn');
+            const messagesContainer = document.querySelector('.chat-messages-container');
+            const paymentNotification = document.getElementById('paymentNotification');
+            const successNotification = document.getElementById('successPaymentNotification');
+            const successMessage = document.getElementById('successPaymentMessage');
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Отправка...';
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {'X-CSRFToken': '{{ csrf_token }}'}
+                });
+
+                if (response.ok) {
+                    form.reset();
+                    document.getElementById('fileName').textContent = '';
+                    const newMessageHtml = await response.text();
+                    messagesContainer.insertAdjacentHTML('beforeend', newMessageHtml);
+                    scrollToBottom();
+
+                    if (paymentNotification) {
+                        paymentNotification.remove();
+                        successMessage.textContent = 'Сообщение успешно отправлено';
+                        successNotification.classList.remove('hidden');
+
+                        setTimeout(() => {
+                            successNotification.classList.add('hidden');
+                        }, 5000);
+                    }
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.error || 'Ошибка при отправке сообщения');
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка при отправке сообщения');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Отправить сообщение';
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        setupRatingStars();
+        setupChatScroll();
+        setupMessageForm();
     });
 </script>
+
 {% endblock %}

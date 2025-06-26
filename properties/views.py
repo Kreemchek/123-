@@ -14,6 +14,8 @@ from django.contrib.auth.mixins import (LoginRequiredMixin, UserPassesTestMixin)
 from django.urls import reverse_lazy
 from django.http import JsonResponse
 from django_filters.views import FilterView
+
+from brokers.models import BrokerProfile
 from .models import Property, PropertyImage, PropertyType, ListingType
 from .filters import PropertyFilter
 from .forms import PropertyForm, ListingTypeForm
@@ -79,6 +81,9 @@ class PropertyDetailView(DetailView):
                 property=self.object
             ).first()
 
+            # Добавляем информацию о роли пользователя
+            context['is_broker'] = self.request.user.user_type == User.UserType.BROKER
+
         return context
 
 class PropertyCreateView(LoginRequiredMixin, CreateView):
@@ -91,9 +96,9 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
         """Добавляем форму для изображений в контекст"""
         context = super().get_context_data(**kwargs)
         context['max_images'] = 10  # Для отображения ограничения в шаблоне
-        property_type = get_object_or_404(PropertyType, name=self.kwargs['property_type'])
-        context['property_type_name'] = property_type.get_name_display()
-        context['show_apartment_fields'] = property_type.name in ['new_flat', 'resale_flat']
+        context['property_type'] = get_object_or_404(PropertyType, name=self.kwargs['property_type'])
+        context['property_type_name'] = context['property_type'].get_name_display()
+        context['show_apartment_fields'] = context['property_type'].name in ['new_flat', 'resale_flat']
         context['step'] = 1
         return context
 
@@ -338,66 +343,35 @@ class SelectListingTypeView(LoginRequiredMixin, View):
 
 class ContactBrokerView(LoginRequiredMixin, View):
     def get(self, request, broker_id, property_id):
-        # Проверяем, есть ли уже платеж за этот контакт
-        existing_payment = Payment.objects.filter(
-            user=request.user,
-            description=f"Контакт с брокером {broker_id} по объекту {property_id}"
+        broker_profile = get_object_or_404(BrokerProfile, id=broker_id)
+        broker_user = broker_profile.user
+
+        # Проверяем, есть ли уже запрос на контакт
+        contact_request = ContactRequest.objects.filter(
+            requester=request.user,
+            broker=broker_user,
+            property_id=property_id
         ).first()
 
-        if existing_payment:
-            # Если уже оплачено, ищем существующий запрос или создаем новый
-            contact_request = ContactRequest.objects.filter(
-                requester=request.user,
-                broker_id=broker_id,
-                property_id=property_id
-            ).first()
+        if contact_request:
+            return redirect('contact_request_detail', pk=contact_request.pk)
 
-            if contact_request:
-                return redirect('contact_request_detail', pk=contact_request.pk)
-            else:
-                # Создаем новый запрос, если не найден
-                contact_request = ContactRequest.objects.create(
-                    requester=request.user,
-                    broker_id=broker_id,
-                    property_id=property_id,
-                    status='in_progress'
-                )
-                return redirect('contact_request_detail', pk=contact_request.pk)
+        # Проверяем, был ли уже оплаченный запрос к этому брокеру по этому объекту
+        has_paid_request = Payment.objects.filter(
+            user=request.user,
+            description__contains=f"Контакт с брокером {broker_id} по объекту {property_id}",
+            status='completed'
+        ).exists()
 
-        # Проверяем баланс
-        if request.user.balance < 1:
-            messages.error(request, "Недостаточно средств на балансе")
-            return redirect('property-detail', pk=property_id)
+        # Создаем запрос
+        contact_request = ContactRequest.objects.create(
+            requester=request.user,
+            broker=broker_user,
+            property_id=property_id,
+            status='new',
+            is_first_message_paid=not has_paid_request
+        )
 
-        try:
-            with transaction.atomic():
-                # Создаем платеж
-                payment = Payment.objects.create(
-                    user=request.user,
-                    amount=1,
-                    payment_method='balance',
-                    status='completed',
-                    description=f"Контакт с брокером {broker_id} по объекту {property_id}",
-                    transaction_id=f"contact_{uuid.uuid4()}"
-                )
-
-                # Списание средств
-                request.user.balance -= 1
-                request.user.save()
-
-                # Создаем запрос на контакт
-                contact_request = ContactRequest.objects.create(
-                    requester=request.user,
-                    broker_id=broker_id,
-                    property_id=property_id,
-                    status='in_progress'
-                )
-
-
-                return redirect('contact_request_detail', pk=contact_request.pk)
-
-        except Exception as e:
-            messages.error(request, f"Ошибка при обработке платежа: {str(e)}")
-            return redirect('property-detail', pk=property_id)
+        return redirect('contact_request_detail', pk=contact_request.pk)
 
 

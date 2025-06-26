@@ -10,13 +10,15 @@ class CustomUserAdmin(UserAdmin):
     form = UserAdminChangeForm
     add_form = UserRegistrationForm
 
-    list_display = ('username', 'email', 'phone', 'user_type', 'is_staff')
+    list_display = ('username', 'email', 'phone', 'user_type', 'is_staff', 'is_admin')
     list_filter = ('user_type', 'is_staff', 'is_superuser', 'is_verified')
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 'email', 'phone', 'avatar')}),
-        ('Permissions', {'fields': ('user_type', 'is_verified', 'is_active', 'is_staff', 'is_superuser',
-                                    'groups', 'user_permissions')}),
+        ('Permissions', {
+            'fields': ('user_type', 'is_verified', 'is_active', 'is_staff', 'is_superuser', 'is_admin',
+                       'groups', 'user_permissions')
+        }),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
     add_fieldsets = (
@@ -27,6 +29,12 @@ class CustomUserAdmin(UserAdmin):
     )
     search_fields = ('username', 'email', 'phone', 'first_name', 'last_name')
     ordering = ('-date_joined',)
+
+    def is_admin(self, obj):
+        return obj.is_admin
+
+    is_admin.boolean = True
+    is_admin.short_description = 'Админ'
 
 
 

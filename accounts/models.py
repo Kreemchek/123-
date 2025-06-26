@@ -25,6 +25,14 @@ class User(AbstractUser):
         help_text="Номер лицензии (только для брокеров)"
     )
 
+
+    is_admin = models.BooleanField(
+        default=False,
+        verbose_name='Администратор',
+        help_text="Определяет, является ли пользователь администратором системы"
+    )
+
+
     verification_token = models.CharField(max_length=100, blank=True, null=True, verbose_name='Токен верификации')
 
     balance = models.DecimalField(
@@ -33,6 +41,7 @@ class User(AbstractUser):
         default=0.00,
         verbose_name='Баланс'
     )
+
 
     @property
     def is_profile_complete(self):
@@ -103,6 +112,7 @@ class User(AbstractUser):
     @property
     def is_developer(self):
         return self.user_type == self.UserType.DEVELOPER
+
 
 
 
@@ -192,6 +202,14 @@ class ContactRequest(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_consultation = models.BooleanField(default=False)
+    is_first_message_paid = models.BooleanField(
+        default=True,
+        verbose_name="Требуется оплата за первое сообщение"
+    )
+    first_message_sent = models.BooleanField(
+        default=False,
+        verbose_name="Первое сообщение отправлено"
+    )
 
     review = models.OneToOneField(
         'brokers.BrokerReview',
