@@ -83,11 +83,10 @@
 
     <!-- Сообщения со скроллером -->
     <div class="relative">
-        <div class="chat-messages-container border border-gray-200 rounded-xl p-4 mb-6 h-[400px] overflow-y-auto bg-white">
+        <div class="chat-messages-container border border-gray-200 rounded-xl p-4 mb-6 max-h-[60vh] overflow-y-auto bg-white">
             {% for message in chat_messages %}
             <div class="mb-4 p-4 rounded-lg border transition-all
-                        {% if message.sender == request.user %}border-blue-400 bg-blue-50 shadow-sm{% else %}border-gray-200 bg-white{% endif %}"
-                 id="message-{{ message.id }}">
+                        {% if message.sender == request.user %}border-blue-400 bg-blue-50 shadow-sm{% else %}border-gray-200 bg-white{% endif %}">
                 <div class="flex items-start gap-3 mb-2">
                     {% if message.sender.avatar %}
                         <img src="{{ message.sender.avatar.url }}" class="w-12 h-12 rounded-full border-2 border-blue-500 object-cover">
@@ -199,7 +198,7 @@
             {% endfor %}
         </div>
     </div>
-{% if object.status == 'new' and request.user == object.requester and not object.first_message_sent and not object.is_consultation %}
+{% if object.status == 'new' and request.user == object.requester and not object.first_message_sent %}
 <div id="paymentNotification" class="bg-blue-100 text-blue-800 p-4 rounded-lg mb-4 mt-3">
     <i class="fas fa-info-circle mr-2"></i>
     С вашего счета будет списано 1 рубль после отправки первого сообщения.
@@ -244,7 +243,7 @@
 {% endif %}
 {% if object.status == 'completed' %}
 <div class="bg-blue-50 p-6 rounded-2xl mt-6 text-center">
-    <h3 class="text-xl font-bold mb-4">Остались вопросы? Напишите нам</h3>
+    <h3 class="text-xl font-bold mb-4">Есть вопросы? Напишите нам</h3>
     <div class="flex justify-center">
         <a href="{% url 'contact_support' %}?is_support=true"
            class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
@@ -253,6 +252,7 @@
     </div>
 </div>
 {% endif %}
+
 </div>
 
 <script>
@@ -384,12 +384,7 @@
                     document.getElementById('fileName').textContent = '';
                     const newMessageHtml = await response.text();
                     messagesContainer.insertAdjacentHTML('beforeend', newMessageHtml);
-
-                    // Прокрутка к последнему сообщению
-                    const lastMessage = messagesContainer.lastElementChild;
-                    if (lastMessage) {
-                        lastMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                    }
+                    scrollToBottom();
 
                     if (paymentNotification) {
                         paymentNotification.remove();
