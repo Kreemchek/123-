@@ -242,6 +242,7 @@
     </form>
 </div>
 {% endif %}
+{% if object.status == 'completed' %}
 <div class="bg-blue-50 p-6 rounded-2xl mt-6 text-center">
     <h3 class="text-xl font-bold mb-4">Есть вопросы? Напишите нам</h3>
     <div class="flex justify-center">
@@ -251,7 +252,7 @@
         </a>
     </div>
 </div>
-
+{% endif %}
 </div>
 
 <script>
