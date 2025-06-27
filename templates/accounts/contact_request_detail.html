@@ -83,10 +83,11 @@
 
     <!-- Сообщения со скроллером -->
     <div class="relative">
-        <div class="chat-messages-container border border-gray-200 rounded-xl p-4 mb-6 max-h-[60vh] overflow-y-auto bg-white">
+        <div class="chat-messages-container border border-gray-200 rounded-xl p-4 mb-6 h-[400px] overflow-y-auto bg-white">
             {% for message in chat_messages %}
             <div class="mb-4 p-4 rounded-lg border transition-all
-                        {% if message.sender == request.user %}border-blue-400 bg-blue-50 shadow-sm{% else %}border-gray-200 bg-white{% endif %}">
+                        {% if message.sender == request.user %}border-blue-400 bg-blue-50 shadow-sm{% else %}border-gray-200 bg-white{% endif %}"
+                 id="message-{{ message.id }}">
                 <div class="flex items-start gap-3 mb-2">
                     {% if message.sender.avatar %}
                         <img src="{{ message.sender.avatar.url }}" class="w-12 h-12 rounded-full border-2 border-blue-500 object-cover">
@@ -382,7 +383,12 @@
                     document.getElementById('fileName').textContent = '';
                     const newMessageHtml = await response.text();
                     messagesContainer.insertAdjacentHTML('beforeend', newMessageHtml);
-                    scrollToBottom();
+
+                    // Прокрутка к последнему сообщению
+                    const lastMessage = messagesContainer.lastElementChild;
+                    if (lastMessage) {
+                        lastMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
 
                     if (paymentNotification) {
                         paymentNotification.remove();
