@@ -1,10 +1,10 @@
 #!/bin/sh
 
-echo "Collect static files"
-python manage.py collectstatic --noinput --clear
-
-echo "Apply database migrations"
+# Миграции
 python manage.py migrate
 
-echo "Starting server"
+# Сбор статики с повышенной детализацией
+python manage.py collectstatic --noinput --verbosity 2
+
+# Запуск сервера
 exec "$@"

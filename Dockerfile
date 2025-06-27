@@ -13,6 +13,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
+RUN python manage.py collectstatic --noinput
 
 RUN mkdir -p /app/media /app/static
 RUN chmod -R 755 /app/media /app/static

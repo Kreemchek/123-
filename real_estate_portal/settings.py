@@ -27,7 +27,7 @@ sys.path.append(str(BASE_DIR))
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-ваш-резервный-ключ-для-разработки')
 
-DEBUG = False
+DEBUG = True
 
 handler500 = 'accounts.views.server_error'
 ALLOWED_HOSTS = ['winwindeal.up.railway.app'  ]
@@ -231,5 +231,13 @@ if os.path.exists('package.json'):
     with open('package.json', 'w') as f:
         f.write('{"private": true, "scripts": {}}')
 
+# Проверка статических файлов
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]
 
+# Для принудительного обслуживания статики через WhiteNoise
+WHITENOISE_USE_FINDERS = True
+WHITENOISE_MANIFEST_STRICT = False
 
