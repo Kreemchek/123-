@@ -312,7 +312,7 @@
             <div class="profile-card">
                 <div class="p-3 lg:p-4">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
-                        <div class="flex items-center gap-4 flex-1">
+                         <div class="flex items-center gap-4 flex-1">
                             <div class="w-20 h-20 lg:w-24 lg:h-24 rounded-lg overflow-hidden">
                                 <img src="{{ fav.property.main_image.url }}"
                                      class="w-full h-full object-cover"
@@ -325,10 +325,16 @@
     </a>
                                     </h4>
                               <div class="flex items-center gap-2 lg:gap-3 text-xs lg:text-sm text-gray-600 mt-1">
-                                    <span>
-                            <i class="fas fa-ruble-sign"></i>
-                            {{ fav.property.price|space_format }} ₽
-                        </span>
+                              <span>
+    <i class="fas fa-ruble-sign"></i>
+    {% if fav.property.is_rental == 'monthly' and fav.property.monthly_price %}
+        {{ fav.property.monthly_price|space_format }} ₽/мес
+    {% elif fav.property.is_rental == 'daily' and fav.property.daily_price %}
+        {{ fav.property.daily_price|space_format }} ₽/сут
+    {% else %}
+        {{ fav.property.price|space_format }} ₽
+    {% endif %}
+</span>
                                     <span>•</span>
                                     <span>
                                         <i class="fas fa-expand"></i>
@@ -570,9 +576,15 @@
 
                     <div class="flex items-center gap-2 lg:gap-3 text-xs lg:text-sm text-gray-600 mb-4">
                         <span>
-                            <i class="fas fa-ruble-sign"></i>
-                            {{ prop.price|space_format }} ₽
-                        </span>
+    <i class="fas fa-ruble-sign"></i>
+    {% if prop.is_rental == 'monthly' and prop.monthly_price %}
+        {{ prop.monthly_price|space_format }} ₽/мес
+    {% elif prop.is_rental == 'daily' and prop.daily_price %}
+        {{ prop.daily_price|space_format }} ₽/сут
+    {% else %}
+        {{ prop.price|space_format }} ₽
+    {% endif %}
+</span>
                         <span>•</span>
                         <span>
                             <i class="fas fa-expand"></i>
@@ -594,9 +606,9 @@
                         </a>
                         <div class="flex gap-2 w-full sm:w-auto">
                             <a href="{% url 'property-update' prop.id %}"
-                                class="px-2 lg:px-3 py-1 lg:py-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 w-full text-center">
-                                <i class="fas fa-edit"></i>
-                            </a>
+   class="btn-custom px-2 lg:px-3 py-1 lg:py-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 w-full text-center">
+    <i class="fas fa-edit mr-2"></i>
+</a>
                             <form method="POST" action="{% url 'property-delete' prop.id %}" class="w-full">
                                 {% csrf_token %}
                                 <button

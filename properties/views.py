@@ -6,10 +6,10 @@ from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.views import View
-from django.views.generic import ( DetailView,
-                                   CreateView,
+from django.views.generic import (DetailView,
+                                  CreateView,
                                   UpdateView,
-                                   DeleteView)
+                                  DeleteView)
 from django.contrib.auth.mixins import (LoginRequiredMixin, UserPassesTestMixin)
 from django.urls import reverse_lazy
 from django.http import JsonResponse
@@ -86,6 +86,7 @@ class PropertyDetailView(DetailView):
 
         return context
 
+
 class PropertyCreateView(LoginRequiredMixin, CreateView):
     model = Property
     form_class = PropertyForm
@@ -103,6 +104,8 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
         return context
 
     def form_valid(self, form):
+
+
         with transaction.atomic():
             listing_type_id = self.request.session.get('selected_listing_type')
             if not listing_type_id:
@@ -124,13 +127,12 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
                 payment_method='balance',
                 status='completed',
                 description=f"Оплата размещения типа: {listing_type.name}",
-                transaction_id=transaction_id  # Указываем уникальный ID
+                transaction_id=transaction_id
             )
 
             self.request.user.balance -= listing_type.price
             self.request.user.save()
 
-            # Остальной код остается без изменений
             self.object = form.save(commit=False)
             self.object.property_type = get_object_or_404(
                 PropertyType,
@@ -183,10 +185,6 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
 
             return super().form_valid(form)
 
-
-
-
-
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['property_type'] = get_object_or_404(
@@ -195,12 +193,11 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
         )
         return kwargs
 
-
     def form_invalid(self, form):
-     """Добавляем контекст для отображения ошибок"""
-     return self.render_to_response(
-        self.get_context_data(form=form, images_error=form.errors)
-    )
+        """Добавляем контекст для отображения ошибок"""
+        return self.render_to_response(
+            self.get_context_data(form=form, images_error=form.errors)
+        )
 
 
 class PropertyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -210,18 +207,32 @@ class PropertyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def test_func(self):
         obj = self.get_object()
-        # Проверяем владельца-брокера через связь BrokerProfile.user
+        # Проверяем, является ли пользователь брокером-владельцем объекта
         is_broker_owner = (
                 obj.broker and
                 self.request.user == obj.broker.user
         )
-        # Проверяем владельца-застройщика
-        is_developer_owner = self.request.user == obj.developer
+        # ИЛИ является ли пользователь застройщиком-владельцем
+        is_developer_owner = (
+                obj.developer and
+                self.request.user == obj.developer
+        )
         return is_broker_owner or is_developer_owner
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['property_type'] = self.object.property_type
+        context['property_type_name'] = self.object.property_type.get_name_display()
+        context['show_apartment_fields'] = self.object.property_type.name in ['new_flat', 'resale_flat']
+        context['step'] = 1
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['property_type'] = self.object.property_type
+        return kwargs
 
     def form_valid(self, form):
-        # Сохраняем объект
         self.object = form.save()
 
         # Обработка новых изображений
@@ -241,6 +252,7 @@ class PropertyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_success_url(self):
         return reverse_lazy('property-detail', kwargs={'pk': self.object.pk})
 
+
 @login_required
 def toggle_favorite(request, pk):
     if not request.user.is_authenticated:
@@ -257,6 +269,7 @@ def toggle_favorite(request, pk):
         return JsonResponse({'status': 'removed', 'is_favorite': False})
     return JsonResponse({'status': 'added', 'is_favorite': True})
 
+
 class BrokerFavoriteView(LoginRequiredMixin, View):
     def post(self, request, pk):
         property = get_object_or_404(Property, pk=pk)
@@ -266,6 +279,7 @@ class BrokerFavoriteView(LoginRequiredMixin, View):
             is_broker_favorite=True
         )
         return JsonResponse({'status': 'added'})
+
 
 class PropertyDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Property
@@ -280,6 +294,7 @@ class PropertyDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         )
         is_developer_owner = self.request.user == obj.developer
         return is_broker_owner or is_developer_owner
+
 
 class SelectPropertyTypeView(LoginRequiredMixin, View):
     template_name = 'properties/select_property_type.html'

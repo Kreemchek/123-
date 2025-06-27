@@ -20,10 +20,10 @@
                 </div>
             </form>
             {% if user.is_authenticated and user.is_broker %}
-<a href="{% url 'select-listing-type' %}" class="btn-primary flex items-center gap-2">
-    <i class="bi bi-plus-lg"></i> Добавить
-</a>
-{% endif %}
+                <a href="{% url 'select-listing-type' %}" class="btn-primary flex items-center gap-2">
+                    <i class="bi bi-plus-lg"></i> Добавить
+                </a>
+            {% endif %}
         </div>
     </div>
 
@@ -44,14 +44,14 @@
 
             <div class="space-y-4">
                 <h3 class="text-xl font-bold text-gray-800 truncate">
-    {% if property.property_type.name == 'house' %}
-        {{ property.title }}
-    {% elif 'flat' in property.property_type.name %}
-          {{ property.title }}
-    {% else %}
-         {{ property.title }}
-    {% endif %}
-</h3>
+                    {% if property.property_type.name == 'house' %}
+                        {{ property.title }}
+                    {% elif 'flat' in property.property_type.name %}
+                        {{ property.title }}
+                    {% else %}
+                        {{ property.title }}
+                    {% endif %}
+                </h3>
 
                 <div class="flex items-center gap-2 text-blue-600">
                     <i class="bi bi-geo-alt"></i>
@@ -70,7 +70,15 @@
                 </div>
 
                 <div class="flex items-center justify-between mt-4">
-                    <span class="text-2xl font-bold text-blue-600">{{ property.price|space_format }} ₽</span>
+                    <span class="text-2xl font-bold text-blue-600">
+                        {% if property.is_rental == 'monthly' and property.monthly_price %}
+                            {{ property.monthly_price|space_format }} ₽/мес
+                        {% elif property.is_rental == 'daily' and property.daily_price %}
+                            {{ property.daily_price|space_format }} ₽/сут
+                        {% else %}
+                            {{ property.price|space_format }} ₽
+                        {% endif %}
+                    </span>
                     {% if user.is_authenticated %}
                     <button class="toggle-favorite" data-property-id="{{ property.id }}">
                         <i class="bi bi-heart{% if property in user.favorites.all %}-fill text-red-500{% endif %} text-xl"></i>

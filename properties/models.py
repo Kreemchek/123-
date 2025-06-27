@@ -61,8 +61,9 @@ class Property(models.Model):
         max_digits=12,
         decimal_places=2,
         verbose_name=_('Цена'),
-        null=True,
-        blank=True
+        null=True,  # Добавьте это
+        blank=True,  # И это
+        default=None
     )
     is_rental = models.CharField(
         max_length=10,
@@ -75,14 +76,16 @@ class Property(models.Model):
         decimal_places=2,
         verbose_name=_('Цена за месяц'),
         null=True,
-        blank=True
+        blank=True,
+        default=None
     )
     daily_price = models.DecimalField(
         max_digits=12,
         decimal_places=2,
         verbose_name=_('Цена за сутки'),
         null=True,
-        blank=True
+        blank=True,
+        default=None
     )
     rooms = models.PositiveIntegerField(verbose_name=_('Количество комнат'))
     location = models.CharField(max_length=200, verbose_name=_('Расположение'))
@@ -196,41 +199,23 @@ class Property(models.Model):
             if self.floor and self.total_floors:
                 floor_info = f"{self.floor}/{self.total_floors}"
 
-            price_info = ""
-            if self.is_rental == 'no' and self.price:
-                price_info = f" - {self.price} ₽"
-            elif self.is_rental == 'monthly' and self.monthly_price:
-                price_info = f" - {self.monthly_price} ₽/мес"
-            elif self.is_rental == 'daily' and self.daily_price:
-                price_info = f" - {self.daily_price} ₽/сут"
+
 
             parts = [
                 type_map.get(self.apartment_type, 'Квартира'),
                 f"{self.total_area} м²",
                 f"{floor_info} этаж" if floor_info else None,
-                price_info if price_info else None
+
             ]
             self.title = ", ".join(filter(None, parts))
 
         elif self.property_type.name == 'house':
-            price_info = ""
-            if self.is_rental == 'no' and self.price:
-                price_info = f" - {self.price} ₽"
-            elif self.is_rental == 'monthly' and self.monthly_price:
-                price_info = f" - {self.monthly_price} ₽/мес"
-            elif self.is_rental == 'daily' and self.daily_price:
-                price_info = f" - {self.daily_price} ₽/сут"
-            self.title = f"Дом, {self.total_area} м²{price_info}"
+
+            self.title = f"Дом, {self.total_area} м²"
 
         else:
-            price_info = ""
-            if self.is_rental == 'no' and self.price:
-                price_info = f" - {self.price} ₽"
-            elif self.is_rental == 'monthly' and self.monthly_price:
-                price_info = f" - {self.monthly_price} ₽/мес"
-            elif self.is_rental == 'daily' and self.daily_price:
-                price_info = f" - {self.daily_price} ₽/сут"
-            self.title = f"{self.property_type.get_name_display()}, {self.total_area} м²{price_info}"
+
+            self.title = f"{self.property_type.get_name_display()}, {self.total_area} м²"
 
         super().save(*args, **kwargs)
 

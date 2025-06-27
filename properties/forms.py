@@ -114,7 +114,7 @@ class PropertyForm(forms.ModelForm):
         if not property_type:
             raise forms.ValidationError("Не указан тип недвижимости")
 
-        # Обязательные поля
+        # Обязательные поля (кроме цены)
         required_fields = {
             'rooms': 'Укажите количество комнат',
             'total_area': 'Укажите общую площадь',
@@ -135,29 +135,47 @@ class PropertyForm(forms.ModelForm):
                 if cleaned_data['floor'] > cleaned_data['total_floors']:
                     self.add_error('floor', 'Этаж не может быть больше общего количества этажей')
 
-        # Валидация цен
         MAX_PRICE = 10 ** 9  # 1 миллиард
-        if is_rental == 'no':
-            if not cleaned_data.get('price'):
-                self.add_error('price', 'Укажите цену объекта')
-            elif cleaned_data['price'] <= 0:
-                self.add_error('price', 'Цена должна быть больше нуля')
-            elif cleaned_data['price'] > MAX_PRICE:
-                self.add_error('price', 'Цена слишком высока')
-        elif is_rental == 'monthly':
-            if not cleaned_data.get('monthly_price'):
+
+        # Обработка цен в зависимости от типа аренды
+        if is_rental == 'monthly':
+            monthly_price = cleaned_data.get('monthly_price')
+            if monthly_price is None:
                 self.add_error('monthly_price', 'Укажите цену за месяц')
-            elif cleaned_data['monthly_price'] <= 0:
+            elif monthly_price <= 0:
                 self.add_error('monthly_price', 'Цена за месяц должна быть больше нуля')
-            elif cleaned_data['monthly_price'] > MAX_PRICE:
+            elif monthly_price > MAX_PRICE:
                 self.add_error('monthly_price', 'Цена за месяц слишком высока')
+
+            # Для аренды помесячно устанавливаем price=0 вместо NULL
+            cleaned_data['price'] = 0
+            cleaned_data['daily_price'] = None
+
         elif is_rental == 'daily':
-            if not cleaned_data.get('daily_price'):
+            daily_price = cleaned_data.get('daily_price')
+            if daily_price is None:
                 self.add_error('daily_price', 'Укажите цену за сутки')
-            elif cleaned_data['daily_price'] <= 0:
+            elif daily_price <= 0:
                 self.add_error('daily_price', 'Цена за сутки должна быть больше нуля')
-            elif cleaned_data['daily_price'] > MAX_PRICE:
+            elif daily_price > MAX_PRICE:
                 self.add_error('daily_price', 'Цена за сутки слишком высока')
+
+            # Для аренды посуточно устанавливаем price=0 вместо NULL
+            cleaned_data['price'] = 0
+            cleaned_data['monthly_price'] = None
+
+        else:  # Продажа (is_rental == 'no' или None)
+            price = cleaned_data.get('price')
+            if price is None:
+                self.add_error('price', 'Укажите цену объекта')
+            elif price <= 0:
+                self.add_error('price', 'Цена должна быть больше нуля')
+            elif price > MAX_PRICE:
+                self.add_error('price', 'Цена слишком высока')
+
+            # Для продажи очищаем цены аренды
+            cleaned_data['monthly_price'] = None
+            cleaned_data['daily_price'] = None
 
         # Проверка изображения
         if 'main_image' not in self.files and not self.instance.main_image:
