@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load custom_filters %}
+{% load support_tags %}
 {% block content %}
 {% if messages %}
 <div class="fixed top-4 right-4 z-50">
@@ -240,6 +241,15 @@
     </form>
 </div>
 {% endif %}
+<div class="bg-blue-50 p-6 rounded-2xl mt-6 text-center">
+    <h3 class="text-xl font-bold mb-4">Есть вопросы? Напишите нам</h3>
+    <div class="flex justify-center">
+        <a href="{% url 'contact_support' %}"
+           class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+            Написать в поддержку
+        </a>
+    </div>
+</div>
 
 </div>
 

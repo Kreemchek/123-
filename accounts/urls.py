@@ -67,6 +67,7 @@ urlpatterns = [
     path('request/delete/<int:pk>/', views.delete_request, name='delete_request'),
     path('complete-broker-info/', views.CompleteBrokerInfoView.as_view(), name='complete_broker_info'),
     path('contact-request/<int:pk>/submit-review/', SubmitReviewView.as_view(), name='submit_review'),
+    path('contact-support/', views.ContactSupportView.as_view(), name='contact_support'),
 
 
 

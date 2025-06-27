@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import User,  Favorite, ContactRequest, DeveloperProfile, \
-    BrokerSubscription, ExclusiveProperty  # Импорт новых моделей
+    BrokerSubscription, ExclusiveProperty ,  SupportSettings # Импорт новых моделей
 from .forms import UserRegistrationForm, UserAdminChangeForm
 
 
@@ -71,5 +71,10 @@ class ExclusivePropertyAdmin(admin.ModelAdmin):
     list_display = ('title', 'developer', 'price')
 
 admin.site.register(User, CustomUserAdmin)
+
+@admin.register(SupportSettings)
+class SupportSettingsAdmin(admin.ModelAdmin):
+    list_display = ('support_user',)
+    fields = ('support_user',)
 
 

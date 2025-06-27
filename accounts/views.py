@@ -15,7 +15,7 @@ from django.views.generic import DeleteView
 from django.http import JsonResponse, HttpResponseForbidden
 from django.views import View
 from django.contrib import messages
-from .models import  StatusLog
+from .models import StatusLog, SupportSettings
 import random
 import string
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -781,3 +781,20 @@ class SubmitReviewView(LoginRequiredMixin, View):
 
         return redirect('contact_request_detail', pk=pk)
 
+
+class ContactSupportView(LoginRequiredMixin, View):
+    def get(self, request):
+        support_user = SupportSettings.get_support_user()
+        if not support_user:
+            messages.error(request, "Служба поддержки временно недоступна")
+            return redirect('dashboard')
+
+        # Создаем новый запрос на консультацию
+        contact_request = ContactRequest.objects.create(
+            requester=request.user,
+            broker=support_user,
+            status='new',
+            is_consultation=True
+        )
+
+        return redirect('contact_request_detail', pk=contact_request.pk)

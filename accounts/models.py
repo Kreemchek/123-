@@ -301,3 +301,27 @@ class StatusLog(models.Model):
     def __str__(self):
         return f"{self.get_status_display()} - {self.timestamp.strftime('%d.%m.%Y %H:%M')}"
 
+
+class SupportSettings(models.Model):
+    support_user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Пользователь поддержки",
+        help_text="Пользователь, который будет получать вопросы после завершенных чатов"
+    )
+
+    class Meta:
+        verbose_name = "Настройки поддержки"
+        verbose_name_plural = "Настройки поддержки"
+
+    def __str__(self):
+        return f"Настройки поддержки (ID: {self.id})"
+
+    @classmethod
+    def get_support_user(cls):
+        try:
+            return cls.objects.first().support_user
+        except:
+            return None
