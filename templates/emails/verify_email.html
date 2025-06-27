@@ -1,37 +1,67 @@
-{% extends 'base.html' %}
-
-{% block title %}Подтверждение Email{% endblock %}
-
-{% block navigation %}
-{% endblock %}
-
-{% block content %}
-<div class="container text-center my-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <h2 class="mb-4">Подтвердите ваш Email</h2>
-            <p class="lead mb-4">
-                Для завершения регистрации перейдите по ссылке в письме,
-                которое мы отправили на вашу электронную почту.
-            </p>
-            <div class="d-grid gap-2 d-md-block">
-                <a href="{{ verification_link }}" class="btn btn-primary btn-lg">
-                    Подтвердить сейчас
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
-
-{% block footer %}
-<footer class="bg-dark text-white mt-5">
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подтверждение Email</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .content {
+            padding: 20px 0;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #3b82f6;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px 0;
+            color: #6c757d;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
     <div class="container">
-        <div class="row">
-            <div class="col-12 text-center py-3">
-                © 2023 RealEstatePro. Все права защищены.
+        <div class="header">
+            <h2>Подтвердите ваш Email</h2>
+        </div>
+        <div class="content">
+            <p>Для завершения регистрации перейдите по ссылке в письме, которое мы отправили на вашу электронную почту.</p>
+            <div style="text-align: center;">
+                <a href="{{ verification_link }}" class="btn">Подтвердить сейчас</a>
             </div>
+            <p>Если кнопка не работает, скопируйте и вставьте следующую ссылку в адресную строку браузера:</p>
+            <p style="word-break: break-all; font-size: 12px; color: #6c757d;">{{ verification_link }}</p>
+        </div>
+        <div class="footer">
+            © 2025 WinWinDeal. Все права защищены.
         </div>
     </div>
-</footer>
-{% endblock %}
+</body>
+</html>
