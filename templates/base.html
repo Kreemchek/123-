@@ -185,12 +185,16 @@
         </div>
 
        <!-- Добавленный блок "Есть вопросы? Напишите нам" -->
-       <div class="mt-4">
+   <div class="mt-4">
     <h4 class="text-sm font-semibold mb-2 text-gray-300">Есть вопросы?</h4>
-    <a href="{% url 'contact_support' %}"
-       class="text-blue-300 hover:text-white text-sm transition-colors">
-        Написать в поддержку
-    </a>
+    {% if user.is_authenticated %}
+        <a href="{% url 'contact_support' %}"
+           class="text-blue-300 hover:text-white text-sm transition-colors">
+            Написать в поддержку
+        </a>
+    {% else %}
+        <span class="text-gray-400 text-sm">Авторизуйтесь, чтобы написать в поддержку</span>
+    {% endif %}
 </div>
 
         <div class="border-t border-gray-700 mt-8 pt-6 text-center">
