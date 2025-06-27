@@ -386,8 +386,10 @@ class MessageCreateView(LoginRequiredMixin, CreateView):
     fields = ['text', 'attachment']
 
     def form_valid(self, form):
-            contact_request = get_object_or_404(ContactRequest, pk=self.kwargs['pk'])
+        contact_request = get_object_or_404(ContactRequest, pk=self.kwargs['pk'])
 
+        # Пропускаем списание средств для запросов в поддержку
+        if not contact_request.is_consultation:
             # Проверяем, нужно ли списывать средства за первое сообщение
             if (contact_request.is_first_message_paid and
                     contact_request.requester == self.request.user and
@@ -416,10 +418,10 @@ class MessageCreateView(LoginRequiredMixin, CreateView):
                 except Exception as e:
                     return JsonResponse({'error': f'Ошибка списания средств: {str(e)}'}, status=400)
 
-            form.instance.contact_request = contact_request
-            form.instance.sender = self.request.user
-            self.object = form.save()
-            return render(self.request, 'accounts/partials/message.html', {'message': self.object})
+        form.instance.contact_request = contact_request
+        form.instance.sender = self.request.user
+        self.object = form.save()
+        return render(self.request, 'accounts/partials/message.html', {'message': self.object})
 
 
 
@@ -794,7 +796,9 @@ class ContactSupportView(LoginRequiredMixin, View):
             requester=request.user,
             broker=support_user,
             status='new',
-            is_consultation=True
+            is_consultation=True,
+            is_first_message_paid=False,
+            first_message_sent=True
         )
 
         return redirect('contact_request_detail', pk=contact_request.pk)
