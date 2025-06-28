@@ -14,11 +14,7 @@ class BrokerProfile(models.Model):
         related_name='broker_profile',
         verbose_name=_('Пользователь')
     )
-    license_number = models.CharField(
-        max_length=50,
-        unique=True,
-        verbose_name=_('Номер лицензии')
-    )
+
     experience = models.PositiveIntegerField(
         default=0,
         verbose_name=_('Опыт работы (лет)')
@@ -62,8 +58,7 @@ class BrokerProfile(models.Model):
         verbose_name_plural = _('Профили брокеров')
         ordering = ['-rating']
 
-    def __str__(self):
-        return f"{self.user.get_full_name()} (Лицензия: {self.license_number})"
+
 
     def active_properties(self):
         return self.user.broker_properties.filter(status='active', is_approved=True)

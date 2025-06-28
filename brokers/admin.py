@@ -27,13 +27,13 @@ class BrokerReviewInline(admin.TabularInline):
 
 @admin.register(BrokerProfile)
 class BrokerProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'license_number', 'rating', 'experience', 'is_approved', 'is_archived')
+    list_display = ('user',  'rating', 'experience', 'is_approved', 'is_archived')
     list_filter = ('is_approved', 'is_archived')
-    search_fields = ('user__username', 'user__email', 'license_number')
+    search_fields = ('user__username', 'user__email')
     list_editable = ('is_approved', 'is_archived')
     fieldsets = (
         (None, {
-            'fields': ('user', 'license_number', 'is_approved')
+            'fields': ('user', 'is_approved')
         }),
         ('Информация', {
             'fields': ('experience', 'about', 'avatar', 'rating')

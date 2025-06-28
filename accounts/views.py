@@ -37,7 +37,7 @@ from django.utils import timezone
 from properties.forms import PropertyForm
 from payments.models import Payment
 from properties.models import Property
-from brokers.forms import BrokerReviewForm
+
 
 from brokers.models import BrokerProfile,BrokerReview
 
@@ -105,21 +105,18 @@ class CompleteRegistrationView(LoginRequiredMixin, View):
             user.is_active = True
             user.save()
 
+            # Автоматическое создание профиля брокера
             if user.user_type == User.UserType.BROKER:
+                BrokerProfile.objects.get_or_create(
+                    user=user,
+                    defaults={
+                        'experience': 0,
+                        'about': '',
+                        'is_approved': True  # или False, если требуется модерация
+                    }
+                )
                 return redirect('complete_broker_info')
             return redirect('dashboard')
-
-        else:
-
-            import logging
-            logger = logging.getLogger('django')
-            logger.error("Role form errors: %s", role_form.errors.as_json())
-            logger.error("Profile form errors: %s", profile_form.errors.as_json())
-
-        return render(request, self.template_name, {
-            'role_form': role_form,
-            'profile_form': profile_form
-        })
 
 
 class EmailVerificationSentView(TemplateView):
@@ -388,35 +385,33 @@ class MessageCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         contact_request = get_object_or_404(ContactRequest, pk=self.kwargs['pk'])
 
-        # Пропускаем списание средств для запросов в поддержку
-        if not contact_request.is_consultation:
-            # Проверяем, нужно ли списывать средства за первое сообщение
-            if (contact_request.is_first_message_paid and
-                    contact_request.requester == self.request.user and
-                    not contact_request.messages.filter(sender=self.request.user).exists()):
+        # Проверяем, нужно ли списывать средства за первое сообщение
+        if (contact_request.is_first_message_paid and
+                contact_request.requester == self.request.user and
+                not contact_request.messages.filter(sender=self.request.user).exists()):
 
-                if self.request.user.balance < 1:
-                    return JsonResponse({'error': 'Недостаточно средств на балансе'}, status=400)
+            if self.request.user.balance < 1:
+                return JsonResponse({'error': 'Недостаточно средств на балансе'}, status=400)
 
-                try:
-                    with transaction.atomic():
-                        self.request.user.balance -= 1
-                        self.request.user.save()
+            try:
+                with transaction.atomic():
+                    self.request.user.balance -= 1
+                    self.request.user.save()
 
-                        Payment.objects.create(
-                            user=self.request.user,
-                            amount=1,
-                            payment_method='balance',
-                            status='completed',
-                            description=f"Контакт с брокером {contact_request.broker.id} по объекту {contact_request.property.id if contact_request.property else 'консультация'}"
-                        )
+                    Payment.objects.create(
+                        user=self.request.user,
+                        amount=1,
+                        payment_method='balance',
+                        status='completed',
+                        description=f"Контакт с брокером {contact_request.broker.id} по объекту {contact_request.property.id if contact_request.property else 'консультация'}"
+                    )
 
-                        # Обновляем флаг после списания
-                        contact_request.is_first_message_paid = False
-                        contact_request.save()
+                    # Обновляем флаг после списания
+                    contact_request.is_first_message_paid = False
+                    contact_request.save()
 
-                except Exception as e:
-                    return JsonResponse({'error': f'Ошибка списания средств: {str(e)}'}, status=400)
+            except Exception as e:
+                return JsonResponse({'error': f'Ошибка списания средств: {str(e)}'}, status=400)
 
         form.instance.contact_request = contact_request
         form.instance.sender = self.request.user
@@ -677,16 +672,14 @@ def delete_request(request, pk):
     return redirect('dashboard')
 
 class CompleteBrokerInfoView(LoginRequiredMixin, UpdateView):
-    form_class =  BrokerProfileForm
+    form_class = BrokerProfileForm
     template_name = 'accounts/complete_broker_info.html'
     success_url = reverse_lazy('dashboard')
 
     def get_object(self):
-        # Создаем или получаем профиль брокера
         broker_profile, created = BrokerProfile.objects.get_or_create(
             user=self.request.user,
             defaults={
-                'license_number': '',
                 'experience': 0,
                 'about': ''
             }
@@ -698,17 +691,19 @@ class CompleteBrokerInfoView(LoginRequiredMixin, UpdateView):
         broker_profile.user = self.request.user
         broker_profile.save()
 
-        # Принудительно обновляем is_profile_complete
+        # Обновляем пользователя
         user = self.request.user
         user.is_verified = True
-        user.save()  # Вызовет пересчёт is_profile_complete через модель User
+        user.save()
 
         return redirect(self.get_success_url())
+
+
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         form.fields['experience'].required = True
-        form.fields['license_number'].required = True
+
         return form
 
     def get_queryset(self):

@@ -40,12 +40,12 @@ class RoleSelectionForm(forms.ModelForm):
             'first_name': 'Имя',
             'patronymic': 'Отчество',
             'phone': 'Телефон',
-            'passport': 'Паспортные данные',
+
             'avatar': 'Аватар'
         }
         widgets = {
             'phone': forms.TextInput(attrs={'placeholder': '+7 (999) 999-99-99'}),
-            'passport': forms.TextInput(attrs={'placeholder': '1234 567890'})
+
         }
 
     def __init__(self, *args, **kwargs):
@@ -68,17 +68,7 @@ class ProfileForm(forms.ModelForm):
     )
 
 
-    passport = forms.CharField(
-        max_length=11,
-        validators=[
-            RegexValidator(
-                regex=r'^\d{4}\s\d{6}$',
-                message="Паспорт должен быть в формате: 1234 567890"
-            )
-        ],
-        required=True,
-        label='Паспортные данные'
-    )
+
 
     class Meta:
         model = User
@@ -87,7 +77,7 @@ class ProfileForm(forms.ModelForm):
             'first_name',
             'patronymic',
             'phone',
-            'passport',
+
             'avatar'
 
         ]
@@ -96,12 +86,11 @@ class ProfileForm(forms.ModelForm):
             'first_name': 'Имя',
             'patronymic': 'Отчество',
             'phone': 'Телефон',
-            'passport': 'Паспортные данные',
             'avatar': 'Фотография профиля'
         }
         widgets = {
             'phone': forms.TextInput(attrs={'placeholder': '+7 (999) 999-99-99'}),
-            'passport': forms.TextInput(attrs={'placeholder': '1234 567890'})
+
         }
 
     def __init__(self, *args, **kwargs):
@@ -110,7 +99,7 @@ class ProfileForm(forms.ModelForm):
         self.fields['last_name'].required = True
         self.fields['first_name'].required = True
         self.fields['phone'].required = True
-        self.fields['passport'].required = True
+
 
 
 
@@ -140,27 +129,27 @@ class MessageForm(forms.ModelForm):
 
 
 class BrokerProfileForm(forms.ModelForm):
+
+
         experience = forms.IntegerField(
             label='Опыт работы (лет)',
             min_value=0,
             required=True,
             widget = forms.NumberInput(attrs={'class': 'custom-input'}),
         )
-        license_number = forms.CharField(
-            label='Номер лицензии',
-            max_length=50,
-            required=True,
-        widget = forms.TextInput(attrs={'class': 'custom-input'}),
-        )
+
         about = forms.CharField(
             label='О себе',
             widget=forms.Textarea(attrs={'class': 'custom-input', 'rows': 4}),
             required=True
         )
 
+
+
+
         class Meta:
             model = BrokerProfile
-            fields = ['experience', 'license_number', 'about']
+            fields = ['experience','about']
 
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)

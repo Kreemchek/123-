@@ -17,13 +17,6 @@ class User(AbstractUser):
         blank=True,
         help_text="Опыт работы в годах (только для брокеров)"
     )
-    license_number = models.CharField(
-        _('License Number'),
-        max_length=50,
-        null=True,
-        blank=True,
-        help_text="Номер лицензии (только для брокеров)"
-    )
 
 
     is_admin = models.BooleanField(
@@ -49,15 +42,14 @@ class User(AbstractUser):
             # Проверка для брокеров
             has_broker_profile = (
                     hasattr(self, 'broker_profile') and
-                    self.broker_profile.license_number and
                     self.broker_profile.experience is not None
             )
             return (
                     has_broker_profile and
                     self.last_name and
                     self.first_name and
-                    self.phone and
-                    self.passport
+                    self.phone
+
             )
         else:
             # Проверка для клиентов и застройщиков
@@ -65,8 +57,6 @@ class User(AbstractUser):
                 self.user_type,
                 self.last_name and self.last_name.strip() != '',
                 self.first_name and self.first_name.strip() != '',
-                self.phone and self.phone.strip() != '',
-                self.passport and self.passport.strip() != ''
             ])
 
     @property
@@ -300,7 +290,6 @@ class StatusLog(models.Model):
 
     def __str__(self):
         return f"{self.get_status_display()} - {self.timestamp.strftime('%d.%m.%Y %H:%M')}"
-
 
 class SupportSettings(models.Model):
     support_user = models.ForeignKey(

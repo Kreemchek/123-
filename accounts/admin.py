@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import User,  Favorite, ContactRequest, DeveloperProfile, \
-    BrokerSubscription, ExclusiveProperty ,  SupportSettings # Импорт новых моделей
+    BrokerSubscription, ExclusiveProperty , SupportSettings # Импорт новых моделей
 from .forms import UserRegistrationForm, UserAdminChangeForm
 
 
@@ -15,6 +15,7 @@ class CustomUserAdmin(UserAdmin):
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 'email', 'phone', 'avatar')}),
+
         ('Permissions', {
             'fields': ('user_type', 'is_verified', 'is_active', 'is_staff', 'is_superuser', 'is_admin',
                        'groups', 'user_permissions')
@@ -30,12 +31,12 @@ class CustomUserAdmin(UserAdmin):
     search_fields = ('username', 'email', 'phone', 'first_name', 'last_name')
     ordering = ('-date_joined',)
 
+
     def is_admin(self, obj):
         return obj.is_admin
 
     is_admin.boolean = True
     is_admin.short_description = 'Админ'
-
 
 
     def approve_properties(self, request, queryset):
