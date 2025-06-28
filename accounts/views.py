@@ -27,7 +27,7 @@ from .models import (User, UserActivity,
                      Message,
                      DeveloperProfile,
                      BrokerSubscription,
-                     ExclusiveProperty, PropertyListing)
+                     ExclusiveProperty, PropertyListing, UserAgreement )
 
 from .forms import (UserRegistrationForm, RoleSelectionForm,
                     ProfileForm, ContactRequestForm, BrokerProfileForm)
