@@ -27,9 +27,9 @@ sys.path.append(str(BASE_DIR))
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-ваш-резервный-ключ-для-разработки')
 
-DEBUG = True
+DEBUG = False
 handler500 = 'accounts.views.server_error'
-ALLOWED_HOSTS = ['*'  ]
+ALLOWED_HOSTS = ['https://winwindeal.up.railway.app'  ]
 
 
 CORS_ALLOW_ALL_ORIGINS = True
