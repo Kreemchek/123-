@@ -174,30 +174,28 @@
                 <div class="form-card">
                     <h3 class="text-lg font-semibold mb-4">Характеристики</h3>
                     <div class="space-y-4">
-                     <!-- Заменяем текущее поле цены в блоке "Характеристики" -->
-{% if show_apartment_fields and property_type.name == 'resale_flat' %}
-<div>
-    <label class="block text-sm font-medium text-gray-700 mb-2">Тип аренды</label>
-    <div class="flex items-center gap-4 mb-4">
-        <label class="inline-flex items-center">
-            <input type="radio" name="is_rental" value="no" class="form-radio rental-type"
-                   {% if form.is_rental.value == 'no' or not form.is_rental.value %}checked{% endif %}>
-            <span class="ml-2">Продажа</span>
-        </label>
-        <label class="inline-flex items-center">
-            <input type="radio" name="is_rental" value="monthly" class="form-radio rental-type"
-                   {% if form.is_rental.value == 'monthly' %}checked{% endif %}>
-            <span class="ml-2">Аренда помесячно</span>
-        </label>
-        <label class="inline-flex items-center">
-            <input type="radio" name="is_rental" value="daily" class="form-radio rental-type"
-                   {% if form.is_rental.value == 'daily' %}checked{% endif %}>
-            <span class="ml-2">Аренда посуточно</span>
-        </label>
-    {% endif %}
-    </div>
-
-</div>
+                        {% if show_apartment_fields and property_type.name == 'resale_flat' %}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Тип аренды</label>
+                            <div class="flex items-center gap-4 mb-4">
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="is_rental" value="no" class="form-radio rental-type"
+                                           {% if form.is_rental.value == 'no' or not form.is_rental.value %}checked{% endif %}>
+                                    <span class="ml-2">Продажа</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="is_rental" value="monthly" class="form-radio rental-type"
+                                           {% if form.is_rental.value == 'monthly' %}checked{% endif %}>
+                                    <span class="ml-2">Аренда помесячно</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="is_rental" value="daily" class="form-radio rental-type"
+                                           {% if form.is_rental.value == 'daily' %}checked{% endif %}>
+                                    <span class="ml-2">Аренда посуточно</span>
+                                </label>
+                            </div>
+                        </div>
+                        {% endif %}
 
                         <div class="grid grid-cols-2 gap-4">
                             <div>
@@ -209,26 +207,25 @@
                                 {% render_field form.total_area class="w-full px-3 py-2 border rounded-lg" %}
                             </div>
                         </div>
- {% if show_apartment_fields and property_type.name == 'resale_flat' %}
+
+                        {% if show_apartment_fields and property_type.name == 'resale_flat' %}
                         <div>
-
                             <div id="sale-price-field" {% if form.is_rental.value != 'no' %}style="display:none;"{% endif %}>
-    <label class="block text-sm font-medium text-gray-700 mb-2">Цена продажи (₽)</label>
-    {% render_field form.price class="w-full px-3 py-2 border rounded-lg" %}
-</div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Цена продажи (₽)</label>
+                                {% render_field form.price class="w-full px-3 py-2 border rounded-lg" %}
+                            </div>
 
-<div id="monthly-price-field" {% if form.is_rental.value != 'monthly' %}style="display:none;"{% endif %}>
-    <label class="block text-sm font-medium text-gray-700 mb-2">Цена за месяц (₽)</label>
-    {% render_field form.monthly_price class="w-full px-3 py-2 border rounded-lg" %}
-</div>
+                            <div id="monthly-price-field" {% if form.is_rental.value != 'monthly' %}style="display:none;"{% endif %}>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Цена за месяц (₽)</label>
+                                {% render_field form.monthly_price class="w-full px-3 py-2 border rounded-lg" %}
+                            </div>
 
-<div id="daily-price-field" {% if form.is_rental.value != 'daily' %}style="display:none;"{% endif %}>
-    <label class="block text-sm font-medium text-gray-700 mb-2">Цена за сутки (₽)</label>
-    {% render_field form.daily_price class="w-full px-3 py-2 border rounded-lg" %}
-</div>
+                            <div id="daily-price-field" {% if form.is_rental.value != 'daily' %}style="display:none;"{% endif %}>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Цена за сутки (₽)</label>
+                                {% render_field form.daily_price class="w-full px-3 py-2 border rounded-lg" %}
+                            </div>
                         </div>
                         {% endif %}
-
 
                         {% if show_apartment_fields %}
                         <div class="grid grid-cols-2 gap-4">
