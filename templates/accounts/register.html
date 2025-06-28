@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load cloudinary %}
+{% load static %}
 {% block title %}Регистрация{% endblock %}
 
 {% block content %}
@@ -135,7 +135,7 @@
                    class="w-4 h-4 border-gray-300 rounded focus:ring-blue-500"
                    required>
            <label for="terms" class="text-gray-600">
-    Принимаю <a href="{{ agreement.document.url }}" class="text-blue-600 hover:underline" target="_blank">условия использования</a>
+   Принимаю <a href="{% static 'files/agreement.pdf' %}" class="text-blue-600 hover:underline" target="_blank">условия использования</a>
 </label>
         </div>
 

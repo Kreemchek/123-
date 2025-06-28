@@ -12,6 +12,35 @@ CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'dqgwzhywm',
     'API_KEY': '164662831511784',
     'API_SECRET': 'aGZYpvwhUCuFiAaYAgXeOIr-FIk',
+    'SECURE': True,
+    'STATIC_IMAGES': False,
+    'MEDIA_TAG': 'media',
+
+    'EXCLUDE_DELETE_ORPHANED_MEDIA_PATHS': (),
+    'STATICFILES_MIMETYPES': {
+        'txt': 'text/plain',
+        'html': 'text/html',
+        'css': 'text/css',
+        'js': 'application/javascript',
+        'json': 'application/json',
+        'xml': 'application/xml',
+        'swf': 'application/x-shockwave-flash',
+        'flv': 'video/x-flv',
+        'png': 'image/png',
+        'jpe': 'image/jpeg',
+        'jpeg': 'image/jpeg',
+        'jpg': 'image/jpeg',
+        'gif': 'image/gif',
+        'bmp': 'image/bmp',
+        'ico': 'image/vnd.microsoft.icon',
+        'tiff': 'image/tiff',
+        'tif': 'image/tiff',
+        'svg': 'image/svg+xml',
+        'svgz': 'image/svg+xml',
+        'pdf': 'application/pdf',
+        'doc': 'application/msword',
+        'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    }
 }
 
 cloudinary.config(
@@ -27,9 +56,9 @@ sys.path.append(str(BASE_DIR))
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-ваш-резервный-ключ-для-разработки')
 
-DEBUG = False
+DEBUG = True
 handler500 = 'accounts.views.server_error'
-ALLOWED_HOSTS = ['winwindeal.up.railway.app'  ]
+ALLOWED_HOSTS = ['*'  ]
 
 
 CORS_ALLOW_ALL_ORIGINS = True

@@ -4,6 +4,15 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from properties.models import Property
+from cloudinary.uploader import upload, destroy
+from cloudinary.models import CloudinaryField
+from cloudinary.utils import cloudinary_url
+import os
+import unicodedata
+from django.db import models
+from cloudinary.uploader import upload, destroy
+from cloudinary.utils import cloudinary_url
+
 
 class User(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
@@ -316,9 +325,43 @@ class SupportSettings(models.Model):
             return None
 
 
+
+
+def transliterate_filename(filename):
+    name, ext = os.path.splitext(filename)
+    # Упрощенная транслитерация кириллицы в латиницу
+    translit_map = {
+        'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo',
+        'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm',
+        'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u',
+        'ф': 'f', 'х': 'h', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'sch',
+        'ъ': '', 'ы': 'y', 'ь': '', 'э': 'e', 'ю': 'yu', 'я': 'ya',
+        ' ': '_'
+    }
+    name = name.lower()
+    result = []
+    for char in name:
+        result.append(translit_map.get(char, char) if char.isalpha() else '_' if char == ' ' else char)
+    clean_name = ''.join(result)
+    # Удаляем все не-ASCII символы и оставляем только буквы, цифры, подчеркивания и точки
+    clean_name = ''.join(c for c in clean_name if c.isalnum() or c in ('_', '-', '.'))
+    return f"{clean_name}{ext}"
+
+
 class UserAgreement(models.Model):
     title = models.CharField(max_length=255, verbose_name="Название документа")
-    document = CloudinaryField('document')  # Убрали verbose_name здесь
+    document = models.CharField(
+        max_length=500,
+        blank=True,
+        null=True,
+        verbose_name="Cloudinary public ID"
+    )
+    uploaded_file = models.FileField(
+        upload_to='temp/',
+        blank=True,
+        null=True,
+        verbose_name="Загрузить PDF"
+    )
     is_active = models.BooleanField(default=True, verbose_name="Активно")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -330,6 +373,75 @@ class UserAgreement(models.Model):
     def __str__(self):
         return self.title
 
+    def save(self, *args, **kwargs):
+        if self.uploaded_file:
+            # Check if file is PDF
+            if not self.uploaded_file.name.lower().endswith('.pdf'):
+                raise ValueError("Разрешены только файлы PDF")
+
+            try:
+                # Delete old file if exists
+                if self.document:
+                    try:
+                        destroy(self.document, resource_type='raw')
+                    except Exception as e:
+                        print(f"Ошибка при удалении старого файла: {str(e)}")
+
+                # Upload new file
+                result = upload(
+                    self.uploaded_file,
+                    resource_type='raw',
+                    folder='user_agreements/',
+                    type='upload',
+                    use_filename=True,
+                    unique_filename=True,
+                    overwrite=True,
+                    public_id=transliterate_filename(self.uploaded_file.name)
+                )
+
+                self.document = result['public_id']
+
+                # Clean up the uploaded file after successful upload
+                if hasattr(self.uploaded_file, 'close'):
+                    self.uploaded_file.close()
+                self.uploaded_file = None
+
+            except Exception as e:
+                print(f"Ошибка при загрузке: {str(e)}")
+                # Clean up if upload fails
+                if hasattr(self.uploaded_file, 'close'):
+                    self.uploaded_file.close()
+                self.uploaded_file = None
+                raise ValueError(f"Ошибка при загрузке файла: {str(e)}")
+
+        super().save(*args, **kwargs)
+
+    def get_url(self):
+        if not self.document:
+            return ''
+
+        try:
+            # Use version from the original upload instead of 'v1'
+            url, _ = cloudinary_url(
+                self.document,
+                resource_type='raw',
+                secure=True
+            )
+            return url
+        except Exception as e:
+            print(f"Ошибка генерации URL: {str(e)}")
+            return ''
+
     @classmethod
     def get_active_agreement(cls):
-        return cls.objects.filter(is_active=True).first()
+        try:
+            agreement = cls.objects.filter(is_active=True).first()
+            if agreement:
+                return {
+                    'title': agreement.title,
+                    'url': agreement.get_url()
+                }
+            return None
+        except Exception as e:
+            print(f"Ошибка при получении соглашения: {str(e)}")
+            return None
