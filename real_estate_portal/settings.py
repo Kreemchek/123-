@@ -151,13 +151,11 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'railway',
         'USER': 'postgres',
-        'PASSWORD': 'kegZgPeddbHDLCNATEgJZWFRxAncDvBj',
+        'PASSWORD': 'cwrpjQBvdIgQQBtcwhkqyTlMBKKDsoXj',
         'HOST': 'tramway.proxy.rlwy.net',
-        'PORT': '30529',
-
-        }
+        'PORT': '18608',
     }
-
+}
 
 # Валидация паролей
 AUTH_PASSWORD_VALIDATORS = [
