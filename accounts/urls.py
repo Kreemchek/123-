@@ -25,6 +25,7 @@ from .views import (
     PropertyDeleteView,
     SubmitReviewView,
     DirectContactBrokerConsultView,
+    UserAgreementDetailView,
 
 )
 
@@ -68,6 +69,7 @@ urlpatterns = [
     path('complete-broker-info/', views.CompleteBrokerInfoView.as_view(), name='complete_broker_info'),
     path('contact-request/<int:pk>/submit-review/', SubmitReviewView.as_view(), name='submit_review'),
     path('contact-support/', views.ContactSupportView.as_view(), name='contact_support'),
+    path('agreement/<int:pk>/', UserAgreementDetailView.as_view(), name='user_agreement_detail'),
 
 
 

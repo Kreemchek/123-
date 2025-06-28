@@ -349,88 +349,40 @@ def transliterate_filename(filename):
 
 
 class UserAgreement(models.Model):
-    title = models.CharField(max_length=255, verbose_name="Название документа")
-    document = models.CharField(
-        max_length=500,
-        blank=True,
-        null=True,
-        verbose_name="Cloudinary public ID"
+    title = models.CharField(
+        max_length=255,
+        verbose_name="Название документа"
     )
-    uploaded_file = models.FileField(
-        upload_to='temp/',
-        blank=True,
-        null=True,
-        verbose_name="Загрузить PDF"
+    content = models.TextField(
+        verbose_name="HTML-содержание соглашения",
+        help_text="Введите текст соглашения с HTML-разметкой"
     )
-    is_active = models.BooleanField(default=True, verbose_name="Активно")
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    url = models.URLField(blank=True, null=True)
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name="Активно"
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Дата создания"
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name="Дата обновления"
+    )
 
     class Meta:
         verbose_name = "Пользовательское соглашение"
         verbose_name_plural = "Пользовательские соглашения"
+        ordering = ['-created_at']
 
     def __str__(self):
         return self.title
 
-    def save(self, *args, **kwargs):
-        if self.uploaded_file:
-            # Check if file is PDF
-            if not self.uploaded_file.name.lower().endswith('.pdf'):
-                raise ValueError("Разрешены только файлы PDF")
-
-            try:
-                # Delete old file if exists
-                if self.document:
-                    try:
-                        destroy(self.document, resource_type='raw')
-                    except Exception as e:
-                        print(f"Ошибка при удалении старого файла: {str(e)}")
-
-                # Upload new file
-                result = upload(
-                    self.uploaded_file,
-                    resource_type='raw',
-                    folder='user_agreements/',
-                    type='upload',
-                    use_filename=True,
-                    unique_filename=True,
-                    overwrite=True,
-                    public_id=transliterate_filename(self.uploaded_file.name)
-                )
-
-                self.document = result['public_id']
-
-                # Clean up the uploaded file after successful upload
-                if hasattr(self.uploaded_file, 'close'):
-                    self.uploaded_file.close()
-                self.uploaded_file = None
-
-            except Exception as e:
-                print(f"Ошибка при загрузке: {str(e)}")
-                # Clean up if upload fails
-                if hasattr(self.uploaded_file, 'close'):
-                    self.uploaded_file.close()
-                self.uploaded_file = None
-                raise ValueError(f"Ошибка при загрузке файла: {str(e)}")
-
-        super().save(*args, **kwargs)
-
     def get_url(self):
-        if not self.document:
-            return ''
-
-        try:
-            # Use version from the original upload instead of 'v1'
-            url, _ = cloudinary_url(
-                self.document,
-                resource_type='raw',
-                secure=True
-            )
-            return url
-        except Exception as e:
-            print(f"Ошибка генерации URL: {str(e)}")
-            return ''
+        # Для совместимости с существующим кодом возвращаем URL страницы соглашения
+        from django.urls import reverse
+        return reverse('user_agreement_detail', kwargs={'pk': self.pk})
 
     @classmethod
     def get_active_agreement(cls):
@@ -439,7 +391,8 @@ class UserAgreement(models.Model):
             if agreement:
                 return {
                     'title': agreement.title,
-                    'url': agreement.get_url()
+                    'url': agreement.get_url(),
+                    'content': agreement.content
                 }
             return None
         except Exception as e:

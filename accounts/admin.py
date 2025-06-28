@@ -82,7 +82,7 @@ class SupportSettingsAdmin(admin.ModelAdmin):
 class UserAgreementAdmin(admin.ModelAdmin):
     list_display = ('title', 'is_active', 'created_at', 'updated_at')
     list_editable = ('is_active',)
-    readonly_fields = ('document', 'created_at', 'updated_at')
-    fields = ('title', 'uploaded_file', 'document', 'is_active', 'created_at', 'updated_at')
+    readonly_fields = ('created_at', 'updated_at')  # Removed 'document' from here
+    fields = ('title', 'content', 'is_active', 'created_at', 'updated_at')
 
 

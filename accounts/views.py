@@ -37,7 +37,8 @@ from django.utils import timezone
 from properties.forms import PropertyForm
 from payments.models import Payment
 from properties.models import Property
-
+from django.views.generic import DetailView
+from .models import UserAgreement
 
 from brokers.models import BrokerProfile,BrokerReview
 
@@ -802,3 +803,10 @@ class ContactSupportView(LoginRequiredMixin, View):
         )
 
         return redirect('contact_request_detail', pk=contact_request.pk)
+
+
+
+class UserAgreementDetailView(DetailView):
+    model = UserAgreement
+    template_name = 'accounts/user_agreement.html'
+    context_object_name = 'agreement'
