@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
+{% load cloudinary %}
 {% block title %}Регистрация{% endblock %}
-{% load static %}
+
 {% block content %}
 <style>
     .registration-container {
@@ -134,8 +135,9 @@
                    class="w-4 h-4 border-gray-300 rounded focus:ring-blue-500"
                    required>
             <label for="terms" class="text-gray-600">
-    Принимаю <a href="{% static 'docs/user_agreement.pdf' %}" class="text-blue-600 hover:underline" target="_blank">условия использования</a>
+    Принимаю <a href="{{ agreement.document.url }}" class="text-blue-600 hover:underline" target="_blank">условия использования</a>
 </label>
+        </div>
 
         <button type="submit" class="btn-primary w-full hover:shadow-lg">
             Продолжить

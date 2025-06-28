@@ -314,3 +314,22 @@ class SupportSettings(models.Model):
             return cls.objects.first().support_user
         except:
             return None
+
+
+class UserAgreement(models.Model):
+    title = models.CharField(max_length=255, verbose_name="Название документа")
+    document = CloudinaryField('document')  # Убрали verbose_name здесь
+    is_active = models.BooleanField(default=True, verbose_name="Активно")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Пользовательское соглашение"
+        verbose_name_plural = "Пользовательские соглашения"
+
+    def __str__(self):
+        return self.title
+
+    @classmethod
+    def get_active_agreement(cls):
+        return cls.objects.filter(is_active=True).first()

@@ -51,6 +51,11 @@ class RegisterView(CreateView):
     template_name = 'accounts/register.html'
     success_url = reverse_lazy('email_verification_sent')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['agreement'] = UserAgreement.get_active_agreement()
+        return context
+
     def form_valid(self, form):
         try:
             user = form.save(commit=False)

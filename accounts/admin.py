@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User,  Favorite, ContactRequest, DeveloperProfile, \
-    BrokerSubscription, ExclusiveProperty , SupportSettings # Импорт новых моделей
+from .models import User, Favorite, ContactRequest, DeveloperProfile, \
+    BrokerSubscription, ExclusiveProperty, SupportSettings, UserAgreement  # Импорт новых моделей
 from .forms import UserRegistrationForm, UserAdminChangeForm
 
 
@@ -78,4 +78,10 @@ class SupportSettingsAdmin(admin.ModelAdmin):
     list_display = ('support_user',)
     fields = ('support_user',)
 
+@admin.register(UserAgreement)
+class UserAgreementAdmin(admin.ModelAdmin):
+    list_display = ('title', 'is_active', 'created_at', 'updated_at')
+    list_editable = ('is_active',)
+    readonly_fields = ('created_at', 'updated_at')
+    fields = ('title', 'document', 'is_active', 'created_at', 'updated_at')
 
