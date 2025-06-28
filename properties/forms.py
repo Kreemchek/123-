@@ -99,12 +99,18 @@ class PropertyForm(forms.ModelForm):
             self.fields.pop('apartment_type', None)
             self.fields.pop('floor', None)
 
+        # Показываем поле цены продажи для всех типов недвижимости
         if self.property_type and self.property_type.name == 'resale_flat':
             self.fields['is_rental'].widget.attrs.update({'class': 'rental-toggle'})
         else:
+            # Удаляем только поля аренды, но оставляем price
             self.fields.pop('is_rental', None)
             self.fields.pop('monthly_price', None)
             self.fields.pop('daily_price', None)
+
+            # Убедимся, что price виден и обязателен для других типов
+            self.fields['price'].required = True
+            self.fields['price'].widget = forms.NumberInput(attrs={'class': 'form-control'})
 
     def clean(self):
         cleaned_data = super().clean()
