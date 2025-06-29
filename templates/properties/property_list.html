@@ -30,7 +30,7 @@
     <!-- Карточки объектов -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for property in properties %}
-        <div class="property-card bg-white rounded-xl shadow-sm hover:shadow-md p-6 border-2 border-gray-100 transition-all">
+        <a href="{% url 'property-detail' property.id %}" class="property-card bg-white rounded-xl shadow-sm hover:shadow-md p-6 border-2 border-gray-100 transition-all block">
             <div class="relative mb-4">
                 <img src="{{ property.main_image.url }}"
                      class="w-full h-48 object-cover rounded-lg"
@@ -80,18 +80,17 @@
                         {% endif %}
                     </span>
                     {% if user.is_authenticated %}
-                    <button class="toggle-favorite" data-property-id="{{ property.id }}">
+                    <button class="toggle-favorite" data-property-id="{{ property.id }}" onclick="event.stopPropagation()">
                         <i class="bi bi-heart{% if property in user.favorites.all %}-fill text-red-500{% endif %} text-xl"></i>
                     </button>
                     {% endif %}
                 </div>
 
-                <a href="{% url 'property-detail' property.id %}"
-                   class="btn-primary block w-full text-center mt-4">
+                <div class="btn-primary w-full text-center mt-4" onclick="event.stopPropagation()">
                     <i class="bi bi-eye"></i> Подробнее
-                </a>
+                </div>
             </div>
-        </div>
+        </a>
         {% empty %}
         <div class="col-span-full text-center py-12 text-gray-500">
             <i class="bi bi-house-x text-3xl"></i>
@@ -137,6 +136,9 @@
     }
     .btn-primary {
         @apply bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2;
+    }
+    .toggle-favorite {
+        cursor: pointer;
     }
 </style>
 {% endblock %}
