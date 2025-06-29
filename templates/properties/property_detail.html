@@ -272,23 +272,27 @@
     <div class="bg-white rounded-xl shadow-sm p-4 md:p-8 border-2 border-gray-100">
         <!-- Карусель с анимацией -->
         <div class="animate-block swiper mb-6 md:mb-8">
-            <div class="swiper-wrapper">
-                <div class="swiper-slide">
-                    <img src="{{ property.main_image.url }}"
-                         alt="{{ property.title }}"
-                         loading="lazy">
-                </div>
-                {% for image in property.images.all %}
-                <div class="swiper-slide">
-                    <img src="{{ image.image.url }}"
-                         alt="Фото объекта {{ forloop.counter }}"
-                         loading="lazy">
-                </div>
-                {% endfor %}
-            </div>
-            <div class="swiper-button-next"></div>
-            <div class="swiper-button-prev"></div>
+    <div class="swiper-wrapper">
+        <!-- Основное изображение -->
+        <div class="swiper-slide">
+            <img src="{{ property.main_image.url }}"
+                 alt="{{ property.title }}"
+                 loading="lazy">
         </div>
+        <!-- Дополнительные изображения (исключая основное) -->
+        {% for image in property.images.all %}
+            {% if image.image.url != property.main_image.url %}
+            <div class="swiper-slide">
+                <img src="{{ image.image.url }}"
+                     alt="Фото объекта {{ forloop.counter }}"
+                     loading="lazy">
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <div class="swiper-button-next"></div>
+    <div class="swiper-button-prev"></div>
+</div>
 
         <!-- Модальное окно -->
         <div id="imageModal" class="image-modal">
@@ -441,7 +445,7 @@
         <div class="font-medium text-base md:text-lg">
             {{ property.broker.user.get_full_name|default:"Не указано" }}
         </div>
-        <div class="text-xs md:text-sm text-gray-500">Лицензированный брокер</div>
+        <div class="text-xs md:text-sm text-gray-500">Брокер по недвижимости</div>
     </div>
 </div>
 

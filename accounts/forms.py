@@ -3,7 +3,8 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.core.validators import RegexValidator
 from .models import User, ContactRequest, Property, Message
 from brokers.models import BrokerProfile
-
+from django.core.exceptions import ValidationError
+from django.template.defaultfilters import filesizeformat
 
 class UserRegistrationForm(UserCreationForm):
     email = forms.EmailField(
@@ -66,6 +67,24 @@ class ProfileForm(forms.ModelForm):
         label='Телефон'
 
     )
+
+    def clean_avatar(self):
+        avatar = self.cleaned_data.get('avatar')
+        if avatar:
+            # Проверка размера файла (5MB)
+            max_size = 5 * 1024 * 1024  # 5MB
+            if avatar.size > max_size:
+                raise ValidationError(
+                    f'Размер файла не должен превышать {filesizeformat(max_size)}. '
+                    f'Ваш файл имеет размер {filesizeformat(avatar.size)}.'
+                )
+
+            # Проверка типа файла
+            valid_types = ['image/jpeg', 'image/png', 'image/gif']
+            if avatar.content_type not in valid_types:
+                raise ValidationError('Неподдерживаемый формат файла. Используйте JPG, PNG или GIF.')
+
+        return avatar
 
 
 

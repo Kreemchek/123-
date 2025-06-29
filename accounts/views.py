@@ -102,27 +102,63 @@ class CompleteRegistrationView(LoginRequiredMixin, View):
         role_form = RoleSelectionForm(request.POST, instance=request.user)
         profile_form = ProfileForm(request.POST, request.FILES, instance=request.user)
 
+        # Проверка размера файла перед обработкой формы
+        if 'avatar' in request.FILES:
+            avatar = request.FILES['avatar']
+            max_size = 5 * 1024 * 1024  # 5MB
+
+            if avatar.size > max_size:
+                messages.error(request,
+                               f"Размер файла не должен превышать 5MB. Ваш файл: {avatar.size / 1024 / 1024:.2f}MB")
+                return render(request, self.template_name, {
+                    'role_form': role_form,
+                    'profile_form': profile_form
+                })
+
         if role_form.is_valid() and profile_form.is_valid():
-            user = role_form.save(commit=False)
-            user.user_type = role_form.cleaned_data['role']
-            profile_form.save()
+            try:
+                user = role_form.save(commit=False)
+                user.user_type = role_form.cleaned_data['role']
 
-            user.is_verified = True
-            user.is_active = True
-            user.save()
+                # Сохраняем профиль
+                profile_form.save()
 
-            # Автоматическое создание профиля брокера
-            if user.user_type == User.UserType.BROKER:
-                BrokerProfile.objects.get_or_create(
-                    user=user,
-                    defaults={
-                        'experience': 0,
-                        'about': '',
-                        'is_approved': True  # или False, если требуется модерация
-                    }
-                )
-                return redirect('complete_broker_info')
-            return redirect('dashboard')
+                user.is_verified = True
+                user.is_active = True
+                user.save()
+
+                # Автоматическое создание профиля брокера
+                if user.user_type == User.UserType.BROKER:
+                    BrokerProfile.objects.get_or_create(
+                        user=user,
+                        defaults={
+                            'experience': 0,
+                            'about': '',
+                            'is_approved': True
+                        }
+                    )
+                    return redirect('complete_broker_info')
+
+                return redirect('dashboard')
+
+            except Exception as e:
+                # Логируем ошибку для администратора
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.error(f"Error during registration completion: {str(e)}")
+
+                # Показываем пользователю общее сообщение об ошибке
+                messages.error(request, "Произошла ошибка при сохранении данных. Пожалуйста, попробуйте снова.")
+                return render(request, self.template_name, {
+                    'role_form': role_form,
+                    'profile_form': profile_form
+                })
+
+        # Если форма не валидна, показываем ошибки
+        return render(request, self.template_name, {
+            'role_form': role_form,
+            'profile_form': profile_form
+        })
 
 
 class EmailVerificationSentView(TemplateView):
