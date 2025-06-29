@@ -271,7 +271,7 @@
 <div class="registration-container">
     <div class="bg-white rounded-xl shadow-sm p-4 md:p-8 border-2 border-gray-100">
         <!-- Карусель с анимацией -->
-        <div class="animate-block swiper mb-6 md:mb-8">
+      <div class="animate-block swiper mb-6 md:mb-8">
     <div class="swiper-wrapper">
         <!-- Основное изображение -->
         <div class="swiper-slide">
@@ -281,7 +281,7 @@
         </div>
         <!-- Дополнительные изображения (исключая основное) -->
         {% for image in property.images.all %}
-            {% if image.image.url != property.main_image.url %}
+            {% if not image.is_main %}  <!-- Проверяем, что это не основное изображение -->
             <div class="swiper-slide">
                 <img src="{{ image.image.url }}"
                      alt="Фото объекта {{ forloop.counter }}"
