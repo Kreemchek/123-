@@ -104,6 +104,8 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
         return context
 
     def form_valid(self, form):
+
+
         with transaction.atomic():
             listing_type_id = self.request.session.get('selected_listing_type')
             if not listing_type_id:
@@ -112,11 +114,11 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
 
             listing_type = ListingType.objects.get(id=listing_type_id)
 
-            # Для всех пользователей (включая админов) проверяем баланс
             if self.request.user.balance < listing_type.price:
                 form.add_error(None, "Недостаточно средств на балансе")
                 return self.form_invalid(form)
 
+            # Генерация уникального transaction_id
             transaction_id = f"property_{uuid.uuid4()}"
 
             payment = Payment.objects.create(
@@ -136,19 +138,16 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
                 PropertyType,
                 name=self.kwargs['property_type']
             )
-
-            # Для администраторов не устанавливаем брокера, для остальных - устанавливаем
-            if not self.request.user.is_admin:
-                if not hasattr(self.request.user, 'broker_profile'):
-                    form.add_error(None, "Профиль брокера не найден. Заполните данные в разделе профиля.")
-                    return self.form_invalid(form)
-                self.object.broker = self.request.user.broker_profile
-
+            self.object.broker = self.request.user.broker_profile
             self.object.is_approved = False
             self.object.creator = self.request.user
             self.object.listing_type = listing_type
             self.object.listing_end_date = timezone.now() + timedelta(days=listing_type.duration_days)
             self.object.is_featured = listing_type.is_featured
+
+            if not hasattr(self.request.user, 'broker_profile'):
+                form.add_error(None, "Профиль брокера не найден. Заполните данные в разделе профиля.")
+                return self.form_invalid(form)
 
             if 'main_image' not in self.request.FILES:
                 form.add_error('main_image', 'Главное изображение обязательно')
