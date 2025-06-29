@@ -432,7 +432,7 @@
                         <h3 class="text-lg md:text-xl font-bold">Контактная информация</h3>
                     </div>
 
-                   <div class="flex items-center gap-3 md:gap-4 mb-3 md:mb-4">
+                  <div class="flex items-center gap-3 md:gap-4 mb-3 md:mb-4">
     {% if property.broker.user.avatar %}
         <img src="{{ property.broker.user.avatar.url }}"
              class="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover">
@@ -445,7 +445,13 @@
         <div class="font-medium text-base md:text-lg">
             {{ property.broker.user.get_full_name|default:"Не указано" }}
         </div>
-        <div class="text-xs md:text-sm text-gray-500">Брокер по недвижимости</div>
+        <div class="text-xs md:text-sm text-gray-500">
+            {% if property.broker.user.is_admin %}
+                Администратор
+            {% else %}
+                Брокер по недвижимости
+            {% endif %}
+        </div>
     </div>
 </div>
 
