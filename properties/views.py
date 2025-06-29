@@ -144,8 +144,7 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
                     return self.form_invalid(form)
                 self.object.broker = self.request.user.broker_profile
 
-            # Автоматически одобряем для админов
-            self.object.is_approved = self.request.user.is_admin
+            self.object.is_approved = False
             self.object.creator = self.request.user
             self.object.listing_type = listing_type
             self.object.listing_end_date = timezone.now() + timedelta(days=listing_type.duration_days)
