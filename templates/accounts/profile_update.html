@@ -86,12 +86,18 @@
         transition: all 0.2s ease;
         background: white;
     }
+
+    .file-info {
+        margin-top: 0.5rem;
+        font-size: 0.875rem;
+        color: #6b7280;
+    }
 </style>
 
 <div class="dashboard-form">
     <h1 class="form-title text-center mb-5">✏️ Редактирование профиля</h1>
 
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" id="profile-form">
         {% csrf_token %}
 
         <!-- Поле аватара -->
@@ -100,8 +106,10 @@
                 <i class="bi bi-camera me-2"></i>
                 {% if form.avatar.value %}Изменить аватар{% else %}Загрузить аватар{% endif %}
             </button>
-            {% render_field form.avatar class+="file-input" %}
+            {% render_field form.avatar class+="file-input" id="avatar-input" accept="image/*" %}
         </div>
+        <div class="file-info">Поддерживаемые форматы: JPG, PNG, GIF (до 5MB)</div>
+        <div id="file-error" class="error-message hidden"></div>
         {% for error in form.avatar.errors %}
             <div class="error-message">{{ error }}</div>
         {% endfor %}
@@ -140,7 +148,45 @@
         const fileName = e.target.files[0]?.name || 'Файл не выбран';
         const btn = this.closest('.file-input-wrapper').querySelector('button');
         btn.innerHTML = `<i class="bi bi-check2-circle me-2"></i>${fileName}`;
+
+        // Проверка размера файла
+        validateFileSize(this);
     });
 
+    // Проверка размера файла перед отправкой
+    function validateFileSize(input) {
+        const fileError = document.getElementById('file-error');
+        fileError.classList.add('hidden');
+
+        if (input.files && input.files[0]) {
+            const fileSize = input.files[0].size; // размер в байтах
+            const maxSize = 5 * 1024 * 1024; // 5MB
+
+            if (fileSize > maxSize) {
+                fileError.textContent = 'Файл слишком большой. Максимальный размер: 5MB';
+                fileError.classList.remove('hidden');
+                input.value = ''; // очищаем выбор файла
+                return false;
+            }
+
+            // Проверка типа файла
+            const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            if (!validTypes.includes(input.files[0].type)) {
+                fileError.textContent = 'Неподдерживаемый формат файла. Используйте JPG, PNG или GIF';
+                fileError.classList.remove('hidden');
+                input.value = '';
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Проверка перед отправкой формы
+    document.getElementById('profile-form').addEventListener('submit', function(e) {
+        const fileInput = document.getElementById('avatar-input');
+        if (fileInput.files.length > 0 && !validateFileSize(fileInput)) {
+            e.preventDefault();
+        }
+    });
 </script>
 {% endblock %}

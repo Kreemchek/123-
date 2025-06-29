@@ -71,18 +71,26 @@ class ProfileForm(forms.ModelForm):
     def clean_avatar(self):
         avatar = self.cleaned_data.get('avatar')
         if avatar:
-            # Проверка размера файла (5MB)
-            max_size = 5 * 1024 * 1024  # 5MB
-            if avatar.size > max_size:
-                raise ValidationError(
-                    f'Размер файла не должен превышать {filesizeformat(max_size)}. '
-                    f'Ваш файл имеет размер {filesizeformat(avatar.size)}.'
-                )
-
             # Проверка типа файла
             valid_types = ['image/jpeg', 'image/png', 'image/gif']
-            if avatar.content_type not in valid_types:
-                raise ValidationError('Неподдерживаемый формат файла. Используйте JPG, PNG или GIF.')
+
+            # Для новых загрузок (File objects)
+            if hasattr(avatar, 'content_type'):
+                if avatar.content_type not in valid_types:
+                    raise ValidationError('Неподдерживаемый формат файла. Используйте JPG, PNG или GIF.')
+
+                # Проверка размера файла (5MB)
+                max_size = 5 * 1024 * 1024  # 5MB
+                if avatar.size > max_size:
+                    raise ValidationError(
+                        f'Размер файла не должен превышать {filesizeformat(max_size)}. '
+                        f'Ваш файл имеет размер {filesizeformat(avatar.size)}.'
+                    )
+
+            # Для существующих файлов Cloudinary (CloudinaryResource)
+            elif not isinstance(avatar, str):  # CloudinaryResource
+                # Не проверяем размер для существующих файлов Cloudinary
+                pass
 
         return avatar
 
