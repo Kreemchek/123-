@@ -104,7 +104,7 @@ class Property(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='broker_properties',
+        related_name='properties',
         verbose_name=_('Брокер')
     )
     developer = models.ForeignKey(

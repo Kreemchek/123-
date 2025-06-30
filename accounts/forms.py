@@ -21,6 +21,9 @@ class UserAdminChangeForm(UserChangeForm):
     class Meta:
         model = User
         fields = '__all__'
+        widgets = {
+            'is_blocked': forms.CheckboxInput(attrs={'class': 'checkbox'}),
+        }
 
 
 class RoleSelectionForm(forms.ModelForm):

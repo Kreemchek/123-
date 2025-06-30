@@ -26,6 +26,11 @@ class User(AbstractUser):
         blank=True,
         help_text="Опыт работы в годах (только для брокеров)"
     )
+    is_blocked = models.BooleanField(
+        default=False,
+        verbose_name='Заблокирован',
+        help_text="Определяет, заблокирован ли пользователь"
+    )
 
 
     is_admin = models.BooleanField(

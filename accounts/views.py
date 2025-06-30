@@ -134,7 +134,7 @@ class CompleteRegistrationView(LoginRequiredMixin, View):
                         defaults={
                             'experience': 0,
                             'about': '',
-                            'is_approved': True
+                            'is_approved': False
                         }
                     )
                     return redirect('complete_broker_info')
@@ -170,13 +170,15 @@ def login_view(request):
         form = AuthenticationForm(data=request.POST)
         if form.is_valid():
             user = form.get_user()
+            if user.is_blocked:
+                messages.error(request, "Ваш аккаунт заблокирован. Обратитесь в поддержку.")
+                return redirect('login')
             login(request, user)
             UserActivity.objects.create(user=user, action="Вход в систему")
             return redirect('dashboard')
     else:
         form = AuthenticationForm()
     return render(request, 'accounts/login.html', {'form': form})
-
 
 def logout_view(request):
     if request.user.is_authenticated:

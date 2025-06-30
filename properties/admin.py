@@ -1,6 +1,8 @@
 from django.contrib import admin
-from .models import PropertyType, Property, PropertyImage
-from .models import ListingType
+from django import forms
+from .models import PropertyType, Property, PropertyImage, ListingType
+from accounts.models import User
+from brokers.models import BrokerProfile  # Добавьте этот импорт
 
 class PropertyImageInline(admin.TabularInline):
     model = PropertyImage
@@ -8,15 +10,17 @@ class PropertyImageInline(admin.TabularInline):
     fields = ('image', 'order')
     ordering = ('order',)
 
-
+class BrokerChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.user.get_full_name() if hasattr(obj, 'user') else str(obj)
 
 @admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
     actions = ['approve_properties']
-    list_display = ('title', 'price', 'property_type', 'status', 'broker', 'developer', 'is_approved', 'created_at')
+    list_display = ('title', 'price', 'property_type', 'status', 'get_broker_name', 'developer', 'is_approved', 'created_at')
     list_filter = ('status', 'property_type', 'is_approved', 'is_premium')
-    search_fields = ('title', 'description', 'address', 'broker__username', 'developer__username')
-    list_editable = ( 'is_approved', 'status',)
+    search_fields = ('title', 'description', 'address', 'broker__user__last_name', 'broker__user__first_name', 'developer__username')
+    list_editable = ('is_approved', 'status',)
     readonly_fields = ('created_at', 'updated_at')
     fieldsets = (
         (None, {
@@ -35,8 +39,22 @@ class PropertyAdmin(admin.ModelAdmin):
     )
     inlines = [PropertyImageInline]
 
+    def get_broker_name(self, obj):
+        if obj.broker and obj.broker.user:
+            return obj.broker.user.get_full_name()
+        return '-'
+
+    get_broker_name.short_description = 'Брокер'
+    get_broker_name.admin_order_field = 'broker__user__last_name'
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "broker":
+            kwargs["queryset"] = BrokerProfile.objects.all().order_by('user__last_name', 'user__first_name')
+            kwargs["form_class"] = BrokerChoiceField
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
     def get_queryset(self, request):
-        return super().get_queryset(request).select_related('broker', 'developer', 'property_type')
+        return super().get_queryset(request).select_related('broker__user', 'developer', 'property_type')
 
     def approve_properties(self, request, queryset):
         queryset.update(is_approved=True, status='active')
@@ -46,7 +64,6 @@ class PropertyAdmin(admin.ModelAdmin):
             obj.status = 'active'
         super().save_model(request, obj, form, change)
 
-
 @admin.register(PropertyImage)
 class PropertyImageAdmin(admin.ModelAdmin):
     list_display = ('property', 'image', 'order')
@@ -54,19 +71,14 @@ class PropertyImageAdmin(admin.ModelAdmin):
     list_filter = ('property__status',)
     search_fields = ('property__title',)
 
-
-
-
-
 @admin.action(description='Одобрить выбранные объекты')
 def approve_properties(modeladmin, request, queryset):
     queryset.update(is_approved=True)
 
 @admin.register(PropertyType)
 class PropertyTypeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'icon')  # Поля для отображения
+    list_display = ('name', 'description', 'icon')
     search_fields = ('name',)
-
 
 @admin.register(ListingType)
 class ListingTypeAdmin(admin.ModelAdmin):

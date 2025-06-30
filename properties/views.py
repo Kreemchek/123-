@@ -35,10 +35,26 @@ class PropertyListView(FilterView):
     paginate_by = 12
 
     def get_queryset(self):
-        queryset = super().get_queryset().filter(is_approved=True)
+        queryset = super().get_queryset()
+
+        # Если пользователь аутентифицирован и является брокером или застройщиком,
+        # показываем его объекты, даже если они не одобрены
+        if self.request.user.is_authenticated:
+            if self.request.user.is_broker and hasattr(self.request.user, 'broker_profile'):
+                queryset = queryset.filter(broker=self.request.user.broker_profile)
+            elif self.request.user.is_developer:
+                queryset = queryset.filter(developer=self.request.user)
+            else:
+                # Для обычных пользователей показываем только одобренные объекты
+                queryset = queryset.filter(is_approved=True)
+        else:
+            # Для неаутентифицированных пользователей показываем только одобренные объекты
+            queryset = queryset.filter(is_approved=True)
+
         broker_id = self.request.GET.get('broker')
         if broker_id:
             queryset = queryset.filter(broker_id=broker_id)
+
         return queryset
 
     def render_to_response(self, context, **response_kwargs):

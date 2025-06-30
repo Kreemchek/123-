@@ -61,6 +61,7 @@ handler500 = 'accounts.views.server_error'
 ALLOWED_HOSTS = ['winwindeal.up.railway.app'  ]
 
 
+
 CORS_ALLOW_ALL_ORIGINS = True
 
 CSRF_TRUSTED_ORIGINS = [

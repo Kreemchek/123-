@@ -56,14 +56,17 @@ class BrokerListView(ListView):
         search_query = self.request.GET.get('search', '')
 
         if search_query:
-            # Ищем по полному имени пользователя (first_name + last_name)
             queryset = queryset.filter(
                 Q(user__first_name__icontains=search_query) |
                 Q(user__last_name__icontains=search_query) |
-                Q(user__patronymic__icontains=search_query)
-            )
+                Q(user__patronymic__icontains=search_query))
 
-        return queryset.filter(is_archived=False, is_approved=True)
+            # Фильтруем только подтвержденных и неархивированных брокеров
+        return queryset.filter(
+            is_archived=False,
+            is_approved=True,
+            user__is_verified=True  # Добавляем проверку верификации пользователя
+        )
 
 
 class BrokerDetailView(DetailView):
