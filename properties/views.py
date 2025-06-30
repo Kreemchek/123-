@@ -27,6 +27,8 @@ from django.db import IntegrityError
 import uuid
 
 
+
+
 class PropertyListView(FilterView):
     model = Property
     template_name = 'properties/property_list.html'
@@ -37,27 +39,77 @@ class PropertyListView(FilterView):
     def get_queryset(self):
         queryset = super().get_queryset()
 
-        # Если пользователь аутентифицирован и является брокером или застройщиком,
-        # показываем его объекты, даже если они не одобрены
-        if self.request.user.is_authenticated:
-            if self.request.user.is_broker and hasattr(self.request.user, 'broker_profile'):
-                queryset = queryset.filter(broker=self.request.user.broker_profile)
-            elif self.request.user.is_developer:
-                queryset = queryset.filter(developer=self.request.user)
-            else:
-                # Для обычных пользователей показываем только одобренные объекты
-                queryset = queryset.filter(is_approved=True)
-        else:
-            # Для неаутентифицированных пользователей показываем только одобренные объекты
+        # Для неаутентифицированных пользователей показываем только одобренные объекты
+        if not self.request.user.is_authenticated:
             queryset = queryset.filter(is_approved=True)
 
+        # Для аутентифицированных пользователей
+        else:
+            # Если пользователь - брокер
+            if self.request.user.is_broker:
+                if hasattr(self.request.user, 'broker_profile'):
+                    # Брокер видит только свои одобренные объекты
+                    queryset = queryset.filter(
+                        broker=self.request.user.broker_profile,
+                        is_approved=True
+                    )
+                else:
+                    return Property.objects.none()
+
+            # Если пользователь - застройщик
+            elif self.request.user.is_developer:
+                # Застройщик видит свои объекты
+                queryset = queryset.filter(
+                    developer=self.request.user
+                )
+
+            # Если пользователь - клиент
+            else:
+                # Клиент видит все одобренные объекты
+                queryset = queryset.filter(is_approved=True)
+
+        # Фильтрация по конкретному брокеру (если указан параметр ?broker=id)
         broker_id = self.request.GET.get('broker')
         if broker_id:
-            queryset = queryset.filter(broker_id=broker_id)
+            broker = get_object_or_404(BrokerProfile, id=broker_id)
+
+            # Если текущий пользователь - брокер и пытается смотреть чужие объекты
+            if self.request.user.is_authenticated and self.request.user.is_broker and self.request.user != broker.user:
+                return Property.objects.none()
+
+            queryset = queryset.filter(
+                broker=broker,
+                is_approved=True
+            )
+
+        # Поиск по названию или локации
+        search_query = self.request.GET.get('search')
+        if search_query:
+            queryset = queryset.filter(
+                Q(title__icontains=search_query) |
+                Q(location__icontains=search_query)
+            )
 
         return queryset
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Добавляем информацию о текущем брокере для фильтра
+        broker_id = self.request.GET.get('broker')
+        if broker_id:
+            context['current_broker'] = get_object_or_404(BrokerProfile, id=broker_id)
+
+        # Добавляем информацию о типе пользователя
+        if self.request.user.is_authenticated:
+            context['is_broker'] = self.request.user.is_broker
+            context['is_developer'] = self.request.user.is_developer
+            context['is_client'] = not (self.request.user.is_broker or self.request.user.is_developer)
+
+        return context
+
     def render_to_response(self, context, **response_kwargs):
+        # Обработка AJAX-запросов (например, для автодополнения)
         if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             properties = self.get_queryset()
             data = {
@@ -65,7 +117,6 @@ class PropertyListView(FilterView):
             }
             return JsonResponse(data)
         return super().render_to_response(context, **response_kwargs)
-
 
 class PropertyDetailView(DetailView):
     model = Property

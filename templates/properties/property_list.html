@@ -6,7 +6,13 @@
 <div class="registration-container">
     <!-- Заголовок и поиск -->
     <div class="header-section mb-8">
-        <h1 class="text-3xl font-bold text-gray-800 mb-4">Каталог недвижимости</h1>
+        <h1 class="text-3xl font-bold text-gray-800 mb-4">
+            {% if user.is_authenticated and user.is_broker %}
+                Мои объекты
+            {% else %}
+                Каталог недвижимости
+            {% endif %}
+        </h1>
         <div class="flex justify-between items-center gap-4">
             <form class="flex-grow">
                 <div class="relative">
@@ -27,76 +33,100 @@
         </div>
     </div>
 
+    <!-- Сообщение для брокеров -->
+    {% if user.is_authenticated and user.is_broker and not request.GET.broker %}
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <i class="bi bi-info-circle text-blue-500 text-xl"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-blue-700">
+                        Вы видите только свои объекты. Для просмотра объектов других пользователей авторизуйтесь как клиент.
+                    </p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
     <!-- Карточки объектов -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {% for property in properties %}
-        <a href="{% url 'property-detail' property.id %}" class="property-card bg-white rounded-xl shadow-sm hover:shadow-md p-6 border-2 border-gray-100 transition-all block">
-            <div class="relative mb-4">
-                <img src="{{ property.main_image.url }}"
-                     class="w-full h-48 object-cover rounded-lg"
-                     alt="{{ property.title }}">
-                {% if property.is_featured %}
-                <span class="absolute top-2 right-2 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">
-                    ★ Premium
-                </span>
-                {% endif %}
-            </div>
-
-            <div class="space-y-4">
-                <h3 class="text-xl font-bold text-gray-800 truncate">
-                    {% if property.property_type.name == 'house' %}
-                        {{ property.title }}
-                    {% elif 'flat' in property.property_type.name %}
-                        {{ property.title }}
-                    {% else %}
-                        {{ property.title }}
-                    {% endif %}
-                </h3>
-
-                <div class="flex items-center gap-2 text-blue-600">
-                    <i class="bi bi-geo-alt"></i>
-                    <span class="truncate">{{ property.location }}</span>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4 text-gray-600">
-                    <div class="flex items-center gap-2">
-                        <i class="bi bi-door-open"></i>
-                        {{ property.rooms }} комн.
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <i class="bi bi-arrows-fullscreen"></i>
-                        {{ property.total_area}} м²
-                    </div>
-                </div>
-
-                <div class="flex items-center justify-between mt-4">
-                    <span class="text-2xl font-bold text-blue-600">
-                        {% if property.is_rental == 'monthly' and property.monthly_price %}
-                            {{ property.monthly_price|space_format }} ₽/мес
-                        {% elif property.is_rental == 'daily' and property.daily_price %}
-                            {{ property.daily_price|space_format }} ₽/сут
-                        {% else %}
-                            {{ property.price|space_format }} ₽
+        {% if properties %}
+            {% for property in properties %}
+                <a href="{% url 'property-detail' property.id %}" class="property-card bg-white rounded-xl shadow-sm hover:shadow-md p-6 border-2 border-gray-100 transition-all block">
+                    <div class="relative mb-4">
+                        <img src="{{ property.main_image.url }}"
+                             class="w-full h-48 object-cover rounded-lg"
+                             alt="{{ property.title }}">
+                        {% if property.is_featured %}
+                        <span class="absolute top-2 right-2 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">
+                            ★ Premium
+                        </span>
                         {% endif %}
-                    </span>
-                    {% if user.is_authenticated %}
-                    <button class="toggle-favorite" data-property-id="{{ property.id }}" onclick="event.stopPropagation()">
-                        <i class="bi bi-heart{% if property in user.favorites.all %}-fill text-red-500{% endif %} text-xl"></i>
-                    </button>
-                    {% endif %}
-                </div>
+                    </div>
 
-                <div class="btn-primary w-full text-center mt-4" onclick="event.stopPropagation()">
-                    <i class="bi bi-eye"></i> Подробнее
-                </div>
+                    <div class="space-y-4">
+                        <h3 class="text-xl font-bold text-gray-800 truncate">
+                            {% if property.property_type.name == 'house' %}
+                                {{ property.title }}
+                            {% elif 'flat' in property.property_type.name %}
+                                {{ property.title }}
+                            {% else %}
+                                {{ property.title }}
+                            {% endif %}
+                        </h3>
+
+                        <div class="flex items-center gap-2 text-blue-600">
+                            <i class="bi bi-geo-alt"></i>
+                            <span class="truncate">{{ property.location }}</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 text-gray-600">
+                            <div class="flex items-center gap-2">
+                                <i class="bi bi-door-open"></i>
+                                {{ property.rooms }} комн.
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="bi bi-arrows-fullscreen"></i>
+                                {{ property.total_area}} м²
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between mt-4">
+                            <span class="text-2xl font-bold text-blue-600">
+                                {% if property.is_rental == 'monthly' and property.monthly_price %}
+                                    {{ property.monthly_price|space_format }} ₽/мес
+                                {% elif property.is_rental == 'daily' and property.daily_price %}
+                                    {{ property.daily_price|space_format }} ₽/сут
+                                {% else %}
+                                    {{ property.price|space_format }} ₽
+                                {% endif %}
+                            </span>
+                            {% if user.is_authenticated %}
+                            <button class="toggle-favorite" data-property-id="{{ property.id }}" onclick="event.stopPropagation()">
+                                <i class="bi bi-heart{% if property in user.favorites.all %}-fill text-red-500{% endif %} text-xl"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+
+                        <div class="btn-primary w-full text-center mt-4" onclick="event.stopPropagation()">
+                            <i class="bi bi-eye"></i> Подробнее
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        {% else %}
+            <div class="col-span-full text-center py-12 text-gray-500">
+                <i class="bi bi-house-x text-3xl"></i>
+                <p class="mt-2">
+                    {% if user.is_authenticated and user.is_broker %}
+                        У вас пока нет объектов
+                    {% else %}
+                        Объекты не найдены
+                    {% endif %}
+                </p>
             </div>
-        </a>
-        {% empty %}
-        <div class="col-span-full text-center py-12 text-gray-500">
-            <i class="bi bi-house-x text-3xl"></i>
-            <p class="mt-2">Объекты не найдены</p>
-        </div>
-        {% endfor %}
+        {% endif %}
     </div>
 
     <!-- Пагинация -->

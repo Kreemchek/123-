@@ -76,20 +76,51 @@ class BrokerDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['reviews'] = self.object.reviews.filter(is_approved=True)
-        context['broker_properties'] = Property.objects.filter(
-            broker=self.object,
-            status='active',
-            is_approved=True
-        )[:4]
+        broker = self.object
+
+        # Получаем отзывы
+        context['reviews'] = broker.reviews.filter(is_approved=True)
+
+        # Фильтруем объекты в зависимости от типа пользователя
+        if self.request.user.is_authenticated:
+            if self.request.user.is_broker:
+                if self.request.user == broker.user:
+                    # Брокер видит только свои одобренные объекты
+                    broker_properties = Property.objects.filter(
+                        broker=broker,
+                        is_approved=True
+                    )
+                else:
+                    # Брокер не должен видеть объекты других брокеров
+                    broker_properties = Property.objects.none()
+            elif self.request.user.is_developer:
+                # Застройщик видит свои объекты
+                broker_properties = Property.objects.filter(
+                    broker=broker,
+                    developer=self.request.user
+                )
+            else:
+                # Клиент видит все одобренные объекты брокера
+                broker_properties = Property.objects.filter(
+                    broker=broker,
+                    is_approved=True
+                )
+        else:
+            # Неаутентифицированные пользователи видят одобренные объекты
+            broker_properties = Property.objects.filter(
+                broker=broker,
+                is_approved=True
+            )
+
+        context['broker_properties'] = broker_properties[:4]  # Только 4 объекта для превью
 
         # Проверка избранного
         is_favorite = False
         user = self.request.user
-        if user.is_authenticated:
+        if user.is_authenticated and not user.is_broker:
             is_favorite = Favorite.objects.filter(
                 user=user,
-                broker=self.object.user,
+                broker=broker.user,
                 favorite_type='broker'
             ).exists()
 
