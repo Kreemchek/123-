@@ -39,6 +39,9 @@ class PropertyListView(FilterView):
     def get_queryset(self):
         queryset = super().get_queryset()
 
+        if self.request.user.is_authenticated and self.request.user.is_admin:
+            return queryset
+
         # Для неаутентифицированных пользователей показываем только одобренные объекты
         if not self.request.user.is_authenticated:
             queryset = queryset.filter(is_approved=True)
