@@ -67,25 +67,25 @@
                         </div>
                     {% endif %}
                     <div class="mt-4">
-            {% if not request.user.is_broker %}
-            <div class="mt-4">
-                <form method="POST" action="{% url 'toggle_favorite' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="type" value="broker">
-                    <input type="hidden" name="id" value="{{ broker.user.id }}">
-                    <input type="hidden" name="next" value="{{ request.path }}">
-                    <button type="submit"
-                            class="bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded-lg transition-colors block w-full">
-                        {% if is_favorite %}
-                            ★ Удалить из избранного
-                        {% else %}
-                            ☆ Добавить в избранное
+                        {% if not request.user.is_broker %}
+                        <div class="mt-4">
+                            <form method="POST" action="{% url 'toggle_favorite' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="type" value="broker">
+                                <input type="hidden" name="id" value="{{ broker.user.id }}">
+                                <input type="hidden" name="next" value="{{ request.path }}">
+                                <button type="submit"
+                                        class="bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded-lg transition-colors block w-full">
+                                    {% if is_favorite %}
+                                        ★ Удалить из избранного
+                                    {% else %}
+                                        ☆ Добавить в избранное
+                                    {% endif %}
+                                </button>
+                            </form>
+                        </div>
                         {% endif %}
-                    </button>
-                </form>
-            </div>
-            {% endif %}
-</div>
+                    </div>
                     <h2 class="text-2xl font-bold text-gray-800">{{ broker.user.get_full_name }}</h2>
 
                     <div class="stats-grid grid grid-cols-2 gap-4 bg-blue-50 rounded-xl p-4">
@@ -99,29 +99,23 @@
                         </div>
                     </div>
 
-
-                              <!-- Кнопка "Запросить консультацию" - показываем только если:
-                 1. Пользователь не брокер ИЛИ
-                 2. Это брокер смотрит не свой профиль -->
-                       <!-- Кнопка "Добавить в избранное" - показываем только клиентам -->
-              <!-- Кнопка "Запросить консультацию" - показываем только клиентам -->
-            {% if not request.user.is_broker %}
-            <div class="mt-4">
-                <a href="{% url 'direct_contact_broker_consult' pk=broker.user.id %}"
-                   class="bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded-lg transition-colors block">
-                    Запросить консультацию (1 руб.)
-                </a>
-                {% if user.balance < 1 %}
-                    <div class="mt-2 text-sm text-red-600">
-                        Недостаточно средств на балансе для консультации (требуется 1 руб.)
+                    <!-- Кнопка "Запросить консультацию" - показываем только клиентам -->
+                    {% if not request.user.is_broker %}
+                    <div class="mt-4">
+                        <a href="{% url 'direct_contact_broker_consult' pk=broker.user.id %}"
+                           class="bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded-lg transition-colors block">
+                            Запросить консультацию (1 руб.)
+                        </a>
+                        {% if user.balance < 1 %}
+                            <div class="mt-2 text-sm text-red-600">
+                                Недостаточно средств на балансе для консультации (требуется 1 руб.)
+                            </div>
+                        {% endif %}
                     </div>
-                {% endif %}
+                    {% endif %}
+                </div>
             </div>
-            {% endif %}
-
         </div>
-    </div>
-</div>
 
         <!-- Правая колонка -->
         <div class="lg:col-span-2 space-y-6">
@@ -136,84 +130,85 @@
             </div>
 
             <!-- Секция "Объекты" -->
-<!-- Секция "Объекты" -->
-<div class="animate-block bg-white rounded-xl shadow-sm p-6 border-2 border-gray-100">
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
-        <h3 class="text-xl font-bold text-gray-800">
-            {% if request.user.is_authenticated and request.user.is_broker and request.user == broker.user %}
-                Мои объекты ({{ broker_properties.count }})
-            {% else %}
-                Объекты ({{ broker_properties.count }})
-            {% endif %}
-        </h3>
-        {% if not request.user.is_broker or request.user == broker.user %}
-            <a href="{% url 'property-list' %}?broker={{ broker.id }}{% if request.user.is_authenticated and request.user.is_broker and request.user == broker.user %}&my_properties=true{% endif %}"
-               class="bg-white text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg border-2 border-blue-200 transition-colors">
-                Все объекты →
-            </a>
-        {% endif %}
-    </div>
-
-    <div class="properties-grid grid grid-cols-1 md:grid-cols-2 gap-4">
-        {% if request.user.is_authenticated and request.user.is_broker and request.user != broker.user %}
-            <div class="empty-state col-span-full text-center py-6 text-gray-500">
-                Нет доступных объектов. Для просмотра объектов других пользователей авторизуйтесь как клиент.
-            </div>
-        {% else %}
-            {% for property in broker_properties|slice:":4" %}
-                <div class="property-card bg-white rounded-xl shadow-sm hover:shadow-md transition p-4 border-2 border-gray-100">
-                    <img src="{{ property.main_image.url }}"
-                         class="w-full h-48 object-cover rounded-lg mb-4"
-                         alt="{{ property.title }}">
-                    <div class="property-details space-y-3">
-                        <h4 class="font-semibold text-gray-800">{{ property.title }}</h4>
-                        <div class="price-area flex justify-between items-center">
-                            {% if property.is_rental == 'monthly' and property.monthly_price %}
-                                <span class="price text-blue-600 font-bold">{{ property.monthly_price|space_format }} ₽/мес</span>
-                            {% elif property.is_rental == 'daily' and property.daily_price %}
-                                <span class="price text-blue-600 font-bold">{{ property.daily_price|space_format }} ₽/сут</span>
-                            {% elif property.price %}
-                                <span class="price text-blue-600 font-bold">{{ property.price|space_format }} ₽</span>
-                            {% else %}
-                                <span class="price text-blue-600 font-bold">Цена не указана</span>
-                            {% endif %}
-                            <div class="flex items-center gap-2">
-                                <span class="area text-gray-600">{{ property.total_area }} м²</span>
-                                {% if property.floor %}
-                                    <span>•</span>
-                                    <span class="flex items-center gap-1">
-                                        <i class="fas fa-layer-group text-sm"></i>
-                                        {{ property.floor }}/{{ property.total_floors|default:"?" }}
-                                    </span>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        {% if request.user.is_authenticated and request.user.is_client %}
-                            <a href="{% url 'contact_broker' pk=broker.user.id property_id=property.id %}"
-                               class="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded-lg transition-colors">
-                                Написать сообщение
-                            </a>
+            <div class="animate-block bg-white rounded-xl shadow-sm p-6 border-2 border-gray-100">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
+                    <h3 class="text-xl font-bold text-gray-800">
+                        {% if request.user.is_authenticated and request.user.is_broker and request.user == broker.user %}
+                            Мои объекты ({{ broker_properties.count }})
+                        {% elif is_admin %}
+                            Все объекты брокера ({{ broker_properties.count }})
+                        {% else %}
+                            Объекты ({{ broker_properties.count }})
                         {% endif %}
-
-                        <a href="{% url 'property-detail' property.id %}"
-                           class="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded-lg transition-colors {% if request.user.is_authenticated and request.user.is_client %}mt-4{% endif %}">
-                            Подробнее
+                    </h3>
+                    {% if not request.user.is_broker or request.user == broker.user or is_admin %}
+                        <a href="{% url 'property-list' %}?broker={{ broker.id }}{% if request.user.is_authenticated and request.user.is_broker and request.user == broker.user %}&my_properties=true{% endif %}"
+                           class="bg-white text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg border-2 border-blue-200 transition-colors">
+                            Все объекты →
                         </a>
-                    </div>
-                </div>
-            {% empty %}
-                <div class="empty-state col-span-full text-center py-6 text-gray-500">
-                    {% if request.user.is_authenticated and request.user.is_broker and request.user == broker.user %}
-                        У вас пока нет одобренных объектов
-                    {% else %}
-                        Нет доступных объектов
                     {% endif %}
                 </div>
-            {% endfor %}
-        {% endif %}
-    </div>
-</div>
+
+                <div class="properties-grid grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {% if request.user.is_authenticated and request.user.is_broker and request.user != broker.user and not is_admin %}
+                        <div class="empty-state col-span-full text-center py-6 text-gray-500">
+                            Нет доступных объектов. Для просмотра объектов других пользователей авторизуйтесь как клиент.
+                        </div>
+                    {% else %}
+                        {% for property in broker_properties|slice:":4" %}
+                            <div class="property-card bg-white rounded-xl shadow-sm hover:shadow-md transition p-4 border-2 border-gray-100">
+                                <img src="{{ property.main_image.url }}"
+                                     class="w-full h-48 object-cover rounded-lg mb-4"
+                                     alt="{{ property.title }}">
+                                <div class="property-details space-y-3">
+                                    <h4 class="font-semibold text-gray-800">{{ property.title }}</h4>
+                                    <div class="price-area flex justify-between items-center">
+                                        {% if property.is_rental == 'monthly' and property.monthly_price %}
+                                            <span class="price text-blue-600 font-bold">{{ property.monthly_price|space_format }} ₽/мес</span>
+                                        {% elif property.is_rental == 'daily' and property.daily_price %}
+                                            <span class="price text-blue-600 font-bold">{{ property.daily_price|space_format }} ₽/сут</span>
+                                        {% elif property.price %}
+                                            <span class="price text-blue-600 font-bold">{{ property.price|space_format }} ₽</span>
+                                        {% else %}
+                                            <span class="price text-blue-600 font-bold">Цена не указана</span>
+                                        {% endif %}
+                                        <div class="flex items-center gap-2">
+                                            <span class="area text-gray-600">{{ property.total_area }} м²</span>
+                                            {% if property.floor %}
+                                                <span>•</span>
+                                                <span class="flex items-center gap-1">
+                                                    <i class="fas fa-layer-group text-sm"></i>
+                                                    {{ property.floor }}/{{ property.total_floors|default:"?" }}
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    {% if request.user.is_authenticated and request.user.is_client %}
+                                        <a href="{% url 'contact_broker' pk=broker.user.id property_id=property.id %}"
+                                           class="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded-lg transition-colors">
+                                            Написать сообщение
+                                        </a>
+                                    {% endif %}
+
+                                    <a href="{% url 'property-detail' property.id %}"
+                                       class="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded-lg transition-colors {% if request.user.is_authenticated and request.user.is_client %}mt-4{% endif %}">
+                                        Подробнее
+                                    </a>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="empty-state col-span-full text-center py-6 text-gray-500">
+                                {% if request.user.is_authenticated and request.user.is_broker and request.user == broker.user %}
+                                    У вас пока нет одобренных объектов
+                                {% else %}
+                                    Нет доступных объектов
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
 
             <!-- Секция "Отзывы" -->
             <div class="animate-block bg-white rounded-xl shadow-sm p-6 border-2 border-gray-100">

@@ -68,7 +68,6 @@ class BrokerListView(ListView):
             user__is_verified=True  # Добавляем проверку верификации пользователя
         )
 
-
 class BrokerDetailView(DetailView):
     model = BrokerProfile
     template_name = 'brokers/broker_detail.html'
@@ -83,7 +82,12 @@ class BrokerDetailView(DetailView):
 
         # Фильтруем объекты в зависимости от типа пользователя
         if self.request.user.is_authenticated:
-            if self.request.user.is_broker:
+            if self.request.user.is_admin or self.request.user.is_superuser:
+                # Администратор видит все объекты брокера
+                broker_properties = Property.objects.filter(
+                    broker=broker
+                )
+            elif self.request.user.is_broker:
                 if self.request.user == broker.user:
                     # Брокер видит только свои одобренные объекты
                     broker_properties = Property.objects.filter(
@@ -113,6 +117,8 @@ class BrokerDetailView(DetailView):
             )
 
         context['broker_properties'] = broker_properties[:4]  # Только 4 объекта для превью
+        context['is_admin'] = self.request.user.is_authenticated and (
+                    self.request.user.is_admin or self.request.user.is_superuser)
 
         # Проверка избранного
         is_favorite = False
