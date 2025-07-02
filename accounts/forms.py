@@ -66,9 +66,8 @@ class ProfileForm(forms.ModelForm):
                 message="Номер должен быть в формате: +7 (XXX) XXX-XX-XX"
             )
         ],
-        required=True,
+        required=False,  # Изменено с True на False
         label='Телефон'
-
     )
 
     def clean_avatar(self):
@@ -128,7 +127,7 @@ class ProfileForm(forms.ModelForm):
         # Делаем поля обязательными на уровне формы
         self.fields['last_name'].required = True
         self.fields['first_name'].required = True
-        self.fields['phone'].required = True
+        #self.fields['phone'].required = True
 
 
 

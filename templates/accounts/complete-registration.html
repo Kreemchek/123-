@@ -117,18 +117,17 @@
                        value="{{ form.patronymic.value|default:'' }}">
             </div>
 
-            <div>
-                <label class="block text-sm font-medium mb-2">Телефон</label>
-                <input type="text"
-                       name="phone"
-                       class="custom-input"
-                       placeholder="+7 (999) 999-99-99"
-                       maxlength="17"
-                       oninput="formatPhone(this)"
-                       onkeydown="handlePhoneInput(event)"
-                       value="{{ form.phone.value|default:'' }}"
-                       required>
-            </div>
+           <div>
+    <label class="block text-sm font-medium mb-2">Телефон <span class="text-gray-500 text-sm font-normal">(необязательно)</span></label>
+    <input type="text"
+           name="phone"
+           class="custom-input"
+           placeholder="+7 (999) 999-99-99"
+           maxlength="17"
+           oninput="formatPhone(this)"
+           onkeydown="handlePhoneInput(event)"
+           value="{{ form.phone.value|default:'' }}">
+</div>
 
 
 

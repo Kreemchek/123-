@@ -61,8 +61,8 @@ class User(AbstractUser):
             return (
                     has_broker_profile and
                     self.last_name and
-                    self.first_name and
-                    self.phone
+                    self.first_name
+
 
             )
         else:

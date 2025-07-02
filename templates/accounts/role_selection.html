@@ -160,20 +160,19 @@
             </div>
 
             <!-- Телефон -->
-            <div>
-                <label class="block text-sm font-medium mb-2">Телефон</label>
-                <div class="input-group">
-                    <input type="text"
-                           name="phone"
-                           class="custom-input phone-input"
-                           placeholder="+7 (999) 999-99-99"
-                           maxlength="17"
-                           oninput="formatPhone(this)"
-                           onkeydown="handlePhoneInput(event)"
-                           value="{{ form.phone.value|default:'' }}"
-                           required>
-                </div>
-            </div>
+           <div>
+    <label class="block text-sm font-medium mb-2">Телефон <span class="text-gray-500 text-sm font-normal">(необязательно)</span></label>
+    <div class="input-group">
+        <input type="text"
+               name="phone"
+               class="custom-input phone-input"
+               placeholder="+7 (999) 999-99-99"
+               maxlength="17"
+               oninput="formatPhone(this)"
+               onkeydown="handlePhoneInput(event)"
+               value="{{ form.phone.value|default:'' }}">
+    </div>
+</div>
 
             <!-- Паспорт РФ -->
 
