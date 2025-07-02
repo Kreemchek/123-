@@ -127,7 +127,7 @@ class ProfileForm(forms.ModelForm):
         # Делаем поля обязательными на уровне формы
         self.fields['last_name'].required = True
         self.fields['first_name'].required = True
-        #self.fields['phone'].required = True
+
 
 
 
