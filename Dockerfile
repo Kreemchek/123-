@@ -26,11 +26,8 @@ RUN pip install --upgrade pip && \
 # Копируем остальной проект
 COPY . .
 
-# Создаём нужные директории с правильными правами
-RUN install -d -m 755 /app/media /app/static
 
-# Собираем статику
-RUN python manage.py collectstatic --noinput
+
 
 # Копируем и даём права на entrypoint
 COPY entrypoint.sh /entrypoint.sh

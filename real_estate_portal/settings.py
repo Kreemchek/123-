@@ -202,6 +202,7 @@ LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
 
+
 #AWS_S3_SIGNATURE_VERSION = 's3v4'
 #AWS_DEFAULT_ACL = 'public-read'
 #AWS_QUERYSTRING_AUTH = False
