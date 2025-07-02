@@ -1,4 +1,26 @@
-node_modules/
+# Git
+.git
 .gitignore
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+
+# Node (если случайно есть)
+node_modules/
+
+# Конфигурация и базы данных
 *.sqlite3
+*.db
 *.env
+
+# Логи и временные файлы
+*.log
+*.DS_Store
+
+# Тесты и документация (если не нужны в контейнере)
+tests/
+docs/
