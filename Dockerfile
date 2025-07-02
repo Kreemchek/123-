@@ -8,11 +8,13 @@ ENV PYTHONUNBUFFERED=1 \
     POETRY_VIRTUALENVS_CREATE=false
 
 # Установка системных зависимостей
+# Установка системных зависимостей
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
-    python${PYTHON_VERSION}-dev \
+    python3.10-dev \
  && rm -rf /var/lib/apt/lists/*
+
 
 # Рабочая директория
 WORKDIR /app
