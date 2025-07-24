@@ -11,6 +11,8 @@ import logging
 from yookassa import Payment
 from payments.models import Payment as PaymentModel
 from decimal import Decimal
+from django.http import JsonResponse
+from accounts.models import User
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -60,6 +62,8 @@ def payment_success_view(request):
 
 @csrf_exempt
 def yookassa_webhook(request):
+    logger.info(f"Webhook received: {request.body}")
+
     if request.method != 'POST':
         return HttpResponse(status=405)
 
@@ -113,3 +117,8 @@ def yookassa_webhook(request):
     except Exception as e:
         logger.error(f"Webhook error: {str(e)}", exc_info=True)
         return HttpResponse(status=400)
+
+def balance_api(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+    return JsonResponse({'balance': float(request.user.balance)})

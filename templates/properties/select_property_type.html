@@ -120,7 +120,7 @@
     <div class="row g-4">
         <!-- Новостройка -->
         <div class="col-12 col-md-6 col-lg-3">
-            <a href="{% url 'property-create' 'new_flat' %}" class="text-decoration-none">
+            <a href="{% url 'properties:property-create' 'new_flat' %}" class="text-decoration-none">
                 <div class="type-card h-100 p-4 text-center">
                     <div class="type-icon">
                         <i class="fas fa-building"></i>
@@ -135,7 +135,7 @@
 
         <!-- Вторичка -->
         <div class="col-12 col-md-6 col-lg-3">
-            <a href="{% url 'property-create' 'resale_flat' %}" class="text-decoration-none">
+            <a href="{% url 'properties:property-create' 'resale_flat' %}" class="text-decoration-none">
                 <div class="type-card h-100 p-4 text-center">
                     <div class="type-icon">
                         <i class="fas fa-city"></i>
@@ -150,7 +150,7 @@
 
         <!-- Дом -->
         <div class="col-12 col-md-6 col-lg-3">
-            <a href="{% url 'property-create' 'house' %}" class="text-decoration-none">
+            <a href="{% url 'properties:property-create' 'house' %}" class="text-decoration-none">
                 <div class="type-card h-100 p-4 text-center">
                     <div class="type-icon">
                         <i class="fas fa-home"></i>
@@ -165,7 +165,7 @@
 
         <!-- Нежилые помещения -->
         <div class="col-12 col-md-6 col-lg-3">
-            <a href="{% url 'property-create' 'commercial' %}" class="text-decoration-none">
+            <a href="{% url 'properties:property-create' 'commercial' %}" class="text-decoration-none">
                 <div class="type-card h-100 p-4 text-center">
                     <div class="type-icon">
                         <i class="fas fa-warehouse"></i>

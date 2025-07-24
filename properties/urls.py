@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
-from .views import PropertyDeleteView
+from .views import PropertyDeleteView, CityAutocompleteView, AddressAutocompleteView, MetroAutocompleteView
+
+app_name = 'properties'  # Добавляем пространство имён
 
 urlpatterns = [
     path('', views.PropertyListView.as_view(), name='property-list'),
@@ -12,7 +14,9 @@ urlpatterns = [
     path('<int:pk>/favorite/', views.toggle_favorite, name='property-favorite'),
     path('<int:pk>/delete/', PropertyDeleteView.as_view(), name='property-delete'),
     path('api/brokers/', views.BrokerSearchView.as_view(), name='broker-search'),
-    path('contact-broker/<int:broker_id>/<int:property_id>/',
-         views.ContactBrokerView.as_view(),
-         name='contact_broker'),
+    path('contact-broker/<int:broker_id>/<int:property_id>/', views.ContactBrokerView.as_view(), name='contact_broker'),
+
+    path('api/cities/', CityAutocompleteView.as_view(), name='city-autocomplete'),
+    path('api/addresses/', AddressAutocompleteView.as_view(), name='address-autocomplete'),
+    path('api/metro/', MetroAutocompleteView.as_view(), name='metro-autocomplete'),
 ]

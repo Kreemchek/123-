@@ -11,7 +11,7 @@ urlpatterns = [
 
     path('accounts/', include('accounts.urls')),
     path('brokers/', include('brokers.urls')),
-    path('payments/', include('payments.urls')),  # Оставляем другие платежные URLs
+    path('payment/', include('payments.urls')),  # Оставляем другие платежные URLs
     path('developers/', include('developers.urls')),
     path('properties/', include('properties.urls')),
 

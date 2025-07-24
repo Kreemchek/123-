@@ -1,8 +1,8 @@
 from django import forms
-from django.core.validators import MaxValueValidator
 from django.utils import timezone
 from .models import Property, PropertyImage, ListingType
 
+from django.contrib.gis.geos import Point
 
 class PropertyForm(forms.ModelForm):
     apartment_type = forms.ChoiceField(
@@ -64,16 +64,36 @@ class PropertyForm(forms.ModelForm):
         help_text='Цена в рублях за сутки аренды'
     )
 
+    construction_year = forms.IntegerField(
+        required=False,
+        label='Год постройки',
+        min_value=1800,
+        max_value=timezone.now().year + 10,
+        help_text='Год постройки здания'
+    )
+
+    district = forms.CharField(
+        required=False,
+        label='Район',
+        max_length=100,
+        help_text='Район города'
+    )
+
+    # Поле для карты
+    map_coordinates = forms.CharField(
+        required=False,
+        widget=forms.HiddenInput()
+    )
+
     class Meta:
         model = Property
         fields = [
-            'description', 'price', 'status', 'broker',
-            'developer', 'is_premium', 'main_image',
-            'rooms', 'location', 'address',
-            'apartment_type', 'floor', 'total_floors', 'has_finishing',
-            'delivery_year', 'is_delivered',
-            'living_area', 'total_area', 'metro_station',
-            'is_rental', 'monthly_price', 'daily_price'
+            'description', 'price', 'status', 'broker', 'developer', 'is_premium',
+            'main_image', 'rooms', 'location', 'address', 'apartment_type',
+            'floor', 'total_floors', 'has_finishing', 'delivery_year',
+            'is_delivered', 'living_area', 'total_area', 'metro_station',
+            'is_rental', 'monthly_price', 'daily_price', 'construction_year',
+            'district', 'map_coordinates'
         ]
         widgets = {
             'status': forms.HiddenInput(),
@@ -85,6 +105,7 @@ class PropertyForm(forms.ModelForm):
             'has_finishing': forms.CheckboxInput(attrs={'class': 'form-checkbox'}),
             'is_delivered': forms.CheckboxInput(attrs={'class': 'form-checkbox'})
         }
+
 
     def __init__(self, *args, **kwargs):
         self.property_type = kwargs.pop('property_type', None)
@@ -200,6 +221,38 @@ class PropertyForm(forms.ModelForm):
         # Проверка типа аренды
         if is_rental in ['monthly', 'daily'] and property_type.name != 'resale_flat':
             self.add_error('is_rental', 'Аренда доступна только для вторичного жилья')
+
+        address = cleaned_data.get('address')
+        location = cleaned_data.get('location')
+        map_coordinates = cleaned_data.get('map_coordinates')
+
+        city_coords = cleaned_data.get('city_coordinates')
+        address_coords = cleaned_data.get('coordinates')
+        metro_coords = cleaned_data.get('metro_coordinates')
+
+        if address_coords:
+            try:
+                lon, lat = map(float, address_coords.split())
+                self.instance.coordinates = Point(lon, lat, srid=4326)
+            except (ValueError, AttributeError):
+                pass
+
+        if metro_coords:
+            try:
+                lon, lat = map(float, metro_coords.split())
+                self.instance.metro_coordinates = Point(lon, lat, srid=4326)
+            except (ValueError, AttributeError):
+                pass
+
+        if map_coordinates:
+            try:
+                lat, lon = map(float, map_coordinates.split(','))
+                self.instance.coordinates = Point(lon, lat)
+            except (ValueError, AttributeError):
+                pass
+        elif address and location:
+            self.instance.geocode_address()
+
 
         return cleaned_data
 

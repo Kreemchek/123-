@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load custom_filters %}
+{% load property_filters %}
 {% block title %}{{ property.title }} | RealEstatePro{% endblock %}
 
 {% block content %}
@@ -35,27 +35,27 @@
     }
 
     .swiper-slide {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: zoom-in;
-    height: 100%;
-    width: 100%;
-    background-color: white; /* Белый фон для слайда */
-    overflow: hidden;
-}
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: zoom-in;
+        height: 100%;
+        width: 100%;
+        background-color: white; /* Белый фон для слайда */
+        overflow: hidden;
+    }
 
     .swiper-slide img {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
-    object-fit: contain;
-    background-color: white;
-    margin: 0 auto;
-    display: block;
-}
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        background-color: white;
+        margin: 0 auto;
+        display: block;
+    }
 
     /* Исправленные стили стрелок */
     .swiper-button-next,
@@ -266,33 +266,46 @@
         scrollbar-width: thin;
         scrollbar-color: #888 #f1f1f1;
     }
+
+    /* Стили для карты */
+    #property-map {
+        min-height: 400px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    @media (max-width: 640px) {
+        #property-map {
+            height: 300px;
+        }
+    }
 </style>
 
 <div class="registration-container">
     <div class="bg-white rounded-xl shadow-sm p-4 md:p-8 border-2 border-gray-100">
         <!-- Карусель с анимацией -->
-      <div class="animate-block swiper mb-6 md:mb-8">
-    <div class="swiper-wrapper">
-        <!-- Основное изображение -->
-        <div class="swiper-slide">
-            <img src="{{ property.main_image.url }}"
-                 alt="{{ property.title }}"
-                 loading="lazy">
-        </div>
-        <!-- Дополнительные изображения (исключая основное) -->
-        {% for image in property.images.all %}
-            {% if not image.is_main %}  <!-- Проверяем, что это не основное изображение -->
-            <div class="swiper-slide">
-                <img src="{{ image.image.url }}"
-                     alt="Фото объекта {{ forloop.counter }}"
-                     loading="lazy">
+        <div class="animate-block swiper mb-6 md:mb-8">
+            <div class="swiper-wrapper">
+                <!-- Основное изображение -->
+                <div class="swiper-slide">
+                    <img src="{{ property.main_image.url }}"
+                         alt="{{ property.title }}"
+                         loading="lazy">
+                </div>
+                <!-- Дополнительные изображения (исключая основное) -->
+                {% for image in property.images.all %}
+                    {% if not image.is_main %}  <!-- Проверяем, что это не основное изображение -->
+                    <div class="swiper-slide">
+                        <img src="{{ image.image.url }}"
+                             alt="Фото объекта {{ forloop.counter }}"
+                             loading="lazy">
+                    </div>
+                    {% endif %}
+                {% endfor %}
             </div>
-            {% endif %}
-        {% endfor %}
-    </div>
-    <div class="swiper-button-next"></div>
-    <div class="swiper-button-prev"></div>
-</div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
 
         <!-- Модальное окно -->
         <div id="imageModal" class="image-modal">
@@ -309,14 +322,14 @@
                     <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-3 md:mb-4">{{ property.title }}</h1>
                     <div class="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4 mb-4 md:mb-6">
                         <span class="text-2xl font-bold text-blue-600">
-    {% if property.is_rental == 'monthly' %}
-        {{ property.monthly_price|space_format }} ₽/месяц
-    {% elif property.is_rental == 'daily' %}
-        {{ property.daily_price|space_format }} ₽/сутки
-    {% else %}
-        {{ property.price|space_format }} ₽
-    {% endif %}
-</span>
+                            {% if property.is_rental == 'monthly' %}
+                                {{ property.monthly_price|space_format }} ₽/месяц
+                            {% elif property.is_rental == 'daily' %}
+                                {{ property.daily_price|space_format }} ₽/сутки
+                            {% else %}
+                                {{ property.price|space_format }} ₽
+                            {% endif %}
+                        </span>
                         {% if property.is_featured %}
                         <span class="bg-yellow-100 text-yellow-800 px-2 py-0.5 md:px-3 md:py-1 rounded-full text-sm">
                             ★ Premium
@@ -325,179 +338,230 @@
                     </div>
                 </div>
 
-<!-- Параметры -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-4 mb-4 md:mb-8 params-grid">
-    <!-- Город -->
-    {% if property.location %}
-    <div class="bg-gray-50 p-4 rounded-lg">
-        <div class="text-xs md:text-sm text-gray-500">Город</div>
-        <div class="text-lg md:text-xl font-bold">{{ property.location }}</div>
-    </div>
-    {% endif %}
-
-    <!-- Адрес -->
-    {% if property.address %}
-    <div class="bg-gray-50 p-4 rounded-lg">
-        <div class="text-xs md:text-sm text-gray-500">Адрес</div>
-        <div class="text-lg md:text-xl font-bold">{{ property.address }}</div>
-    </div>
-    {% endif %}
-
-    <!-- Комнаты (только для квартир) -->
-{% if property.property_type.name == 'new_flat' or property.property_type.name == 'resale_flat' %}
-    <div class="bg-gray-50 p-4 rounded-lg">
-        <div class="text-xs md:text-sm text-gray-500">Комнат</div>
-        <div class="text-lg md:text-xl font-bold">{{ property.rooms }}</div>
-    </div>
-    {% endif %}
-
-    <!-- Этаж (только для квартир) -->
-{% if property.property_type.name == 'new_flat' or property.property_type.name == 'resale_flat' %}
-        {% if property.floor and property.total_floors %}
-        <div class="bg-gray-50 p-4 rounded-lg">
-            <div class="text-xs md:text-sm text-gray-500">Этаж</div>
-            <div class="text-lg md:text-xl font-bold">
-                {{ property.floor }}/{{ property.total_floors }}
-            </div>
-        </div>
-        {% elif property.floor %}
-        <div class="bg-gray-50 p-4 rounded-lg">
-            <div class="text-xs md:text-sm text-gray-500">Этаж</div>
-            <div class="text-lg md:text-xl font-bold">{{ property.floor }}</div>
-        </div>
-        {% endif %}
-    {% endif %}
-
-    <!-- Общая площадь -->
-    <div class="bg-gray-50 p-4 rounded-lg">
-        <div class="text-xs md:text-sm text-gray-500">Общая площадь</div>
-        <div class="text-lg md:text-xl font-bold">{{ property.total_area }} м²</div>
-    </div>
-
-
-    <div class="bg-gray-50 p-4 rounded-lg">
-        <div class="text-xs md:text-sm text-gray-500">Жилая площадь</div>
-        <div class="text-lg md:text-xl font-bold">{{ property.living_area }} м²</div>
-    </div>
-
-
-    <!-- Год сдачи (только для новостроек) -->
-    {% if property.property_type.name == 'new_flat' and property.delivery_year %}
-    <div class="bg-gray-50 p-4 rounded-lg">
-        <div class="text-xs md:text-sm text-gray-500">Год сдачи</div>
-        <div class="text-lg md:text-xl font-bold">{{ property.delivery_year }}</div>
-    </div>
-    {% endif %}
-
-    <!-- Метро -->
-    {% if property.metro_station and property.metro_station != "Не указано" %}
-    <div class="bg-gray-50 p-4 rounded-lg">
-        <div class="text-xs md:text-sm text-gray-500">Метро</div>
-        <div class="text-lg md:text-xl font-bold">{{ property.metro_station }}</div>
-    </div>
-    {% endif %}
-
-    <!-- Отделка (только для квартир) -->
-{% if property.property_type.name == 'new_flat' or property.property_type.name == 'resale_flat' %}
-    <div class="bg-gray-50 p-4 rounded-lg">
-        <div class="text-xs md:text-sm text-gray-500">Отделка</div>
-        <div class="text-lg md:text-xl font-bold">
-            {{ property.has_finishing|yesno:"С отделкой,Без отделки" }}
-        </div>
-    </div>
-    {% endif %}
-
-    <!-- Статус сдачи -->
-    {% if property.property_type.name == 'new_flat' %}
-    <div class="bg-gray-50 p-4 rounded-lg">
-        <div class="text-xs md:text-sm text-gray-500">Статус</div>
-        <div class="text-lg md:text-xl font-bold">
-            {{ property.is_delivered|yesno:"Сдан,Не сдан" }}
-        </div>
-    </div>
+                <!-- Отладочная информация -->
+                <div class="debug-info bg-gray-100 p-4 rounded-lg mb-6">
+                    <h3 class="font-bold text-lg mb-2">Отладочная информация:</h3>
+                    <div class="text-sm space-y-2">
+                        <div><strong>Координаты в JS:</strong> <span id="debug-coords"></span></div>
+                        <div><strong>Тип координат:</strong> <span id="debug-coords-type"></span></div>
+                        <div><strong>API ключ:</strong>
+                            {% if YANDEX_MAPS_API_KEY %}
+                                Установлен (длина: {{ YANDEX_MAPS_API_KEY|length }} символов)
+                            {% else %}
+                                Не установлен
+                            {% endif %}
+                        </div>
+                        <div><strong>Адрес:</strong> {{ property.address|default:"Не указано" }}</div>
+                        <div><strong>Координаты:</strong>
+    {% if property.coordinates %}
+        Долгота: {{ property.coordinates.x|stringformat:"f"|replace_comma }},
+        Широта: {{ property.coordinates.y|stringformat:"f"|replace_comma }}
+    {% else %}
+        Не указаны
     {% endif %}
 </div>
+                        <div><strong>Метро:</strong> {{ property.metro_station|default:"Не указано" }}</div>
+                        <div><strong>Координаты метро:</strong>
+                            {% if property.metro_coordinates %}
+                                Долгота: {{ property.metro_coordinates.x|floatformat:6 }},
+                                Широта: {{ property.metro_coordinates.y|floatformat:6 }}
+                            {% else %}
+                                Не указаны
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                        <div class="debug-info">
+    <h4>Отладочная информация:</h4>
+    <p>Координаты: <span id="debug-coords"></span></p>
+    <p>Тип координат: <span id="debug-coords-type"></span></p>
+    <p>API ключ: {% if YANDEX_MAPS_API_KEY %}Установлен{% else %}Не установлен{% endif %}</p>
+</div>
+
+                <!-- Параметры -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-4 mb-4 md:mb-8 params-grid">
+                    <!-- Город -->
+                    {% if property.location %}
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="text-xs md:text-sm text-gray-500">Город</div>
+                        <div class="text-lg md:text-xl font-bold">{{ property.location }}</div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Адрес -->
+                    {% if property.address %}
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="text-xs md:text-sm text-gray-500">Адрес</div>
+                        <div class="text-lg md:text-xl font-bold">{{ property.address }}</div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Комнаты (только для квартир) -->
+                    {% if property.property_type.name == 'new_flat' or property.property_type.name == 'resale_flat' %}
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="text-xs md:text-sm text-gray-500">Комнат</div>
+                        <div class="text-lg md:text-xl font-bold">{{ property.rooms }}</div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Этаж (только для квартир) -->
+                    {% if property.property_type.name == 'new_flat' or property.property_type.name == 'resale_flat' %}
+                        {% if property.floor and property.total_floors %}
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <div class="text-xs md:text-sm text-gray-500">Этаж</div>
+                            <div class="text-lg md:text-xl font-bold">
+                                {{ property.floor }}/{{ property.total_floors }}
+                            </div>
+                        </div>
+                        {% elif property.floor %}
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <div class="text-xs md:text-sm text-gray-500">Этаж</div>
+                            <div class="text-lg md:text-xl font-bold">{{ property.floor }}</div>
+                        </div>
+                        {% endif %}
+                    {% endif %}
+
+                    <!-- Общая площадь -->
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="text-xs md:text-sm text-gray-500">Общая площадь</div>
+                        <div class="text-lg md:text-xl font-bold">{{ property.total_area }} м²</div>
+                    </div>
+
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="text-xs md:text-sm text-gray-500">Жилая площадь</div>
+                        <div class="text-lg md:text-xl font-bold">{{ property.living_area }} м²</div>
+                    </div>
+
+                    <!-- Год сдачи (только для новостроек) -->
+                    {% if property.property_type.name == 'new_flat' and property.delivery_year %}
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="text-xs md:text-sm text-gray-500">Год сдачи</div>
+                        <div class="text-lg md:text-xl font-bold">{{ property.delivery_year }}</div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Метро -->
+                    {% if property.metro_station and property.metro_station != "Не указано" %}
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="text-xs md:text-sm text-gray-500">Метро</div>
+                        <div class="text-lg md:text-xl font-bold">{{ property.metro_station }}</div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Отделка (только для квартир) -->
+                    {% if property.property_type.name == 'new_flat' or property.property_type.name == 'resale_flat' %}
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="text-xs md:text-sm text-gray-500">Отделка</div>
+                        <div class="text-lg md:text-xl font-bold">
+                            {{ property.has_finishing|yesno:"С отделкой,Без отделки" }}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Статус сдачи -->
+                    {% if property.property_type.name == 'new_flat' %}
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="text-xs md:text-sm text-gray-500">Статус</div>
+                        <div class="text-lg md:text-xl font-bold">
+                            {{ property.is_delivered|yesno:"Сдан,Не сдан" }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
 
                 <!-- Описание объекта -->
                 <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-3 md:mb-4">Описание</h2>
                 <div class="scrollable-description prose max-w-none text-sm md:text-base">
                     {{ property.description|linebreaks }}
                 </div>
+
+                <!-- Карта объекта -->
+                <div class="animate-block mb-6 md:mb-8">
+                    <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-3 md:mb-4">Расположение на карте</h2>
+                    {% if property.coordinates %}
+                        <div id="property-map" class="w-full h-96 rounded-xl bg-gray-100"></div>
+                        {% if property.address %}
+                           <div class="text-lg md:text-xl font-bold">
+    Широта: {{ property.coordinates.y|stringformat:"f"|replace_comma }}, Долгота: {{ property.coordinates.x|stringformat:"f"|replace_comma }}
+</div>
+                        {% endif %}
+                    {% else %}
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-yellow-800">
+                            Координаты объекта не указаны, карта недоступна
+                        </div>
+                    {% endif %}
+                </div>
             </div>
 
             <!-- Правая колонка -->
             <div class="animate-block contact-sidebar bg-gray-50 p-4 md:p-6 rounded-xl mt-6 md:mt-0">
-               <div class="contact-content">
+                <div class="contact-content">
                     <div class="mb-4 md:mb-6">
                         <h3 class="text-lg md:text-xl font-bold">Контактная информация</h3>
                     </div>
 
-                  <div class="flex items-center gap-3 md:gap-4 mb-3 md:mb-4">
-    {% if property.broker.user.avatar %}
-        <img src="{{ property.broker.user.avatar.url }}"
-             class="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover">
-    {% else %}
-        <div class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-blue-100 flex items-center justify-center">
-            <i class="bi bi-person text-xl md:text-2xl text-blue-600"></i>
-        </div>
-    {% endif %}
-    <div>
-        <div class="font-medium text-base md:text-lg">
-            {{ property.broker.user.get_full_name|default:"Не указано" }}
-        </div>
-        <div class="text-xs md:text-sm text-gray-500">
-            {% if property.broker.user.is_admin %}
-                Администратор
-            {% else %}
-                Брокер по недвижимости
-            {% endif %}
-        </div>
-    </div>
-</div>
+                    <div class="flex items-center gap-3 md:gap-4 mb-3 md:mb-4">
+                        {% if property.broker.user.avatar %}
+                            <img src="{{ property.broker.user.avatar.url }}"
+                                 class="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover">
+                        {% else %}
+                            <div class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-blue-100 flex items-center justify-center">
+                                <i class="bi bi-person text-xl md:text-2xl text-blue-600"></i>
+                            </div>
+                        {% endif %}
+                        <div>
+                            <div class="font-medium text-base md:text-lg">
+                                {{ property.broker.user.get_full_name|default:"Не указано" }}
+                            </div>
+                            <div class="text-xs md:text-sm text-gray-500">
+                                {% if property.broker.user.is_admin %}
+                                    Администратор
+                                {% else %}
+                                    Брокер по недвижимости
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
 
+                    <div class="mt-6 md:mt-8 flex flex-col gap-4">
+                        {% if user.is_authenticated and user.user_type == 'client' %}
+                            <a href="{% url 'contact_broker' broker_id=property.broker.id property_id=property.id %}"
+                               class="btn-primary hover:bg-blue-700 transition-colors">
+                               <i class="bi bi-chat-left-text mr-2"></i> Написать (1 руб.)
+                            </a>
+                        {% elif not user.is_authenticated %}
+                            <a href="{% url 'login' %}?next={{ request.path }}"
+                               class="btn-primary hover:bg-blue-700 transition-colors">
+                               <i class="bi bi-chat-left-text mr-2"></i> Войдите, чтобы написать
+                            </a>
+                        {% else %}
+                            <button class="btn-primary opacity-50 cursor-not-allowed" disabled>
+                                <i class="bi bi-chat-left-text mr-2"></i> Запросы только для клиентов
+                            </button>
+                        {% endif %}
 
-
-                <div class="mt-6 md:mt-8 flex flex-col gap-4">
-    {% if user.is_authenticated and user.user_type == 'client' %}
-        <a href="{% url 'contact_broker' broker_id=property.broker.id property_id=property.id %}"
-           class="btn-primary hover:bg-blue-700 transition-colors">
-           <i class="bi bi-chat-left-text mr-2"></i> Написать (1 руб.)
-        </a>
-    {% elif not user.is_authenticated %}
-        <a href="{% url 'login' %}?next={{ request.path }}"
-           class="btn-primary hover:bg-blue-700 transition-colors">
-           <i class="bi bi-chat-left-text mr-2"></i> Войдите, чтобы написать
-        </a>
-    {% else %}
-        <button class="btn-primary opacity-50 cursor-not-allowed" disabled>
-            <i class="bi bi-chat-left-text mr-2"></i> Запросы только для клиентов
-        </button>
-    {% endif %}
-
-    {% if not is_broker %}
-        <form method="POST" action="{% url 'property-favorite' property.id %}" class="w-full">
-            {% csrf_token %}
-            <button type="submit" class="btn-outline hover:border-blue-600 hover:text-blue-600 w-full text-center">
-                <i class="bi bi-heart{% if is_favorite %}-fill text-red-500{% endif %} mr-2"></i>
-                <span>
-                    {% if is_favorite %}
-                        Удалить из избранного
-                    {% else %}
-                        Добавить в избранное
-                    {% endif %}
-                </span>
-            </button>
-        </form>
-    {% endif %}
-</div>
-
+                        {% if not is_broker %}
+                            <form method="POST" action="{% url 'property-favorite' property.id %}" class="w-full">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-outline hover:border-blue-600 hover:text-blue-600 w-full text-center">
+                                    <i class="bi bi-heart{% if is_favorite %}-fill text-red-500{% endif %} mr-2"></i>
+                                    <span>
+                                        {% if is_favorite %}
+                                            Удалить из избранного
+                                        {% else %}
+                                            Добавить в избранное
+                                        {% endif %}
+                                    </span>
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
 <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
 <script>
     // Анимация при скролле
@@ -656,12 +720,168 @@
         });
     }
 
+    // Функция для инициализации карты
+    function initMap() {
+        // Проверка наличия и формата координат
+        if (!window.propertyCoordinates ||
+            !Array.isArray(window.propertyCoordinates) ||
+            window.propertyCoordinates.length !== 2) {
+            console.error('Invalid coordinates:', window.propertyCoordinates);
+            document.getElementById('property-map').innerHTML =
+                '<div class="bg-red-50 p-4 text-red-800">Некорректные координаты объекта</div>';
+            return;
+        }
+
+        // Проверка, что координаты - числа
+        if (isNaN(window.propertyCoordinates[0]) || isNaN(window.propertyCoordinates[1])) {
+            console.error('Coordinates are not numbers:', window.propertyCoordinates);
+            document.getElementById('property-map').innerHTML =
+                '<div class="bg-red-50 p-4 text-red-800">Координаты должны быть числами</div>';
+            return;
+        }
+
+        // Проверка нахождения в пределах России
+        const minLon = 19.0;  // Калининград
+        const maxLon = 180.0; // Дальний Восток
+        const minLat = 41.0;  // Кавказ
+        const maxLat = 82.0;  // Арктика
+
+        if (window.propertyCoordinates[0] < minLon ||
+            window.propertyCoordinates[0] > maxLon ||
+            window.propertyCoordinates[1] < minLat ||
+            window.propertyCoordinates[1] > maxLat) {
+            console.error('Coordinates outside Russia:', window.propertyCoordinates);
+            document.getElementById('property-map').innerHTML =
+                '<div class="bg-red-50 p-4 text-red-800">Координаты за пределами России</div>';
+            return;
+        }
+
+        try {
+            // Создаем карту с ограничениями по России
+            const map = new ymaps.Map('property-map', {
+                center: window.propertyCoordinates,
+                zoom: 15,
+                controls: ['zoomControl', 'fullscreenControl'],
+                // Ограничиваем область просмотра Россией
+                restrictMapArea: [
+                    [minLat, minLon], // юго-запад
+                    [maxLat, maxLon]   // северо-восток
+                ]
+            });
+
+            // Создаем метку
+            const placemark = new ymaps.Placemark(
+                window.propertyCoordinates,
+                {
+                    hintContent: '{{ property.title|escapejs }}',
+                    balloonContent: `
+                        <strong>{{ property.title|escapejs }}</strong><br>
+                        {{ property.address|escapejs }}<br>
+                        Координаты: ${window.propertyCoordinates[1].toFixed(6)}, ${window.propertyCoordinates[0].toFixed(6)}
+                    `,
+                    iconCaption: '{{ property.title|escapejs|truncatechars:30 }}'
+                },
+                {
+                    preset: 'islands#redDotIcon',
+                    balloonCloseButton: true,
+                    hideIconOnBalloonOpen: false
+                }
+            );
+
+            map.geoObjects.add(placemark);
+
+            // Если есть метро, добавляем метку метро
+            {% if property.metro_coordinates %}
+            const metroCoords = [{{ property.metro_coordinates.x }}, {{ property.metro_coordinates.y }}];
+            console.log('Metro coordinates:', metroCoords);
+
+            // Проверяем координаты метро
+            if (metroCoords[0] >= minLon && metroCoords[0] <= maxLon &&
+                metroCoords[1] >= minLat && metroCoords[1] <= maxLat) {
+                const metroPlacemark = new ymaps.Placemark(
+                    metroCoords,
+                    {
+                        hintContent: '{{ property.metro_station|escapejs }}',
+                        balloonContent: 'Станция метро {{ property.metro_station|escapejs }}',
+                        iconCaption: '{{ property.metro_station|escapejs }}'
+                    },
+                    {
+                        preset: 'islands#blueCircleDotIcon',
+                        iconColor: '#1e88e5'
+                    }
+                );
+                map.geoObjects.add(metroPlacemark);
+
+                // Добавляем линию от объекта до метро
+                const polyline = new ymaps.Polyline(
+                    [window.propertyCoordinates, metroCoords],
+                    {},
+                    {
+                        strokeColor: "#1e88e5",
+                        strokeWidth: 3,
+                        strokeOpacity: 0.5
+                    }
+                );
+                map.geoObjects.add(polyline);
+            }
+            {% endif %}
+
+            // Открываем балун с информацией
+            placemark.balloon.open();
+
+            // Устанавливаем границы карты
+            map.setBounds(map.geoObjects.getBounds(), {
+                checkZoomRange: true
+            });
+
+        } catch (e) {
+            console.error('Map initialization error:', e);
+            document.getElementById('property-map').innerHTML =
+                '<div class="bg-red-50 p-4 text-red-800">Ошибка загрузки карты: ' + e.message + '</div>';
+        }
+    }
+
     // Основная инициализация
     document.addEventListener('DOMContentLoaded', function() {
         const swiper = initSwiper();
         setupModal();
         setupFavorites();
         setupImages(swiper);
+
+        // Инициализируем карту, если есть координаты
+        {% if property.coordinates %}
+        // Сохраняем координаты в формате [долгота, широта] (x, y)
+        window.propertyCoordinates = [
+            {{ property.coordinates.x|stringformat:"f" }},
+            {{ property.coordinates.y|stringformat:"f" }}
+        ];
+
+        // Вывод отладочной информации
+        if (window.propertyCoordinates) {
+            document.getElementById('debug-coords').textContent = window.propertyCoordinates.join(', ');
+            document.getElementById('debug-coords-type').textContent =
+                typeof window.propertyCoordinates[0] + ', ' + typeof window.propertyCoordinates[1];
+        }
+
+        // Проверяем наличие API ключа
+        {% if YANDEX_MAPS_API_KEY %}
+        // Загружаем API Яндекс.Карт
+        const script = document.createElement('script');
+        script.src = 'https://api-maps.yandex.ru/2.1/?apikey={{ YANDEX_MAPS_API_KEY }}&lang=ru_RU&load=package.full';
+        script.onload = function() {
+            ymaps.ready(initMap);
+        };
+        script.onerror = function() {
+            console.error('Failed to load Yandex Maps API');
+            document.getElementById('property-map').innerHTML =
+                '<div class="bg-yellow-50 p-4 text-yellow-800">Не удалось загрузить карту. Пожалуйста, попробуйте позже.</div>';
+        };
+        document.head.appendChild(script);
+        {% else %}
+        document.getElementById('property-map').innerHTML =
+            '<div class="bg-yellow-50 p-4 text-yellow-800">API ключ для карт не настроен</div>';
+        {% endif %}
+        {% endif %}
     });
 </script>
 {% endblock %}

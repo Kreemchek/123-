@@ -2,7 +2,13 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from cloudinary.models import CloudinaryField
-
+from django.contrib.gis.db import models as gis_models
+from django.contrib.gis.geos import Point
+import logging
+import requests
+from django.conf import settings
+from django.core.exceptions import ValidationError
+logger = logging.getLogger('properties')
 class PropertyType(models.Model):
     name = models.CharField(
         max_length=100,
@@ -166,11 +172,76 @@ class Property(models.Model):
         max_length=100,
         blank=True
     )
+    coordinates = gis_models.PointField(
+        geography=True,
+        blank=True,
+        null=True,
+        verbose_name='Координаты'
+    )
+    metro_coordinates = gis_models.PointField(
+        geography=True,
+        blank=True,
+        null=True,
+        verbose_name='Координаты метро'
+    )
+
+    # Метод для геокодирования адреса
+    # В models.py
+    def geocode_address(self):
+        try:
+            # Используем API Поиска для более точных результатов
+            search_url = (
+                f"https://search-maps.yandex.ru/v1/"
+                f"?apikey={settings.YANDEX_SEARCH_API_KEY}"
+                f"&text={self.address}"
+                f"&lang=ru_RU"
+                f"&results=1"
+            )
+            search_response = requests.get(search_url)
+
+            if search_response.status_code == 200:
+                data = search_response.json()
+                if data.get('features'):
+                    feature = data['features'][0]
+                    lon, lat = feature['geometry']['coordinates']
+                    self.coordinates = Point(lon, lat, srid=4326)
+                    return
+
+            # Fallback на обычный геокодер
+            geocoder_url = (
+                f"https://geocode-maps.yandex.ru/1.x/"
+                f"?apikey={settings.YANDEX_GEOCODER_API_KEY}"
+                f"&format=json"
+                f"&geocode={self.address}"
+            )
+            response = requests.get(geocoder_url)
+            data = response.json()
+
+            if data['response']['GeoObjectCollection']['metaDataProperty']['GeocoderResponseMetaData']['found'] > 0:
+                pos = data['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['Point']['pos']
+                lon, lat = map(float, pos.split())
+                self.coordinates = Point(lon, lat, srid=4326)
+
+        except Exception as e:
+            logger.error(f"Geocoding failed for address {self.address}: {str(e)}")
+
+
+
+    def get_coordinates_as_floats(self):
+        """Возвращает координаты как числа с плавающей точкой"""
+        if self.coordinates:
+            return {
+                'x': float(str(self.coordinates.x).replace(',', '.')),
+                'y': float(str(self.coordinates.y).replace(',', '.'))
+            }
+        return None
+
 
     class Meta:
         verbose_name = _('Объект недвижимости')
         verbose_name_plural = _('Объекты недвижимости')
         ordering = ['-created_at']
+
 
     def __str__(self):
         if self.is_rental == 'monthly' and self.monthly_price:
@@ -178,6 +249,8 @@ class Property(models.Model):
         elif self.is_rental == 'daily' and self.daily_price:
             return f"{self.title} - {self.daily_price} ₽/сут"
         return f"{self.title} - {self.price} ₽"
+
+
 
     def get_status_color(self):
         colors = {
@@ -199,8 +272,6 @@ class Property(models.Model):
             if self.floor and self.total_floors:
                 floor_info = f"{self.floor}/{self.total_floors}"
 
-
-
             parts = [
                 type_map.get(self.apartment_type, 'Квартира'),
                 f"{self.total_area} м²",
@@ -217,7 +288,79 @@ class Property(models.Model):
 
             self.title = f"{self.property_type.get_name_display()}, {self.total_area} м²"
 
+        if not self.coordinates and self.address:
+            self.geocode_address()
+
+        if not self.metro_coordinates and self.metro_station:
+            self.metro_coordinates = self.get_metro_coordinates()
+
+        if self.metro_station and self.metro_station != "Не указано" and not self.metro_coordinates:
+            self.metro_coordinates = self.get_metro_coordinates()
+
+        logger.debug(
+            f"Saving property. Address: {self.address}, "
+            f"Coordinates: {self.coordinates}, "
+            f"Metro: {self.metro_station}, "
+            f"Metro Coords: {self.metro_coordinates}"
+        )
+
+        if not self.coordinates and self.address:
+            logger.debug(f"Geocoding address: {self.address}")
+            self.geocode_address()
+
+        if not self.metro_coordinates and self.metro_station:
+            logger.debug(f"Geocoding metro: {self.metro_station}")
+            self.metro_coordinates = self.get_metro_coordinates()
+
         super().save(*args, **kwargs)
+
+        # Метод для получения ближайшего метро
+
+    def get_nearest_metro(self):
+        import requests
+        from django.conf import settings
+
+        if not self.coordinates or not settings.YANDEX_MAPS_API_KEY:
+            return None
+
+        try:
+            lon, lat = self.coordinates.coords
+            url = f"https://geocode-maps.yandex.ru/1.x/?apikey={settings.YANDEX_MAPS_API_KEY}&format=json&geocode={lon},{lat}&kind=metro"
+            response = requests.get(url)
+            data = response.json()
+
+            metro = data['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['name']
+            return metro
+        except Exception as e:
+            print(f"Metro search error: {e}")
+            return None
+
+    def get_metro_coordinates(self):
+        import requests
+        from django.conf import settings
+
+        if not self.metro_station or not settings.YANDEX_GEOCODER_API_KEY:
+            return None
+
+        try:
+            url = f"https://geocode-maps.yandex.ru/1.x/?apikey={settings.YANDEX_GEOCODER_API_KEY}&format=json&geocode={self.metro_station}&kind=metro"
+            response = requests.get(url)
+            data = response.json()
+
+            if data['response']['GeoObjectCollection']['metaDataProperty']['GeocoderResponseMetaData']['found'] > 0:
+                pos = data['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['Point']['pos']
+                lon, lat = map(float, pos.split())
+                return Point(lon, lat, srid=4326)
+        except Exception as e:
+            print(f"Metro geocoding error: {e}")
+
+        return None
+
+    def clean(self):
+        if self.coordinates:
+            # Проверяем порядок координат (x=долгота, y=широта)
+            if not (-180 <= self.coordinates.x <= 180) or not (-90 <= self.coordinates.y <= 90):
+                raise ValidationError("Некорректные координаты")
 
 class PropertyImage(models.Model):
     property = models.ForeignKey(
@@ -251,3 +394,6 @@ class ListingType(models.Model):
 
     def __str__(self):
         return self.name
+
+
+

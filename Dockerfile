@@ -1,27 +1,24 @@
-ARG PYTHON_VERSION=3.10
-FROM python:${PYTHON_VERSION}-slim
+FROM python:3.11
 
-ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    POETRY_VIRTUALENVS_CREATE=false
+# Установка временной зоны
+RUN apt-get update && apt-get install -y tzdata
+ENV TZ=Europe/Moscow
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libpq-dev \
-    python3-dev \
- && rm -rf /var/lib/apt/lists/*
+# Остальные инструкции остаются без изменений
+RUN apt-get update && apt-get install -y \
+    postgresql-client \
+    gdal-bin \
+    libgdal-dev \
+    python3-gdal \
+    iputils-ping \
+    curl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt /tmp/
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
 WORKDIR /app
-
-COPY requirements.txt .
-
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
-
 COPY . .
 
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["gunicorn", "real_estate_portal.wsgi:application", "--bind", "0.0.0.0:8080"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

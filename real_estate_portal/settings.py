@@ -6,6 +6,8 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 
+import os
+DEBUG = os.getenv('DEBUG', '0') == '1'
 
 load_dotenv()
 CLOUDINARY_STORAGE = {
@@ -56,16 +58,24 @@ sys.path.append(str(BASE_DIR))
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-ваш-резервный-ключ-для-разработки')
 
-DEBUG = False
+
 handler500 = 'accounts.views.server_error'
-ALLOWED_HOSTS = ['winwindeal.up.railway.app'  ]
+ALLOWED_HOSTS = [
+"*"
+
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+
+]
 
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://winwindeal.up.railway.app'
-]
+
+
 
 
 INSTALLED_APPS = [
@@ -133,14 +143,41 @@ TEMPLATES = [
 ]
 LOGGING = {
     'version': 1,
+    'disable_existing_loggers': False,
     'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'geocode.log',
+            'formatter': 'verbose',
+        },
         'console': {
+            'level': 'DEBUG',
             'class': 'logging.StreamHandler',
+            'formatter': 'simple',
         },
     },
-    'root': {
-        'handlers': ['console'],
-        'level': 'INFO',
+    'formatters': {
+        'verbose': {
+            'format': '{asctime} {levelname} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'loggers': {
+        'properties': {
+            'handlers': ['file', 'console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'django': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
     },
 }
 
@@ -148,12 +185,12 @@ WSGI_APPLICATION = 'real_estate_portal.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'railway',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'postgres',
         'USER': 'postgres',
-        'PASSWORD': 'cwrpjQBvdIgQQBtcwhkqyTlMBKKDsoXj',
-        'HOST': 'tramway.proxy.rlwy.net',
-        'PORT': '18608',
+        'PASSWORD': 'postgres',
+        'HOST': 'db',
+        'PORT': '5432',
     }
 }
 
@@ -176,8 +213,9 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 10*1024*1024
 LANGUAGE_CODE = 'ru-ru'
 TIME_ZONE = 'Europe/Moscow'
 USE_I18N = True
-USE_L10N = True
+USE_L10N = False
 USE_TZ = True
+DECIMAL_SEPARATOR = '.'
 
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
@@ -196,7 +234,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 AUTH_USER_MODEL = 'accounts.User'
 
-CORS_ALLOWED_ORIGINS = ['https://winwindeal.up.railway.app']
+
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
@@ -252,7 +290,6 @@ if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 if os.path.exists('package.json'):
     with open('package.json', 'w') as f:
@@ -263,8 +300,15 @@ STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
-
+# Добавьте в settings.py
+# Добавляем в settings.py
+YANDEX_MAPS_API_KEY = '3585e6f5-6323-4098-8a4d-b279da5b0c4f'  # Основной ключ для JavaScript API
+YANDEX_GEOCODER_API_KEY = '3585e6f5-6323-4098-8a4d-b279da5b0c4f'  # Для геокодирования
+YANDEX_SEARCH_API_KEY = '3585e6f5-6323-4098-8a4d-b279da5b0c4f'  # Для поиска организаций
+YANDEX_GEO_SUGGEST_API_KEY = '7979f3d5-7f35-4fd8-893c-e5f1ecaeb3a4'  # Для геосаджеста
 # Для принудительного обслуживания статики через WhiteNoise
 WHITENOISE_USE_FINDERS = True
 WHITENOISE_MANIFEST_STRICT = False
-
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+SESSION_COOKIE_DOMAIN = None

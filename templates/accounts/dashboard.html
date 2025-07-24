@@ -533,10 +533,10 @@
                 <i class="fas fa-home text-green-500/80"></i>
                 Ваши объекты
             </h3>
-            <a href="{% url 'select-listing-type' %}" class="btn-custom">
-                <i class="fas fa-plus"></i>
-                Добавить
-            </a>
+            <a href="{% url 'properties:select-listing-type' %}" class="btn-custom">
+    <i class="fas fa-plus"></i>
+    Добавить
+</a>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
@@ -558,7 +558,7 @@
                         </div>
                         <div>
                             <h4 class="text-base lg:text-lg font-bold text-gray-800">
-    <a href="{% url 'property-detail' prop.id %}" class="hover:text-blue-600 transition-colors">
+    <a href="{% url 'properties:property-detail' prop.id %}" class="hover:text-blue-600 transition-colors">
         🏢 {{ prop.title }}
     </a>
 </h4>
@@ -595,24 +595,24 @@
                     </div>
 
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                        <a href="{% url 'property-detail' prop.id %}" class="btn-custom w-full sm:w-auto text-center">
+                        <a href="{% url 'properties:property-detail' prop.id %}" class="btn-custom w-full sm:w-auto text-center">
                             <i class="fas fa-eye"></i>
                             Просмотр
                         </a>
                         <div class="flex gap-2 w-full sm:w-auto">
-                            <a href="{% url 'property-update' prop.id %}"
+                            <a href="{% url 'properties:property-update' prop.id %}"
    class="btn-custom px-2 lg:px-3 py-1 lg:py-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 w-full text-center">
     <i class="fas fa-edit mr-2"></i>
 </a>
-                            <form method="POST" action="{% url 'property-delete' prop.id %}" class="w-full">
-                                {% csrf_token %}
-                                <button
-                                    type="submit"
-                                    onclick="return confirm('Вы уверены, что хотите удалить этот объект?')"
-                                    class="px-2 lg:px-3 py-1 lg:py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 w-full">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
+                            <form method="POST" action="{% url 'properties:property-delete' prop.id %}" class="w-full">
+    {% csrf_token %}
+    <button
+        type="submit"
+        onclick="return confirm('Вы уверены, что хотите удалить этот объект?')"
+        class="px-2 lg:px-3 py-1 lg:py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 w-full">
+        <i class="fas fa-trash"></i>
+    </button>
+</form>
                         </div>
                     </div>
                 </div>
@@ -623,7 +623,7 @@
                     <i class="fas fa-box-open text-2xl lg:text-3xl text-blue-600"></i>
                 </div>
                 <h4 class="text-gray-600 text-sm lg:text-base mb-4">Нет добавленных объектов</h4>
-                 <a href="{% url 'select-listing-type' %}" class="btn-custom">
+                 <a href="{% url 'properties:select-listing-type' %}" class="btn-custom">
                     Создать первый объект
                 </a>
             </div>

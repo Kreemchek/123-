@@ -5,7 +5,6 @@
 
 {% block content %}
 <style>
-    /* Все стили остаются без изменений */
     .creation-stepper {
         max-width: 800px;
         margin: 2rem auto;
@@ -80,7 +79,83 @@
         border-color: #3b82f6;
         box-shadow: 0 4px 6px rgba(59, 130, 246, 0.1);
     }
-     /* Мобильная адаптация */
+
+    /* Стили для карты */
+    #map-container {
+        width: 100%;
+        height: 400px;
+        margin-bottom: 1rem;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        position: relative;
+    }
+
+    #map {
+        width: 100%;
+        height: 100%;
+    }
+
+    .map-controls {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 1000;
+        background: white;
+        padding: 8px;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .address-display {
+        margin-top: 1rem;
+        padding: 0.75rem;
+        background: #f8f9fa;
+        border-radius: 0.5rem;
+        border: 1px solid #dee2e6;
+    }
+
+    /* Стили для поиска объектов */
+    .search-container {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 1000;
+        width: 300px;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 8px 12px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .search-results {
+        background: white;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        max-height: 300px;
+        overflow-y: auto;
+        margin-top: 5px;
+        display: none;
+    }
+
+    .search-result-item {
+        padding: 8px 12px;
+        cursor: pointer;
+        border-bottom: 1px solid #eee;
+    }
+
+    .search-result-item:hover {
+        background-color: #f5f5f5;
+    }
+
+    .search-result-item:last-child {
+        border-bottom: none;
+    }
+
+    /* Мобильная адаптация */
     @media (max-width: 768px) {
         .creation-stepper {
             margin: 1rem;
@@ -127,12 +202,19 @@
         h1.text-2xl {
             font-size: 1.5rem;
         }
+
+        #map-container {
+            height: 300px;
+        }
+
+        .search-container {
+            width: 200px;
+        }
     }
 </style>
 
 <div class="creation-stepper">
     <div class="step-indicator">
-        <!-- Индикатор шагов (адаптирован для мобильных) -->
         <div class="step-badge step-active">1</div>
         <span class="text-blue-600 font-semibold">Основные данные</span>
         <div class="flex-1 border-t-2 border-dashed mx-2"></div>
@@ -209,23 +291,23 @@
                         </div>
 
                         <div>
-    <div id="sale-price-field">
-        <label class="block text-sm font-medium text-gray-700 mb-2">Цена продажи (₽)</label>
-        {% render_field form.price class="w-full px-3 py-2 border rounded-lg" %}
-    </div>
+                            <div id="sale-price-field">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Цена продажи (₽)</label>
+                                {% render_field form.price class="w-full px-3 py-2 border rounded-lg" %}
+                            </div>
 
-    {% if show_apartment_fields and property_type.name == 'resale_flat' %}
-    <div id="monthly-price-field" {% if form.is_rental.value != 'monthly' %}style="display:none;"{% endif %}>
-        <label class="block text-sm font-medium text-gray-700 mb-2">Цена за месяц (₽)</label>
-        {% render_field form.monthly_price class="w-full px-3 py-2 border rounded-lg" %}
-    </div>
+                            {% if show_apartment_fields and property_type.name == 'resale_flat' %}
+                            <div id="monthly-price-field" {% if form.is_rental.value != 'monthly' %}style="display:none;"{% endif %}>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Цена за месяц (₽)</label>
+                                {% render_field form.monthly_price class="w-full px-3 py-2 border rounded-lg" %}
+                            </div>
 
-    <div id="daily-price-field" {% if form.is_rental.value != 'daily' %}style="display:none;"{% endif %}>
-        <label class="block text-sm font-medium text-gray-700 mb-2">Цена за сутки (₽)</label>
-        {% render_field form.daily_price class="w-full px-3 py-2 border rounded-lg" %}
-    </div>
-    {% endif %}
-</div>
+                            <div id="daily-price-field" {% if form.is_rental.value != 'daily' %}style="display:none;"{% endif %}>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Цена за сутки (₽)</label>
+                                {% render_field form.daily_price class="w-full px-3 py-2 border rounded-lg" %}
+                            </div>
+                            {% endif %}
+                        </div>
 
                         {% if show_apartment_fields %}
                         <div class="grid grid-cols-2 gap-4">
@@ -287,13 +369,14 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Основное фото</label>
                             {% render_field form.main_image class="w-full px-3 py-2 border rounded-lg" %}
+                            <small class="text-gray-500 text-xs block mt-1">Изображение должно быть не больше 1280x720 пикселей и 5MB</small>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Дополнительные фото</label>
                             <input type="file" name="images" multiple
                                    class="w-full px-3 py-2 border rounded-lg"
                                    accept="image/*">
-                            <small class="text-gray-500 text-sm">Максимум 10 изображений</small>
+                            <small class="text-gray-500 text-xs block mt-1">Максимум 10 изображений, каждое не больше 1280x720 пикселей и 5MB</small>
                         </div>
                     </div>
                 </div>
@@ -317,16 +400,38 @@
                     <h3 class="text-lg font-semibold mb-4">Расположение</h3>
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Адрес</label>
-                            {% render_field form.address class="w-full px-3 py-2 border rounded-lg" rows="3" %}
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Город</label>
+                            {% render_field form.location class="w-full px-3 py-2 border rounded-lg" id="city-input" %}
                         </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Адрес</label>
+                            <div id="map-container">
+                                <div id="map"></div>
+                                <div class="map-controls">
+                                    <button type="button" id="locate-me" class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">
+                                        <i class="bi bi-geo-alt"></i> Мое местоположение
+                                    </button>
+                                </div>
+                                <div class="search-container">
+                                    <input type="text" class="search-input" placeholder="Поиск объектов..." id="search-objects">
+                                    <div class="search-results" id="search-results"></div>
+                                </div>
+                            </div>
+                            <div class="address-display" id="address-display">
+                                Адрес не выбран
+                            </div>
+                            <input type="hidden" id="address-input" name="address">
+                            <input type="hidden" id="coordinates" name="coordinates">
+                        </div>
+
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Метро</label>
-                            {% render_field form.metro_station class="w-full px-3 py-2 border rounded-lg" %}
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Город</label>
-                            {% render_field form.location class="w-full px-3 py-2 border rounded-lg" %}
+                            <input type="text" id="metro-input" name="metro_station"
+                                   class="w-full px-3 py-2 border rounded-lg"
+                                   placeholder="Введите станцию метро"
+                                   value="{{ form.metro_station.value|default:'' }}">
+                            <input type="hidden" id="metro-coordinates" name="metro_coordinates">
                         </div>
                     </div>
                 </div>
@@ -348,6 +453,7 @@
     </form>
 </div>
 
+<script src="https://api-maps.yandex.ru/2.1/?apikey={{ YANDEX_MAPS_API_KEY }}&lang=ru_RU"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const steps = document.querySelectorAll('.form-step');
@@ -357,119 +463,249 @@
         const propertyForm = document.getElementById('property-form');
         let currentStep = 0;
 
-        // Функция для проверки размеров изображения
-        function checkImageDimensions(file) {
-            return new Promise((resolve) => {
-                if (!file.type.match('image.*')) {
-                    alert('Пожалуйста, выберите файл изображения (JPEG, PNG)');
-                    resolve(false);
+        // Инициализация карты и поиска
+        let map, placemark;
+        let searchResults = [];
+
+        ymaps.ready(initMap);
+
+        function initMap() {
+            map = new ymaps.Map('map', {
+                center: [55.751574, 37.573856],
+                zoom: 12,
+                controls: ['zoomControl', 'fullscreenControl']
+            });
+
+            // Обработчик клика по карте
+            map.events.add('click', function(e) {
+                const coords = e.get('coords');
+                updatePlacemark(coords);
+                getAddress(coords);
+                findNearestMetro(coords);
+            });
+
+            // Кнопка "Мое местоположение"
+            document.getElementById('locate-me').addEventListener('click', function() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        const coords = [position.coords.latitude, position.coords.longitude];
+                        map.setCenter(coords, 15);
+                        updatePlacemark(coords);
+                        getAddress(coords);
+                        findNearestMetro(coords);
+                    }, function(error) {
+                        alert('Не удалось определить ваше местоположение: ' + error.message);
+                    });
+                } else {
+                    alert('Ваш браузер не поддерживает геолокацию');
+                }
+            });
+
+            // Поиск объектов
+            const searchInput = document.getElementById('search-objects');
+            const searchResultsContainer = document.getElementById('search-results');
+
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value;
+                if (query.length < 3) {
+                    searchResultsContainer.style.display = 'none';
                     return;
                 }
 
-                // Проверка размера файла (не более 5MB)
-                const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-                if (file.size > MAX_FILE_SIZE) {
-                    alert(`Файл ${file.name} слишком большой (${(file.size/1024/1024).toFixed(2)} MB). Максимальный размер: 5MB`);
-                    resolve(false);
-                    return;
+                searchObjects(query);
+            });
+
+            // Обработчик выбора результата поиска
+            searchResultsContainer.addEventListener('click', function(e) {
+                if (e.target.classList.contains('search-result-item')) {
+                    const index = e.target.dataset.index;
+                    const result = searchResults[index];
+
+                    const coords = result.geometry.coordinates;
+                    map.setCenter(coords, 15);
+                    updatePlacemark(coords);
+                    getAddress(coords);
+                    findNearestMetro(coords);
+
+                    searchInput.value = result.properties.name;
+                    searchResultsContainer.style.display = 'none';
                 }
-
-                const img = new Image();
-                const url = URL.createObjectURL(file);
-
-                img.onload = function() {
-                    const isCorrectSize = this.width <= 1280 && this.height <= 720;
-                    if (!isCorrectSize) {
-                        alert(`Изображение ${file.name} слишком большое (${this.width}x${this.height}). Максимальный размер: 1280x720 пикселей`);
-                    }
-                    URL.revokeObjectURL(url);
-                    resolve(isCorrectSize);
-                };
-
-                img.onerror = function() {
-                    alert('Ошибка загрузки изображения. Пожалуйста, выберите другой файл.');
-                    URL.revokeObjectURL(url);
-                    resolve(false);
-                };
-
-                img.src = url;
             });
         }
 
-        // Асинхронная валидация шага
-        async function validateStep(step) {
-            let isValid = true;
-            const inputs = steps[step].querySelectorAll('input, select, textarea');
-            const isRentalType = document.querySelector('.rental-type:checked')?.value;
+        // Обновление метки на карте
+        function updatePlacemark(coords) {
+            if (placemark) {
+                map.geoObjects.remove(placemark);
+            }
 
-            // Проверка обычных полей
-            inputs.forEach(input => {
-                // Пропускаем проверку скрытых полей цены
-                if ((input.name === 'price' && isRentalType !== 'no') ||
-                    (input.name === 'monthly_price' && isRentalType !== 'monthly') ||
-                    (input.name === 'daily_price' && isRentalType !== 'daily')) {
-                    return;
-                }
-
-                // Проверяем только видимые и обязательные поля
-                if (input.offsetParent !== null && input.required && !input.value.trim()) {
-                    input.reportValidity();
-                    isValid = false;
-                } else if (input.offsetParent !== null && !input.reportValidity()) {
-                    isValid = false;
-                }
+            placemark = new ymaps.Placemark(coords, {}, {
+                preset: 'islands#redDotIcon',
+                draggable: true
             });
 
-            // Специальная проверка для шага с изображениями
-            if (step === 1) {
-                const mainImageInput = document.querySelector('input[name="main_image"]');
-                const additionalImagesInput = document.querySelector('input[name="images"]');
+            map.geoObjects.add(placemark);
 
-                // Проверка основного изображения
-                if (mainImageInput.files.length > 0) {
-                    const mainImage = mainImageInput.files[0];
-                    const isMainImageValid = await checkImageDimensions(mainImage);
-                    if (!isMainImageValid) isValid = false;
-                } else {
-                    alert('Пожалуйста, загрузите основное изображение');
-                    isValid = false;
-                }
+            // Обработчик перемещения метки
+            placemark.events.add('dragend', function() {
+                const newCoords = placemark.geometry.getCoordinates();
+                getAddress(newCoords);
+                findNearestMetro(newCoords);
+            });
+        }
 
-                // Проверка дополнительных изображений
-                if (additionalImagesInput && additionalImagesInput.files.length > 0) {
-                    // Проверка количества изображений (не более 10)
-                    if (additionalImagesInput.files.length > 10) {
-                        alert('Можно загрузить не более 10 дополнительных изображений');
-                        isValid = false;
-                    } else {
-                        for (let i = 0; i < additionalImagesInput.files.length; i++) {
-                            const image = additionalImagesInput.files[i];
-                            const isImageValid = await checkImageDimensions(image);
-                            if (!isImageValid) {
-                                isValid = false;
-                                break;
-                            }
+        // Получение адреса по координатам
+        function getAddress(coords) {
+            ymaps.geocode(coords).then(function(res) {
+                const firstGeoObject = res.geoObjects.get(0);
+                if (firstGeoObject) {
+                    const address = firstGeoObject.getAddressLine();
+                    document.getElementById('address-display').textContent = address;
+                    document.getElementById('address-input').value = address;
+                    document.getElementById('coordinates').value = coords.join(',');
+
+                    // Автоматически заполняем город, если он не заполнен
+                    const cityInput = document.getElementById('city-input');
+                    if (!cityInput.value) {
+                        const locality = firstGeoObject.getLocalities()[0];
+                        if (locality) {
+                            cityInput.value = locality;
                         }
                     }
                 }
-            }
-
-            return isValid;
+            });
         }
 
+        // Поиск ближайшего метро
+        function findNearestMetro(coords) {
+            // Пробуем использовать API Поиска по организациям
+            const searchApiUrl = `https://search-maps.yandex.ru/v1/?apikey={{ YANDEX_SEARCH_API_KEY }}&text=метро&ll=${coords[1]},${coords[0]}&lang=ru_RU&type=biz&results=1`;
+
+            fetch(searchApiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.features && data.features.length > 0) {
+                        const metro = data.features[0];
+                        document.getElementById('metro-input').value = metro.properties.name;
+                        document.getElementById('metro-coordinates').value =
+                            `${metro.geometry.coordinates[0]},${metro.geometry.coordinates[1]}`;
+                    } else {
+                        // Fallback на геокодер, если API Поиска не дал результатов
+                        ymaps.geocode(coords, { kind: 'metro' }).then(function(res) {
+                            const metro = res.geoObjects.get(0);
+                            if (metro) {
+                                document.getElementById('metro-input').value =
+                                    metro.properties.get('name');
+                                const metroCoords = metro.geometry.getCoordinates();
+                                document.getElementById('metro-coordinates').value =
+                                    `${metroCoords[0]},${metroCoords[1]}`;
+                            }
+                        });
+                    }
+                })
+                .catch(() => {
+                    // Fallback на геокодер, если API Поиска недоступен
+                    ymaps.geocode(coords, { kind: 'metro' }).then(function(res) {
+                        const metro = res.geoObjects.get(0);
+                        if (metro) {
+                            document.getElementById('metro-input').value =
+                                metro.properties.get('name');
+                            const metroCoords = metro.geometry.getCoordinates();
+                            document.getElementById('metro-coordinates').value =
+                                `${metroCoords[0]},${metroCoords[1]}`;
+                        }
+                    });
+                });
+        }
+
+        // Поиск объектов через API Поиска по организациям
+        function searchObjects(query) {
+            const apiUrl = `https://search-maps.yandex.ru/v1/?apikey={{ YANDEX_SEARCH_API_KEY }}&text=${encodeURIComponent(query)}&ll=37.617698,55.755864&lang=ru_RU&results=5`;
+
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    searchResults = data.features || [];
+                    displaySearchResults(searchResults);
+                })
+                .catch(error => {
+                    console.error('Ошибка поиска объектов:', error);
+                    // Fallback на геокодер
+                    ymaps.geocode(query).then(function(res) {
+                        searchResults = res.geoObjects.toArray().map(item => ({
+                            properties: {
+                                name: item.properties.get('name') || item.properties.get('text'),
+                                description: item.properties.get('description')
+                            },
+                            geometry: {
+                                coordinates: item.geometry.getCoordinates()
+                            }
+                        }));
+                        displaySearchResults(searchResults);
+                    });
+                });
+        }
+
+        // Отображение результатов поиска
+        function displaySearchResults(results) {
+            const container = document.getElementById('search-results');
+            container.innerHTML = '';
+
+            if (results.length === 0) {
+                container.innerHTML = '<div class="search-result-item">Ничего не найдено</div>';
+                container.style.display = 'block';
+                return;
+            }
+
+            results.forEach((result, index) => {
+                const item = document.createElement('div');
+                item.className = 'search-result-item';
+                item.dataset.index = index;
+
+                const name = result.properties.name || 'Объект без названия';
+                const description = result.properties.description ?
+                    `<small class="text-gray-500">${result.properties.description}</small>` : '';
+
+                item.innerHTML = `<strong>${name}</strong><br>${description}`;
+                container.appendChild(item);
+            });
+
+            container.style.display = 'block';
+        }
+
+        // Скрываем результаты поиска при клике вне поля
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.search-container')) {
+                document.getElementById('search-results').style.display = 'none';
+            }
+        });
+
+        // Автодополнение городов через Геосаджест
+        document.getElementById('city-input').addEventListener('input', function(e) {
+            const query = e.target.value;
+            if (query.length < 3) return;
+
+            const apiUrl = `https://suggest-maps.yandex.ru/suggest-geo?apikey={{ YANDEX_GEO_SUGGEST_API_KEY }}&text=${encodeURIComponent(query)}&lang=ru_RU&ll=37.617698,55.755864&spn=10,10`;
+
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    // Здесь можно добавить отображение подсказок для городов
+                    console.log('Результаты геосаджеста:', data);
+                });
+        });
+
+        // Остальной код (валидация, навигация по шагам) остается без изменений...
         function updateSteps() {
-            // Обновление индикатора шагов
             document.querySelectorAll('.step-badge').forEach((badge, index) => {
                 badge.classList.toggle('step-active', index === currentStep);
                 badge.classList.toggle('step-inactive', index !== currentStep);
             });
 
-            // Показать/скрыть шаги
             steps.forEach((step, index) => {
                 step.classList.toggle('active', index === currentStep);
             });
 
-            // Обновление кнопок навигации
             prevBtn.disabled = false;
             if (currentStep === 0) {
                 prevBtn.textContent = '← На главную';
@@ -481,7 +717,6 @@
             submitBtn.classList.toggle('hidden', currentStep !== steps.length - 1);
         }
 
-        // Обработчик для кнопки "Назад"
         prevBtn.addEventListener('click', function() {
             if (currentStep === 0) {
                 window.location.href = "{% url 'dashboard' %}";
@@ -491,7 +726,6 @@
             }
         });
 
-        // Обработчик для кнопки "Далее"
         nextBtn.addEventListener('click', async function() {
             if (await validateStep(currentStep)) {
                 currentStep++;
@@ -499,9 +733,7 @@
             }
         });
 
-        // Обработчик отправки формы
         propertyForm.addEventListener('submit', async function(e) {
-            // Проверяем все шаги перед отправкой
             for (let i = 0; i < steps.length; i++) {
                 if (!await validateStep(i)) {
                     e.preventDefault();
@@ -512,23 +744,8 @@
             }
         });
 
-        // Инициализация шагов
         updateSteps();
 
-        // Добавляем подсказки о требованиях к изображениям
-        const mainImageInput = document.querySelector('input[name="main_image"]');
-        if (mainImageInput) {
-            mainImageInput.insertAdjacentHTML('afterend',
-                '<small class="text-gray-500 text-xs block mt-1">Изображение должно быть не больше 1280x720 пикселей и 5MB</small>');
-        }
-
-        const additionalImagesInput = document.querySelector('input[name="images"]');
-        if (additionalImagesInput) {
-            additionalImagesInput.insertAdjacentHTML('afterend',
-                '<small class="text-gray-500 text-xs block mt-1">Максимум 10 изображений, каждое не больше 1280x720 пикселей и 5MB</small>');
-        }
-
-        // Обработка переключения типа аренды
         const rentalRadios = document.querySelectorAll('.rental-type');
         const salePriceField = document.getElementById('sale-price-field');
         const monthlyPriceField = document.getElementById('monthly-price-field');
@@ -577,23 +794,120 @@
                             dailyPriceField.querySelector('input').required = true;
                         }
                     }
-                    // Принудительная валидация формы
                     propertyForm.reportValidity();
                 });
             });
 
-            // Инициализация при загрузке страницы
             const checkedRadio = document.querySelector('.rental-type:checked');
             if (checkedRadio) {
                 checkedRadio.dispatchEvent(new Event('change'));
             } else {
-                // Если ничего не выбрано, выбираем "Продажа" по умолчанию
                 const noRadio = document.querySelector('.rental-type[value="no"]');
                 if (noRadio) {
                     noRadio.checked = true;
                     noRadio.dispatchEvent(new Event('change'));
                 }
             }
+        }
+
+        async function validateStep(step) {
+            let isValid = true;
+            const inputs = steps[step].querySelectorAll('input, select, textarea');
+            const isRentalType = document.querySelector('.rental-type:checked')?.value;
+
+            inputs.forEach(input => {
+                if ((input.name === 'price' && isRentalType !== 'no') ||
+                    (input.name === 'monthly_price' && isRentalType !== 'monthly') ||
+                    (input.name === 'daily_price' && isRentalType !== 'daily')) {
+                    return;
+                }
+
+                if (input.offsetParent !== null && input.required && !input.value.trim()) {
+                    input.reportValidity();
+                    isValid = false;
+                } else if (input.offsetParent !== null && !input.reportValidity()) {
+                    isValid = false;
+                }
+            });
+
+            if (step === 1) {
+                const mainImageInput = document.querySelector('input[name="main_image"]');
+                const additionalImagesInput = document.querySelector('input[name="images"]');
+
+                if (mainImageInput.files.length > 0) {
+                    const mainImage = mainImageInput.files[0];
+                    const isMainImageValid = await checkImageDimensions(mainImage);
+                    if (!isMainImageValid) isValid = false;
+                } else {
+                    alert('Пожалуйста, загрузите основное изображение');
+                    isValid = false;
+                }
+
+                if (additionalImagesInput && additionalImagesInput.files.length > 0) {
+                    if (additionalImagesInput.files.length > 10) {
+                        alert('Можно загрузить не более 10 дополнительных изображений');
+                        isValid = false;
+                    } else {
+                        for (let i = 0; i < additionalImagesInput.files.length; i++) {
+                            const image = additionalImagesInput.files[i];
+                            const isImageValid = await checkImageDimensions(image);
+                            if (!isImageValid) {
+                                isValid = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (step === 2) {
+                const addressInput = document.getElementById('address-input');
+                const coordinatesInput = document.getElementById('coordinates');
+
+                if (!addressInput.value || !coordinatesInput.value) {
+                    alert('Пожалуйста, укажите адрес на карте');
+                    isValid = false;
+                }
+            }
+
+            return isValid;
+        }
+
+        function checkImageDimensions(file) {
+            return new Promise((resolve) => {
+                if (!file.type.match('image.*')) {
+                    alert('Пожалуйста, выберите файл изображения (JPEG, PNG)');
+                    resolve(false);
+                    return;
+                }
+
+                const MAX_FILE_SIZE = 5 * 1024 * 1024;
+                if (file.size > MAX_FILE_SIZE) {
+                    alert(`Файл ${file.name} слишком большой (${(file.size/1024/1024).toFixed(2)} MB). Максимальный размер: 5MB`);
+                    resolve(false);
+                    return;
+                }
+
+                const img = new Image();
+                const url = URL.createObjectURL(file);
+
+                img.onload = function() {
+                    const isCorrectSize = this.width <= 1280 && this.height <= 720;
+                    if (!isCorrectSize) {
+                        alert(`Изображение ${file.name} слишком большое (${this.width}x${this.height}). Максимальный размер: 1280x720 пикселей`);
+                    }
+                    URL.revokeObjectURL(url);
+                    resolve(isCorrectSize);
+                };
+
+                img.onerror = function() {
+                    alert('Ошибка загрузки изображения. Пожалуйста, выберите другой файл.');
+                    URL.revokeObjectURL(url);
+                    resolve(false);
+                };
+
+                img.src = url;
+            });
         }
     });
 </script>

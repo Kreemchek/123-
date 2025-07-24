@@ -1,0 +1,1 @@
+{"event":"payment.succeeded","object":{"id":"test_pay_12345","status":"succeeded","paid":true,"amount":{"value":"100.00","currency":"RUB"},"metadata":{"user_id":1}}} 

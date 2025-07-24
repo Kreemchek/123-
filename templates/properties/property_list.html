@@ -1,161 +1,10 @@
 {% extends 'base.html' %}
 {% load custom_filters %}
-{% block title %}Каталог недвижимости | RealEstatePro{% endblock %}
 
-{% block content %}
-<div class="registration-container">
-    <!-- Заголовок и поиск -->
-    <div class="header-section mb-8">
-        <h1 class="text-3xl font-bold text-gray-800 mb-4">
-            {% if user.is_authenticated and user.is_broker %}
-                Мои объекты
-            {% else %}
-                Каталог недвижимости
-            {% endif %}
-        </h1>
-        <div class="flex justify-between items-center gap-4">
-            <form class="flex-grow">
-                <div class="relative">
-                    <input type="search"
-                           name="search"
-                           placeholder="Поиск по названию или локации..."
-                           class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    <button type="submit" class="absolute right-3 top-3 text-gray-400 hover:text-blue-600">
-                        <i class="bi bi-search text-xl"></i>
-                    </button>
-                </div>
-            </form>
-            {% if user.is_authenticated and user.is_broker %}
-                <a href="{% url 'select-listing-type' %}" class="btn-primary flex items-center gap-2">
-                    <i class="bi bi-plus-lg"></i> Добавить
-                </a>
-            {% endif %}
-        </div>
-    </div>
-
-    <!-- Сообщение для брокеров -->
-    {% if user.is_authenticated and user.is_broker and not request.GET.broker %}
-        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
-            <div class="flex">
-                <div class="flex-shrink-0">
-                    <i class="bi bi-info-circle text-blue-500 text-xl"></i>
-                </div>
-                <div class="ml-3">
-                    <p class="text-sm text-blue-700">
-                        Вы видите только свои объекты. Для просмотра объектов других пользователей авторизуйтесь как клиент.
-                    </p>
-                </div>
-            </div>
-        </div>
-    {% endif %}
-
-    <!-- Карточки объектов -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {% if properties %}
-            {% for property in properties %}
-                <a href="{% url 'property-detail' property.id %}" class="property-card bg-white rounded-xl shadow-sm hover:shadow-md p-6 border-2 border-gray-100 transition-all block">
-                    <div class="relative mb-4">
-                        <img src="{{ property.main_image.url }}"
-                             class="w-full h-48 object-cover rounded-lg"
-                             alt="{{ property.title }}">
-                        {% if property.is_featured %}
-                        <span class="absolute top-2 right-2 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">
-                            ★ Premium
-                        </span>
-                        {% endif %}
-                    </div>
-
-                    <div class="space-y-4">
-                        <h3 class="text-xl font-bold text-gray-800 truncate">
-                            {% if property.property_type.name == 'house' %}
-                                {{ property.title }}
-                            {% elif 'flat' in property.property_type.name %}
-                                {{ property.title }}
-                            {% else %}
-                                {{ property.title }}
-                            {% endif %}
-                        </h3>
-
-                        <div class="flex items-center gap-2 text-blue-600">
-                            <i class="bi bi-geo-alt"></i>
-                            <span class="truncate">{{ property.location }}</span>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4 text-gray-600">
-                            <div class="flex items-center gap-2">
-                                <i class="bi bi-door-open"></i>
-                                {{ property.rooms }} комн.
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <i class="bi bi-arrows-fullscreen"></i>
-                                {{ property.total_area}} м²
-                            </div>
-                        </div>
-
-                        <div class="flex items-center justify-between mt-4">
-                            <span class="text-2xl font-bold text-blue-600">
-                                {% if property.is_rental == 'monthly' and property.monthly_price %}
-                                    {{ property.monthly_price|space_format }} ₽/мес
-                                {% elif property.is_rental == 'daily' and property.daily_price %}
-                                    {{ property.daily_price|space_format }} ₽/сут
-                                {% else %}
-                                    {{ property.price|space_format }} ₽
-                                {% endif %}
-                            </span>
-                            {% if user.is_authenticated %}
-                            <button class="toggle-favorite" data-property-id="{{ property.id }}" onclick="event.stopPropagation()">
-                                <i class="bi bi-heart{% if property in user.favorites.all %}-fill text-red-500{% endif %} text-xl"></i>
-                            </button>
-                            {% endif %}
-                        </div>
-
-                        <div class="btn-primary w-full text-center mt-4" onclick="event.stopPropagation()">
-                            <i class="bi bi-eye"></i> Подробнее
-                        </div>
-                    </div>
-                </a>
-            {% endfor %}
-        {% else %}
-            <div class="col-span-full text-center py-12 text-gray-500">
-                <i class="bi bi-house-x text-3xl"></i>
-                <p class="mt-2">
-                    {% if user.is_authenticated and user.is_broker %}
-                        У вас пока нет объектов
-                    {% else %}
-                        Объекты не найдены
-                    {% endif %}
-                </p>
-            </div>
-        {% endif %}
-    </div>
-
-    <!-- Пагинация -->
-    {% if is_paginated %}
-    <div class="pagination flex justify-center gap-2 mt-8">
-        {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}"
-           class="page-item px-4 py-2 rounded-lg border-2 border-gray-200 hover:bg-gray-50">
-            <i class="bi bi-chevron-left"></i>
-        </a>
-        {% endif %}
-
-        {% for num in page_obj.paginator.page_range %}
-        <a href="?page={{ num }}"
-           class="page-item px-4 py-2 rounded-lg border-2 {% if num == page_obj.number %}bg-blue-600 text-white border-blue-600{% else %}border-gray-200 hover:bg-gray-50{% endif %}">
-            {{ num }}
-        </a>
-        {% endfor %}
-
-        {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}"
-           class="page-item px-4 py-2 rounded-lg border-2 border-gray-200 hover:bg-gray-50">
-            <i class="bi bi-chevron-right"></i>
-        </a>
-        {% endif %}
-    </div>
-    {% endif %}
-</div>
-
+{% block extra_head %}
+<link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css">
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js"></script>
+<script src="https://api-maps.yandex.ru/2.1/?apikey={{ YANDEX_MAPS_API_KEY }}&lang=ru_RU" type="text/javascript"></script>
 <style>
     .property-card {
         transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -170,5 +19,711 @@
     .toggle-favorite {
         cursor: pointer;
     }
+
+    /* Новые стили для фильтров и карты */
+    .filter-container {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 2rem;
+    }
+
+    @media (max-width: 1024px) {
+        .filter-container {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .filter-sidebar {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        height: fit-content;
+        position: sticky;
+        top: 1rem;
+    }
+
+    .map-sidebar {
+        height: 500px;
+        position: sticky;
+        top: 1rem;
+    }
+
+    .filter-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .filter-section h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        color: #374151;
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .filter-toggle {
+        display: none;
+        margin-bottom: 1rem;
+    }
+
+    @media (max-width: 1024px) {
+        .filter-toggle {
+            display: block;
+        }
+
+        .filter-sidebar {
+            display: none;
+        }
+
+        .filter-sidebar.active {
+            display: block;
+        }
+    }
+
+    .map-container {
+        height: 100%;
+        width: 100%;
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+
+    .radius-control {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 1;
+        background: white;
+        padding: 5px;
+        border-radius: 3px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+
+    .radius-slider {
+        width: 200px;
+    }
+
+    /* Новые стили для фильтров как в category_detail.html */
+    .sticky-column {
+        top: calc(var(--total-header-height) + 4.0rem);
+        position: sticky;
+        height: fit-content;
+        align-self: flex-start;
+        margin-bottom: 1rem;
+    }
+
+    @media (max-width: 767px) {
+        .sticky-column {
+            position: relative;
+            top: auto;
+        }
+    }
+
+    .filter-section h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        color: #111827;
+    }
+
+    .filter-section input[type="text"],
+    .filter-section input[type="number"],
+    .filter-section select {
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+    }
+
+    .filter-section .grid-cols-2 {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.5rem;
+    }
+
+    .filter-section label {
+        display: block;
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-bottom: 0.25rem;
+    }
+
+    .filter-section .flex.items-center {
+        margin-bottom: 0.5rem;
+    }
+
+    .filter-section .flex.items-center input[type="checkbox"],
+    .filter-section .flex.items-center input[type="radio"] {
+        margin-right: 0.5rem;
+    }
+
+    .filter-section .flex.items-center label {
+        margin-bottom: 0;
+        color: #374151;
+        font-size: 0.875rem;
+    }
+
+    #reset_filters {
+        width: 100%;
+        border: 1px solid #d1d5db;
+        color: #374151;
+        padding: 0.5rem;
+        border-radius: 0.375rem;
+        background-color: white;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    #reset_filters:hover {
+        background-color: #f3f4f6;
+    }
+
+    #apply_filters {
+        width: 100%;
+        background-color: #3b82f6;
+        color: white;
+        padding: 0.5rem;
+        border-radius: 0.375rem;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    #apply_filters:hover {
+        background-color: #2563eb;
+    }
 </style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Хлебные крошки -->
+    <nav class="breadcrumbs mb-6" aria-label="Хлебные крошки">
+        <a href="/">Главная</a>
+        <span class="separator" aria-hidden="true">/</span>
+        <span>Каталог недвижимости</span>
+    </nav>
+
+    <div class="flex flex-col lg:flex-row gap-8">
+        <!-- Боковая панель с фильтрами -->
+        <aside class="w-full lg:w-64 flex-shrink-0">
+            <div class="bg-white rounded-lg shadow p-6 sticky-column">
+                <button class="filter-toggle btn-primary mb-4 lg:hidden">
+                    <i class="bi bi-funnel"></i> Фильтры
+                </button>
+
+              <div class="filter-sidebar lg:block" id="filter-sidebar">
+    <form method="get" id="filter-form">
+        <!-- Тип недвижимости -->
+        <div class="filter-section">
+            <h3>Тип недвижимости</h3>
+            {% for choice in filter.form.property_type %}
+                <div class="flex items-center mb-2">
+                    {{ choice.tag }}
+                    <label for="{{ choice.id_for_label }}" class="ml-2 text-sm">
+                        {{ choice.choice_label }}
+                    </label>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Цена -->
+        <div class="filter-section">
+            <h3>Цена, ₽</h3>
+            <div class="grid grid-cols-2 gap-2 mb-2">
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">От</label>
+                    <input type="number" name="min_price" value="{{ filter.form.min_price.value|default:'' }}"
+                           class="w-full px-2 py-1 border rounded text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">До</label>
+                    <input type="number" name="max_price" value="{{ filter.form.max_price.value|default:'' }}"
+                           class="w-full px-2 py-1 border rounded text-sm">
+                </div>
+            </div>
+
+            <h3>Цена за м², ₽</h3>
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">От</label>
+                    <input type="number" name="min_price_per_sqm" value="{{ filter.form.min_price_per_sqm.value|default:'' }}"
+                           class="w-full px-2 py-1 border rounded text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">До</label>
+                    <input type="number" name="max_price_per_sqm" value="{{ filter.form.max_price_per_sqm.value|default:'' }}"
+                           class="w-full px-2 py-1 border rounded text-sm">
+                </div>
+            </div>
+        </div>
+
+        <!-- Площадь -->
+        <div class="filter-section">
+            <h3>Площадь, м²</h3>
+            <div class="grid grid-cols-2 gap-2 mb-2">
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">Общая от</label>
+                    <input type="number" name="min_area" value="{{ filter.form.min_area.value|default:'' }}"
+                           class="w-full px-2 py-1 border rounded text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">Общая до</label>
+                    <input type="number" name="max_area" value="{{ filter.form.max_area.value|default:'' }}"
+                           class="w-full px-2 py-1 border rounded text-sm">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">Жилая от</label>
+                    <input type="number" name="min_living_area" value="{{ filter.form.min_living_area.value|default:'' }}"
+                           class="w-full px-2 py-1 border rounded text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">Жилая до</label>
+                    <input type="number" name="max_living_area" value="{{ filter.form.max_living_area.value|default:'' }}"
+                           class="w-full px-2 py-1 border rounded text-sm">
+                </div>
+            </div>
+        </div>
+
+        <!-- Комнаты -->
+        <div class="filter-section">
+            <h3>Количество комнат</h3>
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">От</label>
+                    <input type="number" name="rooms__gte" value="{{ filter.form.rooms__gte.value|default:'' }}"
+                           class="w-full px-2 py-1 border rounded text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">До</label>
+                    <input type="number" name="rooms__lte" value="{{ filter.form.rooms__lte.value|default:'' }}"
+                           class="w-full px-2 py-1 border rounded text-sm">
+                </div>
+            </div>
+        </div>
+
+        <!-- Этажи -->
+        <div class="filter-section">
+            <h3>Этаж</h3>
+            <div class="grid grid-cols-2 gap-2 mb-2">
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">От</label>
+                    <input type="number" name="min_floor" value="{{ filter.form.min_floor.value|default:'' }}"
+                           class="w-full px-2 py-1 border rounded text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">До</label>
+                    <input type="number" name="max_floor" value="{{ filter.form.max_floor.value|default:'' }}"
+                           class="w-full px-2 py-1 border rounded text-sm">
+                </div>
+            </div>
+
+            <h3>Этажность дома</h3>
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">От</label>
+                    <input type="number" name="min_total_floors" value="{{ filter.form.min_total_floors.value|default:'' }}"
+                           class="w-full px-2 py-1 border rounded text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">До</label>
+                    <input type="number" name="max_total_floors" value="{{ filter.form.max_total_floors.value|default:'' }}"
+                           class="w-full px-2 py-1 border rounded text-sm">
+                </div>
+            </div>
+        </div>
+
+        <!-- Год постройки -->
+        <div class="filter-section">
+            <h3>Год постройки</h3>
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">От</label>
+                    <input type="number" name="min_construction_year" value="{{ filter.form.min_construction_year.value|default:'' }}"
+                           class="w-full px-2 py-1 border rounded text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">До</label>
+                    <input type="number" name="max_construction_year" value="{{ filter.form.max_construction_year.value|default:'' }}"
+                           class="w-full px-2 py-1 border rounded text-sm">
+                </div>
+            </div>
+        </div>
+
+        <!-- Расстояние до центра -->
+        <div class="filter-section">
+            <h3>Расстояние до центра, км</h3>
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">От</label>
+                    <input type="number" name="min_distance_to_center" value="{{ filter.form.min_distance_to_center.value|default:'' }}"
+                           class="w-full px-2 py-1 border rounded text-sm" step="0.1">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">До</label>
+                    <input type="number" name="max_distance_to_center" value="{{ filter.form.max_distance_to_center.value|default:'' }}"
+                           class="w-full px-2 py-1 border rounded text-sm" step="0.1">
+                </div>
+            </div>
+        </div>
+
+        <!-- Радиус на карте -->
+        <input type="hidden" name="radius_filter" id="radius-filter-input">
+
+        <!-- Метро -->
+        <div class="filter-section">
+            <h3>Метро</h3>
+            <input type="text" name="metro_station" value="{{ filter.form.metro_station.value|default:'' }}"
+                   class="w-full px-2 py-1 border rounded text-sm"
+                   placeholder="Название станции">
+        </div>
+
+        <!-- Район -->
+        <div class="filter-section">
+            <h3>Район</h3>
+            <input type="text" name="district" value="{{ filter.form.district.value|default:'' }}"
+                   class="w-full px-2 py-1 border rounded text-sm"
+                   placeholder="Название района">
+        </div>
+
+        <!-- Город -->
+        <div class="filter-section">
+            <h3>Город</h3>
+            <input type="text" name="location" value="{{ filter.form.location.value|default:'' }}"
+                   class="w-full px-2 py-1 border rounded text-sm"
+                   placeholder="Название города">
+        </div>
+
+        <!-- Чекбоксы -->
+        <div class="filter-section">
+            <div class="flex items-center mb-2">
+                {{ filter.form.has_finishing }}
+                <label for="{{ filter.form.has_finishing.id_for_label }}" class="ml-2 text-sm">
+                    Только с отделкой
+                </label>
+            </div>
+
+            <div class="flex items-center">
+                {{ filter.form.is_delivered }}
+                <label for="{{ filter.form.is_delivered.id_for_label }}" class="ml-2 text-sm">
+                    Только сданные
+                </label>
+            </div>
+        </div>
+
+        <!-- Кнопки фильтра -->
+        <div class="filter-actions">
+            <button type="submit" id="apply_filters" class="btn-primary px-4 py-2 text-sm">
+                Применить
+            </button>
+            <a href="?" id="reset_filters" class="btn-outline px-4 py-2 text-sm">
+                Сбросить
+            </a>
+        </div>
+    </form>
+</div>
+              </div>
+        </aside>
+
+        <!-- Основное содержимое -->
+        <div class="flex-1">
+            <!-- Заголовок и поиск -->
+            <div class="header-section mb-8">
+                <h1 class="text-3xl font-bold text-gray-800 mb-4">
+                    {% if user.is_authenticated and user.is_broker %}
+                        Мои объекты
+                    {% else %}
+                        Каталог недвижимости
+                    {% endif %}
+                </h1>
+                <div class="flex justify-between items-center gap-4">
+                    <form class="flex-grow">
+                        <div class="relative">
+                            <input type="search"
+                                   name="search"
+                                   placeholder="Поиск по названию или локации..."
+                                   class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <button type="submit" class="absolute right-3 top-3 text-gray-400 hover:text-blue-600">
+                                <i class="bi bi-search text-xl"></i>
+                            </button>
+                        </div>
+                    </form>
+                    {% if user.is_authenticated and user.is_broker %}
+                        <a href="{% url 'properties:select-listing-type' %}" class="btn-primary flex items-center gap-2">
+                            <i class="bi bi-plus-lg"></i> Добавить
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Карта с объектами -->
+            <div class="map-sidebar mb-8 bg-white rounded-lg shadow-sm overflow-hidden">
+                <div id="properties-map" class="map-container"></div>
+                <div class="radius-control">
+                    <input type="range" min="1" max="50" value="5" class="radius-slider" id="radius-slider">
+                    <span id="radius-value">5 км</span>
+                </div>
+            </div>
+
+            <!-- Карточки объектов -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% if properties %}
+                    {% for property in properties %}
+                        <a href="{% url 'property-detail' property.id %}" class="property-card bg-white rounded-xl shadow-sm hover:shadow-md p-6 border-2 border-gray-100 transition-all block">
+                            <div class="relative mb-4">
+                                <img src="{{ property.main_image.url }}"
+                                     class="w-full h-48 object-cover rounded-lg"
+                                     alt="{{ property.title }}">
+                                {% if property.is_featured %}
+                                <span class="absolute top-2 right-2 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">
+                                    ★ Premium
+                                </span>
+                                {% endif %}
+                            </div>
+
+                            <div class="space-y-4">
+                                <h3 class="text-xl font-bold text-gray-800 truncate">
+                                    {% if property.property_type.name == 'house' %}
+                                        {{ property.title }}
+                                    {% elif 'flat' in property.property_type.name %}
+                                        {{ property.title }}
+                                    {% else %}
+                                        {{ property.title }}
+                                    {% endif %}
+                                </h3>
+
+                                <div class="flex items-center gap-2 text-blue-600">
+                                    <i class="bi bi-geo-alt"></i>
+                                    <span class="truncate">{{ property.location }}</span>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-4 text-gray-600">
+                                    <div class="flex items-center gap-2">
+                                        <i class="bi bi-door-open"></i>
+                                        {{ property.rooms }} комн.
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <i class="bi bi-arrows-fullscreen"></i>
+                                        {{ property.total_area}} м²
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between mt-4">
+                                    <span class="text-2xl font-bold text-blue-600">
+                                        {% if property.is_rental == 'monthly' and property.monthly_price %}
+                                            {{ property.monthly_price|space_format }} ₽/мес
+                                        {% elif property.is_rental == 'daily' and property.daily_price %}
+                                            {{ property.daily_price|space_format }} ₽/сут
+                                        {% else %}
+                                            {{ property.price|space_format }} ₽
+                                        {% endif %}
+                                    </span>
+                                    {% if user.is_authenticated %}
+                                    <button class="toggle-favorite" data-property-id="{{ property.id }}" onclick="event.stopPropagation()">
+                                        <i class="bi bi-heart{% if property in user.favorites.all %}-fill text-red-500{% endif %} text-xl"></i>
+                                    </button>
+                                    {% endif %}
+                                </div>
+
+                                <div class="btn-primary w-full text-center mt-4" onclick="event.stopPropagation()">
+                                    <i class="bi bi-eye"></i> Подробнее
+                                </div>
+                            </div>
+                        </a>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-span-full text-center py-12 text-gray-500">
+                        <i class="bi bi-house-x text-3xl"></i>
+                        <p class="mt-2">
+                            {% if user.is_authenticated and user.is_broker %}
+                                У вас пока нет объектов
+                            {% else %}
+                                Объекты не найдены
+                            {% endif %}
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Пагинация -->
+            {% if is_paginated %}
+            <div class="pagination flex justify-center gap-2 mt-8">
+                {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}"
+                   class="page-item px-4 py-2 rounded-lg border-2 border-gray-200 hover:bg-gray-50">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                <a href="?page={{ num }}"
+                   class="page-item px-4 py-2 rounded-lg border-2 {% if num == page_obj.number %}bg-blue-600 text-white border-blue-600{% else %}border-gray-200 hover:bg-gray-50{% endif %}">
+                    {{ num }}
+                </a>
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}"
+                   class="page-item px-4 py-2 rounded-lg border-2 border-gray-200 hover:bg-gray-50">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Переключение видимости фильтров на мобильных
+        const filterToggle = document.querySelector('.filter-toggle');
+        const filterSidebar = document.getElementById('filter-sidebar');
+
+        if (filterToggle && filterSidebar) {
+            filterToggle.addEventListener('click', function() {
+                filterSidebar.classList.toggle('hidden');
+            });
+        }
+
+        // Инициализация карты
+        let map;
+        let objectMarkers = [];
+        let radiusCircle;
+        let radius = 5; // км
+        let centerCoords = [55.751574, 37.573856]; // Москва по умолчанию
+
+        ymaps.ready(initMap);
+
+        function initMap() {
+            map = new ymaps.Map('properties-map', {
+                center: centerCoords,
+                zoom: 10,
+                controls: ['zoomControl', 'fullscreenControl']
+            });
+
+            // Добавляем метки объектов
+            {% for property in properties %}
+                {% if property.coordinates %}
+                    addPropertyMarker(
+                        [{{ property.coordinates.y }}, {{ property.coordinates.x }}],
+                        '{{ property.title }}',
+                        '{{ property.get_absolute_url }}',
+                        '{{ property.main_image.url }}',
+                        '{{ property.price|default:0 }}'
+                    );
+                {% endif %}
+            {% endfor %}
+
+            // Обработчик клика по карте для установки радиуса поиска
+            map.events.add('click', function(e) {
+                centerCoords = e.get('coords');
+                updateRadiusCircle(centerCoords, radius);
+                updateRadiusFilterInput(centerCoords, radius);
+            });
+
+            // Инициализация слайдера радиуса
+            const radiusSlider = document.getElementById('radius-slider');
+            const radiusValue = document.getElementById('radius-value');
+
+            radiusSlider.addEventListener('input', function() {
+                radius = parseInt(this.value);
+                radiusValue.textContent = radius + ' км';
+                updateRadiusCircle(centerCoords, radius);
+                updateRadiusFilterInput(centerCoords, radius);
+            });
+        }
+
+        function addPropertyMarker(coords, title, url, imageUrl, price) {
+            const marker = new ymaps.Placemark(coords, {
+                balloonContent: `
+                    <div style="padding: 10px;">
+                        <img src="${imageUrl}" style="width: 100%; height: 120px; object-fit: cover; margin-bottom: 10px;">
+                        <h3 style="margin: 0 0 5px 0; font-size: 16px;">${title}</h3>
+                        <p style="margin: 0; font-weight: bold; color: #0060f4;">${parseInt(price).toLocaleString('ru-RU')} ₽</p>
+                        <a href="${url}" style="display: inline-block; margin-top: 10px; color: #0060f4;">Подробнее</a>
+                    </div>
+                `
+            }, {
+                preset: 'islands#blueHomeIcon'
+            });
+
+            marker.events.add('click', function() {
+                window.location.href = url;
+            });
+
+            map.geoObjects.add(marker);
+            objectMarkers.push(marker);
+        }
+
+        function updateRadiusCircle(center, radius) {
+            if (radiusCircle) {
+                map.geoObjects.remove(radiusCircle);
+            }
+
+            radiusCircle = new ymaps.Circle([
+                center,
+                radius * 1000 // Радиус в метрах
+            ], {}, {
+                fillColor: "#0060f433",
+                strokeColor: "#0060f4",
+                strokeOpacity: 0.8,
+                strokeWidth: 2
+            });
+
+            map.geoObjects.add(radiusCircle);
+            map.setCenter(center, getZoomLevelForRadius(radius));
+        }
+
+        function updateRadiusFilterInput(center, radius) {
+            document.getElementById('radius-filter-input').value =
+                `${center[0]},${center[1]},${radius}`;
+        }
+
+        function getZoomLevelForRadius(radius) {
+            // Эмпирическая формула для определения zoom уровня
+            if (radius > 20) return 10;
+            if (radius > 10) return 11;
+            if (radius > 5) return 12;
+            if (radius > 2) return 13;
+            return 14;
+        }
+
+        // Обработчик для кнопки "Избранное"
+        document.querySelectorAll('.toggle-favorite').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const propertyId = this.getAttribute('data-property-id');
+                const icon = this.querySelector('i');
+
+                fetch(`/properties/${propertyId}/toggle-favorite/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Accept': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'added') {
+                        icon.classList.add('bi-heart-fill', 'text-red-500');
+                        icon.classList.remove('bi-heart');
+                    } else {
+                        icon.classList.remove('bi-heart-fill', 'text-red-500');
+                        icon.classList.add('bi-heart');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+    });
+</script>
 {% endblock %}

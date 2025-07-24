@@ -1,30 +1,35 @@
+# Стандартные Django импорты
 from datetime import timedelta
-
 from django.contrib import messages
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Q, ExpressionWrapper, F, FloatField
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.views import View
-from django.views.generic import (DetailView,
-                                  CreateView,
-                                  UpdateView,
-                                  DeleteView)
-from django.contrib.auth.mixins import (LoginRequiredMixin, UserPassesTestMixin)
+from django.views.generic import DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.db import IntegrityError
+from django.conf import settings
+# Гео-импорты
+from django.contrib.gis.measure import Distance
+from django.contrib.gis.geos import Point
+import json
+# Сторонние библиотеки
 from django_filters.views import FilterView
-
+import uuid
+import requests
+from django.http import JsonResponse
+from django.views import View
+# Локальные импорты
 from brokers.models import BrokerProfile
 from .models import Property, PropertyImage, PropertyType, ListingType
 from .filters import PropertyFilter
 from .forms import PropertyForm, ListingTypeForm
-from accounts.models import User, ContactRequest
-from accounts.models import Favorite
-from django.contrib.auth.decorators import login_required
+from accounts.models import User, ContactRequest, Favorite
 from payments.models import Payment
-from django.db import IntegrityError
-import uuid
 
 
 
@@ -85,6 +90,13 @@ class PropertyListView(FilterView):
                 is_approved=True
             )
 
+        queryset = queryset.annotate(
+            price_per_sqm=ExpressionWrapper(
+                F('price') / F('total_area'),
+                output_field=FloatField()
+            )
+        )
+
         # Поиск по названию или локации
         search_query = self.request.GET.get('search')
         if search_query:
@@ -92,6 +104,12 @@ class PropertyListView(FilterView):
                 Q(title__icontains=search_query) |
                 Q(location__icontains=search_query)
             )
+
+        # Добавляем расчет расстояния до центра, если нужно
+        if 'min_distance_to_center' in self.request.GET or 'max_distance_to_center' in self.request.GET:
+            center_point = Point(37.617635, 55.755814, srid=4326)  # Координаты центра Москвы
+            queryset = queryset.annotate(
+                distance_to_center=Distance('coordinates', center_point))
 
         return queryset
 
@@ -129,6 +147,23 @@ class PropertyDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['images'] = self.object.images.all()
+        context['YANDEX_MAPS_API_KEY'] = settings.YANDEX_MAPS_API_KEY
+        if self.object.coordinates:
+            coords = self.object.get_coordinates_as_floats()
+            context['coordinates_json'] = json.dumps(coords)
+
+        if self.object.coordinates:
+            context['coordinates_json'] = json.dumps({
+                'x': float(str(self.object.coordinates.x).replace(',', '.')),
+                'y': float(str(self.object.coordinates.y).replace(',', '.'))
+            })
+            if self.object.coordinates:
+                print(f"Coordinates: X={self.object.coordinates.x}, Y={self.object.coordinates.y}")
+        if self.object.metro_coordinates:
+            context['metro_coordinates_json'] = json.dumps({
+                'x': float(self.object.metro_coordinates.x),
+                'y': float(self.object.metro_coordinates.y)
+            })
 
         if self.request.user.is_authenticated:
             # Проверка избранного
@@ -136,6 +171,7 @@ class PropertyDetailView(DetailView):
                 user=self.request.user,
                 property=self.object
             ).exists()
+
 
             # Проверка, оплачен ли уже контакт
             context['contact_paid'] = Payment.objects.filter(
@@ -153,6 +189,10 @@ class PropertyDetailView(DetailView):
 
             # Добавляем информацию о роли пользователя
             context['is_broker'] = self.request.user.user_type == User.UserType.BROKER
+        if self.object.coordinates:
+            context['has_coordinates'] = True
+        else:
+            context['has_coordinates'] = False
 
         return context
 
@@ -166,6 +206,9 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         """Добавляем форму для изображений в контекст"""
         context = super().get_context_data(**kwargs)
+        context['YANDEX_MAPS_API_KEY'] = settings.YANDEX_MAPS_API_KEY
+        context['YANDEX_SEARCH_API_KEY'] = settings.YANDEX_SEARCH_API_KEY
+        context['YANDEX_GEO_SUGGEST_API_KEY'] = settings.YANDEX_GEO_SUGGEST_API_KEY
         context['max_images'] = 10  # Для отображения ограничения в шаблоне
         context['property_type'] = get_object_or_404(PropertyType, name=self.kwargs['property_type'])
         context['property_type_name'] = context['property_type'].get_name_display()
@@ -357,12 +400,16 @@ class PropertyDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def test_func(self):
         obj = self.get_object()
-        # Проверяем связь через BrokerProfile.user
+        # Проверяем, является ли пользователь брокером-владельцем объекта
         is_broker_owner = (
                 obj.broker and
                 self.request.user == obj.broker.user
         )
-        is_developer_owner = self.request.user == obj.developer
+        # ИЛИ является ли пользователь застройщиком-владельцем
+        is_developer_owner = (
+                obj.developer and
+                self.request.user == obj.developer
+        )
         return is_broker_owner or is_developer_owner
 
 
@@ -421,7 +468,7 @@ class SelectListingTypeView(LoginRequiredMixin, View):
         if form.is_valid():
             listing_type = form.cleaned_data['listing_type']
             request.session['selected_listing_type'] = listing_type.id
-            return redirect('select-property-type')
+            return redirect('properties:select-property-type')  # Указание пространства имён
 
         return render(request, self.template_name, {'form': form})
 
@@ -458,5 +505,108 @@ class ContactBrokerView(LoginRequiredMixin, View):
         )
 
         return redirect('contact_request_detail', pk=contact_request.pk)
+
+
+class CityAutocompleteView(View):
+    def get(self, request):
+        query = request.GET.get('query', '')
+        api_key = settings.YANDEX_GEOCODER_API_KEY
+        url = f"https://geocode-maps.yandex.ru/1.x/?apikey={api_key}&format=json&geocode={query}&kind=locality&results=10"
+
+        try:
+            response = requests.get(url)
+            data = response.json()
+            features = data['response']['GeoObjectCollection']['featureMember']
+            cities = []
+
+            for feature in features:
+                city = feature['GeoObject']['name']
+                address = feature['GeoObject']['description']
+                if city not in [c['city'] for c in cities]:
+                    cities.append({
+                        'city': city,
+                        'address': address,
+                        'coordinates': feature['GeoObject']['Point']['pos']
+                    })
+
+            return JsonResponse({'cities': cities})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+
+# В views.py
+class AddressAutocompleteView(View):
+    def get(self, request):
+        city = request.GET.get('city', '')
+        query = request.GET.get('query', '')
+        api_key = settings.YANDEX_GEOCODER_API_KEY
+
+        try:
+            # Пробуем сначала использовать API Поиска
+            search_url = f"https://search-maps.yandex.ru/v1/?apikey={settings.YANDEX_SEARCH_API_KEY}&text={city}+{query}&lang=ru_RU&results=10"
+            search_response = requests.get(search_url)
+
+            if search_response.status_code == 200:
+                data = search_response.json()
+                addresses = [
+                    {
+                        'address': feature['properties']['name'],
+                        'coordinates': feature['geometry']['coordinates']
+                    }
+                    for feature in data.get('features', [])
+                ]
+                return JsonResponse({'addresses': addresses})
+
+            # Fallback на геокодер, если API Поиска не доступен
+            geocoder_url = f"https://geocode-maps.yandex.ru/1.x/?apikey={api_key}&format=json&geocode={city}+{query}&results=10"
+            response = requests.get(geocoder_url)
+            data = response.json()
+
+            features = data['response']['GeoObjectCollection']['featureMember']
+            addresses = []
+
+            for feature in features:
+                geo = feature['GeoObject']
+                addresses.append({
+                    'address': geo['metaDataProperty']['GeocoderMetaData']['text'],
+                    'coordinates': geo['Point']['pos'].split()  # долгота, широта
+                })
+
+            return JsonResponse({'addresses': addresses})
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+
+class MetroAutocompleteView(View):
+    def get(self, request):
+        city = request.GET.get('city', 'Москва')  # По умолчанию Москва
+        query = request.GET.get('query', '')
+        api_key = settings.YANDEX_GEOCODER_API_KEY
+        url = f"https://geocode-maps.yandex.ru/1.x/?apikey={api_key}&format=json&geocode={city}&kind=metro&results=50"
+
+        try:
+            response = requests.get(url)
+            data = response.json()
+            features = data['response']['GeoObjectCollection']['featureMember']
+            metro_stations = []
+
+            for feature in features:
+                if 'name' in feature['GeoObject']:
+                    metro_stations.append({
+                        'name': feature['GeoObject']['name'],
+                        'coordinates': feature['GeoObject']['Point']['pos']
+                    })
+
+            # Фильтрация по запросу
+            if query:
+                metro_stations = [m for m in metro_stations if query.lower() in m['name'].lower()]
+
+            return JsonResponse({'metro_stations': metro_stations[:10]})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+
+
 
 
