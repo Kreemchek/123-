@@ -19,4 +19,5 @@ urlpatterns = [
     path('api/cities/', CityAutocompleteView.as_view(), name='city-autocomplete'),
     path('api/addresses/', AddressAutocompleteView.as_view(), name='address-autocomplete'),
     path('api/metro/', MetroAutocompleteView.as_view(), name='metro-autocomplete'),
+path('update-address/', views.update_property_address, name='update_property_address'),
 ]

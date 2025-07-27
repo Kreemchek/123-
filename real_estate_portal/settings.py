@@ -93,6 +93,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+'django.contrib.gis',
     'django_filters',
     'widget_tweaks',
     'channels',
@@ -304,7 +305,7 @@ STATICFILES_FINDERS = [
 # Добавляем в settings.py
 YANDEX_MAPS_API_KEY = '3585e6f5-6323-4098-8a4d-b279da5b0c4f'  # Основной ключ для JavaScript API
 YANDEX_GEOCODER_API_KEY = '3585e6f5-6323-4098-8a4d-b279da5b0c4f'  # Для геокодирования
-YANDEX_SEARCH_API_KEY = '3585e6f5-6323-4098-8a4d-b279da5b0c4f'  # Для поиска организаций
+
 YANDEX_GEO_SUGGEST_API_KEY = '7979f3d5-7f35-4fd8-893c-e5f1ecaeb3a4'  # Для геосаджеста
 # Для принудительного обслуживания статики через WhiteNoise
 WHITENOISE_USE_FINDERS = True

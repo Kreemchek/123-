@@ -85,6 +85,20 @@ class PropertyForm(forms.ModelForm):
         widget=forms.HiddenInput()
     )
 
+    location = forms.CharField(
+        required=False,
+        label='Город',
+        max_length=200,
+        help_text='Город, где находится объект'
+    )
+
+    address = forms.CharField(
+        required=False,
+        label='Адрес',
+        widget=forms.Textarea(attrs={'rows': 2}),
+        help_text='Полный адрес объекта'
+    )
+
     class Meta:
         model = Property
         fields = [
@@ -101,11 +115,9 @@ class PropertyForm(forms.ModelForm):
             'developer': forms.HiddenInput(),
             'is_premium': forms.HiddenInput(),
             'description': forms.Textarea(attrs={'rows': 4}),
-            'address': forms.Textarea(attrs={'rows': 2}),
             'has_finishing': forms.CheckboxInput(attrs={'class': 'form-checkbox'}),
             'is_delivered': forms.CheckboxInput(attrs={'class': 'form-checkbox'})
         }
-
 
     def __init__(self, *args, **kwargs):
         self.property_type = kwargs.pop('property_type', None)
@@ -120,16 +132,12 @@ class PropertyForm(forms.ModelForm):
             self.fields.pop('apartment_type', None)
             self.fields.pop('floor', None)
 
-        # Показываем поле цены продажи для всех типов недвижимости
         if self.property_type and self.property_type.name == 'resale_flat':
             self.fields['is_rental'].widget.attrs.update({'class': 'rental-toggle'})
         else:
-            # Удаляем только поля аренды, но оставляем price
             self.fields.pop('is_rental', None)
             self.fields.pop('monthly_price', None)
             self.fields.pop('daily_price', None)
-
-            # Убедимся, что price виден и обязателен для других типов
             self.fields['price'].required = True
             self.fields['price'].widget = forms.NumberInput(attrs={'class': 'form-control'})
 
@@ -141,19 +149,15 @@ class PropertyForm(forms.ModelForm):
         if not property_type:
             raise forms.ValidationError("Не указан тип недвижимости")
 
-        # Обязательные поля (кроме цены)
         required_fields = {
             'rooms': 'Укажите количество комнат',
             'total_area': 'Укажите общую площадь',
-            'location': 'Укажите расположение',
-            'address': 'Укажите адрес'
         }
 
         for field, error_msg in required_fields.items():
             if not cleaned_data.get(field):
                 self.add_error(field, error_msg)
 
-        # Проверки для квартир
         if property_type.name in ['new_flat', 'resale_flat']:
             if not cleaned_data.get('floor'):
                 self.add_error('floor', 'Укажите этаж')
@@ -162,11 +166,10 @@ class PropertyForm(forms.ModelForm):
                 if cleaned_data['floor'] > cleaned_data['total_floors']:
                     self.add_error('floor', 'Этаж не может быть больше общего количества этажей')
 
-        MAX_PRICE = 10 ** 9  # 1 миллиард
+        MAX_PRICE = 10 ** 9
 
-        # Обработка цен в зависимости от типа аренды
         if is_rental == 'monthly':
-            if 'monthly_price' in self.fields:  # Проверяем наличие поля в форме
+            if 'monthly_price' in self.fields:
                 monthly_price = cleaned_data.get('monthly_price')
                 if monthly_price is None:
                     self.add_error('monthly_price', 'Укажите цену за месяц')
@@ -175,12 +178,11 @@ class PropertyForm(forms.ModelForm):
                 elif monthly_price > MAX_PRICE:
                     self.add_error('monthly_price', 'Цена за месяц слишком высока')
 
-                # Для аренды помесячно устанавливаем price=0 вместо NULL
                 cleaned_data['price'] = 0
                 cleaned_data['daily_price'] = None
 
         elif is_rental == 'daily':
-            if 'daily_price' in self.fields:  # Проверяем наличие поля в форме
+            if 'daily_price' in self.fields:
                 daily_price = cleaned_data.get('daily_price')
                 if daily_price is None:
                     self.add_error('daily_price', 'Укажите цену за сутки')
@@ -189,11 +191,10 @@ class PropertyForm(forms.ModelForm):
                 elif daily_price > MAX_PRICE:
                     self.add_error('daily_price', 'Цена за сутки слишком высока')
 
-                # Для аренды посуточно устанавливаем price=0 вместо NULL
                 cleaned_data['price'] = 0
                 cleaned_data['monthly_price'] = None
 
-        else:  # Продажа (is_rental == 'no' или None)
+        else:
             price = cleaned_data.get('price')
             if price is None:
                 self.add_error('price', 'Укажите цену объекта')
@@ -202,57 +203,21 @@ class PropertyForm(forms.ModelForm):
             elif price > MAX_PRICE:
                 self.add_error('price', 'Цена слишком высока')
 
-            # Для продажи очищаем цены аренды, если они есть в форме
             if 'monthly_price' in self.fields:
                 cleaned_data['monthly_price'] = None
             if 'daily_price' in self.fields:
                 cleaned_data['daily_price'] = None
 
-        # Проверка изображения
         if 'main_image' not in self.files and not self.instance.main_image:
             self.add_error('main_image', 'Главное изображение обязательно')
 
-        # Проверка года сдачи
         if cleaned_data.get('delivery_year'):
             current_year = timezone.now().year
             if cleaned_data['delivery_year'] < 1900 or cleaned_data['delivery_year'] > current_year + 10:
                 self.add_error('delivery_year', 'Некорректный год сдачи')
 
-        # Проверка типа аренды
         if is_rental in ['monthly', 'daily'] and property_type.name != 'resale_flat':
             self.add_error('is_rental', 'Аренда доступна только для вторичного жилья')
-
-        address = cleaned_data.get('address')
-        location = cleaned_data.get('location')
-        map_coordinates = cleaned_data.get('map_coordinates')
-
-        city_coords = cleaned_data.get('city_coordinates')
-        address_coords = cleaned_data.get('coordinates')
-        metro_coords = cleaned_data.get('metro_coordinates')
-
-        if address_coords:
-            try:
-                lon, lat = map(float, address_coords.split())
-                self.instance.coordinates = Point(lon, lat, srid=4326)
-            except (ValueError, AttributeError):
-                pass
-
-        if metro_coords:
-            try:
-                lon, lat = map(float, metro_coords.split())
-                self.instance.metro_coordinates = Point(lon, lat, srid=4326)
-            except (ValueError, AttributeError):
-                pass
-
-        if map_coordinates:
-            try:
-                lat, lon = map(float, map_coordinates.split(','))
-                self.instance.coordinates = Point(lon, lat)
-            except (ValueError, AttributeError):
-                pass
-        elif address and location:
-            self.instance.geocode_address()
-
 
         return cleaned_data
 

@@ -30,8 +30,11 @@ from .filters import PropertyFilter
 from .forms import PropertyForm, ListingTypeForm
 from accounts.models import User, ContactRequest, Favorite
 from payments.models import Payment
-
-
+from django.views.decorators.http import require_http_methods
+from django.http import JsonResponse
+from django.contrib.gis.geos import Point
+import logging
+logger = logging.getLogger(__name__)
 
 
 class PropertyListView(FilterView):
@@ -204,12 +207,11 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('dashboard')
 
     def get_context_data(self, **kwargs):
-        """Добавляем форму для изображений в контекст"""
         context = super().get_context_data(**kwargs)
         context['YANDEX_MAPS_API_KEY'] = settings.YANDEX_MAPS_API_KEY
-        context['YANDEX_SEARCH_API_KEY'] = settings.YANDEX_SEARCH_API_KEY
+
         context['YANDEX_GEO_SUGGEST_API_KEY'] = settings.YANDEX_GEO_SUGGEST_API_KEY
-        context['max_images'] = 10  # Для отображения ограничения в шаблоне
+        context['max_images'] = 10
         context['property_type'] = get_object_or_404(PropertyType, name=self.kwargs['property_type'])
         context['property_type_name'] = context['property_type'].get_name_display()
         context['show_apartment_fields'] = context['property_type'].name in ['new_flat', 'resale_flat']
@@ -217,8 +219,6 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
         return context
 
     def form_valid(self, form):
-
-
         with transaction.atomic():
             listing_type_id = self.request.session.get('selected_listing_type')
             if not listing_type_id:
@@ -231,7 +231,6 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
                 form.add_error(None, "Недостаточно средств на балансе")
                 return self.form_invalid(form)
 
-            # Генерация уникального transaction_id
             transaction_id = f"property_{uuid.uuid4()}"
 
             payment = Payment.objects.create(
@@ -266,6 +265,10 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
                 form.add_error('main_image', 'Главное изображение обязательно')
                 return self.form_invalid(form)
 
+            # Установка временных значений для location и address
+            self.object.location = "Не указано"
+            self.object.address = "Адрес будет указан позже"
+
             self.object.save()
 
             # Обработка изображений
@@ -290,13 +293,13 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
 
             messages.success(
                 self.request,
-                f"Объект успешно создан! С вашего баланса списано {listing_type.price} ₽"
+                f"Объект успешно создан! С вашего баланса списано {listing_type.price} ₽. Теперь укажите точный адрес объекта."
             )
 
             if 'selected_listing_type' in self.request.session:
                 del self.request.session['selected_listing_type']
 
-            return super().form_valid(form)
+            return redirect('properties:property-detail', pk=self.object.pk)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -307,7 +310,6 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
         return kwargs
 
     def form_invalid(self, form):
-        """Добавляем контекст для отображения ошибок"""
         return self.render_to_response(
             self.get_context_data(form=form, images_error=form.errors)
         )
@@ -607,6 +609,130 @@ class MetroAutocompleteView(View):
             return JsonResponse({'error': str(e)}, status=500)
 
 
+@require_http_methods(["POST"])
+def update_property_address(request):
+    try:
+        # Логирование входящего запроса
+        logger.debug("=" * 50)
+        logger.debug("Incoming request to update_property_address")
+        logger.debug(f"Request body (raw): {request.body}")
 
+        try:
+            data = json.loads(request.body)
+            logger.debug(f"Parsed JSON data: {data}")
+        except json.JSONDecodeError as e:
+            logger.error(f"JSON decode error: {str(e)}")
+            return JsonResponse(
+                {'status': 'error', 'message': 'Неверный формат JSON'},
+                status=400
+            )
 
+        # Проверка наличия property_id
+        if 'property_id' not in data:
+            logger.error("Missing property_id in request data")
+            return JsonResponse(
+                {'status': 'error', 'message': 'Отсутствует property_id'},
+                status=400
+            )
 
+        try:
+            property = Property.objects.get(pk=data['property_id'])
+            logger.debug(f"Found property: {property.id} - {property.title}")
+        except Property.DoesNotExist:
+            logger.error(f"Property not found: {data.get('property_id')}")
+            return JsonResponse(
+                {'status': 'error', 'message': 'Объект не найден'},
+                status=404
+            )
+
+        # Проверка прав
+        if not (request.user == property.broker.user or
+                request.user == property.developer or
+                request.user.is_admin):
+            logger.warning(f"User {request.user.id} doesn't have permissions for property {property.id}")
+            return JsonResponse(
+                {'status': 'error', 'message': 'Недостаточно прав'},
+                status=403
+            )
+
+        # Обработка координат
+        if data.get('coordinates'):
+            logger.debug("-" * 30)
+            logger.debug("Processing coordinates data")
+            logger.debug(f"Raw coordinates string: {data['coordinates']} (type: {type(data['coordinates'])})")
+
+            try:
+                # Явная замена запятых на точки для защиты от локали
+                coords_str = data['coordinates'].replace(',', '.')
+                logger.debug(f"Coordinates after comma replacement: {coords_str}")
+
+                # Разделение координат
+                coords = coords_str.split(',')
+                logger.debug(f"Split coordinates: {coords}")
+
+                if len(coords) != 2:
+                    raise ValueError("Должно быть ровно 2 координаты")
+
+                # Преобразование в float
+                lon, lat = map(float, coords)
+                logger.debug(f"Parsed coordinates as floats: lon={lon}, lat={lat}")
+
+                # Создание Point
+                point = Point(lon, lat, srid=4326)
+                logger.debug(f"Created Point object: {point}")
+                logger.debug(f"Point WKT: {point.wkt}")
+                logger.debug(f"Point coordinates: x={point.x}, y={point.y}")
+                logger.debug(f"Point SRID: {point.srid}")
+
+                # Сохранение в модель
+                property.coordinates = point
+                logger.debug("Coordinates assigned to property")
+
+            except (ValueError, IndexError, TypeError) as e:
+                logger.error(f"Coordinate processing error: {str(e)}", exc_info=True)
+                return JsonResponse(
+                    {'status': 'error', 'message': f'Некорректный формат координат: {str(e)}'},
+                    status=400
+                )
+        else:
+            logger.debug("No coordinates provided in request")
+
+        # Обновление других полей
+        property.location = data.get('city', property.location)
+        property.address = data.get('address', property.address)
+        property.metro_station = data.get('metro_station', property.metro_station)
+
+        try:
+            property.save()
+            logger.debug("Property successfully saved")
+            logger.debug(f"Current coordinates in DB: {property.coordinates}")
+            logger.debug(f"Coordinates from DB - x: {property.coordinates.x}, y: {property.coordinates.y}")
+
+            # Получение объекта из БД для проверки
+            refreshed_property = Property.objects.get(pk=property.id)
+            logger.debug(f"Refreshed coordinates: {refreshed_property.coordinates}")
+            logger.debug(
+                f"Refreshed coordinates - x: {refreshed_property.coordinates.x}, y: {refreshed_property.coordinates.y}")
+
+        except Exception as e:
+            logger.error(f"Error saving property: {str(e)}", exc_info=True)
+            return JsonResponse(
+                {'status': 'error', 'message': 'Ошибка сохранения данных'},
+                status=500
+            )
+
+        return JsonResponse({
+            'status': 'success',
+            'address': property.address,
+            'coordinates': {
+                'x': property.coordinates.x,
+                'y': property.coordinates.y
+            }
+        })
+
+    except Exception as e:
+        logger.error(f"Unexpected error in update_property_address: {str(e)}", exc_info=True)
+        return JsonResponse(
+            {'status': 'error', 'message': 'Внутренняя ошибка сервера'},
+            status=500
+        )

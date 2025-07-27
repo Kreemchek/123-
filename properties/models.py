@@ -261,6 +261,7 @@ class Property(models.Model):
         return colors.get(self.status, 'blue')
 
     def save(self, *args, **kwargs):
+        # Генерация заголовка
         if self.property_type.name in ['new_flat', 'resale_flat']:
             type_map = {
                 'studio': 'Студия',
@@ -276,42 +277,17 @@ class Property(models.Model):
                 type_map.get(self.apartment_type, 'Квартира'),
                 f"{self.total_area} м²",
                 f"{floor_info} этаж" if floor_info else None,
-
             ]
             self.title = ", ".join(filter(None, parts))
-
         elif self.property_type.name == 'house':
-
             self.title = f"Дом, {self.total_area} м²"
-
         else:
-
             self.title = f"{self.property_type.get_name_display()}, {self.total_area} м²"
 
-        if not self.coordinates and self.address:
-            self.geocode_address()
-
-        if not self.metro_coordinates and self.metro_station:
-            self.metro_coordinates = self.get_metro_coordinates()
-
-        if self.metro_station and self.metro_station != "Не указано" and not self.metro_coordinates:
-            self.metro_coordinates = self.get_metro_coordinates()
-
-        logger.debug(
-            f"Saving property. Address: {self.address}, "
-            f"Coordinates: {self.coordinates}, "
-            f"Metro: {self.metro_station}, "
-            f"Metro Coords: {self.metro_coordinates}"
-        )
-
-        if not self.coordinates and self.address:
-            logger.debug(f"Geocoding address: {self.address}")
-            self.geocode_address()
-
-        if not self.metro_coordinates and self.metro_station:
-            logger.debug(f"Geocoding metro: {self.metro_station}")
-            self.metro_coordinates = self.get_metro_coordinates()
-
+        if self.coordinates:
+            logger.debug(f"Saving coordinates: x={self.coordinates.x}, y={self.coordinates.y}")
+            if not (-180 <= self.coordinates.x <= 180) or not (-90 <= self.coordinates.y <= 90):
+                raise ValidationError("Некорректные координаты")
         super().save(*args, **kwargs)
 
         # Метод для получения ближайшего метро
