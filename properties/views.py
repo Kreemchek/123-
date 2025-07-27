@@ -34,6 +34,7 @@ from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse
 from django.contrib.gis.geos import Point
 import logging
+from django.core.serializers.json import DjangoJSONEncoder
 logger = logging.getLogger(__name__)
 
 
@@ -151,51 +152,43 @@ class PropertyDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['images'] = self.object.images.all()
         context['YANDEX_MAPS_API_KEY'] = settings.YANDEX_MAPS_API_KEY
-        if self.object.coordinates:
-            coords = self.object.get_coordinates_as_floats()
-            context['coordinates_json'] = json.dumps(coords)
 
+        # Координаты объекта в формате JSON
         if self.object.coordinates:
             context['coordinates_json'] = json.dumps({
-                'x': float(str(self.object.coordinates.x).replace(',', '.')),
-                'y': float(str(self.object.coordinates.y).replace(',', '.'))
-            })
-            if self.object.coordinates:
-                print(f"Coordinates: X={self.object.coordinates.x}, Y={self.object.coordinates.y}")
+                'x': float(self.object.coordinates.x),
+                'y': float(self.object.coordinates.y)
+            }, cls=DjangoJSONEncoder)
+
+        # Координаты метро в формате JSON
         if self.object.metro_coordinates:
             context['metro_coordinates_json'] = json.dumps({
                 'x': float(self.object.metro_coordinates.x),
                 'y': float(self.object.metro_coordinates.y)
-            })
+            }, cls=DjangoJSONEncoder)
 
+        # Остальной контекст
         if self.request.user.is_authenticated:
-            # Проверка избранного
             context['is_favorite'] = Favorite.objects.filter(
                 user=self.request.user,
                 property=self.object
             ).exists()
 
-
-            # Проверка, оплачен ли уже контакт
             context['contact_paid'] = Payment.objects.filter(
                 user=self.request.user,
                 description__contains=f"Контакт с брокером {self.object.broker.id} по объекту {self.object.id}",
                 status='completed'
             ).exists()
 
-            # Добавляем существующий запрос в контекст, если есть
             context['existing_request'] = ContactRequest.objects.filter(
                 requester=self.request.user,
                 broker=self.object.broker.user,
                 property=self.object
             ).first()
 
-            # Добавляем информацию о роли пользователя
             context['is_broker'] = self.request.user.user_type == User.UserType.BROKER
-        if self.object.coordinates:
-            context['has_coordinates'] = True
-        else:
-            context['has_coordinates'] = False
+
+        context['has_coordinates'] = bool(self.object.coordinates)
 
         return context
 

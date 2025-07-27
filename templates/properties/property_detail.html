@@ -777,16 +777,17 @@
     // Инициализация карты для просмотра
     let viewMap, viewPlacemark;
 
-   function initViewMap() {
-    {% if property.coordinates %}
-        // Получаем координаты из модели и преобразуем в массив чисел
-        const coords = [parseFloat({{ property.coordinates.y }}), parseFloat({{ property.coordinates.x }})];
-        console.log('InitViewMap - Coordinates from DB:', [{{ property.coordinates.x }}, {{ property.coordinates.y }}]);
-            console.log('InitViewMap - Coordinates for Yandex:', coords);
-            console.log('PostGIS stores:', [{{ property.coordinates.x }}, {{ property.coordinates.y }}]); // Долгота, широта
-            console.log('Yandex Maps expects:', [{{ property.coordinates.y }}, {{ property.coordinates.x }}]); // Ш
-    {% else %}
-        const coords = [55.751574, 37.617635]; // Москва по умолчанию
+  function initViewMap() {
+    let coords = [55.751574, 37.617635]; // Москва по умолчанию
+
+    {% if coordinates_json %}
+        try {
+            const coordsData = JSON.parse('{{ coordinates_json|escapejs }}');
+            coords = [coordsData.y, coordsData.x];
+            console.log('InitViewMap - Coordinates:', coords);
+        } catch (e) {
+            console.error('Error parsing coordinates:', e);
+        }
     {% endif %}
 
     ymaps.ready(function() {
@@ -804,15 +805,17 @@
         });
         viewMap.geoObjects.add(viewPlacemark);
 
-        {% if property.metro_coordinates %}
-            const metroCoords = [parseFloat({{ property.metro_coordinates.y }}), parseFloat({{ property.metro_coordinates.x }})];
-            const metroPlacemark = new ymaps.Placemark(metroCoords, {
-                hintContent: '{{ property.metro_station|escapejs }}'
-            }, {
-                preset: 'islands#blueCircleDotIcon',
-                iconColor: '#1e88e5'
-            });
-            viewMap.geoObjects.add(metroPlacemark);
+        {% if metro_coordinates_json %}
+            try {
+                const metroCoordsData = JSON.parse('{{ metro_coordinates_json|escapejs }}');
+                const metroCoords = [metroCoordsData.y, metroCoordsData.x];
+                const metroPlacemark = new ymaps.Placemark(metroCoords, {
+                    hintContent: '{{ property.metro_station|escapejs }}'
+                }, {
+                    preset: 'islands#blueCircleDotIcon',
+                    iconColor: '#1e88e5'
+                });
+                viewMap.geoObjects.add(metroPlacemark);
 
                 const polyline = new ymaps.Polyline(
                     [coords, metroCoords],
@@ -824,20 +827,29 @@
                     }
                 );
                 viewMap.geoObjects.add(polyline);
+            } catch (e) {
+                console.error('Error parsing metro coordinates:', e);
+            }
         {% endif %}
     });
 }
+
 
     // Инициализация карты для редактирования
     let editMap, editPlacemark;
     let searchResults = [];
 
     function initEditMap() {
-    {% if property.coordinates %}
-        const initialCoords = [parseFloat({{ property.coordinates.y }}), parseFloat({{ property.coordinates.x }})];
-        console.log('InitEditMap - Initial coordinates:', initialCoords);
-    {% else %}
-        const initialCoords = [55.751574, 37.617635]; // Москва по умолчанию
+    let initialCoords = [55.751574, 37.617635]; // Москва по умолчанию
+
+    {% if coordinates_json %}
+        try {
+            const coordsData = JSON.parse('{{ coordinates_json|escapejs }}');
+            initialCoords = [coordsData.y, coordsData.x];
+            console.log('InitEditMap - Initial coordinates:', initialCoords);
+        } catch (e) {
+            console.error('Error parsing coordinates:', e);
+        }
     {% endif %}
 
     ymaps.ready(function() {
@@ -1041,7 +1053,7 @@
     btn.disabled = true;
     btn.innerHTML = '<i class="bi bi-arrow-repeat spin"></i> Сохранение...';
 
-    try {
+     try {
         let coords = [55.751574, 37.617635]; // Москва по умолчанию
         if (editPlacemark) {
             const yandexCoords = editPlacemark.geometry.getCoordinates();
