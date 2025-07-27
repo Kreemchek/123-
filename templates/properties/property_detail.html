@@ -595,9 +595,7 @@
                     <div id="map-view-container">
                         <div id="map-view"></div>
                     </div>
-                    <div class="address-display" id="address-view-display">
-                        {{ property.address|default:"Адрес не указан" }}
-                    </div>
+
                 </div>
             </div>
 
@@ -1053,13 +1051,11 @@
     btn.disabled = true;
     btn.innerHTML = '<i class="bi bi-arrow-repeat spin"></i> Сохранение...';
 
-     try {
+    try {
         let coords = [55.751574, 37.617635]; // Москва по умолчанию
         if (editPlacemark) {
             const yandexCoords = editPlacemark.geometry.getCoordinates();
             console.log('Saving Yandex coordinates:', yandexCoords);
-
-            // Конвертируем в формат для PostGIS: [долгота, широта]
             coords = [yandexCoords[1], yandexCoords[0]];
             console.log('Converted to PostGIS format:', coords);
         }
@@ -1101,7 +1097,12 @@
                 viewMap.geoObjects.add(viewPlacemark);
             }
 
-            document.getElementById('address-view-display').textContent = data.address;
+            // Обновляем адрес в параметрах
+            const addressParamElement = document.querySelector('.params-grid div:nth-child(2) .text-lg');
+            if (addressParamElement) {
+                addressParamElement.textContent = data.address;
+            }
+
             showToast('Адрес успешно сохранен!', 'success');
         } else {
             throw new Error(data.message || 'Неизвестная ошибка');

@@ -4,7 +4,6 @@
 {% block extra_head %}
 <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css">
 <script src="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js"></script>
-<script src="https://api-maps.yandex.ru/2.1/?apikey={{ YANDEX_MAPS_API_KEY }}&lang=ru_RU" type="text/javascript"></script>
 <style>
     .property-card {
         transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -197,7 +196,69 @@
     #apply_filters:hover {
         background-color: #2563eb;
     }
+
+    /* Исправленные стили для карты */
+    #all-properties-map {
+        width: 100%;
+        height: 500px !important;
+        min-height: 500px;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        margin-bottom: 2rem;
+        position: relative;
+        background-color: #f0f0f0;
+        display: block !important;
+    }
+
+    /* Гарантируем, что родительские элементы не скрывают карту */
+    .animate-block {
+        display: block !important;
+        visibility: visible !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    .map-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .map-header h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #111827;
+    }
+        /* Добавляем стили для кнопки "Мое местоположение" */
+    .locate-me-btn {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 1000;
+        background: white;
+        padding: 8px;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 14px;
+    }
+
+    .locate-me-btn:hover {
+        background: #f5f5f5;
+    }
+
+    .locate-me-btn i {
+        font-size: 16px;
+    }
 </style>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://api-maps.yandex.ru/2.1/?apikey={{ YANDEX_MAPS_API_KEY }}&lang=ru_RU"></script>
 {% endblock %}
 
 {% block content %}
@@ -208,6 +269,19 @@
         <span class="separator" aria-hidden="true">/</span>
         <span>Каталог недвижимости</span>
     </nav>
+
+    <!-- Карта всех объектов -->
+    <div class="animate-block mb-8">
+    <div class="map-header">
+        <h2>Карта объектов недвижимости</h2>
+    </div>
+    <div id="all-properties-map"></div>
+    <!-- Добавляем кнопку "Мое местоположение" -->
+    <button id="locate-me" class="locate-me-btn">
+        <i class="bi bi-geo-alt"></i> Мое местоположение
+    </button>
+</div>
+
 
     <div class="flex flex-col lg:flex-row gap-8">
         <!-- Боковая панель с фильтрами -->
@@ -432,7 +506,7 @@
 </div>
               </div>
         </aside>
-
+<div style="display:none">API Key: {{ YANDEX_MAPS_API_KEY }}</div>
         <!-- Основное содержимое -->
         <div class="flex-1">
             <!-- Заголовок и поиск -->
@@ -464,20 +538,11 @@
                 </div>
             </div>
 
-            <!-- Карта с объектами -->
-            <div class="map-sidebar mb-8 bg-white rounded-lg shadow-sm overflow-hidden">
-                <div id="properties-map" class="map-container"></div>
-                <div class="radius-control">
-                    <input type="range" min="1" max="50" value="5" class="radius-slider" id="radius-slider">
-                    <span id="radius-value">5 км</span>
-                </div>
-            </div>
-
             <!-- Карточки объектов -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {% if properties %}
                     {% for property in properties %}
-                        <a href="{% url 'property-detail' property.id %}" class="property-card bg-white rounded-xl shadow-sm hover:shadow-md p-6 border-2 border-gray-100 transition-all block">
+                        <a href="{% url 'properties:property-detail' property.id %}" class="property-card bg-white rounded-xl shadow-sm hover:shadow-md p-6 border-2 border-gray-100 transition-all block">
                             <div class="relative mb-4">
                                 <img src="{{ property.main_image.url }}"
                                      class="w-full h-48 object-cover rounded-lg"
@@ -583,6 +648,191 @@
 </div>
 
 <script>
+    // Функция инициализации карты
+    function initMap() {
+        console.log("[DEBUG] Начало инициализации карты");
+
+        if (typeof ymaps === 'undefined') {
+            console.error('[DEBUG] Yandex Maps API not loaded');
+            setTimeout(initMap, 100);
+            return;
+        }
+
+        const mapContainer = document.getElementById('all-properties-map');
+        if (mapContainer.offsetHeight === 0) {
+            mapContainer.style.height = '500px';
+        }
+
+        ymaps.ready(function() {
+            const allPropertiesMap = new ymaps.Map('all-properties-map', {
+                center: [55.751574, 37.617635],
+                zoom: 10,
+                controls: ['zoomControl', 'fullscreenControl']
+            });
+
+            // Добавляем метки всех объектов
+            {% for property in properties %}
+                {% if property.coordinates %}
+                    const lat{{ property.id }} = parseFloat('{{ property.coordinates.y|stringformat:"f" }}'.replace(',', '.'));
+                    const lon{{ property.id }} = parseFloat('{{ property.coordinates.x|stringformat:"f" }}'.replace(',', '.'));
+                    const propertyCoords{{ property.id }} = [lat{{ property.id }}, lon{{ property.id }}];
+
+                    const marker{{ property.id }} = new ymaps.Placemark(
+                        propertyCoords{{ property.id }},
+                        {
+                            balloonContent: `
+                                <div style="padding: 10px;">
+                                    <img src="{{ property.main_image.url }}" style="width: 100%; height: 120px; object-fit: cover; margin-bottom: 10px;">
+                                    <h3 style="margin: 0 0 5px 0; font-size: 16px;">{{ property.title }}</h3>
+                                    <p style="margin: 0; font-weight: bold; color: #0060f4;">
+                                        {% if property.is_rental == 'monthly' and property.monthly_price %}
+                                            {{ property.monthly_price|space_format }} ₽/мес
+                                        {% elif property.is_rental == 'daily' and property.daily_price %}
+                                            {{ property.daily_price|space_format }} ₽/сут
+                                        {% else %}
+                                            {{ property.price|space_format }} ₽
+                                        {% endif %}
+                                    </p>
+                                    <a href="{% url 'properties:property-detail' property.id %}" style="display: inline-block; margin-top: 10px; color: #0060f4;">Подробнее</a>
+                                </div>
+                            `,
+                            hintContent: '{{ property.title|escapejs }}'
+                        },
+                        {
+                            preset: 'islands#blueHomeIcon',
+                            balloonCloseButton: true,
+                            draggable: false
+                        }
+                    );
+
+                    marker{{ property.id }}.events.add('click', function(e) {
+                        const balloon = e.get('target').balloon;
+                        if (balloon.isOpen()) {
+                            window.location.href = "{% url 'properties:property-detail' property.id %}";
+                        }
+                    });
+
+                    allPropertiesMap.geoObjects.add(marker{{ property.id }});
+                {% endif %}
+            {% endfor %}
+
+            // Обработчик кнопки "Мое местоположение"
+            document.getElementById('locate-me').addEventListener('click', function() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        function(position) {
+                            const userCoords = [position.coords.latitude, position.coords.longitude];
+                            allPropertiesMap.setCenter(userCoords, 15);
+
+                            // Добавляем метку пользователя
+                            const userMarker = new ymaps.Placemark(userCoords, {
+                                hintContent: 'Ваше местоположение'
+                            }, {
+                                preset: 'islands#greenDotIcon',
+                                draggable: false
+                            });
+
+                            allPropertiesMap.geoObjects.add(userMarker);
+                        },
+                        function(error) {
+                            console.error('Ошибка получения местоположения:', error);
+                            alert('Не удалось определить ваше местоположение. Пожалуйста, проверьте настройки геолокации.');
+                        },
+                        {
+                            enableHighAccuracy: true,
+                            timeout: 5000,
+                            maximumAge: 0
+                        }
+                    );
+                } else {
+                    alert('Ваш браузер не поддерживает геолокацию');
+                }
+            });
+
+            // Автомасштабирование
+            if (allPropertiesMap.geoObjects.getLength() > 0) {
+                allPropertiesMap.setBounds(allPropertiesMap.geoObjects.getBounds(), {
+                    checkZoomRange: true,
+                    zoomMargin: 50
+                });
+            } else {
+                allPropertiesMap.setCenter([55.751574, 37.617635], 10);
+            }
+        });
+    }
+
+
+        console.log("[DEBUG] Карта успешно инициализирована");{
+
+
+}
+
+    // Загружаем Яндекс.Карты динамически
+    function loadYandexMaps() {
+        console.log("[DEBUG] Начало загрузки Yandex Maps API");
+
+        const script = document.createElement('script');
+        script.src = `https://api-maps.yandex.ru/2.1/?apikey={{ YANDEX_MAPS_API_KEY }}&lang=ru_RU&onload=initMap`;
+        script.type = 'text/javascript';
+
+        script.onload = function() {
+            console.log("[DEBUG] Скрипт Yandex Maps API успешно загружен");
+        };
+
+        script.onerror = function() {
+            console.error("[DEBUG] Ошибка загрузки скрипта Yandex Maps API");
+        };
+
+        document.head.appendChild(script);
+    }
+
+    // Запускаем загрузку карт после полной загрузки страницы
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("[DEBUG] DOM полностью загружен, начинаем загрузку карт");
+        loadYandexMaps();
+    });
+</script>
+
+<div id="map-status" style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.8); padding: 5px 10px; border-radius: 4px; z-index: 1000; font-size: 12px;">
+    Статус карты: <span id="map-status-text">загрузка...</span>
+</div>
+
+<script>
+    // Обновляем статус карты в интерфейсе
+    function updateMapStatus(status) {
+        const statusElement = document.getElementById('map-status-text');
+        if (statusElement) {
+            statusElement.textContent = status;
+
+            // Добавляем цвет в зависимости от статуса
+            if (status.includes('успешно')) {
+                statusElement.style.color = 'green';
+            } else if (status.includes('ошибка')) {
+                statusElement.style.color = 'red';
+            } else {
+                statusElement.style.color = 'orange';
+            }
+        }
+    }
+
+    // Перехватываем сообщения для обновления статуса
+    const originalConsoleLog = console.log;
+    const originalConsoleError = console.error;
+
+    console.log = function(message) {
+        if (typeof message === 'string' && message.includes('[DEBUG]')) {
+            updateMapStatus(message.replace('[DEBUG]', '').trim());
+        }
+        originalConsoleLog.apply(console, arguments);
+    };
+
+    console.error = function(message) {
+        if (typeof message === 'string' && message.includes('[DEBUG]')) {
+            updateMapStatus('ОШИБКА: ' + message.replace('[DEBUG]', '').trim());
+        }
+        originalConsoleError.apply(console, arguments);
+    };
+
     document.addEventListener('DOMContentLoaded', function() {
         // Переключение видимости фильтров на мобильных
         const filterToggle = document.querySelector('.filter-toggle');
@@ -592,109 +842,6 @@
             filterToggle.addEventListener('click', function() {
                 filterSidebar.classList.toggle('hidden');
             });
-        }
-
-        // Инициализация карты
-        let map;
-        let objectMarkers = [];
-        let radiusCircle;
-        let radius = 5; // км
-        let centerCoords = [55.751574, 37.573856]; // Москва по умолчанию
-
-        ymaps.ready(initMap);
-
-        function initMap() {
-            map = new ymaps.Map('properties-map', {
-                center: centerCoords,
-                zoom: 10,
-                controls: ['zoomControl', 'fullscreenControl']
-            });
-
-            // Добавляем метки объектов
-            {% for property in properties %}
-                {% if property.coordinates %}
-                    addPropertyMarker(
-                        [{{ property.coordinates.y }}, {{ property.coordinates.x }}],
-                        '{{ property.title }}',
-                        '{{ property.get_absolute_url }}',
-                        '{{ property.main_image.url }}',
-                        '{{ property.price|default:0 }}'
-                    );
-                {% endif %}
-            {% endfor %}
-
-            // Обработчик клика по карте для установки радиуса поиска
-            map.events.add('click', function(e) {
-                centerCoords = e.get('coords');
-                updateRadiusCircle(centerCoords, radius);
-                updateRadiusFilterInput(centerCoords, radius);
-            });
-
-            // Инициализация слайдера радиуса
-            const radiusSlider = document.getElementById('radius-slider');
-            const radiusValue = document.getElementById('radius-value');
-
-            radiusSlider.addEventListener('input', function() {
-                radius = parseInt(this.value);
-                radiusValue.textContent = radius + ' км';
-                updateRadiusCircle(centerCoords, radius);
-                updateRadiusFilterInput(centerCoords, radius);
-            });
-        }
-
-        function addPropertyMarker(coords, title, url, imageUrl, price) {
-            const marker = new ymaps.Placemark(coords, {
-                balloonContent: `
-                    <div style="padding: 10px;">
-                        <img src="${imageUrl}" style="width: 100%; height: 120px; object-fit: cover; margin-bottom: 10px;">
-                        <h3 style="margin: 0 0 5px 0; font-size: 16px;">${title}</h3>
-                        <p style="margin: 0; font-weight: bold; color: #0060f4;">${parseInt(price).toLocaleString('ru-RU')} ₽</p>
-                        <a href="${url}" style="display: inline-block; margin-top: 10px; color: #0060f4;">Подробнее</a>
-                    </div>
-                `
-            }, {
-                preset: 'islands#blueHomeIcon'
-            });
-
-            marker.events.add('click', function() {
-                window.location.href = url;
-            });
-
-            map.geoObjects.add(marker);
-            objectMarkers.push(marker);
-        }
-
-        function updateRadiusCircle(center, radius) {
-            if (radiusCircle) {
-                map.geoObjects.remove(radiusCircle);
-            }
-
-            radiusCircle = new ymaps.Circle([
-                center,
-                radius * 1000 // Радиус в метрах
-            ], {}, {
-                fillColor: "#0060f433",
-                strokeColor: "#0060f4",
-                strokeOpacity: 0.8,
-                strokeWidth: 2
-            });
-
-            map.geoObjects.add(radiusCircle);
-            map.setCenter(center, getZoomLevelForRadius(radius));
-        }
-
-        function updateRadiusFilterInput(center, radius) {
-            document.getElementById('radius-filter-input').value =
-                `${center[0]},${center[1]},${radius}`;
-        }
-
-        function getZoomLevelForRadius(radius) {
-            // Эмпирическая формула для определения zoom уровня
-            if (radius > 20) return 10;
-            if (radius > 10) return 11;
-            if (radius > 5) return 12;
-            if (radius > 2) return 13;
-            return 14;
         }
 
         // Обработчик для кнопки "Избранное"
