@@ -225,14 +225,12 @@ class Property(models.Model):
         except Exception as e:
             logger.error(f"Geocoding failed for address {self.address}: {str(e)}")
 
-
-
     def get_coordinates_as_floats(self):
         """Возвращает координаты как числа с плавающей точкой"""
         if self.coordinates:
             return {
-                'x': float(str(self.coordinates.x).replace(',', '.')),
-                'y': float(str(self.coordinates.y).replace(',', '.'))
+                'x': float(self.coordinates.x),
+                'y': float(self.coordinates.y)
             }
         return None
 

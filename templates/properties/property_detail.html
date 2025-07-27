@@ -777,43 +777,42 @@
     // Инициализация карты для просмотра
     let viewMap, viewPlacemark;
 
-    function initViewMap() {
-        // Используем координаты из модели (x - долгота, y - широта)
-        {% if property.coordinates %}
-            // Для Яндекс.Карт нужно передавать [широта, долгота]
-            const coords = [{{ property.coordinates.y }}, {{ property.coordinates.x }}];
-            console.log('InitViewMap - Coordinates from DB:', [{{ property.coordinates.x }}, {{ property.coordinates.y }}]);
+   function initViewMap() {
+    {% if property.coordinates %}
+        // Получаем координаты из модели и преобразуем в массив чисел
+        const coords = [parseFloat({{ property.coordinates.y }}), parseFloat({{ property.coordinates.x }})];
+        console.log('InitViewMap - Coordinates from DB:', [{{ property.coordinates.x }}, {{ property.coordinates.y }}]);
             console.log('InitViewMap - Coordinates for Yandex:', coords);
             console.log('PostGIS stores:', [{{ property.coordinates.x }}, {{ property.coordinates.y }}]); // Долгота, широта
             console.log('Yandex Maps expects:', [{{ property.coordinates.y }}, {{ property.coordinates.x }}]); // Ш
-        {% else %}
-            const coords = [55.751574, 37.617635]; // Москва по умолчанию [широта, долгота]
-        {% endif %}
+    {% else %}
+        const coords = [55.751574, 37.617635]; // Москва по умолчанию
+    {% endif %}
 
-        ymaps.ready(function() {
-            viewMap = new ymaps.Map('map-view', {
-                center: coords,
-                zoom: 15,
-                controls: ['zoomControl', 'fullscreenControl']
-            });
+    ymaps.ready(function() {
+        viewMap = new ymaps.Map('map-view', {
+            center: coords,
+            zoom: 15,
+            controls: ['zoomControl', 'fullscreenControl']
+        });
 
-            viewPlacemark = new ymaps.Placemark(coords, {
-                hintContent: '{{ property.address|escapejs }}'
+        viewPlacemark = new ymaps.Placemark(coords, {
+            hintContent: '{{ property.address|escapejs }}'
+        }, {
+            preset: 'islands#redDotIcon',
+            draggable: false
+        });
+        viewMap.geoObjects.add(viewPlacemark);
+
+        {% if property.metro_coordinates %}
+            const metroCoords = [parseFloat({{ property.metro_coordinates.y }}), parseFloat({{ property.metro_coordinates.x }})];
+            const metroPlacemark = new ymaps.Placemark(metroCoords, {
+                hintContent: '{{ property.metro_station|escapejs }}'
             }, {
-                preset: 'islands#redDotIcon',
-                draggable: false
+                preset: 'islands#blueCircleDotIcon',
+                iconColor: '#1e88e5'
             });
-            viewMap.geoObjects.add(viewPlacemark);
-
-            {% if property.metro_coordinates %}
-                const metroCoords = [{{ property.metro_coordinates.y }}, {{ property.metro_coordinates.x }}];
-                const metroPlacemark = new ymaps.Placemark(metroCoords, {
-                    hintContent: '{{ property.metro_station|escapejs }}'
-                }, {
-                    preset: 'islands#blueCircleDotIcon',
-                    iconColor: '#1e88e5'
-                });
-                viewMap.geoObjects.add(metroPlacemark);
+            viewMap.geoObjects.add(metroPlacemark);
 
                 const polyline = new ymaps.Polyline(
                     [coords, metroCoords],
@@ -825,36 +824,34 @@
                     }
                 );
                 viewMap.geoObjects.add(polyline);
-            {% endif %}
-        });
-    }
+        {% endif %}
+    });
+}
 
     // Инициализация карты для редактирования
     let editMap, editPlacemark;
     let searchResults = [];
 
-     function initEditMap() {
-        // Используем координаты из модели (x - долгота, y - широта)
-        {% if property.coordinates %}
-            // Для Яндекс.Карт нужно передавать [широта, долгота]
-            const initialCoords = [{{ property.coordinates.y }}, {{ property.coordinates.x }}];
-            console.log('InitEditMap - Initial coordinates:', initialCoords);
-        {% else %}
-            const initialCoords = [55.751574, 37.617635]; // Москва по умолчанию [широта, долгота]
-        {% endif %}
+    function initEditMap() {
+    {% if property.coordinates %}
+        const initialCoords = [parseFloat({{ property.coordinates.y }}), parseFloat({{ property.coordinates.x }})];
+        console.log('InitEditMap - Initial coordinates:', initialCoords);
+    {% else %}
+        const initialCoords = [55.751574, 37.617635]; // Москва по умолчанию
+    {% endif %}
 
-        ymaps.ready(function() {
-            editMap = new ymaps.Map('map', {
-                center: initialCoords,
-                zoom: 15,
-                controls: ['zoomControl', 'fullscreenControl']
-            });
+    ymaps.ready(function() {
+        editMap = new ymaps.Map('map', {
+            center: initialCoords,
+            zoom: 15,
+            controls: ['zoomControl', 'fullscreenControl']
+        });
 
-            editPlacemark = new ymaps.Placemark(initialCoords, {}, {
-                preset: 'islands#redDotIcon',
-                draggable: true
-            });
-            editMap.geoObjects.add(editPlacemark);
+        editPlacemark = new ymaps.Placemark(initialCoords, {}, {
+            preset: 'islands#redDotIcon',
+            draggable: true
+        });
+        editMap.geoObjects.add(editPlacemark);
 
             // Обработчик клика по карте
             editMap.events.add('click', function(e) {
@@ -1038,75 +1035,73 @@
     }
 
     // Обработчик сохранения адреса
-     document.getElementById('save-address-btn').addEventListener('click', async function() {
-        const btn = this;
-        const originalText = btn.innerHTML;
-        btn.disabled = true;
-        btn.innerHTML = '<i class="bi bi-arrow-repeat spin"></i> Сохранение...';
+    document.getElementById('save-address-btn').addEventListener('click', async function() {
+    const btn = this;
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="bi bi-arrow-repeat spin"></i> Сохранение...';
 
-        try {
-            let coords = [55.751574, 37.617635]; // Москва по умолчанию [широта, долгота]
-            if (editPlacemark) {
-                // Получаем [широта, долгота] от Яндекс
-                const yandexCoords = editPlacemark.geometry.getCoordinates();
-                console.log('Saving Yandex coordinates:', yandexCoords);
+    try {
+        let coords = [55.751574, 37.617635]; // Москва по умолчанию
+        if (editPlacemark) {
+            const yandexCoords = editPlacemark.geometry.getCoordinates();
+            console.log('Saving Yandex coordinates:', yandexCoords);
 
-                // Конвертируем в [долгота, широта] для PostGIS
-                coords = [yandexCoords[1], yandexCoords[0]];
-                console.log('Converted to PostGIS format:', coords);
-            }
+            // Конвертируем в формат для PostGIS: [долгота, широта]
+            coords = [yandexCoords[1], yandexCoords[0]];
+            console.log('Converted to PostGIS format:', coords);
+        }
 
-            const response = await fetch('{% url "properties:update_property_address" %}?t=' + Date.now(), {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: JSON.stringify({
-                    property_id: {{ property.id }},
-                    city: document.getElementById('city-input').value,
-                    address: document.getElementById('address-display').textContent,
-                    metro_station: document.getElementById('metro-input').value,
-                    coordinates: coords.join(','),
-                    _method: 'PATCH'
-                })
-            });
+        const response = await fetch('{% url "properties:update_property_address" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                property_id: {{ property.id }},
+                city: document.getElementById('city-input').value,
+                address: document.getElementById('address-display').textContent,
+                metro_station: document.getElementById('metro-input').value,
+                coordinates: coords.join(','),
+                _method: 'PATCH'
+            })
+        });
 
-            const data = await response.json();
-            console.log('Server response:', data);
+        const data = await response.json();
+        console.log('Server response:', data);
 
-            if (data.status === 'success') {
-                // Обновляем карту просмотра
-                if (typeof viewMap !== 'undefined') {
-                    // Конвертируем обратно в [широта, долгота] для Яндекс
-                    const newCoords = [data.coordinates.y, data.coordinates.x];
-                    console.log('Updating view map with:', newCoords);
-                    viewMap.setCenter(newCoords);
+        if (data.status === 'success') {
+            // Обновляем карту просмотра
+            if (typeof viewMap !== 'undefined') {
+                const newCoords = [data.coordinates.y, data.coordinates.x];
+                console.log('Updating view map with:', newCoords);
+                viewMap.setCenter(newCoords, 15);
 
-                    if (viewPlacemark) {
-                        viewMap.geoObjects.remove(viewPlacemark);
-                    }
-
-                    viewPlacemark = new ymaps.Placemark(newCoords, {}, {
-                        preset: 'islands#redDotIcon',
-                        draggable: false
-                    });
-                    viewMap.geoObjects.add(viewPlacemark);
+                if (viewPlacemark) {
+                    viewMap.geoObjects.remove(viewPlacemark);
                 }
 
-                document.getElementById('address-view-display').textContent = data.address;
-                showToast('Адрес успешно сохранен!', 'success');
-            } else {
-                throw new Error(data.message || 'Неизвестная ошибка');
+                viewPlacemark = new ymaps.Placemark(newCoords, {}, {
+                    preset: 'islands#redDotIcon',
+                    draggable: false
+                });
+                viewMap.geoObjects.add(viewPlacemark);
             }
-        } catch (error) {
-            console.error('Ошибка:', error);
-            showToast(`Ошибка: ${error.message}`, 'error');
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = originalText;
+
+            document.getElementById('address-view-display').textContent = data.address;
+            showToast('Адрес успешно сохранен!', 'success');
+        } else {
+            throw new Error(data.message || 'Неизвестная ошибка');
         }
-    });
+    } catch (error) {
+        console.error('Ошибка:', error);
+        showToast(`Ошибка: ${error.message}`, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+});
     // Основная инициализация
     document.addEventListener('DOMContentLoaded', function() {
         const swiper = initSwiper();

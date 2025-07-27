@@ -662,18 +662,14 @@ def update_property_address(request):
             logger.debug(f"Raw coordinates string: {data['coordinates']} (type: {type(data['coordinates'])})")
 
             try:
-                # Явная замена запятых на точки для защиты от локали
-                coords_str = data['coordinates'].replace(',', '.')
-                logger.debug(f"Coordinates after comma replacement: {coords_str}")
-
-                # Разделение координат
-                coords = coords_str.split(',')
+                # Разделяем координаты по запятой
+                coords = data['coordinates'].split(',')
                 logger.debug(f"Split coordinates: {coords}")
 
                 if len(coords) != 2:
                     raise ValueError("Должно быть ровно 2 координаты")
 
-                # Преобразование в float
+                # Преобразование в float (уже с точкой как разделителем)
                 lon, lat = map(float, coords)
                 logger.debug(f"Parsed coordinates as floats: lon={lon}, lat={lat}")
 
