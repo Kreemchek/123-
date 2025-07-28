@@ -127,6 +127,7 @@ class PropertyListView(FilterView):
         context = super().get_context_data(**kwargs)
         context['YANDEX_MAPS_API_KEY'] = settings.YANDEX_MAPS_API_KEY
 
+
         # Добавляем информацию о текущем брокере для фильтра
         broker_id = self.request.GET.get('broker')
         if broker_id:

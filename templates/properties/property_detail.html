@@ -474,6 +474,12 @@
                         <div class="text-lg md:text-xl font-bold">{{ property.rooms }}</div>
                     </div>
                     {% endif %}
+{% if property.distance_to_center %}
+<div class="bg-gray-50 p-4 rounded-lg">
+    <div class="text-xs md:text-sm text-gray-500">До центра</div>
+    <div class="text-lg md:text-xl font-bold">{{ property.distance_to_center|floatformat:2 }} км</div>
+</div>
+{% endif %}
 
                     <!-- Этаж (только для квартир) -->
                     {% if property.property_type.name == 'new_flat' or property.property_type.name == 'resale_flat' %}
@@ -518,6 +524,7 @@
                         <div class="text-lg md:text-xl font-bold">{{ property.metro_station }}</div>
                     </div>
                     {% endif %}
+
 
                     <!-- Отделка (только для квартир) -->
                     {% if property.property_type.name == 'new_flat' or property.property_type.name == 'resale_flat' %}

@@ -5,7 +5,7 @@ from django.contrib.gis.geos import Point
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import D
 from django_filters import FilterSet, NumberFilter, CharFilter, BooleanFilter, ModelMultipleChoiceFilter
-from .models import Property, PropertyType
+from .models import Property, PropertyType, CityCenter
 
 
 class PropertyFilter(FilterSet):
@@ -75,13 +75,40 @@ class PropertyFilter(FilterSet):
                 return queryset.filter(price_per_sqm__lte=value)
         return queryset
 
+        # Обновляем фильтр расстояния до центра
+
     def filter_by_distance_to_center(self, queryset, name, value):
-        # Реализация расчета расстояния до центра
-        if value and name == 'min_distance_to_center':
-            return queryset.filter(distance_to_center__gte=value)
-        elif value and name == 'max_distance_to_center':
-            return queryset.filter(distance_to_center__lte=value)
-        return queryset
+        if not value:
+            return queryset
+
+        try:
+            value = float(value)
+            # Получаем все города из выборки
+            locations = queryset.values_list('location', flat=True).distinct()
+
+            # Создаем Q-объект для фильтрации
+            q_objects = Q()
+
+            for city in locations:
+                city_center = CityCenter.objects.filter(city__iexact=city).first()
+                if city_center:
+                    if name == 'min_distance_to_center':
+                        q_objects |= Q(
+                            location=city,
+                            coordinates__distance_gte=(city_center.coordinates, D(km=value))
+                        )
+                    elif name == 'max_distance_to_center':
+                        q_objects |= Q(
+                            location=city,
+                            coordinates__distance_lte=(city_center.coordinates, D(km=value))
+                        )
+
+            return queryset.filter(q_objects).annotate(
+                distance=Distance('coordinates', city_center.coordinates)
+            )
+
+        except (ValueError, TypeError):
+            return queryset
 
     def filter_by_radius(self, queryset, name, value):
         try:

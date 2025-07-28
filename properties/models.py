@@ -153,6 +153,17 @@ class Property(models.Model):
         null=True,
         blank=True
     )
+    construction_year = models.PositiveIntegerField(
+        verbose_name='Год постройки',
+        null=True,
+        blank=True
+    )
+    distance_to_center = models.FloatField(
+        verbose_name='Расстояние до центра (км)',
+        null=True,
+        blank=True
+    )
+
     is_delivered = models.BooleanField(verbose_name='Дом сдан', default=False)
     living_area = models.DecimalField(
         verbose_name='Жилая площадь (м²)',
@@ -234,6 +245,53 @@ class Property(models.Model):
             }
         return None
 
+        # Метод для обновления расстояния до центра
+
+    def update_distance_to_center(self):
+        """
+        Рассчитывает расстояние до центра города в километрах.
+        Возвращает расстояние или None, если не удалось рассчитать.
+        """
+        if not self.coordinates or not self.location:
+            return None
+
+        try:
+            # Получаем центр города из базы данных
+            city_center = CityCenter.objects.filter(city__iexact=self.location).first()
+            if not city_center:
+                # Если центр города не задан, попробуем найти его через геокодер
+                center_coords = self._geocode_city_center(self.location)
+                if center_coords:
+                    city_center = CityCenter.objects.create(
+                        city=self.location,
+                        coordinates=Point(center_coords[0], center_coords[1], srid=4326)
+                    )
+                else:
+                    return None
+
+            # Вычисляем расстояние (примерно в км) и возвращаем значение
+            distance = self.coordinates.distance(city_center.coordinates) * 100
+            return distance
+
+        except Exception as e:
+            logger.error(f"Error calculating distance to center: {str(e)}")
+            return None
+
+    def _geocode_city_center(self, city_name):
+        """Геокодирование центра города через Яндекс API"""
+        try:
+            url = f"https://geocode-maps.yandex.ru/1.x/?apikey={settings.YANDEX_GEOCODER_API_KEY}&format=json&geocode={city_name}&kind=locality"
+            response = requests.get(url)
+            data = response.json()
+
+            if data['response']['GeoObjectCollection']['metaDataProperty']['GeocoderResponseMetaData']['found'] > 0:
+                pos = data['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['Point']['pos']
+                lon, lat = map(float, pos.split())
+                return (lon, lat)
+        except Exception as e:
+            logger.error(f"Geocoding error for city {city_name}: {str(e)}")
+        return None
+
 
     class Meta:
         verbose_name = _('Объект недвижимости')
@@ -282,10 +340,17 @@ class Property(models.Model):
         else:
             self.title = f"{self.property_type.get_name_display()}, {self.total_area} м²"
 
+        # Обновление расстояния до центра
+        if self.coordinates and self.location:
+            self.distance_to_center = self.update_distance_to_center()
+
+        # Валидация координат
         if self.coordinates:
             logger.debug(f"Saving coordinates: x={self.coordinates.x}, y={self.coordinates.y}")
             if not (-180 <= self.coordinates.x <= 180) or not (-90 <= self.coordinates.y <= 90):
                 raise ValidationError("Некорректные координаты")
+
+        # Вызов оригинального метода save
         super().save(*args, **kwargs)
 
         # Метод для получения ближайшего метро
@@ -335,6 +400,18 @@ class Property(models.Model):
             # Проверяем порядок координат (x=долгота, y=широта)
             if not (-180 <= self.coordinates.x <= 180) or not (-90 <= self.coordinates.y <= 90):
                 raise ValidationError("Некорректные координаты")
+
+
+class CityCenter(models.Model):
+    city = models.CharField(max_length=100, unique=True, verbose_name='Город')
+    coordinates = gis_models.PointField(verbose_name='Координаты центра')
+
+    class Meta:
+        verbose_name = 'Центр города'
+        verbose_name_plural = 'Центры городов'
+
+    def __str__(self):
+        return self.city
 
 class PropertyImage(models.Model):
     property = models.ForeignKey(
