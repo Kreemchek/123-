@@ -14,7 +14,7 @@ from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.conf import settings
 # Гео-импорты
-from django.contrib.gis.measure import Distance
+from django.contrib.gis.measure import Distance, D
 from django.contrib.gis.geos import Point
 import json
 # Сторонние библиотеки
@@ -48,8 +48,17 @@ class PropertyListView(FilterView):
     def get_queryset(self):
         queryset = super().get_queryset()
 
+        # Для администраторов показываем все объекты
         if self.request.user.is_authenticated and self.request.user.is_admin:
             return queryset
+
+        # Аннотируем цену за квадратный метр
+        queryset = queryset.annotate(
+            price_per_sqm=ExpressionWrapper(
+                F('price') / F('total_area'),
+                output_field=FloatField()
+            )
+        )
 
         # Для неаутентифицированных пользователей показываем только одобренные объекты
         if not self.request.user.is_authenticated:
@@ -94,28 +103,25 @@ class PropertyListView(FilterView):
                 is_approved=True
             )
 
-        queryset = queryset.annotate(
-            price_per_sqm=ExpressionWrapper(
-                F('price') / F('total_area'),
-                output_field=FloatField()
-            )
-        )
-
-        # Поиск по названию или локации
+        # Обработка поискового запроса
         search_query = self.request.GET.get('search')
         if search_query:
-            queryset = queryset.filter(
-                Q(title__icontains=search_query) |
-                Q(location__icontains=search_query)
-            )
+            # Используем фильтр для универсального поиска
+            return PropertyFilter(data={'search': search_query}, queryset=queryset).qs
 
-        # Добавляем расчет расстояния до центра, если нужно
-        if 'min_distance_to_center' in self.request.GET or 'max_distance_to_center' in self.request.GET:
-            center_point = Point(37.617635, 55.755814, srid=4326)  # Координаты центра Москвы
-            queryset = queryset.annotate(
-                distance_to_center=Distance('coordinates', center_point))
+        # Обработка геолокации
+        geo_coords = self.request.GET.get('radius_filter')
+        if geo_coords:
+            try:
+                lat, lon, radius = map(float, geo_coords.split(','))
+                center = Point(lon, lat, srid=4326)
+                queryset = queryset.filter(
+                    coordinates__distance_lte=(center, D(km=radius)))
+            except (ValueError, IndexError):
+                pass
 
-        return queryset
+        # Применяем все остальные фильтры
+        return PropertyFilter(data=self.request.GET, queryset=queryset).qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

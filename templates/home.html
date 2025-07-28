@@ -9,123 +9,158 @@
     }
     .category-card { animation: fadeIn 0.6s ease; }
     .gradient-bg { background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); }
+
+    /* Стили для автодополнения */
+    #search-suggestions {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        border: 1px solid #e5e7eb;
+        border-top: none;
+    }
+    #search-suggestions div {
+        padding: 10px 15px;
+        cursor: pointer;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    #search-suggestions div:hover {
+        background-color: #f9fafb;
+    }
+
+    /* Стили для модального окна фильтров */
+    #filters-modal {
+        transition: opacity 0.3s ease;
+    }
+    #filters-modal > div {
+        transition: transform 0.3s ease;
+    }
+    #filters-modal:not(.hidden) {
+        display: flex;
+        opacity: 1;
+    }
+    #filters-modal:not(.hidden) > div {
+        transform: translateY(0);
+    }
+
+    /* Стили для toast-уведомлений */
+    .toast {
+        animation: slideIn 0.3s ease forwards;
+    }
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
 </style>
 
 <!-- Герой-секция -->
 <div class="hero bg-blue-600 text-white py-20">
     <div class="container mx-auto px-4 text-center">
-        <h1 class="text-4xl md:text-6xl font-bold mb-6 animate-pulse"> Сервис выгодных сделок с недвижимостью</h1>
+        <h1 class="text-4xl md:text-6xl font-bold mb-6 animate-pulse">Сервис выгодных сделок с недвижимостью</h1>
         <p class="text-xl mb-8 opacity-95">База проверенных брокеров и эксклюзивных предложений</p>
 
         <!-- Улучшенная форма поиска -->
         <div class="max-w-3xl mx-auto bg-white rounded-xl p-2 shadow-2xl">
-            <form class="flex flex-col md:flex-row gap-2"
+            <form class="flex flex-col" id="search-form"
                   action="{% if user.is_authenticated %}{% url 'properties:property-list' %}{% else %}{% url 'register' %}?next={% url 'properties:property-list' %}{% endif %}"
                   method="get">
-                <input type="text"
-                       name="search"
-                       placeholder="📍 Район, ЖК, метро..."
-                       class="flex-grow px-6 py-4 rounded-lg text-gray-800 border-0 focus:ring-4 focus:ring-blue-200">
+                <div class="relative flex items-center">
+                    <input type="text"
+                           name="search"
+                           placeholder="🔍 Введите город, метро, '2-комнатная', 'цена 5-10 млн', 'рядом со мной'..."
+                           class="flex-grow px-6 py-4 rounded-lg text-gray-800 border-0 focus:ring-4 focus:ring-blue-200"
+                           id="location-search"
+                           autocomplete="off">
 
-               <div class="flex gap-2 flex-grow">
-    <select name="property_type"
-            class="px-4 py-3 rounded-lg bg-gray-200 border border-gray-300 focus:border-gray-400 w-1/2
-                   text-gray-800 focus:ring-2 focus:ring-gray-200 transition-colors">
-        <option value="">Тип</option>
-        <option value="apartment">Квартира</option>
-        <option value="house">Дом</option>
-        <option value="commercial">Коммерческая</option>
-    </select>
+                    <button type="button" id="geolocation-btn" class="absolute right-16 text-gray-500 hover:text-blue-600">
+                        <i class="fas fa-location-arrow"></i>
+                    </button>
 
-    <select name="price"
-            class="px-4 py-3 rounded-lg bg-gray-200 border border-gray-300 focus:border-gray-400 w-1/2
-                   text-gray-800 focus:ring-2 focus:ring-gray-200 transition-colors">
-        <option value=""> Бюджет</option>
-        <option value="1-5">До 5 млн</option>
-        <option value="5-10">5-10 млн</option>
-        <option value="10-20">10-20 млн</option>
-    </select>
-</div>
+                    <button type="submit"
+                            class="bg-blue-700 hover:bg-blue-800 px-6 py-4 rounded-lg
+                                   font-bold text-white transition-all duration-300
+                                   transform hover:scale-105 ml-2">
+                        Найти
+                    </button>
+                </div>
 
-               <button type="submit"
-    class="bg-blue-700 hover:bg-blue-800 px-10 py-4 rounded-xl
-           font-bold text-white transition-all duration-300
-           transform hover:scale-105 shadow-xl
-           border-2 border-blue-900/20
-           flex items-center gap-2">
-    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-    </svg>
-    Найти
-</button>
+                <div id="search-suggestions" class="hidden bg-white mt-1 rounded-lg shadow-lg z-10 max-h-60 overflow-auto">
+                    <!-- Здесь будут подсказки -->
+                </div>
+
+                <div class="text-xs text-gray-500 mt-2 pl-2">
+                    Примеры: "2-комнатная в Москве", "новостройка от 5 млн", "дом 100 м²"
+                </div>
+
+                <button type="button" id="show-filters" class="mt-2 text-blue-600 text-sm font-medium self-start flex items-center">
+                    <i class="fas fa-sliders-h mr-2"></i> Расширенные фильтры
+                </button>
             </form>
+
+            <!-- Скрытый инпут для геолокации -->
+            <input type="hidden" id="geo-coords" name="radius_filter">
         </div>
     </div>
 </div>
 
 <!-- Категории -->
-<!-- Категории -->
 <div class="container mx-auto px-4 py-16">
-    <h2 class="text-4xl font-bold text-center mb-16"> Выберите категорию</h2>
+    <h2 class="text-4xl font-bold text-center mb-16">Выберите категорию</h2>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <!-- Брокеры -->
-        <!-- Брокеры -->
-<a href="{% if user.is_authenticated %}{% url 'broker-list' %}{% else %}{% url 'register' %}?next={% url 'broker-list' %}{% endif %}"
-   class="group">
-    <div class="bg-white rounded-lg shadow-lg overflow-hidden
-                transition-transform duration-300
-                hover:scale-105 transform">
-        <div class="h-48 bg-blue-600 flex items-center justify-center">
-            <i class="fas fa-user-tie text-white text-6xl"></i>
-        </div>
-        <div class="p-6">
-            <h3 class="text-xl font-bold mb-2">Брокеры</h3>
-            <p class="text-gray-600">Профессиональное управление недвижимостью</p>
-        </div>
-    </div>
-</a>
-
-
-
-<!-- Объекты -->
-<a href="{% if user.is_authenticated %}{% url 'properties:property-list' %}{% else %}{% url 'register' %}?next={% url 'properties:property-list' %}{% endif %}"
-   class="group">
-    <div class="bg-white rounded-lg shadow-lg overflow-hidden
-                transition-transform duration-300
-                hover:scale-105 transform">
-        <div class="h-48 bg-orange-500 flex items-center justify-center relative">
-
-
-            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-                <i class="fas fa-home text-white text-6xl"></i>
+        <a href="{% if user.is_authenticated %}{% url 'broker-list' %}{% else %}{% url 'register' %}?next={% url 'broker-list' %}{% endif %}"
+           class="group">
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden
+                        transition-transform duration-300
+                        hover:scale-105 transform">
+                <div class="h-48 bg-blue-600 flex items-center justify-center">
+                    <i class="fas fa-user-tie text-white text-6xl"></i>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold mb-2">Брокеры</h3>
+                    <p class="text-gray-600">Профессиональное управление недвижимостью</p>
+                </div>
             </div>
-        </div>
-        <div class="p-6">
-            <h3 class="text-xl font-bold mb-2">Объекты</h3>
-            <p class="text-gray-600">Вся недвижимость в одном месте</p>
-        </div>
-    </div>
-<!-- Застройщики -->
-<a href="{% if user.is_authenticated %}{% url 'developer-list' %}{% else %}{% url 'register' %}?next={% url 'developer-list' %}{% endif %}"
-   class="group">
-      <div class="bg-white rounded-lg shadow-lg overflow-hidden
-                transition-transform duration-300
-                hover:scale-105 transform">
-        <div class="h-48 bg-green-600 flex items-center justify-center">
-            <i class="fas fa-building text-white text-6xl"></i>
-        </div>
-        <div class="p-6">
-            <h3 class="text-xl font-bold mb-2">Застройщики</h3>
-            <p class="text-gray-600">Предложения от застройщиков</p>
-        </div>
-    </div>
-</a>
-</a>
+        </a>
 
+        <!-- Объекты -->
+        <a href="{% if user.is_authenticated %}{% url 'properties:property-list' %}{% else %}{% url 'register' %}?next={% url 'properties:property-list' %}{% endif %}"
+           class="group">
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden
+                        transition-transform duration-300
+                        hover:scale-105 transform">
+                <div class="h-48 bg-orange-500 flex items-center justify-center relative">
+                    <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                        <i class="fas fa-home text-white text-6xl"></i>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold mb-2">Объекты</h3>
+                    <p class="text-gray-600">Вся недвижимость в одном месте</p>
+                </div>
+            </div>
+        </a>
+
+        <!-- Застройщики -->
+        <a href="{% if user.is_authenticated %}{% url 'developer-list' %}{% else %}{% url 'register' %}?next={% url 'developer-list' %}{% endif %}"
+           class="group">
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden
+                        transition-transform duration-300
+                        hover:scale-105 transform">
+                <div class="h-48 bg-green-600 flex items-center justify-center">
+                    <i class="fas fa-building text-white text-6xl"></i>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold mb-2">Застройщики</h3>
+                    <p class="text-gray-600">Предложения от застройщиков</p>
+                </div>
+            </div>
+        </a>
     </div>
 </div>
+
 <!-- Популярные объекты -->
 <div class="bg-gray-50 py-20">
     <div class="container mx-auto px-4">
@@ -163,11 +198,11 @@
                     <div class="flex justify-between items-center mb-4">
                         <span class="text-2xl font-bold text-blue-600">{{ property.price|floatformat:"0" }} ₽</span>
                         <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
-                            {{ property.area }} м²
+                            {{ property.total_area|floatformat:"0" }} м²
                         </span>
                     </div>
 
-                    <a href="{% if user.is_authenticated %}{% url 'property-detail' property.id %}{% else %}{% url 'register' %}?next={% url 'property-detail' property.id %}{% endif %}"
+                    <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}{% endif %}"
                        class="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-3 rounded-xl
                               transition-all transform hover:scale-105">
                         📌 Подробнее
@@ -182,9 +217,290 @@
             <a href="{% if user.is_authenticated %}{% url 'properties:property-list' %}{% else %}{% url 'register' %}?next={% url 'properties:property-list' %}{% endif %}"
                class="inline-block bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold px-12 py-4
                       rounded-2xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
-                 Смотреть все объекты
+                Смотреть все объекты
             </a>
         </div>
     </div>
 </div>
+
+<!-- Модальное окно для фильтров -->
+<div id="filters-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-auto">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold">Уточнить поиск</h3>
+            <button id="close-filters" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Тип недвижимости</label>
+                <select name="property_type" class="w-full p-2 border rounded">
+                    <option value="">Любой</option>
+                    <option value="new_flat">Новостройка</option>
+                    <option value="resale_flat">Вторичка</option>
+                    <option value="house">Дом</option>
+                    <option value="commercial">Коммерческая</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-1">Цена, млн ₽</label>
+                <div class="flex space-x-2">
+                    <input type="number" name="min_price" placeholder="От" class="w-1/2 p-2 border rounded">
+                    <input type="number" name="max_price" placeholder="До" class="w-1/2 p-2 border rounded">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-1">Площадь, м²</label>
+                <div class="flex space-x-2">
+                    <input type="number" name="min_area" placeholder="От" class="w-1/2 p-2 border rounded">
+                    <input type="number" name="max_area" placeholder="До" class="w-1/2 p-2 border rounded">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-1">Количество комнат</label>
+                <div class="flex space-x-2">
+                    <input type="number" name="rooms__gte" placeholder="От" class="w-1/2 p-2 border rounded">
+                    <input type="number" name="rooms__lte" placeholder="До" class="w-1/2 p-2 border rounded">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-1">Этаж</label>
+                <div class="flex space-x-2">
+                    <input type="number" name="min_floor" placeholder="От" class="w-1/2 p-2 border rounded">
+                    <input type="number" name="max_floor" placeholder="До" class="w-1/2 p-2 border rounded">
+                </div>
+            </div>
+
+            <button type="button" id="apply-filters" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">
+                Применить фильтры
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchForm = document.getElementById('search-form');
+    const searchInput = document.getElementById('location-search');
+    const suggestionsContainer = document.getElementById('search-suggestions');
+    const geolocationBtn = document.getElementById('geolocation-btn');
+    const geoCoordsInput = document.getElementById('geo-coords');
+    const showFiltersBtn = document.getElementById('show-filters');
+    const filtersModal = document.getElementById('filters-modal');
+    const closeFiltersBtn = document.getElementById('close-filters');
+    const applyFiltersBtn = document.getElementById('apply-filters');
+
+    // Типы недвижимости для автодополнения
+    const propertyTypes = {
+        'квартира': 'apartment',
+        'дом': 'house',
+        'коммерческая': 'commercial',
+        'новостройка': 'new_flat',
+        'вторичка': 'resale_flat'
+    };
+
+    // Автодополнение
+    searchInput.addEventListener('input', function() {
+        const query = this.value.trim();
+
+        if (query.length < 2) {
+            suggestionsContainer.classList.add('hidden');
+            return;
+        }
+
+        // Формируем подсказки
+        let suggestions = '';
+
+        // Подсказки по типам недвижимости
+        Object.keys(propertyTypes).forEach(type => {
+            if (type.toLowerCase().includes(query.toLowerCase())) {
+                suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                                data-type="${propertyTypes[type]}">${type}</div>`;
+            }
+        });
+
+        // Подсказки по параметрам
+        if (/цена\s*\d*/i.test(query)) {
+            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                            data-query="цена 5-10 млн">цена 5-10 млн</div>`;
+            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                            data-query="цена до 5 млн">цена до 5 млн</div>`;
+            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                            data-query="цена от 10 млн">цена от 10 млн</div>`;
+        }
+
+        if (/площадь\s*\d*/i.test(query)) {
+            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                            data-query="площадь 50-70 м²">площадь 50-70 м²</div>`;
+            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                            data-query="площадь от 80 м²">площадь от 80 м²</div>`;
+        }
+
+        if (query.toLowerCase().includes('рядом') || query.toLowerCase().includes('недалеко')) {
+            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                            data-geo="true">рядом со мной</div>`;
+        }
+
+        if (query.toLowerCase().includes('комнат')) {
+            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                            data-query="1-комнатная">1-комнатная</div>`;
+            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                            data-query="2-комнатная">2-комнатная</div>`;
+            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                            data-query="3-комнатная">3-комнатная</div>`;
+        }
+
+        if (suggestions) {
+            suggestionsContainer.innerHTML = suggestions;
+            suggestionsContainer.classList.remove('hidden');
+        } else {
+            suggestionsContainer.classList.add('hidden');
+        }
+    });
+
+    // Обработка выбора подсказки
+    suggestionsContainer.addEventListener('click', function(e) {
+        if (e.target.dataset.type) {
+            searchInput.value = e.target.textContent;
+            // Можно сразу добавить скрытое поле с типом
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'property_type';
+            hiddenInput.value = e.target.dataset.type;
+            searchForm.appendChild(hiddenInput);
+        }
+        else if (e.target.dataset.query) {
+            searchInput.value = e.target.dataset.query;
+        }
+        else if (e.target.dataset.geo) {
+            searchInput.value = 'рядом со мной';
+            getGeolocation();
+        }
+
+        suggestionsContainer.classList.add('hidden');
+    });
+
+    // Геолокация
+    geolocationBtn.addEventListener('click', getGeolocation);
+
+    function getGeolocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                position => {
+                    const coords = `${position.coords.latitude},${position.coords.longitude},5`;
+                    geoCoordsInput.value = coords;
+                    searchInput.value = 'рядом со мной';
+                    showToast('Геолокация определена', 'success');
+                },
+                error => {
+                    showToast('Не удалось определить местоположение', 'error');
+                    console.error('Geolocation error:', error);
+                }
+            );
+        } else {
+            showToast('Ваш браузер не поддерживает геолокацию', 'error');
+        }
+    }
+
+    // Фильтры
+    showFiltersBtn.addEventListener('click', function() {
+        filtersModal.classList.remove('hidden');
+    });
+
+    closeFiltersBtn.addEventListener('click', function() {
+        filtersModal.classList.add('hidden');
+    });
+
+    applyFiltersBtn.addEventListener('click', function() {
+        // Собираем все фильтры и добавляем их к форме
+        const filters = filtersModal.querySelectorAll('select, input[type="number"]');
+        filters.forEach(filter => {
+            if (filter.value) {
+                const existing = searchForm.querySelector(`[name="${filter.name}"]`);
+                if (existing) existing.remove();
+
+                const clone = filter.cloneNode();
+                clone.value = filter.value;
+                searchForm.appendChild(clone);
+            }
+        });
+
+        filtersModal.classList.add('hidden');
+        searchForm.submit();
+    });
+
+    // Обработка формы
+    searchForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Обработка запросов типа "цена 5-10 млн"
+        const searchValue = searchInput.value.trim();
+        const priceMatch = searchValue.match(/цена\s*(\d+)\s*-\s*(\d+)\s*млн/i);
+        if (priceMatch) {
+            const minPrice = priceMatch[1] + '000000';
+            const maxPrice = priceMatch[2] + '000000';
+
+            addHiddenInput('min_price', minPrice);
+            addHiddenInput('max_price', maxPrice);
+        }
+
+        // Обработка запросов типа "цена до 5 млн"
+        const priceToMatch = searchValue.match(/цена\s*до\s*(\d+)\s*млн/i);
+        if (priceToMatch) {
+            const maxPrice = priceToMatch[1] + '000000';
+            addHiddenInput('max_price', maxPrice);
+        }
+
+        // Обработка запросов типа "цена от 10 млн"
+        const priceFromMatch = searchValue.match(/цена\s*от\s*(\d+)\s*млн/i);
+        if (priceFromMatch) {
+            const minPrice = priceFromMatch[1] + '000000';
+            addHiddenInput('min_price', minPrice);
+        }
+
+        // Обработка запросов типа "площадь 50-70 м²"
+        const areaMatch = searchValue.match(/площадь\s*(\d+)\s*-\s*(\d+)\s*м²/i);
+        if (areaMatch) {
+            addHiddenInput('min_area', areaMatch[1]);
+            addHiddenInput('max_area', areaMatch[2]);
+        }
+
+        // Обработка запросов типа "1-комнатная"
+        const roomsMatch = searchValue.match(/(\d+)-комнатная/i);
+        if (roomsMatch) {
+            addHiddenInput('rooms', roomsMatch[1]);
+        }
+
+        this.submit();
+    });
+
+    function addHiddenInput(name, value) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value;
+        searchForm.appendChild(input);
+    }
+
+    function showToast(message, type) {
+        // Реализация toast-уведомлений
+        const toast = document.createElement('div');
+        toast.className = `fixed bottom-4 right-4 px-4 py-2 rounded-lg text-white ${
+            type === 'success' ? 'bg-green-500' : 'bg-red-500'
+        }`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+});
+</script>
 {% endblock %}

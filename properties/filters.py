@@ -1,3 +1,4 @@
+import re  # Добавьте эту строку в начало файла
 from django import forms
 from django.db.models import Q
 from django.contrib.gis.geos import Point
@@ -45,9 +46,8 @@ class PropertyFilter(FilterSet):
         widget=forms.CheckboxSelectMultiple
     )
 
-    # Метро, район, город
+    # Метро, город
     metro_station = CharFilter(field_name='metro_station', lookup_expr='icontains')
-    district = CharFilter(field_name='district', lookup_expr='icontains')
     location = CharFilter(field_name='location', lookup_expr='icontains')
 
     # Дополнительные параметры
@@ -64,10 +64,9 @@ class PropertyFilter(FilterSet):
     class Meta:
         model = Property
         fields = [
-            'property_type', 'rooms', 'location', 'district',
+            'property_type', 'rooms', 'location',
             'metro_station', 'has_finishing', 'is_delivered'
         ]
-
     def filter_price_per_sqm(self, queryset, name, value):
         if value:
             if name == 'min_price_per_sqm':
@@ -99,3 +98,60 @@ class PropertyFilter(FilterSet):
         except (ValueError, IndexError):
             pass
         return queryset
+
+    search = CharFilter(method='universal_search', label='Универсальный поиск')
+
+    def universal_search(self, queryset, name, value):
+        print(f"Universal search triggered with value: {value}")
+        if not value:
+            return queryset
+
+        # Обработка специальных запросов (цена, площадь)
+        value = re.sub(r'цена\s*(\d+)\s*-\s*(\d+)\s*млн',
+                       lambda m: f"{m.group(1)}000000 {m.group(2)}000000", value, flags=re.IGNORECASE)
+        value = re.sub(r'площадь\s*(\d+)\s*-\s*(\d+)\s*м²',
+                       lambda m: f"{m.group(1)} {m.group(2)}", value, flags=re.IGNORECASE)
+
+        search_terms = re.findall(r'(?:"([^"]+)"|(\S+))', value)
+        search_terms = [term[0] or term[1] for term in search_terms]
+
+        q_objects = Q()
+
+        for term in search_terms:
+            # Поиск по типам недвижимости
+            type_mapping = {
+                'квартира': 'apartment',
+                'дом': 'house',
+                'коммерческая': 'commercial',
+                'новостройка': 'new_flat',
+                'вторичка': 'resale_flat'
+            }
+            if term.lower() in type_mapping:
+                q_objects |= Q(property_type__name=type_mapping[term.lower()])
+                continue
+
+            # Попробуем преобразовать в число (для комнат, площади, цены)
+            try:
+                numeric_term = float(term.replace(',', '.'))
+                q_objects |= (
+                        Q(rooms=numeric_term) |
+                        Q(total_area=numeric_term) |
+                        Q(living_area=numeric_term) |
+                        Q(price=numeric_term) |
+                        Q(monthly_price=numeric_term) |
+                        Q(daily_price=numeric_term))
+                continue
+            except ValueError:
+                pass
+
+            # Текстовый поиск по всем полям
+            q_objects |= (
+                    Q(title__icontains=term) |
+                    Q(description__icontains=term) |
+                    Q(location__icontains=term) |
+                    Q(address__icontains=term) |
+                    Q(metro_station__icontains=term) |
+                    Q(property_type__name__icontains=term)
+            )
+
+        return queryset.filter(q_objects).distinct()

@@ -539,15 +539,7 @@
                     </div>
                     {% endif %}
                 </div>
-
-                <!-- Описание объекта -->
-                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-3 md:mb-4">Описание</h2>
-                <div class="scrollable-description prose max-w-none text-sm md:text-base">
-                    {{ property.description|linebreaks }}
-                </div>
-
-                <!-- Карта объекта -->
-                <div class="animate-block mb-6 md:mb-8">
+             <div class="animate-block mb-6 md:mb-8">
                     <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-3 md:mb-4">Расположение на карте</h2>
 
                     <!-- Форма редактирования адреса -->
@@ -597,6 +589,15 @@
                     </div>
 
                 </div>
+
+                <!-- Описание объекта -->
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-3 md:mb-4">Описание</h2>
+                <div class="scrollable-description prose max-w-none text-sm md:text-base">
+                    {{ property.description|linebreaks }}
+                </div>
+
+                <!-- Карта объекта -->
+
             </div>
 
             <!-- Правая колонка -->

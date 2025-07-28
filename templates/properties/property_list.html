@@ -200,14 +200,20 @@
     /* Исправленные стили для карты */
     #all-properties-map {
         width: 100%;
-        height: 500px !important;
-        min-height: 500px;
+        height: 300px !important;
+        min-height: 300px;
         border-radius: 0.5rem;
         overflow: hidden;
-        margin-bottom: 2rem;
+        margin-bottom: 1rem;
         position: relative;
         background-color: #f0f0f0;
         display: block !important;
+        transition: height 0.3s ease;
+    }
+
+    #all-properties-map.expanded {
+        height: 500px !important;
+        min-height: 500px;
     }
 
     /* Гарантируем, что родительские элементы не скрывают карту */
@@ -230,7 +236,8 @@
         font-weight: 600;
         color: #111827;
     }
-        /* Добавляем стили для кнопки "Мое местоположение" */
+
+    /* Добавляем стили для кнопки "Мое местоположение" */
     .locate-me-btn {
         position: absolute;
         top: 10px;
@@ -254,6 +261,65 @@
     .locate-me-btn i {
         font-size: 16px;
     }
+
+    /* Стили для кнопки разворачивания карты */
+    .expand-map-btn {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000;
+        background: white;
+        padding: 10px 20px;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 16px;
+        border: none;
+        outline: none;
+    }
+
+    .expand-map-btn:hover {
+        background: #f5f5f5;
+    }
+
+    .expand-map-btn i {
+        font-size: 18px;
+    }
+
+    /* Контейнер для карты и поиска */
+    .map-search-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    /* Контейнер для поиска и кнопки добавления */
+    .search-add-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        width: 100%;
+    }
+
+    .search-form {
+        flex-grow: 1;
+        max-width: calc(100% - 180px);
+    }
+
+    @media (max-width: 768px) {
+        .search-add-container {
+            flex-direction: column;
+        }
+        .search-form {
+            max-width: 100%;
+            width: 100%;
+        }
+    }
 </style>
 {% endblock %}
 
@@ -270,18 +336,50 @@
         <span>Каталог недвижимости</span>
     </nav>
 
-    <!-- Карта всех объектов -->
-    <div class="animate-block mb-8">
-    <div class="map-header">
-        <h2>Карта объектов недвижимости</h2>
-    </div>
-    <div id="all-properties-map"></div>
-    <!-- Добавляем кнопку "Мое местоположение" -->
-    <button id="locate-me" class="locate-me-btn">
-        <i class="bi bi-geo-alt"></i> Мое местоположение
-    </button>
-</div>
+    <!-- Контейнер для карты и поиска -->
+    <div class="map-search-container">
+        <!-- Заголовок и поиск -->
+        <div class="header-section">
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">
+                {% if user.is_authenticated and user.is_broker %}
+                    Мои объекты
+                {% else %}
+                    Каталог недвижимости
+                {% endif %}
+            </h1>
+            <div class="search-add-container">
+                <form class="search-form">
+                    <div class="relative">
+                        <input type="search"
+                               name="search"
+                               placeholder="Поиск по названию или локации..."
+                               class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <button type="submit" class="absolute right-3 top-3 text-gray-400 hover:text-blue-600">
+                            <i class="bi bi-search text-xl"></i>
+                        </button>
+                    </div>
+                </form>
+                {% if user.is_authenticated and user.is_broker %}
+                    <a href="{% url 'properties:select-listing-type' %}" class="btn-primary flex items-center gap-2 whitespace-nowrap">
+                        <i class="bi bi-plus-lg"></i> Добавить
+                    </a>
+                {% endif %}
+            </div>
+        </div>
 
+        <!-- Карта всех объектов -->
+        <div class="animate-block">
+            <div id="all-properties-map"></div>
+            <!-- Кнопка для разворачивания карты -->
+            <button id="expand-map" class="expand-map-btn">
+                <i class="bi bi-arrows-angle-expand"></i> Смотреть объекты
+            </button>
+            <!-- Кнопка "Мое местоположение" -->
+            <button id="locate-me" class="locate-me-btn">
+                <i class="bi bi-geo-alt"></i> Мое местоположение
+            </button>
+        </div>
+    </div>
 
     <div class="flex flex-col lg:flex-row gap-8">
         <!-- Боковая панель с фильтрами -->
@@ -291,253 +389,225 @@
                     <i class="bi bi-funnel"></i> Фильтры
                 </button>
 
-              <div class="filter-sidebar lg:block" id="filter-sidebar">
-    <form method="get" id="filter-form">
-        <!-- Тип недвижимости -->
-        <div class="filter-section">
-            <h3>Тип недвижимости</h3>
-            {% for choice in filter.form.property_type %}
-                <div class="flex items-center mb-2">
-                    {{ choice.tag }}
-                    <label for="{{ choice.id_for_label }}" class="ml-2 text-sm">
-                        {{ choice.choice_label }}
-                    </label>
-                </div>
-            {% endfor %}
-        </div>
+                <div class="filter-sidebar lg:block" id="filter-sidebar">
+                    <form method="get" id="filter-form">
+                        <!-- Тип недвижимости -->
+                        <div class="filter-section">
+                            <h3>Тип недвижимости</h3>
+                            {% for choice in filter.form.property_type %}
+                                <div class="flex items-center mb-2">
+                                    {{ choice.tag }}
+                                    <label for="{{ choice.id_for_label }}" class="ml-2 text-sm">
+                                        {{ choice.choice_label }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
 
-        <!-- Цена -->
-        <div class="filter-section">
-            <h3>Цена, ₽</h3>
-            <div class="grid grid-cols-2 gap-2 mb-2">
-                <div>
-                    <label class="block text-xs text-gray-500 mb-1">От</label>
-                    <input type="number" name="min_price" value="{{ filter.form.min_price.value|default:'' }}"
-                           class="w-full px-2 py-1 border rounded text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs text-gray-500 mb-1">До</label>
-                    <input type="number" name="max_price" value="{{ filter.form.max_price.value|default:'' }}"
-                           class="w-full px-2 py-1 border rounded text-sm">
-                </div>
-            </div>
+                        <!-- Цена -->
+                        <div class="filter-section">
+                            <h3>Цена, ₽</h3>
+                            <div class="grid grid-cols-2 gap-2 mb-2">
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">От</label>
+                                    <input type="number" name="min_price" value="{{ filter.form.min_price.value|default:'' }}"
+                                           class="w-full px-2 py-1 border rounded text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">До</label>
+                                    <input type="number" name="max_price" value="{{ filter.form.max_price.value|default:'' }}"
+                                           class="w-full px-2 py-1 border rounded text-sm">
+                                </div>
+                            </div>
 
-            <h3>Цена за м², ₽</h3>
-            <div class="grid grid-cols-2 gap-2">
-                <div>
-                    <label class="block text-xs text-gray-500 mb-1">От</label>
-                    <input type="number" name="min_price_per_sqm" value="{{ filter.form.min_price_per_sqm.value|default:'' }}"
-                           class="w-full px-2 py-1 border rounded text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs text-gray-500 mb-1">До</label>
-                    <input type="number" name="max_price_per_sqm" value="{{ filter.form.max_price_per_sqm.value|default:'' }}"
-                           class="w-full px-2 py-1 border rounded text-sm">
-                </div>
-            </div>
-        </div>
+                            <h3>Цена за м², ₽</h3>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">От</label>
+                                    <input type="number" name="min_price_per_sqm" value="{{ filter.form.min_price_per_sqm.value|default:'' }}"
+                                           class="w-full px-2 py-1 border rounded text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">До</label>
+                                    <input type="number" name="max_price_per_sqm" value="{{ filter.form.max_price_per_sqm.value|default:'' }}"
+                                           class="w-full px-2 py-1 border rounded text-sm">
+                                </div>
+                            </div>
+                        </div>
 
-        <!-- Площадь -->
-        <div class="filter-section">
-            <h3>Площадь, м²</h3>
-            <div class="grid grid-cols-2 gap-2 mb-2">
-                <div>
-                    <label class="block text-xs text-gray-500 mb-1">Общая от</label>
-                    <input type="number" name="min_area" value="{{ filter.form.min_area.value|default:'' }}"
-                           class="w-full px-2 py-1 border rounded text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs text-gray-500 mb-1">Общая до</label>
-                    <input type="number" name="max_area" value="{{ filter.form.max_area.value|default:'' }}"
-                           class="w-full px-2 py-1 border rounded text-sm">
-                </div>
-            </div>
+                        <!-- Площадь -->
+                        <div class="filter-section">
+                            <h3>Площадь, м²</h3>
+                            <div class="grid grid-cols-2 gap-2 mb-2">
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">Общая от</label>
+                                    <input type="number" name="min_area" value="{{ filter.form.min_area.value|default:'' }}"
+                                           class="w-full px-2 py-1 border rounded text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">Общая до</label>
+                                    <input type="number" name="max_area" value="{{ filter.form.max_area.value|default:'' }}"
+                                           class="w-full px-2 py-1 border rounded text-sm">
+                                </div>
+                            </div>
 
-            <div class="grid grid-cols-2 gap-2">
-                <div>
-                    <label class="block text-xs text-gray-500 mb-1">Жилая от</label>
-                    <input type="number" name="min_living_area" value="{{ filter.form.min_living_area.value|default:'' }}"
-                           class="w-full px-2 py-1 border rounded text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs text-gray-500 mb-1">Жилая до</label>
-                    <input type="number" name="max_living_area" value="{{ filter.form.max_living_area.value|default:'' }}"
-                           class="w-full px-2 py-1 border rounded text-sm">
-                </div>
-            </div>
-        </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">Жилая от</label>
+                                    <input type="number" name="min_living_area" value="{{ filter.form.min_living_area.value|default:'' }}"
+                                           class="w-full px-2 py-1 border rounded text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">Жилая до</label>
+                                    <input type="number" name="max_living_area" value="{{ filter.form.max_living_area.value|default:'' }}"
+                                           class="w-full px-2 py-1 border rounded text-sm">
+                                </div>
+                            </div>
+                        </div>
 
-        <!-- Комнаты -->
-        <div class="filter-section">
-            <h3>Количество комнат</h3>
-            <div class="grid grid-cols-2 gap-2">
-                <div>
-                    <label class="block text-xs text-gray-500 mb-1">От</label>
-                    <input type="number" name="rooms__gte" value="{{ filter.form.rooms__gte.value|default:'' }}"
-                           class="w-full px-2 py-1 border rounded text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs text-gray-500 mb-1">До</label>
-                    <input type="number" name="rooms__lte" value="{{ filter.form.rooms__lte.value|default:'' }}"
-                           class="w-full px-2 py-1 border rounded text-sm">
-                </div>
-            </div>
-        </div>
+                        <!-- Комнаты -->
+                        <div class="filter-section">
+                            <h3>Количество комнат</h3>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">От</label>
+                                    <input type="number" name="rooms__gte" value="{{ filter.form.rooms__gte.value|default:'' }}"
+                                           class="w-full px-2 py-1 border rounded text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">До</label>
+                                    <input type="number" name="rooms__lte" value="{{ filter.form.rooms__lte.value|default:'' }}"
+                                           class="w-full px-2 py-1 border rounded text-sm">
+                                </div>
+                            </div>
+                        </div>
 
-        <!-- Этажи -->
-        <div class="filter-section">
-            <h3>Этаж</h3>
-            <div class="grid grid-cols-2 gap-2 mb-2">
-                <div>
-                    <label class="block text-xs text-gray-500 mb-1">От</label>
-                    <input type="number" name="min_floor" value="{{ filter.form.min_floor.value|default:'' }}"
-                           class="w-full px-2 py-1 border rounded text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs text-gray-500 mb-1">До</label>
-                    <input type="number" name="max_floor" value="{{ filter.form.max_floor.value|default:'' }}"
-                           class="w-full px-2 py-1 border rounded text-sm">
-                </div>
-            </div>
+                        <!-- Этажи -->
+                        <div class="filter-section">
+                            <h3>Этаж</h3>
+                            <div class="grid grid-cols-2 gap-2 mb-2">
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">От</label>
+                                    <input type="number" name="min_floor" value="{{ filter.form.min_floor.value|default:'' }}"
+                                           class="w-full px-2 py-1 border rounded text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">До</label>
+                                    <input type="number" name="max_floor" value="{{ filter.form.max_floor.value|default:'' }}"
+                                           class="w-full px-2 py-1 border rounded text-sm">
+                                </div>
+                            </div>
 
-            <h3>Этажность дома</h3>
-            <div class="grid grid-cols-2 gap-2">
-                <div>
-                    <label class="block text-xs text-gray-500 mb-1">От</label>
-                    <input type="number" name="min_total_floors" value="{{ filter.form.min_total_floors.value|default:'' }}"
-                           class="w-full px-2 py-1 border rounded text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs text-gray-500 mb-1">До</label>
-                    <input type="number" name="max_total_floors" value="{{ filter.form.max_total_floors.value|default:'' }}"
-                           class="w-full px-2 py-1 border rounded text-sm">
-                </div>
-            </div>
-        </div>
+                            <h3>Этажность дома</h3>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">От</label>
+                                    <input type="number" name="min_total_floors" value="{{ filter.form.min_total_floors.value|default:'' }}"
+                                           class="w-full px-2 py-1 border rounded text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">До</label>
+                                    <input type="number" name="max_total_floors" value="{{ filter.form.max_total_floors.value|default:'' }}"
+                                           class="w-full px-2 py-1 border rounded text-sm">
+                                </div>
+                            </div>
+                        </div>
 
-        <!-- Год постройки -->
-        <div class="filter-section">
-            <h3>Год постройки</h3>
-            <div class="grid grid-cols-2 gap-2">
-                <div>
-                    <label class="block text-xs text-gray-500 mb-1">От</label>
-                    <input type="number" name="min_construction_year" value="{{ filter.form.min_construction_year.value|default:'' }}"
-                           class="w-full px-2 py-1 border rounded text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs text-gray-500 mb-1">До</label>
-                    <input type="number" name="max_construction_year" value="{{ filter.form.max_construction_year.value|default:'' }}"
-                           class="w-full px-2 py-1 border rounded text-sm">
-                </div>
-            </div>
-        </div>
+                        <!-- Год постройки -->
+                        <div class="filter-section">
+                            <h3>Год постройки</h3>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">От</label>
+                                    <input type="number" name="min_construction_year" value="{{ filter.form.min_construction_year.value|default:'' }}"
+                                           class="w-full px-2 py-1 border rounded text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">До</label>
+                                    <input type="number" name="max_construction_year" value="{{ filter.form.max_construction_year.value|default:'' }}"
+                                           class="w-full px-2 py-1 border rounded text-sm">
+                                </div>
+                            </div>
+                        </div>
 
-        <!-- Расстояние до центра -->
-        <div class="filter-section">
-            <h3>Расстояние до центра, км</h3>
-            <div class="grid grid-cols-2 gap-2">
-                <div>
-                    <label class="block text-xs text-gray-500 mb-1">От</label>
-                    <input type="number" name="min_distance_to_center" value="{{ filter.form.min_distance_to_center.value|default:'' }}"
-                           class="w-full px-2 py-1 border rounded text-sm" step="0.1">
-                </div>
-                <div>
-                    <label class="block text-xs text-gray-500 mb-1">До</label>
-                    <input type="number" name="max_distance_to_center" value="{{ filter.form.max_distance_to_center.value|default:'' }}"
-                           class="w-full px-2 py-1 border rounded text-sm" step="0.1">
-                </div>
-            </div>
-        </div>
+                        <!-- Расстояние до центра -->
+                        <div class="filter-section">
+                            <h3>Расстояние до центра, км</h3>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">От</label>
+                                    <input type="number" name="min_distance_to_center" value="{{ filter.form.min_distance_to_center.value|default:'' }}"
+                                           class="w-full px-2 py-1 border rounded text-sm" step="0.1">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">До</label>
+                                    <input type="number" name="max_distance_to_center" value="{{ filter.form.max_distance_to_center.value|default:'' }}"
+                                           class="w-full px-2 py-1 border rounded text-sm" step="0.1">
+                                </div>
+                            </div>
+                        </div>
 
-        <!-- Радиус на карте -->
-        <input type="hidden" name="radius_filter" id="radius-filter-input">
+                        <!-- Радиус на карте -->
+                        <input type="hidden" name="radius_filter" id="radius-filter-input">
 
-        <!-- Метро -->
-        <div class="filter-section">
-            <h3>Метро</h3>
-            <input type="text" name="metro_station" value="{{ filter.form.metro_station.value|default:'' }}"
-                   class="w-full px-2 py-1 border rounded text-sm"
-                   placeholder="Название станции">
-        </div>
+                        <!-- Метро -->
+                        <div class="filter-section">
+                            <h3>Метро</h3>
+                            <input type="text" name="metro_station" value="{{ filter.form.metro_station.value|default:'' }}"
+                                   class="w-full px-2 py-1 border rounded text-sm"
+                                   placeholder="Название станции">
+                        </div>
 
-        <!-- Район -->
-        <div class="filter-section">
-            <h3>Район</h3>
-            <input type="text" name="district" value="{{ filter.form.district.value|default:'' }}"
-                   class="w-full px-2 py-1 border rounded text-sm"
-                   placeholder="Название района">
-        </div>
+                        <!-- Район -->
+                        <div class="filter-section">
+                            <h3>Район</h3>
+                            <input type="text" name="district" value="{{ filter.form.district.value|default:'' }}"
+                                   class="w-full px-2 py-1 border rounded text-sm"
+                                   placeholder="Название района">
+                        </div>
 
-        <!-- Город -->
-        <div class="filter-section">
-            <h3>Город</h3>
-            <input type="text" name="location" value="{{ filter.form.location.value|default:'' }}"
-                   class="w-full px-2 py-1 border rounded text-sm"
-                   placeholder="Название города">
-        </div>
+                        <!-- Город -->
+                        <div class="filter-section">
+                            <h3>Город</h3>
+                            <input type="text" name="location" value="{{ filter.form.location.value|default:'' }}"
+                                   class="w-full px-2 py-1 border rounded text-sm"
+                                   placeholder="Название города">
+                        </div>
 
-        <!-- Чекбоксы -->
-        <div class="filter-section">
-            <div class="flex items-center mb-2">
-                {{ filter.form.has_finishing }}
-                <label for="{{ filter.form.has_finishing.id_for_label }}" class="ml-2 text-sm">
-                    Только с отделкой
-                </label>
-            </div>
+                        <!-- Чекбоксы -->
+                        <div class="filter-section">
+                            <div class="flex items-center mb-2">
+                                {{ filter.form.has_finishing }}
+                                <label for="{{ filter.form.has_finishing.id_for_label }}" class="ml-2 text-sm">
+                                    Только с отделкой
+                                </label>
+                            </div>
 
-            <div class="flex items-center">
-                {{ filter.form.is_delivered }}
-                <label for="{{ filter.form.is_delivered.id_for_label }}" class="ml-2 text-sm">
-                    Только сданные
-                </label>
-            </div>
-        </div>
+                            <div class="flex items-center">
+                                {{ filter.form.is_delivered }}
+                                <label for="{{ filter.form.is_delivered.id_for_label }}" class="ml-2 text-sm">
+                                    Только сданные
+                                </label>
+                            </div>
+                        </div>
 
-        <!-- Кнопки фильтра -->
-        <div class="filter-actions">
-            <button type="submit" id="apply_filters" class="btn-primary px-4 py-2 text-sm">
-                Применить
-            </button>
-            <a href="?" id="reset_filters" class="btn-outline px-4 py-2 text-sm">
-                Сбросить
-            </a>
-        </div>
-    </form>
-</div>
-              </div>
-        </aside>
-<div style="display:none">API Key: {{ YANDEX_MAPS_API_KEY }}</div>
-        <!-- Основное содержимое -->
-        <div class="flex-1">
-            <!-- Заголовок и поиск -->
-            <div class="header-section mb-8">
-                <h1 class="text-3xl font-bold text-gray-800 mb-4">
-                    {% if user.is_authenticated and user.is_broker %}
-                        Мои объекты
-                    {% else %}
-                        Каталог недвижимости
-                    {% endif %}
-                </h1>
-                <div class="flex justify-between items-center gap-4">
-                    <form class="flex-grow">
-                        <div class="relative">
-                            <input type="search"
-                                   name="search"
-                                   placeholder="Поиск по названию или локации..."
-                                   class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                            <button type="submit" class="absolute right-3 top-3 text-gray-400 hover:text-blue-600">
-                                <i class="bi bi-search text-xl"></i>
+                        <!-- Кнопки фильтра -->
+                        <div class="filter-actions">
+                            <button type="submit" id="apply_filters" class="btn-primary px-4 py-2 text-sm">
+                                Применить
                             </button>
+                            <a href="?" id="reset_filters" class="btn-outline px-4 py-2 text-sm">
+                                Сбросить
+                            </a>
                         </div>
                     </form>
-                    {% if user.is_authenticated and user.is_broker %}
-                        <a href="{% url 'properties:select-listing-type' %}" class="btn-primary flex items-center gap-2">
-                            <i class="bi bi-plus-lg"></i> Добавить
-                        </a>
-                    {% endif %}
                 </div>
             </div>
+        </aside>
+        <div style="display:none">API Key: {{ YANDEX_MAPS_API_KEY }}</div>
 
+        <!-- Основное содержимое -->
+        <div class="flex-1">
             <!-- Карточки объектов -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {% if properties %}
@@ -660,7 +730,7 @@
 
         const mapContainer = document.getElementById('all-properties-map');
         if (mapContainer.offsetHeight === 0) {
-            mapContainer.style.height = '500px';
+            mapContainer.style.height = '300px';
         }
 
         ymaps.ready(function() {
@@ -761,11 +831,30 @@
         });
     }
 
+    // Обработчик кнопки разворачивания карты
+    document.addEventListener('DOMContentLoaded', function() {
+        const expandBtn = document.getElementById('expand-map');
+        const mapContainer = document.getElementById('all-properties-map');
 
-        console.log("[DEBUG] Карта успешно инициализирована");{
+        if (expandBtn && mapContainer) {
+            expandBtn.addEventListener('click', function() {
+                mapContainer.classList.toggle('expanded');
 
+                if (mapContainer.classList.contains('expanded')) {
+                    expandBtn.innerHTML = '<i class="bi bi-arrows-angle-contract"></i> Свернуть карту';
+                } else {
+                    expandBtn.innerHTML = '<i class="bi bi-arrows-angle-expand"></i> Смотреть объекты';
+                }
 
-}
+                // Перерисовываем карту после изменения размера
+                setTimeout(function() {
+                    if (typeof ymaps !== 'undefined' && typeof allPropertiesMap !== 'undefined') {
+                        allPropertiesMap.container.fitToViewport();
+                    }
+                }, 300);
+            });
+        }
+    });
 
     // Загружаем Яндекс.Карты динамически
     function loadYandexMaps() {
@@ -790,50 +879,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         console.log("[DEBUG] DOM полностью загружен, начинаем загрузку карт");
         loadYandexMaps();
-    });
-</script>
 
-<div id="map-status" style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.8); padding: 5px 10px; border-radius: 4px; z-index: 1000; font-size: 12px;">
-    Статус карты: <span id="map-status-text">загрузка...</span>
-</div>
-
-<script>
-    // Обновляем статус карты в интерфейсе
-    function updateMapStatus(status) {
-        const statusElement = document.getElementById('map-status-text');
-        if (statusElement) {
-            statusElement.textContent = status;
-
-            // Добавляем цвет в зависимости от статуса
-            if (status.includes('успешно')) {
-                statusElement.style.color = 'green';
-            } else if (status.includes('ошибка')) {
-                statusElement.style.color = 'red';
-            } else {
-                statusElement.style.color = 'orange';
-            }
-        }
-    }
-
-    // Перехватываем сообщения для обновления статуса
-    const originalConsoleLog = console.log;
-    const originalConsoleError = console.error;
-
-    console.log = function(message) {
-        if (typeof message === 'string' && message.includes('[DEBUG]')) {
-            updateMapStatus(message.replace('[DEBUG]', '').trim());
-        }
-        originalConsoleLog.apply(console, arguments);
-    };
-
-    console.error = function(message) {
-        if (typeof message === 'string' && message.includes('[DEBUG]')) {
-            updateMapStatus('ОШИБКА: ' + message.replace('[DEBUG]', '').trim());
-        }
-        originalConsoleError.apply(console, arguments);
-    };
-
-    document.addEventListener('DOMContentLoaded', function() {
         // Переключение видимости фильтров на мобильных
         const filterToggle = document.querySelector('.filter-toggle');
         const filterSidebar = document.getElementById('filter-sidebar');
@@ -872,5 +918,26 @@
             });
         });
     });
+
+    // Обновляем статус карты в интерфейсе
+    function updateMapStatus(status) {
+        const statusElement = document.getElementById('map-status-text');
+        if (statusElement) {
+            statusElement.textContent = status;
+
+            // Добавляем цвет в зависимости от статуса
+            if (status.includes('успешно')) {
+                statusElement.style.color = 'green';
+            } else if (status.includes('ошибка')) {
+                statusElement.style.color = 'red';
+            } else {
+                statusElement.style.color = 'orange';
+            }
+        }
+    }
 </script>
+
+<div id="map-status" style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.8); padding: 5px 10px; border-radius: 4px; z-index: 1000; font-size: 12px;">
+    Статус карты: <span id="map-status-text">загрузка...</span>
+</div>
 {% endblock %}
