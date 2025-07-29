@@ -5,8 +5,17 @@ from django.contrib.gis.geos import Point
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import D
 from django_filters import FilterSet, NumberFilter, CharFilter, BooleanFilter, ModelMultipleChoiceFilter
-from .models import Property, PropertyType, CityCenter
+from .models import Property, PropertyType, CityCenter, MetroStation
 
+class MetroStationMultipleChoiceWidget(forms.SelectMultiple):
+    max_choices = 5
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.attrs.update({
+            'class': 'metro-station-select',
+            'data-max-choices': self.max_choices
+        })
 
 class PropertyFilter(FilterSet):
     # Существующие фильтры
@@ -42,12 +51,18 @@ class PropertyFilter(FilterSet):
 
     # Тип недвижимости
     property_type = ModelMultipleChoiceFilter(
+        field_name='property_type__name',  # Фильтруем по полю name модели PropertyType
         queryset=PropertyType.objects.all(),
-        widget=forms.CheckboxSelectMultiple
+        widget=forms.CheckboxSelectMultiple,
+        label='Тип недвижимости',
+        to_field_name='name'  # Используем поле name для сравнения
     )
-
-    # Метро, город
-    metro_station = CharFilter(field_name='metro_station', lookup_expr='icontains')
+    metro_station = ModelMultipleChoiceFilter(
+        field_name='metro_station',
+        queryset=MetroStation.objects.none(),
+        widget=MetroStationMultipleChoiceWidget,
+        label='Станции метро (макс. 5)'
+    )
     location = CharFilter(field_name='location', lookup_expr='icontains')
 
     # Дополнительные параметры
@@ -67,6 +82,19 @@ class PropertyFilter(FilterSet):
             'property_type', 'rooms', 'location',
             'metro_station', 'has_finishing', 'is_delivered'
         ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Динамически обновляем queryset для поля metro_station на основе выбранного города
+        if 'location' in self.data:
+            try:
+                city = self.data.get('location')
+                if city:
+                    self.filters['metro_station'].field.queryset = MetroStation.objects.filter(
+                        city__iexact=city
+                    ).order_by('name')
+            except (ValueError, TypeError):
+                pass
     def filter_price_per_sqm(self, queryset, name, value):
         if value:
             if name == 'min_price_per_sqm':

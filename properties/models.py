@@ -15,7 +15,7 @@ class PropertyType(models.Model):
         choices=[
             ('new_flat', 'Новостройка'),
             ('resale_flat', 'Вторичка'),
-            ('commercial', 'Нежилые помещения '),
+            ('commercial', 'Нежилое помещение'),
             ('house', 'Дом')
         ],
         unique=True,
@@ -446,5 +446,31 @@ class ListingType(models.Model):
     def __str__(self):
         return self.name
 
+
+# models.py
+class MetroStation(models.Model):
+    city = models.CharField(max_length=100, verbose_name='Город')
+    name = models.CharField(max_length=100, verbose_name='Название станции')
+    line = models.CharField(
+        max_length=100,
+        verbose_name='Линия метро',
+        blank=True,
+        null=True
+    )
+    line_color = models.CharField(
+        max_length=50,
+        verbose_name='Цвет линии',
+        blank=True,
+        null=True
+    )
+    coordinates = gis_models.PointField(verbose_name='Координаты', srid=4326)
+
+    class Meta:
+        verbose_name = 'Станция метро'
+        verbose_name_plural = 'Станции метро'
+        unique_together = ('city', 'name')  # Одна станция может быть только в одном городе
+
+    def __str__(self):
+        return f"{self.name} ({self.city})"
 
 

@@ -142,7 +142,7 @@
                         {% endif %}
                     </h3>
                     {% if not request.user.is_broker or request.user == broker.user or is_admin %}
-                        <a href="{% url 'property-list' %}?broker={{ broker.id }}{% if request.user.is_authenticated and request.user.is_broker and request.user == broker.user %}&my_properties=true{% endif %}"
+                        <a href="{% url 'properties:property-list' %}?broker={{ broker.id }}{% if request.user.is_authenticated and request.user.is_broker and request.user == broker.user %}&my_properties=true{% endif %}"
                            class="bg-white text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg border-2 border-blue-200 transition-colors">
                             Все объекты →
                         </a>
@@ -191,7 +191,7 @@
                                         </a>
                                     {% endif %}
 
-                                    <a href="{% url 'property-detail' property.id %}"
+                                    <a href="{% url 'properties:property-detail' property.id %}"
                                        class="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded-lg transition-colors {% if request.user.is_authenticated and request.user.is_client %}mt-4{% endif %}">
                                         Подробнее
                                     </a>

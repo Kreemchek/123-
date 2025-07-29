@@ -25,7 +25,7 @@ from django.http import JsonResponse
 from django.views import View
 # Локальные импорты
 from brokers.models import BrokerProfile
-from .models import Property, PropertyImage, PropertyType, ListingType
+from .models import Property, PropertyImage, PropertyType, ListingType, MetroStation
 from .filters import PropertyFilter
 from .forms import PropertyForm, ListingTypeForm
 from accounts.models import User, ContactRequest, Favorite
@@ -126,7 +126,8 @@ class PropertyListView(FilterView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['YANDEX_MAPS_API_KEY'] = settings.YANDEX_MAPS_API_KEY
-
+        context['property_types'] = PropertyType.objects.all()
+        context['selected_property_types'] = self.request.GET.getlist('property_type', [])
 
         # Добавляем информацию о текущем брокере для фильтра
         broker_id = self.request.GET.get('broker')
@@ -138,6 +139,39 @@ class PropertyListView(FilterView):
             context['is_broker'] = self.request.user.is_broker
             context['is_developer'] = self.request.user.is_developer
             context['is_client'] = not (self.request.user.is_broker or self.request.user.is_developer)
+
+        # Получаем выбранные станции метро из GET-параметров
+        selected_metro = self.request.GET.getlist('metro_station', [])
+
+        # Получаем уникальные линии метро для фильтра
+        metro_lines = MetroStation.objects.values('line', 'line_color').distinct()
+
+        # Формируем список линий с короткими названиями
+        metro_lines_data = []
+        for line in metro_lines:
+            if line['line']:
+                short_name = line['line'].split()[0]  # Берем первое слово из названия линии
+                metro_lines_data.append({
+                    'name': line['line'],
+                    'short_name': short_name,
+                    'color': line['line_color'] or '#cccccc'
+                })
+
+        # Получаем станции метро для выбранного города (если есть)
+        location = self.request.GET.get('location', '')
+        metro_stations = MetroStation.objects.all()
+        if location:
+            metro_stations = metro_stations.filter(city__iexact=location)
+
+        # Получаем полные данные выбранных станций
+        selected_metro_stations = MetroStation.objects.filter(name__in=selected_metro)
+
+        context.update({
+            'metro_lines': metro_lines_data,
+            'metro_stations': metro_stations.order_by('line', 'name'),
+            'selected_metro': selected_metro,
+            'selected_metro_stations': selected_metro_stations,
+        })
 
         return context
 
@@ -733,3 +767,24 @@ def update_property_address(request):
             {'status': 'error', 'message': 'Внутренняя ошибка сервера'},
             status=500
         )
+
+
+class MetroStationsView(View):
+    def get(self, request):
+        city = request.GET.get('city', '')
+        if not city:
+            return JsonResponse({'metro_stations': []})
+
+        stations = MetroStation.objects.filter(city__iexact=city).order_by('line', 'name')
+        data = {
+            'metro_stations': [
+                {
+                    'name': station.name,
+                    'city': station.city,
+                    'line': station.line if station.line else 'Другая линия',
+                    'line_color': station.line_color if station.line_color else '#cccccc'
+                }
+                for station in stations
+            ]
+        }
+        return JsonResponse(data)

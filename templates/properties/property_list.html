@@ -5,21 +5,35 @@
 <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css">
 <script src="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js"></script>
 <style>
+    /* Основные стили карточек недвижимости */
     .property-card {
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        border: 2px solid #e5e7eb;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        background: white;
     }
+
     .property-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        transform: translateY(-8px);
+        box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.1);
+        border-color: #bfdbfe;
     }
+
     .btn-primary {
         @apply bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2;
     }
+
     .toggle-favorite {
         cursor: pointer;
+        transition: transform 0.2s ease;
     }
 
-    /* Новые стили для фильтров и карты */
+    .toggle-favorite:hover {
+        transform: scale(1.1);
+    }
+
+    /* Стили для фильтров и карты */
     .filter-container {
         display: grid;
         grid-template-columns: 300px 1fr;
@@ -32,278 +46,433 @@
         }
     }
 
+    /* Улучшенные стили для боковой панели фильтров */
     .filter-sidebar {
         background: white;
-        padding: 1.5rem;
-        border-radius: 0.5rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        padding: 1.75rem;
+        border-radius: 1rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        border: 2px solid #e5e7eb;
         height: fit-content;
         position: sticky;
         top: 1rem;
+        transition: all 0.3s ease;
     }
 
-    .map-sidebar {
-        height: 500px;
-        position: sticky;
-        top: 1rem;
+    .filter-sidebar:hover {
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+        border-color: #d1d5db;
     }
 
+    /* Стили для секций фильтров */
     .filter-section {
-        margin-bottom: 1.5rem;
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background: #f9fafb;
+        border-radius: 0.75rem;
+        border: 2px solid #e5e7eb;
+        transition: all 0.3s ease;
+        animation: slideIn 0.3s ease-out forwards;
+        opacity: 0;
     }
 
-    .filter-section h3 {
-        font-size: 1rem;
-        font-weight: 600;
-        margin-bottom: 0.75rem;
-        color: #374151;
+    .filter-section:hover {
+        background: #f3f4f6;
+        border-color: #d1d5db;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     }
 
-    .filter-actions {
-        display: flex;
-        gap: 0.5rem;
-        margin-top: 1rem;
-    }
-
-    .filter-toggle {
-        display: none;
-        margin-bottom: 1rem;
-    }
-
-    @media (max-width: 1024px) {
-        .filter-toggle {
-            display: block;
+    /* Анимация появления секций */
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-15px);
         }
-
-        .filter-sidebar {
-            display: none;
-        }
-
-        .filter-sidebar.active {
-            display: block;
+        to {
+            opacity: 1;
+            transform: translateX(0);
         }
     }
 
-    .map-container {
-        height: 100%;
-        width: 100%;
-        border-radius: 0.5rem;
-        overflow: hidden;
-    }
+    /* Задержки для анимации */
+    .filter-section:nth-child(1) { animation-delay: 0.1s; }
+    .filter-section:nth-child(2) { animation-delay: 0.2s; }
+    .filter-section:nth-child(3) { animation-delay: 0.3s; }
+    .filter-section:nth-child(4) { animation-delay: 0.4s; }
+    .filter-section:nth-child(5) { animation-delay: 0.5s; }
+    .filter-section:nth-child(6) { animation-delay: 0.6s; }
+    .filter-section:nth-child(7) { animation-delay: 0.7s; }
+    .filter-section:nth-child(8) { animation-delay: 0.8s; }
+    .filter-section:nth-child(9) { animation-delay: 0.9s; }
+    .filter-section:nth-child(10) { animation-delay: 1.0s; }
 
-    .radius-control {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        z-index: 1;
-        background: white;
-        padding: 5px;
-        border-radius: 3px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    }
-
-    .radius-slider {
-        width: 200px;
-    }
-
-    /* Новые стили для фильтров как в category_detail.html */
-    .sticky-column {
-        top: calc(var(--total-header-height) + 4.0rem);
-        position: sticky;
-        height: fit-content;
-        align-self: flex-start;
-        margin-bottom: 1rem;
-    }
-
-    @media (max-width: 767px) {
-        .sticky-column {
-            position: relative;
-            top: auto;
-        }
-    }
-
+    /* Заголовки секций */
     .filter-section h3 {
         font-size: 1.125rem;
-        font-weight: 600;
-        margin-bottom: 0.75rem;
+        font-weight: 700;
+        margin-bottom: 1.25rem;
         color: #111827;
+        border-bottom: 2px solid #e5e7eb;
+        padding-bottom: 0.75rem;
+        position: relative;
+        transition: color 0.2s;
     }
 
+    .filter-section:hover h3 {
+        color: #1e40af;
+    }
+
+    .filter-section h3::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 50px;
+        height: 2px;
+        background: #3b82f6;
+        transition: width 0.3s ease;
+    }
+
+    .filter-section:hover h3::after {
+        width: 80px;
+    }
+
+    /* Поля ввода */
     .filter-section input[type="text"],
     .filter-section input[type="number"],
     .filter-section select {
         width: 100%;
-        padding: 0.5rem 0.75rem;
-        border: 1px solid #d1d5db;
-        border-radius: 0.375rem;
-        font-size: 0.875rem;
+        padding: 0.75rem 1rem;
+        border: 2px solid #d1d5db;
+        border-radius: 0.75rem;
+        font-size: 0.9375rem;
+        font-weight: 600;
+        color: #374151;
+        background: white;
+        transition: all 0.3s ease;
     }
 
+    .filter-section input[type="text"]:focus,
+    .filter-section input[type="number"]:focus,
+    .filter-section select:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        outline: none;
+    }
+
+    .filter-section input[type="text"]:hover,
+    .filter-section input[type="number"]:hover,
+    .filter-section select:hover {
+        border-color: #9ca3af;
+    }
+
+    /* Сетка для двойных полей */
     .filter-section .grid-cols-2 {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 0.5rem;
+        gap: 0.75rem;
     }
 
+    /* Лейблы */
     .filter-section label {
         display: block;
-        font-size: 0.875rem;
-        color: #6b7280;
-        margin-bottom: 0.25rem;
+        font-size: 0.9375rem;
+        font-weight: 600;
+        color: #4b5563;
+        margin-bottom: 0.5rem;
+        transition: color 0.2s;
     }
 
+    .filter-section:hover label {
+        color: #111827;
+    }
+
+    /* Чекбоксы и радиокнопки */
     .filter-section .flex.items-center {
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        transition: all 0.2s;
         margin-bottom: 0.5rem;
+    }
+
+    .filter-section .flex.items-center:hover {
+        background: rgba(59, 130, 246, 0.05);
     }
 
     .filter-section .flex.items-center input[type="checkbox"],
     .filter-section .flex.items-center input[type="radio"] {
-        margin-right: 0.5rem;
+        margin-right: 0.75rem;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #d1d5db;
+        border-radius: 0.375rem;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+
+    .filter-section .flex.items-center input[type="checkbox"]:checked,
+    .filter-section .flex.items-center input[type="radio"]:checked {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
     }
 
     .filter-section .flex.items-center label {
-        margin-bottom: 0;
+        font-weight: 600;
         color: #374151;
-        font-size: 0.875rem;
-    }
-
-    #reset_filters {
-        width: 100%;
-        border: 1px solid #d1d5db;
-        color: #374151;
-        padding: 0.5rem;
-        border-radius: 0.375rem;
-        background-color: white;
         cursor: pointer;
-        transition: background-color 0.2s;
+        transition: color 0.2s;
     }
 
-    #reset_filters:hover {
-        background-color: #f3f4f6;
+    .filter-section .flex.items-center:hover label {
+        color: #1e40af;
+    }
+
+    /* Кнопки фильтров */
+    .filter-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
     }
 
     #apply_filters {
-        width: 100%;
-        background-color: #3b82f6;
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
         color: white;
-        padding: 0.5rem;
-        border-radius: 0.375rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.75rem;
+        font-weight: 700;
         border: none;
         cursor: pointer;
-        transition: background-color 0.2s;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
     }
 
     #apply_filters:hover {
-        background-color: #2563eb;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(37, 99, 235, 0.15);
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
     }
 
-    /* Исправленные стили для карты */
-    #all-properties-map {
-        width: 100%;
-        height: 300px !important;
-        min-height: 300px;
-        border-radius: 0.5rem;
-        overflow: hidden;
-        margin-bottom: 1rem;
-        position: relative;
-        background-color: #f0f0f0;
-        display: block !important;
-        transition: height 0.3s ease;
+    #apply_filters:active {
+        transform: translateY(0);
     }
 
-    #all-properties-map.expanded {
-        height: 500px !important;
-        min-height: 500px;
-    }
-
-    /* Гарантируем, что родительские элементы не скрывают карту */
-    .animate-block {
-        display: block !important;
-        visibility: visible !important;
-        height: auto !important;
-        overflow: visible !important;
-    }
-
-    .map-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-    }
-
-    .map-header h2 {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: #111827;
-    }
-
-    /* Добавляем стили для кнопки "Мое местоположение" */
-    .locate-me-btn {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        z-index: 1000;
+    #reset_filters {
         background: white;
-        padding: 8px;
-        border-radius: 4px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        color: #374151;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.75rem;
+        font-weight: 700;
+        border: 2px solid #d1d5db;
         cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        flex: 1;
         display: flex;
         align-items: center;
-        gap: 5px;
-        font-size: 14px;
+        justify-content: center;
+        gap: 0.5rem;
     }
 
-    .locate-me-btn:hover {
-        background: #f5f5f5;
+    #reset_filters:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        border-color: #9ca3af;
+        background: #f9fafb;
     }
 
-    .locate-me-btn i {
-        font-size: 16px;
+    #reset_filters:active {
+        transform: translateY(0);
     }
 
-    /* Стили для кнопки разворачивания карты */
-    .expand-map-btn {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 1000;
-        background: white;
-        padding: 10px 20px;
-        border-radius: 4px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 16px;
-        border: none;
+    /* Иконки для кнопок */
+    .filter-actions button i {
+        font-size: 1.1em;
+        transition: transform 0.3s ease;
+    }
+
+    #apply_filters:hover i {
+        transform: rotate(5deg) scale(1.1);
+    }
+
+    #reset_filters:hover i {
+        transform: rotate(-5deg) scale(1.1);
+    }
+
+    /* Стили для мультиселекта метро */
+    #metro-select {
+        min-height: 120px;
+        border-radius: 0.75rem;
+        border: 2px solid #d1d5db;
+        padding: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    #metro-select:hover {
+        border-color: #9ca3af;
+    }
+
+    #metro-select:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
         outline: none;
     }
 
-    .expand-map-btn:hover {
-        background: #f5f5f5;
+    #metro-select option {
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.5rem;
+        margin: 0.25rem 0;
+        transition: all 0.2s;
     }
 
-    .expand-map-btn i {
-        font-size: 18px;
+    #metro-select option:hover {
+        background: #e5e7eb !important;
+    }
+
+    #metro-select option:checked {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+        font-weight: 600;
+    }
+
+    /* Фильтр по типу недвижимости */
+    .property-type-filter {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .property-type-item {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem;
+        border-radius: 0.75rem;
+        transition: all 0.3s ease;
+        background: white;
+        border: 2px solid #e5e7eb;
+    }
+
+    .property-type-item:hover {
+        background: #f3f4f6;
+        border-color: #d1d5db;
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .property-type-item input[type="checkbox"] {
+        margin-right: 1rem;
+        width: 20px;
+        height: 20px;
+        accent-color: #3b82f6;
+        cursor: pointer;
+    }
+
+    .property-type-item label {
+        font-weight: 700;
+        color: #374151;
+        cursor: pointer;
+        flex: 1;
+        transition: color 0.2s;
+    }
+
+    .property-type-item:hover label {
+        color: #1e40af;
+    }
+
+    /* Подсветка активных фильтров */
+    .filter-section:has(input:not([value=""])) {
+        background: #f0f7ff;
+        border-color: #bfdbfe;
+    }
+
+    .filter-section:has(input:not([value=""])) h3 {
+        color: #1e40af;
+    }
+
+    .filter-section:has(input:not([value=""])) h3::after {
+        background: #1e40af;
+    }
+
+    /* Стили для карты */
+    .map-container-wrapper {
+        position: relative;
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        border: 2px solid #e5e7eb;
+        margin-bottom: 2rem;
+        transition: all 0.3s ease;
+        width: 100%;
+        max-width: 1000px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    #all-properties-map {
+        width: 100%;
+        height: 500px;
+        display: block;
+        transition: height 0.3s ease;
+    }
+
+    /* Индикатор загрузки карты */
+    .map-loading {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 999;
+        border-radius: 16px;
+    }
+
+    .map-loading-spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #1e40af;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
     }
 
     /* Контейнер для карты и поиска */
     .map-search-container {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
+        gap: 1.5rem;
         margin-bottom: 2rem;
+        width: 100%;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     /* Контейнер для поиска и кнопки добавления */
     .search-add-container {
         display: flex;
-        align-items: center;
-        gap: 1rem;
-        width: 100%;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    @media (min-width: 768px) {
+        .search-add-container {
+            flex-direction: row;
+            align-items: center;
+        }
     }
 
     .search-form {
@@ -320,6 +489,305 @@
             width: 100%;
         }
     }
+
+    /* Стили для пагинации */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 0.75rem;
+        margin-top: 2rem;
+    }
+
+    .page-item {
+        padding: 0.75rem 1rem;
+        border-radius: 0.75rem;
+        border: 2px solid #e5e7eb;
+        transition: all 0.2s;
+        font-weight: 600;
+    }
+
+    .page-item:hover {
+        background: #f3f4f6;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .page-item.bg-blue-600 {
+        box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+    }
+
+    /* Адаптивные стили */
+    @media (max-width: 1024px) {
+        .filter-toggle {
+            display: block;
+            margin-bottom: 1.5rem;
+            width: 100%;
+        }
+
+        .filter-sidebar {
+            display: none;
+        }
+
+        .filter-sidebar.active {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    }
+
+    @media (max-width: 767px) {
+        .sticky-column {
+            position: relative;
+            top: auto;
+        }
+
+        .filter-section {
+            padding: 1rem;
+        }
+
+        .filter-actions {
+            flex-direction: column;
+        }
+    }
+    /* Стили для выпадающего списка городов */
+/* Стили для модального окна городов */
+        #city-dropdown {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        padding: 2rem;
+        overflow-y: auto;
+        backdrop-filter: blur(5px);
+        display: none;
+    }
+
+    #city-dropdown > .container {
+        background-color: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        max-width: 800px;
+        margin: 2rem auto;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Остальные стили остаются без изменений */
+     .city-search-container {
+        background-color: white;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    #city-search:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    .city-option {
+        padding: 1rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.75rem;
+        font-size: 1.125rem;
+        transition: all 0.2s ease;
+        text-align: left;
+        background: white;
+    }
+
+    .city-option:hover {
+        background-color: #f0f7ff;
+        border-color: #bfdbfe;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .city-option.hidden {
+        display: none;
+    }
+
+    #close-city-modal {
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+
+    #close-city-modal:hover {
+        color: #1e40af;
+    }
+      #metro-dropdown {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        padding: 2rem;
+        overflow-y: auto;
+        backdrop-filter: blur(5px);
+        display: none;
+    }
+
+    #metro-dropdown > .container {
+        background-color: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        max-width: 800px;
+        margin: 2rem auto;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .metro-search-container {
+        background-color: white;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    #metro-search {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        transition: all 0.2s;
+    }
+
+    #metro-search:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    .metro-line-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .metro-line-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e5e7eb;
+    }
+
+    .metro-line-color {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        margin-right: 0.75rem;
+        flex-shrink: 0;
+    }
+
+    .metro-line-name {
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .metro-stations-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .metro-station-option {
+        padding: 0.75rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+        text-align: left;
+        background: white;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .metro-station-option:hover {
+        background-color: #f0f7ff;
+        border-color: #bfdbfe;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .metro-station-option.selected {
+        background-color: #3b82f6;
+        color: white;
+        border-color: #3b82f6;
+    }
+
+    .metro-station-color {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+        flex-shrink: 0;
+    }
+
+    .metro-station-name {
+        flex-grow: 1;
+    }
+
+    #close-metro-modal {
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+
+    #close-metro-modal:hover {
+        color: #1e40af;
+    }
+
+    .metro-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .metro-action-btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    #apply-metro-selection {
+        background: #3b82f6;
+        color: white;
+        border: none;
+    }
+
+    #apply-metro-selection:hover {
+        background: #2563eb;
+    }
+
+    #clear-metro-selection {
+        background: white;
+        color: #374151;
+        border: 1px solid #d1d5db;
+    }
+
+    #clear-metro-selection:hover {
+        background: #f3f4f6;
+    }
 </style>
 {% endblock %}
 
@@ -329,108 +797,289 @@
 
 {% block content %}
 <div class="container mx-auto px-4 py-8">
-    <!-- Хлебные крошки -->
-    <nav class="breadcrumbs mb-6" aria-label="Хлебные крошки">
-        <a href="/">Главная</a>
-        <span class="separator" aria-hidden="true">/</span>
-        <span>Каталог недвижимости</span>
-    </nav>
-
     <!-- Контейнер для карты и поиска -->
     <div class="map-search-container">
         <!-- Заголовок и поиск -->
-        <div class="header-section">
-            <h1 class="text-3xl font-bold text-gray-800 mb-4">
+        <div class="bg-white rounded-xl shadow-sm p-4 mb-6 border-2 border-gray-100">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+            <h1 class="text-3xl font-bold text-gray-800">
                 {% if user.is_authenticated and user.is_broker %}
                     Мои объекты
                 {% else %}
                     Каталог недвижимости
                 {% endif %}
             </h1>
-            <div class="search-add-container">
-                <form class="search-form">
-                    <div class="relative">
+
+            <div class="w-full md:w-auto flex-1 flex flex-col sm:flex-row gap-4 items-stretch">
+                <form class="search-form flex-1">
+                    <div class="relative h-full">
                         <input type="search"
                                name="search"
                                placeholder="Поиск по названию или локации..."
-                               class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                               class="w-full h-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                         <button type="submit" class="absolute right-3 top-3 text-gray-400 hover:text-blue-600">
                             <i class="bi bi-search text-xl"></i>
                         </button>
                     </div>
                 </form>
+
                 {% if user.is_authenticated and user.is_broker %}
-                    <a href="{% url 'properties:select-listing-type' %}" class="btn-primary flex items-center gap-2 whitespace-nowrap">
+                    <a href="{% url 'properties:select-listing-type' %}"
+                       class="btn-primary flex items-center justify-center gap-2 whitespace-nowrap px-6 py-3 rounded-lg transition-all hover:shadow-md">
                         <i class="bi bi-plus-lg"></i> Добавить
                     </a>
                 {% endif %}
             </div>
         </div>
-
-        <!-- Карта всех объектов -->
-        <div class="animate-block">
-            <div id="all-properties-map"></div>
-            <!-- Кнопка для разворачивания карты -->
-            <button id="expand-map" class="expand-map-btn">
-                <i class="bi bi-arrows-angle-expand"></i> Смотреть объекты
-            </button>
-            <!-- Кнопка "Мое местоположение" -->
-            <button id="locate-me" class="locate-me-btn">
-                <i class="bi bi-geo-alt"></i> Мое местоположение
-            </button>
-        </div>
     </div>
 
-    <div class="flex flex-col lg:flex-row gap-8">
-        <!-- Боковая панель с фильтрами -->
-        <aside class="w-full lg:w-64 flex-shrink-0">
+        <!-- Карта всех объектов -->
+      <!-- Карта всех объектов -->
+
+
+     <div class="flex flex-col lg:flex-row gap-8">
+        <aside class="w-full lg:w-64 flex-shrink-0 order-first">
             <div class="bg-white rounded-lg shadow p-6 sticky-column">
                 <button class="filter-toggle btn-primary mb-4 lg:hidden">
                     <i class="bi bi-funnel"></i> Фильтры
                 </button>
-
                 <div class="filter-sidebar lg:block" id="filter-sidebar">
                     <form method="get" id="filter-form">
                         <!-- Тип недвижимости -->
                         <div class="filter-section">
                             <h3>Тип недвижимости</h3>
-                            {% for choice in filter.form.property_type %}
-                                <div class="flex items-center mb-2">
-                                    {{ choice.tag }}
-                                    <label for="{{ choice.id_for_label }}" class="ml-2 text-sm">
-                                        {{ choice.choice_label }}
-                                    </label>
-                                </div>
-                            {% endfor %}
+
+<div class="property-type-filter">
+    {% for pt in property_types %}
+        <div class="property-type-item">
+            <input type="checkbox"
+                   name="property_type"
+                   value="{{ pt.name }}"
+                   id="property_type_{{ pt.name }}"
+                   {% if pt.name in selected_property_types %}checked{% endif %}>
+            <label for="property_type_{{ pt.name }}">
+                {{ pt.get_name_display }}
+            </label>
+        </div>
+    {% endfor %}
+</div>
                         </div>
+                     <!-- Город -->
+                       <!-- В секции фильтра по городу замените текущий input на этот код -->
+<div class="filter-section">
+    <h3>Город</h3>
+    <div class="relative">
+        <button type="button"
+                id="city-input"
+                class="w-full px-3 py-2 border-2 border-blue-500 rounded-lg text-sm font-medium bg-white hover:bg-blue-50 transition-colors text-left relative shadow-sm hover:shadow-md"
+                onclick="document.getElementById('city-dropdown').classList.remove('hidden')">
+            <span id="selected-city-text" class="text-gray-700">
+                {% if filter.form.location.value %}
+                    {{ filter.form.location.value }}
+                {% else %}
+                    Выберите город
+                {% endif %}
+            </span>
+            <i class="bi bi-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
+        </button>
+
+        <input type="hidden"
+               name="location"
+               value="{{ filter.form.location.value|default:'' }}"
+               id="city-hidden-input">
+
+        <div id="city-dropdown"
+             class="fixed inset-0 z-50 hidden bg-white p-6 overflow-y-auto">
+            <div class="container mx-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Выберите город</h2>
+                    <button id="close-city-modal" class="text-gray-500 hover:text-gray-700">
+                        <i class="bi bi-x text-3xl"></i>
+                    </button>
+                </div>
+
+                     <div class="mb-6">
+    <input type="text"
+           id="city-search"
+           placeholder="Начните вводить название города..."
+           class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-lg">
+</div>
+<button type="button" id="use-custom-city" class="hidden mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg">
+    Применить
+</button>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Москва">Москва</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Московская область">Московская область</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Санкт-Петербург">Санкт-Петербург</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Ленинградская область">Ленинградская область</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Екатеринбург">Екатеринбург</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Краснодар">Краснодар</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Новосибирск">Новосибирск</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Красноярск">Красноярск</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Челябинск">Челябинск</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Ростов-на-Дону">Ростов-на-Дону</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Тюмень">Тюмень</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Уфа">Уфа</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Казань">Казань</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Пермь">Пермь</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Нижний Новгород">Нижний Новгород</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Самара">Самара</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Саратов">Саратов</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Омск">Омск</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Балашиха">Балашиха</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Волгоград">Волгоград</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Воронеж">Воронеж</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Иркутск">Иркутск</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Хабаровск">Хабаровск</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Томск">Томск</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Ярославль">Ярославль</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Сочи">Сочи</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Сургут">Сургут</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Подольск">Подольск</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Мытищи">Мытищи</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Владивосток">Владивосток</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Калуга">Калуга</button>
+            <button type="button"
+                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                    data-city="Пятигорск">Пятигорск</button>
+        </div>
+    </div>
+</div>
+    </div>
+</div>
+                       <!-- Метро -->
+                        <div class="filter-section">
+                            <h3>Метро</h3>
+                            <select name="{{ filter.form.metro_station.name }}"
+                                    id="{{ filter.form.metro_station.id_for_label }}"
+                                    class="metro-station-select w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm font-medium"
+                                    multiple
+                                    data-max-choices="5">
+                                {% for option in filter.form.metro_station %}
+                                    <option value="{{ option.data.value }}"
+                                            {% if option.data.selected %}selected{% endif %}>
+                                        {{ option.data.label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+
+
+                       <!-- Расстояние до центра -->
+                        <div class="filter-section">
+                            <h3>Расстояние до центра, км</h3>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">От</label>
+                                    <input type="number" name="min_distance_to_center" value="{{ filter.form.min_distance_to_center.value|default:'' }}"
+                                           class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm font-medium" step="0.1">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">До</label>
+                                    <input type="number" name="max_distance_to_center" value="{{ filter.form.max_distance_to_center.value|default:'' }}"
+                                           class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm font-medium" step="0.1">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Радиус на карте -->
+                        <input type="hidden" name="radius_filter" id="radius-filter-input">
+
+
+
+
 
                         <!-- Цена -->
                         <div class="filter-section">
                             <h3>Цена, ₽</h3>
                             <div class="grid grid-cols-2 gap-2 mb-2">
                                 <div>
-                                    <label class="block text-xs text-gray-500 mb-1">От</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">От</label>
                                     <input type="number" name="min_price" value="{{ filter.form.min_price.value|default:'' }}"
-                                           class="w-full px-2 py-1 border rounded text-sm">
+                                           class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm font-medium">
                                 </div>
                                 <div>
-                                    <label class="block text-xs text-gray-500 mb-1">До</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">До</label>
                                     <input type="number" name="max_price" value="{{ filter.form.max_price.value|default:'' }}"
-                                           class="w-full px-2 py-1 border rounded text-sm">
+                                           class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm font-medium">
                                 </div>
                             </div>
 
                             <h3>Цена за м², ₽</h3>
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block text-xs text-gray-500 mb-1">От</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">От</label>
                                     <input type="number" name="min_price_per_sqm" value="{{ filter.form.min_price_per_sqm.value|default:'' }}"
-                                           class="w-full px-2 py-1 border rounded text-sm">
+                                           class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm font-medium">
                                 </div>
                                 <div>
-                                    <label class="block text-xs text-gray-500 mb-1">До</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">До</label>
                                     <input type="number" name="max_price_per_sqm" value="{{ filter.form.max_price_per_sqm.value|default:'' }}"
-                                           class="w-full px-2 py-1 border rounded text-sm">
+                                           class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm font-medium">
                                 </div>
                             </div>
                         </div>
@@ -440,27 +1089,27 @@
                             <h3>Площадь, м²</h3>
                             <div class="grid grid-cols-2 gap-2 mb-2">
                                 <div>
-                                    <label class="block text-xs text-gray-500 mb-1">Общая от</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Общая от</label>
                                     <input type="number" name="min_area" value="{{ filter.form.min_area.value|default:'' }}"
-                                           class="w-full px-2 py-1 border rounded text-sm">
+                                           class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm font-medium">
                                 </div>
                                 <div>
-                                    <label class="block text-xs text-gray-500 mb-1">Общая до</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Общая до</label>
                                     <input type="number" name="max_area" value="{{ filter.form.max_area.value|default:'' }}"
-                                           class="w-full px-2 py-1 border rounded text-sm">
+                                           class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm font-medium">
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block text-xs text-gray-500 mb-1">Жилая от</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Жилая от</label>
                                     <input type="number" name="min_living_area" value="{{ filter.form.min_living_area.value|default:'' }}"
-                                           class="w-full px-2 py-1 border rounded text-sm">
+                                           class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm font-medium">
                                 </div>
                                 <div>
-                                    <label class="block text-xs text-gray-500 mb-1">Жилая до</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Жилая до</label>
                                     <input type="number" name="max_living_area" value="{{ filter.form.max_living_area.value|default:'' }}"
-                                           class="w-full px-2 py-1 border rounded text-sm">
+                                           class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm font-medium">
                                 </div>
                             </div>
                         </div>
@@ -470,14 +1119,14 @@
                             <h3>Количество комнат</h3>
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block text-xs text-gray-500 mb-1">От</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">От</label>
                                     <input type="number" name="rooms__gte" value="{{ filter.form.rooms__gte.value|default:'' }}"
-                                           class="w-full px-2 py-1 border rounded text-sm">
+                                           class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm font-medium">
                                 </div>
                                 <div>
-                                    <label class="block text-xs text-gray-500 mb-1">До</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">До</label>
                                     <input type="number" name="rooms__lte" value="{{ filter.form.rooms__lte.value|default:'' }}"
-                                           class="w-full px-2 py-1 border rounded text-sm">
+                                           class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm font-medium">
                                 </div>
                             </div>
                         </div>
@@ -487,28 +1136,28 @@
                             <h3>Этаж</h3>
                             <div class="grid grid-cols-2 gap-2 mb-2">
                                 <div>
-                                    <label class="block text-xs text-gray-500 mb-1">От</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">От</label>
                                     <input type="number" name="min_floor" value="{{ filter.form.min_floor.value|default:'' }}"
-                                           class="w-full px-2 py-1 border rounded text-sm">
+                                           class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm font-medium">
                                 </div>
                                 <div>
-                                    <label class="block text-xs text-gray-500 mb-1">До</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">До</label>
                                     <input type="number" name="max_floor" value="{{ filter.form.max_floor.value|default:'' }}"
-                                           class="w-full px-2 py-1 border rounded text-sm">
+                                           class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm font-medium">
                                 </div>
                             </div>
 
                             <h3>Этажность дома</h3>
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block text-xs text-gray-500 mb-1">От</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">От</label>
                                     <input type="number" name="min_total_floors" value="{{ filter.form.min_total_floors.value|default:'' }}"
-                                           class="w-full px-2 py-1 border rounded text-sm">
+                                           class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm font-medium">
                                 </div>
                                 <div>
-                                    <label class="block text-xs text-gray-500 mb-1">До</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">До</label>
                                     <input type="number" name="max_total_floors" value="{{ filter.form.max_total_floors.value|default:'' }}"
-                                           class="w-full px-2 py-1 border rounded text-sm">
+                                           class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm font-medium">
                                 </div>
                             </div>
                         </div>
@@ -518,74 +1167,32 @@
                             <h3>Год постройки</h3>
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block text-xs text-gray-500 mb-1">От</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">От</label>
                                     <input type="number" name="min_construction_year" value="{{ filter.form.min_construction_year.value|default:'' }}"
-                                           class="w-full px-2 py-1 border rounded text-sm">
+                                           class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm font-medium">
                                 </div>
                                 <div>
-                                    <label class="block text-xs text-gray-500 mb-1">До</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">До</label>
                                     <input type="number" name="max_construction_year" value="{{ filter.form.max_construction_year.value|default:'' }}"
-                                           class="w-full px-2 py-1 border rounded text-sm">
+                                           class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm font-medium">
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Расстояние до центра -->
-                        <div class="filter-section">
-                            <h3>Расстояние до центра, км</h3>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div>
-                                    <label class="block text-xs text-gray-500 mb-1">От</label>
-                                    <input type="number" name="min_distance_to_center" value="{{ filter.form.min_distance_to_center.value|default:'' }}"
-                                           class="w-full px-2 py-1 border rounded text-sm" step="0.1">
-                                </div>
-                                <div>
-                                    <label class="block text-xs text-gray-500 mb-1">До</label>
-                                    <input type="number" name="max_distance_to_center" value="{{ filter.form.max_distance_to_center.value|default:'' }}"
-                                           class="w-full px-2 py-1 border rounded text-sm" step="0.1">
-                                </div>
-                            </div>
-                        </div>
 
-                        <!-- Радиус на карте -->
-                        <input type="hidden" name="radius_filter" id="radius-filter-input">
-
-                        <!-- Метро -->
-                        <div class="filter-section">
-                            <h3>Метро</h3>
-                            <input type="text" name="metro_station" value="{{ filter.form.metro_station.value|default:'' }}"
-                                   class="w-full px-2 py-1 border rounded text-sm"
-                                   placeholder="Название станции">
-                        </div>
-
-                        <!-- Район -->
-                        <div class="filter-section">
-                            <h3>Район</h3>
-                            <input type="text" name="district" value="{{ filter.form.district.value|default:'' }}"
-                                   class="w-full px-2 py-1 border rounded text-sm"
-                                   placeholder="Название района">
-                        </div>
-
-                        <!-- Город -->
-                        <div class="filter-section">
-                            <h3>Город</h3>
-                            <input type="text" name="location" value="{{ filter.form.location.value|default:'' }}"
-                                   class="w-full px-2 py-1 border rounded text-sm"
-                                   placeholder="Название города">
-                        </div>
 
                         <!-- Чекбоксы -->
                         <div class="filter-section">
                             <div class="flex items-center mb-2">
                                 {{ filter.form.has_finishing }}
-                                <label for="{{ filter.form.has_finishing.id_for_label }}" class="ml-2 text-sm">
+                                <label for="{{ filter.form.has_finishing.id_for_label }}" class="ml-2 text-sm font-medium">
                                     Только с отделкой
                                 </label>
                             </div>
 
                             <div class="flex items-center">
                                 {{ filter.form.is_delivered }}
-                                <label for="{{ filter.form.is_delivered.id_for_label }}" class="ml-2 text-sm">
+                                <label for="{{ filter.form.is_delivered.id_for_label }}" class="ml-2 text-sm font-medium">
                                     Только сданные
                                 </label>
                             </div>
@@ -593,10 +1200,10 @@
 
                         <!-- Кнопки фильтра -->
                         <div class="filter-actions">
-                            <button type="submit" id="apply_filters" class="btn-primary px-4 py-2 text-sm">
+                            <button type="submit" id="apply_filters" class="btn-primary px-4 py-2 text-sm font-semibold">
                                 Применить
                             </button>
-                            <a href="?" id="reset_filters" class="btn-outline px-4 py-2 text-sm">
+                            <a href="?" id="reset_filters" class="px-4 py-2 text-sm font-semibold border-2 border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                                 Сбросить
                             </a>
                         </div>
@@ -606,73 +1213,97 @@
         </aside>
         <div style="display:none">API Key: {{ YANDEX_MAPS_API_KEY }}</div>
 
-        <!-- Основное содержимое -->
-        <div class="flex-1">
+
+  <div class="flex-1">
+            <!-- Карта всех объектов -->
+            <div class="flex justify-end">
+                <div class="custom-map-container relative" style="width: 1000px; height: 500px;">
+                    <div id="all-properties-map" class="rounded-xl overflow-hidden"></div>
+                    <div class="map-loading" id="map-loading">
+                        <div class="map-loading-spinner"></div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Карточки объектов -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
                 {% if properties %}
                     {% for property in properties %}
-                        <a href="{% url 'properties:property-detail' property.id %}" class="property-card bg-white rounded-xl shadow-sm hover:shadow-md p-6 border-2 border-gray-100 transition-all block">
-                            <div class="relative mb-4">
-                                <img src="{{ property.main_image.url }}"
-                                     class="w-full h-48 object-cover rounded-lg"
-                                     alt="{{ property.title }}">
-                                {% if property.is_featured %}
-                                <span class="absolute top-2 right-2 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">
-                                    ★ Premium
-                                </span>
-                                {% endif %}
-                            </div>
+           <a href="{% url 'properties:property-detail' property.id %}" class="property-card bg-white rounded-xl shadow-sm hover:shadow-md p-6 transition-all block">
+    <div class="relative mb-4">
+        <img src="{{ property.main_image.url }}"
+             class="w-full h-48 object-cover rounded-lg"
+             alt="{{ property.title }}">
+        {% if property.is_featured %}
+        <span class="absolute top-2 right-2 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">
+            ★ Premium
+        </span>
+        {% endif %}
+    </div>
 
-                            <div class="space-y-4">
-                                <h3 class="text-xl font-bold text-gray-800 truncate">
-                                    {% if property.property_type.name == 'house' %}
-                                        {{ property.title }}
-                                    {% elif 'flat' in property.property_type.name %}
-                                        {{ property.title }}
-                                    {% else %}
-                                        {{ property.title }}
-                                    {% endif %}
-                                </h3>
+    <div class="space-y-4">
+        <h3 class="text-xl font-bold text-gray-800 truncate">
+            {{ property.title }}
+        </h3>
 
-                                <div class="flex items-center gap-2 text-blue-600">
-                                    <i class="bi bi-geo-alt"></i>
-                                    <span class="truncate">{{ property.location }}</span>
-                                </div>
+        <!-- Убрал border-2 у этого контейнера -->
+        <div class="rounded-lg p-3 bg-gray-50">
+            <div class="grid grid-cols-2 gap-3">
+                <!-- Город -->
+                <div class="flex items-center gap-2">
+                    <i class="bi bi-geo-alt"></i>
+                    <span class="truncate">{{ property.location }}</span>
+                </div>
 
-                                <div class="grid grid-cols-2 gap-4 text-gray-600">
-                                    <div class="flex items-center gap-2">
-                                        <i class="bi bi-door-open"></i>
-                                        {{ property.rooms }} комн.
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <i class="bi bi-arrows-fullscreen"></i>
-                                        {{ property.total_area}} м²
-                                    </div>
-                                </div>
+                <!-- Комнаты -->
+                <div class="flex items-center gap-2">
+                    <i class="bi bi-door-open"></i>
+                    <span>{{ property.rooms }} комн.</span>
+                </div>
 
-                                <div class="flex items-center justify-between mt-4">
-                                    <span class="text-2xl font-bold text-blue-600">
-                                        {% if property.is_rental == 'monthly' and property.monthly_price %}
-                                            {{ property.monthly_price|space_format }} ₽/мес
-                                        {% elif property.is_rental == 'daily' and property.daily_price %}
-                                            {{ property.daily_price|space_format }} ₽/сут
-                                        {% else %}
-                                            {{ property.price|space_format }} ₽
-                                        {% endif %}
-                                    </span>
-                                    {% if user.is_authenticated %}
-                                    <button class="toggle-favorite" data-property-id="{{ property.id }}" onclick="event.stopPropagation()">
-                                        <i class="bi bi-heart{% if property in user.favorites.all %}-fill text-red-500{% endif %} text-xl"></i>
-                                    </button>
-                                    {% endif %}
-                                </div>
+                <!-- Метро -->
+                {% if property.metro_station and property.metro_station != "Не указано" %}
+                <div class="flex items-center gap-2">
+                    <i class="bi bi-subway"></i>
+                    <span class="truncate">{{ property.metro_station|cut:"метро " }}</span>
+                </div>
+                {% else %}
+                <div></div>
+                {% endif %}
 
-                                <div class="btn-primary w-full text-center mt-4" onclick="event.stopPropagation()">
-                                    <i class="bi bi-eye"></i> Подробнее
-                                </div>
-                            </div>
-                        </a>
+                <!-- Метраж -->
+                <div class="flex items-center gap-2">
+                    <i class="bi bi-arrows-fullscreen"></i>
+                    <span>{{ property.total_area}} м²</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center justify-between mt-4">
+            <span class="text-2xl font-bold text-blue-600">
+                {% if property.is_rental == 'monthly' and property.monthly_price %}
+                    {{ property.monthly_price|space_format }} ₽/мес
+                {% elif property.is_rental == 'daily' and property.daily_price %}
+                    {{ property.daily_price|space_format }} ₽/сут
+                {% else %}
+                    {{ property.price|space_format }} ₽
+                {% endif %}
+            </span>
+            {% if user.is_authenticated %}
+            <button class="toggle-favorite" data-property-id="{{ property.id }}" onclick="event.stopPropagation()">
+                <i class="bi bi-heart{% if property in user.favorites.all %}-fill text-red-500{% endif %} text-xl"></i>
+            </button>
+            {% endif %}
+        </div>
+
+        <!-- Кнопка "Подробнее" -->
+        <div class="mt-4">
+            <button class="w-full py-2 px-4 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2" onclick="event.stopPropagation()">
+                <i class="bi bi-eye"></i> Подробнее
+            </button>
+        </div>
+    </div>
+</a>
                     {% endfor %}
                 {% else %}
                     <div class="col-span-full text-center py-12 text-gray-500">
@@ -716,145 +1347,242 @@
         </div>
     </div>
 </div>
-
 <script>
-    // Функция инициализации карты
-    function initMap() {
-        console.log("[DEBUG] Начало инициализации карты");
+  // Функция инициализации карты
+// Функция инициализации карты
+function initMap() {
+    console.log("[DEBUG] Начало инициализации карты");
 
-        if (typeof ymaps === 'undefined') {
-            console.error('[DEBUG] Yandex Maps API not loaded');
-            setTimeout(initMap, 100);
-            return;
-        }
+    if (typeof ymaps === 'undefined') {
+        console.error('[DEBUG] Yandex Maps API not loaded');
+        setTimeout(initMap, 100);
+        return;
+    }
+        // Получаем контейнер карты
+    const mapContainer = document.getElementById('all-properties-map');
+    const mapWrapper = mapContainer.parentElement;
+    mapWrapper.style.width = '1200px';
+    mapWrapper.style.height = '300px';
 
-        const mapContainer = document.getElementById('all-properties-map');
-        if (mapContainer.offsetHeight === 0) {
-            mapContainer.style.height = '300px';
-        }
+    if (mapContainer.offsetHeight === 0) {
+        mapContainer.style.height = mapWrapper.style.height || '500px';
+    }
+    ymaps.ready(function() {
+        const allPropertiesMap = new ymaps.Map('all-properties-map', {
+            center: [55.751574, 37.617635],
+            zoom: 10,
+            controls: ['zoomControl', 'geolocationControl']
+        });
 
-        ymaps.ready(function() {
-            const allPropertiesMap = new ymaps.Map('all-properties-map', {
-                center: [55.751574, 37.617635],
-                zoom: 10,
-                controls: ['zoomControl', 'fullscreenControl']
-            });
+        // Настройка контрола геолокации
+        allPropertiesMap.controls.get('geolocationControl').options.set({
+            position: { top: '15px', right: '15px' },
+            size: 'small',
+            float: 'none',
+            noPlacemark: false
+        });
 
-            // Добавляем метки всех объектов
-            {% for property in properties %}
-                {% if property.coordinates %}
-                    const lat{{ property.id }} = parseFloat('{{ property.coordinates.y|stringformat:"f" }}'.replace(',', '.'));
-                    const lon{{ property.id }} = parseFloat('{{ property.coordinates.x|stringformat:"f" }}'.replace(',', '.'));
-                    const propertyCoords{{ property.id }} = [lat{{ property.id }}, lon{{ property.id }}];
+        // Создаем коллекцию для хранения всех объектов
+        const objectManager = new ymaps.ObjectManager({
+            clusterize: true,
+            gridSize: 64,
+            clusterDisableClickZoom: true
+        });
 
-                    const marker{{ property.id }} = new ymaps.Placemark(
-                        propertyCoords{{ property.id }},
-                        {
-                            balloonContent: `
-                                <div style="padding: 10px;">
-                                    <img src="{{ property.main_image.url }}" style="width: 100%; height: 120px; object-fit: cover; margin-bottom: 10px;">
-                                    <h3 style="margin: 0 0 5px 0; font-size: 16px;">{{ property.title }}</h3>
-                                    <p style="margin: 0; font-weight: bold; color: #0060f4;">
-                                        {% if property.is_rental == 'monthly' and property.monthly_price %}
-                                            {{ property.monthly_price|space_format }} ₽/мес
-                                        {% elif property.is_rental == 'daily' and property.daily_price %}
-                                            {{ property.daily_price|space_format }} ₽/сут
-                                        {% else %}
-                                            {{ property.price|space_format }} ₽
-                                        {% endif %}
-                                    </p>
-                                    <a href="{% url 'properties:property-detail' property.id %}" style="display: inline-block; margin-top: 10px; color: #0060f4;">Подробнее</a>
-                                </div>
-                            `,
-                            hintContent: '{{ property.title|escapejs }}'
-                        },
-                        {
-                            preset: 'islands#blueHomeIcon',
-                            balloonCloseButton: true,
-                            draggable: false
-                        }
-                    );
+        // Настройка внешнего вида кластеров
+        objectManager.clusters.options.set({
+            preset: 'islands#invertedDarkBlueClusterIcons',
+            groupByCoordinates: false,
+            clusterDisableClickZoom: true,
+            clusterHideIconOnBalloonOpen: false,
+            geoObjectHideIconOnBalloonOpen: false
+        });
 
-                    marker{{ property.id }}.events.add('click', function(e) {
-                        const balloon = e.get('target').balloon;
-                        if (balloon.isOpen()) {
-                            window.location.href = "{% url 'properties:property-detail' property.id %}";
-                        }
-                    });
+        // Настройка внешнего вида меток
+        objectManager.objects.options.set({
+            preset: 'islands#darkBlueHomeIcon',
+            balloonContentLayout: ymaps.templateLayoutFactory.createClass(
+                `<div style="padding: 10px;">
+                    <img src="$[properties.image]" style="width: 100%; height: 120px; object-fit: cover; margin-bottom: 10px;">
+                    <h3 style="margin: 0 0 5px 0; font-size: 16px;">$[properties.title]</h3>
+                    <p style="margin: 0; font-weight: bold; color: #0060f4;">$[properties.price]</p>
+                    <a href="$[properties.url]" style="display: inline-block; margin-top: 10px; color: #0060f4;">Подробнее</a>
+                </div>`
+            ),
+            hideIconOnBalloonOpen: false,
+            openBalloonOnClick: true,
+            balloonAutoPan: false,
+            balloonCloseButton: false
+        });
 
-                    allPropertiesMap.geoObjects.add(marker{{ property.id }});
-                {% endif %}
-            {% endfor %}
-
-            // Обработчик кнопки "Мое местоположение"
-            document.getElementById('locate-me').addEventListener('click', function() {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        function(position) {
-                            const userCoords = [position.coords.latitude, position.coords.longitude];
-                            allPropertiesMap.setCenter(userCoords, 15);
-
-                            // Добавляем метку пользователя
-                            const userMarker = new ymaps.Placemark(userCoords, {
-                                hintContent: 'Ваше местоположение'
-                            }, {
-                                preset: 'islands#greenDotIcon',
-                                draggable: false
-                            });
-
-                            allPropertiesMap.geoObjects.add(userMarker);
-                        },
-                        function(error) {
-                            console.error('Ошибка получения местоположения:', error);
-                            alert('Не удалось определить ваше местоположение. Пожалуйста, проверьте настройки геолокации.');
-                        },
-                        {
-                            enableHighAccuracy: true,
-                            timeout: 5000,
-                            maximumAge: 0
-                        }
-                    );
-                } else {
-                    alert('Ваш браузер не поддерживает геолокацию');
-                }
-            });
-
-            // Автомасштабирование
-            if (allPropertiesMap.geoObjects.getLength() > 0) {
-                allPropertiesMap.setBounds(allPropertiesMap.geoObjects.getBounds(), {
-                    checkZoomRange: true,
-                    zoomMargin: 50
+        // Добавляем объекты в менеджер
+        const features = [];
+        {% for property in properties %}
+            {% if property.coordinates %}
+                features.push({
+                    type: 'Feature',
+                    id: {{ property.id }},
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [parseFloat('{{ property.coordinates.y|stringformat:"f" }}'.replace(',', '.')),
+                                     parseFloat('{{ property.coordinates.x|stringformat:"f" }}'.replace(',', '.'))]
+                    },
+                    properties: {
+                        title: '{{ property.title|escapejs }}',
+                        price: `{% if property.is_rental == 'monthly' and property.monthly_price %}
+                                    {{ property.monthly_price|space_format }} ₽/мес
+                                {% elif property.is_rental == 'daily' and property.daily_price %}
+                                    {{ property.daily_price|space_format }} ₽/сут
+                                {% else %}
+                                    {{ property.price|space_format }} ₽
+                                {% endif %}`,
+                        image: '{{ property.main_image.url }}',
+                        url: '{% url 'properties:property-detail' property.id %}'
+                    }
                 });
+            {% endif %}
+        {% endfor %}
+
+        objectManager.add(features);
+        allPropertiesMap.geoObjects.add(objectManager);
+
+        // Автомасштабирование
+        if (features.length > 0) {
+            allPropertiesMap.setBounds(objectManager.getBounds(), {
+                checkZoomRange: true,
+                zoomMargin: 50
+            });
+        } else {
+            allPropertiesMap.setCenter([55.751574, 37.617635], 10);
+        }
+
+        // Переменные для управления состоянием
+        let currentMapCenter = allPropertiesMap.getCenter();
+        let isUserZooming = false;
+        let zoomTimeout;
+        let balloonsOpened = false;
+        let lastZoomLevel = allPropertiesMap.getZoom();
+
+        // Функция для безопасного открытия балунов
+        function safeOpenBalloon(objectManager, objectId) {
+            try {
+                objectManager.objects.balloon.open(objectId, {
+                    autoPan: false,
+                    closeButton: false
+                });
+            } catch (e) {
+                console.error('Ошибка при открытии балуна:', e);
+            }
+        }
+
+        // Обработчик изменения масштаба
+        allPropertiesMap.events.add('boundschange', function(e) {
+            const zoom = e.get('newZoom');
+            const oldZoom = lastZoomLevel;
+            lastZoomLevel = zoom;
+
+            // Сохраняем текущий центр карты
+            currentMapCenter = allPropertiesMap.getCenter();
+
+            // Если пользователь изменяет масштаб
+            if (e.get('byUser')) {
+                isUserZooming = true;
+
+                // Сбрасываем предыдущий таймер
+                clearTimeout(zoomTimeout);
+
+                // Устанавливаем новый таймер
+                zoomTimeout = setTimeout(() => {
+                    isUserZooming = false;
+                    // После завершения зума проверяем нужно ли открыть балуны
+                    if (zoom >= 15 && !balloonsOpened) {
+                        openAllBalloons(objectManager);
+                        balloonsOpened = true;
+                    }
+                }, 1000);
+            }
+
+            if (zoom < 12) {
+                // При маленьком масштабе показываем только кластеры
+                objectManager.objects.options.set({ visible: false });
+                objectManager.clusters.options.set({ visible: true });
+                if (balloonsOpened) {
+                    closeAllBalloons(objectManager);
+                    balloonsOpened = false;
+                }
             } else {
-                allPropertiesMap.setCenter([55.751574, 37.617635], 10);
+                // При среднем и большом масштабе показываем объекты
+                objectManager.objects.options.set({
+                    visible: true,
+                    preset: 'islands#darkBlueHomeIcon'
+                });
+                objectManager.clusters.options.set({ visible: false });
+
+                // Открываем балуны только если:
+                // 1. Масштаб >= 15
+                // 2. Пользователь не изменяет масштаб в данный момент
+                // 3. Балуны еще не открыты
+                if (zoom >= 15 && !isUserZooming && !balloonsOpened) {
+                    openAllBalloons(objectManager);
+                    balloonsOpened = true;
+                } else if (zoom < 15 && balloonsOpened) {
+                    closeAllBalloons(objectManager);
+                    balloonsOpened = false;
+                }
             }
         });
-    }
 
-    // Обработчик кнопки разворачивания карты
-    document.addEventListener('DOMContentLoaded', function() {
-        const expandBtn = document.getElementById('expand-map');
-        const mapContainer = document.getElementById('all-properties-map');
+        // Обработчик клика по объекту
+        objectManager.objects.events.add('click', function(e) {
+            const objectId = e.get('objectId');
+            const centerBefore = allPropertiesMap.getCenter();
 
-        if (expandBtn && mapContainer) {
-            expandBtn.addEventListener('click', function() {
-                mapContainer.classList.toggle('expanded');
+            // Закрываем все балуны перед открытием нового
+            closeAllBalloons(objectManager);
+            balloonsOpened = false;
 
-                if (mapContainer.classList.contains('expanded')) {
-                    expandBtn.innerHTML = '<i class="bi bi-arrows-angle-contract"></i> Свернуть карту';
-                } else {
-                    expandBtn.innerHTML = '<i class="bi bi-arrows-angle-expand"></i> Смотреть объекты';
-                }
+            // Открываем балун для выбранного объекта
+            safeOpenBalloon(objectManager, objectId);
+        });
 
-                // Перерисовываем карту после изменения размера
-                setTimeout(function() {
-                    if (typeof ymaps !== 'undefined' && typeof allPropertiesMap !== 'undefined') {
-                        allPropertiesMap.container.fitToViewport();
-                    }
-                }, 300);
-            });
-        }
+        // Обработчик закрытия балуна
+        objectManager.objects.balloon.events.add('close', function() {
+            balloonsOpened = false;
+        });
     });
+}
+
+// Функция для открытия всех балунов без перемещения карты
+function openAllBalloons(objectManager) {
+    // Получаем все объекты
+    const objects = objectManager.objects.getAll();
+
+    // Сначала закрываем все балуны
+    objectManager.objects.balloon.close();
+
+    // Затем открываем их с задержкой
+    objects.forEach((object, index) => {
+        setTimeout(() => {
+            try {
+                objectManager.objects.balloon.open(object.id, {
+                    autoPan: false,
+                    closeButton: false
+                });
+            } catch (e) {
+                console.error('Ошибка при открытии балуна:', e);
+            }
+        }, index * 200); // Увеличили задержку между открытием балунов
+    });
+}
+
+// Функция для закрытия всех балунов
+function closeAllBalloons(objectManager) {
+    try {
+        objectManager.objects.balloon.close();
+    } catch (e) {
+        console.error('Ошибка при закрытии балунов:', e);
+    }
+}
 
     // Загружаем Яндекс.Карты динамически
     function loadYandexMaps() {
@@ -935,6 +1663,173 @@
             }
         }
     }
+document.addEventListener('DOMContentLoaded', function() {
+    const cityInput = document.querySelector('input[name="location"]');
+    const metroSelect = document.querySelector('select[name="metro_station"]');
+
+    if (cityInput && metroSelect) {
+        cityInput.addEventListener('change', function() {
+            const city = this.value.trim();
+            if (city) {
+                fetch(`/api/metro/?city=${encodeURIComponent(city)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        metroSelect.innerHTML = '<option value="">Все станции</option>';
+                        data.metro_stations.forEach(station => {
+                            const option = document.createElement('option');
+                            option.value = station.name;
+                            option.textContent = station.name;
+                            metroSelect.appendChild(option);
+                        });
+                    });
+            } else {
+                metroSelect.innerHTML = '<option value="">Все станции</option>';
+            }
+        });
+    }
+});
+// В property_list.html в секции script
+document.addEventListener('DOMContentLoaded', function() {
+    const cityInput = document.querySelector('input[name="location"]');
+    const metroSelect = document.querySelector('select[name="metro_station"]');
+
+    function updateMetroStations(city) {
+        if (!city) {
+            metroSelect.innerHTML = '<option value="">Все станции</option>';
+            return;
+        }
+
+        fetch(`/api/metro-stations/?city=${encodeURIComponent(city)}`)
+            .then(response => response.json())
+            .then(data => {
+                let options = '<option value="">Все станции</option>';
+                data.metro_stations.forEach(station => {
+                    options += `<option value="${station.name}">${station.name}</option>`;
+                });
+                metroSelect.innerHTML = options;
+            });
+    }
+
+    // Обработчик изменения города
+    if (cityInput) {
+        cityInput.addEventListener('change', function() {
+            updateMetroStations(this.value.trim());
+        });
+
+        // Инициализация при загрузке, если город уже выбран
+        if (cityInput.value) {
+            updateMetroStations(cityInput.value.trim());
+        }
+    }
+
+    // Ограничение выбора станций
+    if (metroSelect) {
+        metroSelect.addEventListener('change', function() {
+            const selectedOptions = Array.from(this.selectedOptions)
+                .filter(opt => opt.value !== ""); // Исключаем пустую опцию
+
+            if (selectedOptions.length > 5) {
+                alert('Можно выбрать не более 5 станций метро');
+                // Снимаем выделение с последних выбранных станций
+                for (let i = 5; i < selectedOptions.length; i++) {
+                    selectedOptions[i].selected = false;
+                }
+            }
+        });
+    }
+});
+// Обработчик для выбора города
+document.addEventListener('DOMContentLoaded', function() {
+    const cityInput = document.getElementById('city-input');
+    const cityDropdown = document.getElementById('city-dropdown');
+    const citySearch = document.getElementById('city-search');
+    const closeModal = document.getElementById('close-city-modal');
+    const useCustomCityBtn = document.getElementById('use-custom-city');
+    let customCity = '';
+
+    // Открытие модального окна
+    cityInput.addEventListener('click', function(e) {
+        e.preventDefault();
+        cityDropdown.classList.remove('hidden');
+        citySearch.focus();
+    });
+
+    // Закрытие модального окна
+    closeModal.addEventListener('click', function() {
+        cityDropdown.classList.add('hidden');
+    });
+
+    // Закрытие при клике вне контента
+    cityDropdown.addEventListener('click', function(e) {
+        if (e.target === cityDropdown) {
+            cityDropdown.classList.add('hidden');
+        }
+    });
+
+    // Обработка выбора города из списка
+    document.querySelectorAll('.city-option').forEach(option => {
+        option.addEventListener('click', function() {
+            const city = this.getAttribute('data-city');
+            document.getElementById('selected-city-text').textContent = city;
+            document.getElementById('city-hidden-input').value = city;
+            cityDropdown.classList.add('hidden');
+            document.getElementById('apply_filters').click();
+        });
+    });
+
+    // Обработчик ввода в поле поиска
+    citySearch.addEventListener('input', function() {
+        const searchTerm = this.value.trim();
+        customCity = searchTerm;
+
+        // Показываем/скрываем кнопку для ручного ввода
+        if (searchTerm.length > 2) {
+            useCustomCityBtn.classList.remove('hidden');
+            useCustomCityBtn.textContent = `Использовать "${searchTerm}"`;
+        } else {
+            useCustomCityBtn.classList.add('hidden');
+        }
+
+        // Фильтрация стандартных городов
+        document.querySelectorAll('.city-option').forEach(option => {
+            const city = option.getAttribute('data-city').toLowerCase();
+            if (city.includes(searchTerm.toLowerCase())) {
+                option.classList.remove('hidden');
+            } else {
+                option.classList.add('hidden');
+            }
+        });
+    });
+
+    // Обработчик выбора ручного ввода
+    useCustomCityBtn.addEventListener('click', function() {
+        if (customCity) {
+            document.getElementById('selected-city-text').textContent = customCity;
+            document.getElementById('city-hidden-input').value = customCity;
+            cityDropdown.classList.add('hidden');
+            document.getElementById('apply_filters').click();
+        }
+    });
+
+    // Обработчик Enter в поле поиска
+    citySearch.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && customCity) {
+            e.preventDefault();
+            document.getElementById('selected-city-text').textContent = customCity;
+            document.getElementById('city-hidden-input').value = customCity;
+            cityDropdown.classList.add('hidden');
+            document.getElementById('apply_filters').click();
+        }
+    });
+
+    // Обработчик Enter в основном поле
+    cityInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            document.getElementById('apply_filters').click();
+        }
+    });
+});
 </script>
 
 
