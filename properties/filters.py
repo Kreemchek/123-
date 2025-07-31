@@ -17,6 +17,24 @@ class MetroStationMultipleChoiceWidget(forms.SelectMultiple):
             'data-max-choices': self.max_choices
         })
 
+class MetroStationFilter(CharFilter):
+    def filter(self, qs, value):
+        if not value:
+            return qs
+
+        # Разделяем строку по запятым, удаляем пробелы и пустые значения
+        stations = [s.strip() for s in value.split(',') if s.strip()]
+        if not stations:
+            return qs
+
+        # Создаем Q-объекты для поиска по каждой станции
+        q_objects = Q()
+        for station in stations:
+            # Ищем полное совпадение или станцию в составе строки
+            q_objects |= Q(metro_station__iexact=station) | Q(metro_station__icontains=station)
+
+        return qs.filter(q_objects).distinct()
+
 class PropertyFilter(FilterSet):
     # Существующие фильтры
     min_price = NumberFilter(field_name='price', lookup_expr='gte')
@@ -57,12 +75,22 @@ class PropertyFilter(FilterSet):
         label='Тип недвижимости',
         to_field_name='name'  # Используем поле name для сравнения
     )
-    metro_station = ModelMultipleChoiceFilter(
-        field_name='metro_station',
-        queryset=MetroStation.objects.none(),
-        widget=MetroStationMultipleChoiceWidget,
-        label='Станции метро (макс. 5)'
-    )
+    metro_station = MetroStationFilter(label='Станции метро')
+
+    def filter_by_metro_name(self, queryset, name, value):
+        if not value:
+            return queryset
+
+        stations = [s.strip() for s in value.split(',') if s.strip()]
+        if not stations:
+            return queryset
+
+        q_objects = Q()
+        for station in stations:
+            q_objects |= Q(metro_station__icontains=station)
+
+        return queryset.filter(q_objects).distinct()
+
     location = CharFilter(field_name='location', lookup_expr='icontains')
 
     # Дополнительные параметры

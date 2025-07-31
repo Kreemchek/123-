@@ -7,6 +7,7 @@ from django.conf import settings
 import logging
 import re
 import time
+from collections import defaultdict
 
 logger = logging.getLogger(__name__)
 
@@ -20,83 +21,141 @@ CITIES_WITH_METRO = [
     'Казань'
 ]
 
-# Расширенный словарь соответствия названий линий и их цветов
+# Полный словарь соответствия названий линий и их цветов
 LINE_COLORS = {
-    # Москва
-    'Сокольническая': '#FF0000',  # Красная
-    'Замоскворецкая': '#008000',  # Зеленая
-    'Арбатско-Покровская': '#0000FF',  # Синяя
-    'Покровская': '#0000FF',  # Альтернативное название для Арбатско-Покровской
-    'Филёвская': '#00BFFF',  # Голубая
-    'Кольцевая': '#A52A2A',  # Коричневая
-    'кольцевая': '#A52A2A',  # Строчная версия
-    'Калужско-Рижская': '#FFA500',  # Оранжевая
-    'Рижская': '#FFA500',  # Альтернативное название для Калужско-Рижской
-    'Таганско-Краснопресненская': '#800080',  # Фиолетовая
-    'Краснопресненская': '#800080',  # Альтернативное название
-    'Калининская': '#FFC0CB',  # Розовая
-    'Серпуховско-Тимирязевская': '#808080',  # Серая
-    'Тимирязевская': '#808080',  # Альтернативное название
-    'Люблинско-Дмитровская': '#7CFC00',  # Салатовая
-    'Дмитровская': '#7CFC00',  # Альтернативное название
-    'Бутовская': '#40E0D0',  # Бирюзовая
-    'Солнцевская': '#40E0D0',  # Бирюзовая (для Солнцевской линии)
-    'Некрасовская': '#FF69B4',  # Розовая (для Некрасовской линии)
-    'Московское центральное кольцо': '#8B4513',  # Коричневая (для МЦК)
-    'МЦК': '#8B4513',  # Сокращение для МЦК
-    'Московская монорельсовая': '#6A5ACD',  # Сланцевая (для монорельса)
-    'Монорельс': '#6A5ACD',  # Сокращение для монорельса
+    # Метрополитен
+    'Сокольническая': '#FF0000',
+    'Замоскворецкая': '#008000',
+    'Арбатско-Покровская': '#0000FF',
+    'Филёвская': '#00BFFF',
+    'Кольцевая': '#A52A2A',
+    'Калужско-Рижская': '#FFA500',
+    'Таганско-Краснопресненская': '#800080',
+    'Калининская': '#FFC0CB',
+    'Серпуховско-Тимирязевская': '#808080',
+    'Люблинско-Дмитровская': '#7CFC00',
+    'Бутовская': '#8DD8D8',
+    'Солнцевская': '#8DD8D8',
+    'Некрасовская': '#FF69B4',
+    'Большая кольцевая': '#8B4513',
+
+    # МЦК
+    'МЦК': '#8B4513',
+
+    # МЦД (лучше переименовать в стандартные названия)
+    'МЦД-1': '#DAA520',  # Белорусско-Савёловский
+    'МЦД-2': '#FF00FF',  # Курско-Рижский
+    'МЦД-3': '#FFEFD5',  # Ленинградско-Казанский
+    'МЦД-4': '#98FF98',  # Калужско-Нижегородский
+    'МЦД-5': '#00FF7F',  # Ярославско-Павелецкий
+
 
     # Санкт-Петербург
-    'Кировско-Выборгская': '#FF0000',  # Красная
-    'Московско-Петроградская': '#0000FF',  # Синяя
-    'Невско-Василеостровская': '#008000',  # Зеленая
-    'Правобережная': '#FFA500',  # Оранжевая
-    'Фрунзенско-Приморская': '#800080',  # Фиолетовая
-    '1': '#FF0000',  # Для линий, указанных как "1 линия"
+    'Кировско-Выборгская': '#FF0000',
+    'Московско-Петроградская': '#0000FF',
+    'Невско-Василеостровская': '#008000',
+    'Правобережная': '#FFA500',
+    'Фрунзенско-Приморская': '#800080',
+    '1': '#FF0000',
     '2': '#0000FF',
     '3': '#008000',
     '4': '#FFA500',
     '5': '#800080',
 
-    # Нижний Новгород
-    'Автозаводская': '#FF0000',  # Красная
-    'Сормовская': '#0000FF',  # Синяя
-    'Мещерская': '#008000',  # Зеленая',
-
-    # Новосибирск
-    'Ленинская': '#FF0000',  # Красная
-    'Дзержинская': '#0000FF',  # Синяя,
-
-    # Самара
-    'Первая': '#FF0000',  # Красная,
-
-    # Екатеринбург
-    'Первая': '#FF0000',  # Красная,
-
-    # Казань
-    'Центральная': '#FF0000',  # Красная,
+    # Другие города
+    'Автозаводская': '#FF0000',  # Нижний Новгород
+    'Сормовская': '#0000FF',
+    'Мещерская': '#008000',
+    'Ленинская': '#FF0000',  # Новосибирск
+    'Дзержинская': '#0000FF',
+    'Первая': '#FF0000',  # Самара, Екатеринбург
+    'Центральная': '#FF0000',  # Казань
 }
 
-
-# Словарь для обработки особых случаев станций
+# Особые случаи станций
 SPECIAL_STATIONS = {
+    # Москва
     'станция Курская': {'line': 'Арбатско-Покровская линия', 'line_color': '#0000FF'},
     'станция Площадь трёх вокзалов (Каланчёвская)': {'line': 'Кольцевая линия', 'line_color': '#A52A2A'},
-    'станция МЦД Казанский вокзал': {'line': 'МЦК', 'line_color': '#8B4513'},
     'станция Белорусская': {'line': 'Кольцевая линия', 'line_color': '#A52A2A'},
-    'станция МЦД Ленинградский вокзал': {'line': 'МЦК', 'line_color': '#8B4513'},
-    'станция Серп и Молот': {'line': 'МЦК', 'line_color': '#8B4513'},
     'станция Рижская': {'line': 'Калужско-Рижская линия', 'line_color': '#FFA500'},
-    'станция Москва-Товарная': {'line': 'МЦК', 'line_color': '#8B4513'},
     'станция Савёловская': {'line': 'Серпуховско-Тимирязевская линия', 'line_color': '#808080'},
-    'станция Митьково': {'line': 'Люблинско-Дмитровская линия', 'line_color': '#7CFC00'},
     'станция Марьина Роща': {'line': 'Люблинско-Дмитровская линия', 'line_color': '#7CFC00'},
     'станция Беговая': {'line': 'Таганско-Краснопресненская линия', 'line_color': '#800080'},
     'станция Лужники': {'line': 'Сокольническая линия', 'line_color': '#FF0000'},
+    'станция Серп и Молот': {'line': 'МЦД-4', 'line_color': '#98FF98'},
+    'станция Митьково': {'line': 'МЦД-3', 'line_color': '#FFEFD5'},
+    'станция Нижегородская': {'line': 'Большая кольцевая линия', 'line_color': '#8B4513'},
+    'станция Лефортово': {'line': 'Большая кольцевая линия', 'line_color': '#8B4513'},
+    'станция Электрозаводская': {'line': 'Большая кольцевая линия', 'line_color': '#8B4513'},
+    'станция Косино': {'line': 'Некрасовская линия', 'line_color': '#FF69B4'},
+    'станция Хорошёвская': {'line': 'Большая кольцевая линия', 'line_color': '#8B4513'},
+
+    # Санкт-Петербург
+    'станция Технологический институт-1': {'line': 'Кировско-Выборгская линия', 'line_color': '#FF0000'},
+    'станция Технологический институт-2': {'line': 'Московско-Петроградская линия', 'line_color': '#0000FF'},
+    'станция Площадь Александра Невского-1': {'line': 'Невско-Василеостровская линия', 'line_color': '#008000'},
+    'станция Площадь Александра Невского-2': {'line': 'Правобережная линия', 'line_color': '#FFA500'},
+    'станция Спасская': {'line': 'Правобережная линия', 'line_color': '#FFA500'},
+    'станция Адмиралтейская': {'line': 'Фрунзенско-Приморская линия', 'line_color': '#800080'},
 }
 
-# Список ключевых слов, которые указывают на то, что это не станция метро
+# Нормализация названий станций
+STATION_NAME_MAPPING = {
+    # Москва
+    'Улица Подбельского': 'Бульвар Рокоссовского',
+    'Кировская': 'Чистые пруды',
+    'Мясницкая': 'Чистые пруды',
+    'Дзержинская': 'Лубянка',
+    'Охотный ряд': 'Охотный Ряд',
+    'Станция имени Л. М. Кагановича': 'Охотный Ряд',
+    'Проспект Маркса': 'Охотный Ряд',
+    'Дворец Советов': 'Кропоткинская',
+    'Парк культуры имени Горького': 'Парк культуры',
+    'Ленинские горы': 'Воробьёвы горы',
+    'Ленино': 'Царицыно',
+    'Завод имени Сталина': 'Автозаводская',
+    'Завод имени Лихачева': 'Автозаводская',
+    'Площадь Свердлова': 'Театральная',
+    'Горьковская': 'Тверская',
+    'Арбатская площадь': 'Арбатская',
+    'Спартаковская': 'Бауманская',
+    'Сталинская': 'Семеновская',
+    'Стадион народов': 'Партизанская',
+    'Измайловская': 'Партизанская',
+    'Измайловский парк': 'Партизанская',
+    'Стадион им. Сталина': 'Партизанская',
+    'Улица Коминтерна': 'Александровский сад',
+    'Им. Коминтерна': 'Александровский сад',
+    'Калининская': 'Александровский сад',
+    'Воздвиженка': 'Александровский сад',
+    'Деловой центр': 'Выставочная',
+    'Ботанический сад': 'Проспект Мира',
+    'Калужская': 'Октябрьская',
+    'Серпуховская': 'Добрынинская',
+    'ВСХВ': 'ВДНХ',
+    'Мир': 'Алексеевская',
+    'Щербаковская': 'Алексеевская',
+    'Ново-Алексеевская': 'Алексеевская',
+    'Колхозная': 'Сухаревская',
+    'Площадь Ногина': 'Китай-город',
+    'Ждановская': 'Выхино',
+    'Битцевский парк': 'Новоясеневская',
+
+    # Станции с приставкой "станция"
+    'станция Беговая': 'Беговая',
+    'станция Марьина Роща': 'Марьина Роща',
+    'станция Курская': 'Курская',
+    'станция Савёловская': 'Савёловская',
+    'станция Лужники': 'Лужники',
+    'станция Рижская': 'Рижская',
+    'станция Белорусская': 'Белорусская',
+    'станция Серп и Молот': 'Серп и Молот',
+    'станция Митьково': 'Митьково',
+    'станция Нижегородская': 'Нижегородская',
+    'станция Лефортово': 'Лефортово',
+}
+
 NON_METRO_KEYWORDS = [
     'аэропорт', 'аэродром', 'вокзал', 'трасса', 'шоссе', 'автодорога',
     'дорога', 'километр', 'территория', 'улица', 'посёлок', 'поселок',
@@ -110,19 +169,16 @@ class Command(BaseCommand):
     help = 'Load and update metro stations from Yandex API with line information'
 
     def handle(self, *args, **options):
-        # First, clean up non-metro stations from the database
-        self.cleanup_non_metro_stations()
+        self.cleanup_and_normalize_stations()
 
-        total_stations_without_line = 0
-        total_stations_without_color = 0
-        stations_missing_line = []
-        stations_missing_color = []
+        stats = defaultdict(int)
+        missing_data = {
+            'line': [],
+            'color': []
+        }
 
         for city in CITIES_WITH_METRO:
             self.stdout.write(f"\nProcessing city: {city}")
-            city_stations_without_line = 0
-            city_stations_without_color = 0
-
             try:
                 # Получаем координаты города
                 city_url = f"https://geocode-maps.yandex.ru/1.x/?apikey={settings.YANDEX_GEOCODER_API_KEY}&format=json&geocode={city}"
@@ -134,8 +190,8 @@ class Command(BaseCommand):
                 city_pos = city_data['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['Point']['pos']
                 lon, lat = map(float, city_pos.split())
 
-                # Ищем метро в радиусе 20 км от центра города
-                metro_url = f"https://geocode-maps.yandex.ru/1.x/?apikey={settings.YANDEX_GEOCODER_API_KEY}&format=json&geocode={lon},{lat}&kind=metro&results=100&spn=0.3,0.3"
+                # Ищем метро с увеличенным радиусом
+                metro_url = f"https://geocode-maps.yandex.ru/1.x/?apikey={settings.YANDEX_GEOCODER_API_KEY}&format=json&geocode={lon},{lat}&kind=metro&results=1000&spn=1.5,1.5"
                 metro_response = requests.get(metro_url)
                 metro_response.raise_for_status()
                 metro_data = metro_response.json()
@@ -145,8 +201,7 @@ class Command(BaseCommand):
                     self.stdout.write(self.style.WARNING(f"No metro stations found for {city}"))
                     continue
 
-                stations_updated = 0
-                processed_stations = set()  # Для отслеживания уже обработанных станций
+                processed_stations = set()
 
                 for feature in features:
                     geo_object = feature.get('GeoObject', {})
@@ -157,62 +212,34 @@ class Command(BaseCommand):
                     if not station_name or not pos:
                         continue
 
-                    # Skip if this is clearly not a metro station
                     if self.is_non_metro_station(station_name):
                         continue
 
-                    # Очищаем название от лишних слов
+                    # Очистка и нормализация названия
                     original_name = station_name
-                    station_name = re.sub(r'станция метро', '', station_name, flags=re.IGNORECASE).strip()
-                    station_name = re.sub(r'метро', '', station_name, flags=re.IGNORECASE).strip()
+                    station_name = re.sub(r'станция метро|метро', '', station_name, flags=re.IGNORECASE).strip()
+                    station_name = STATION_NAME_MAPPING.get(station_name, station_name)
 
-                    # Пропускаем дубликаты
+                    # Проверка дубликатов
                     station_key = f"{city}:{station_name}"
                     if station_key in processed_stations:
                         continue
                     processed_stations.add(station_key)
 
-                    # Проверяем особые случаи станций
-                    line_name = None
-                    line_color = None
-                    missing_line = False
-                    missing_color = False
+                    # Определение линии и цвета
+                    line_name, line_color = self.get_line_info(original_name, description)
 
-                    # Обработка особых случаев
-                    if original_name in SPECIAL_STATIONS:
-                        line_name = SPECIAL_STATIONS[original_name]['line']
-                        line_color = SPECIAL_STATIONS[original_name]['line_color']
-                    else:
-                        # Стандартная обработка
-                        if description:
-                            # Ищем название линии (например, "Сокольническая линия")
-                            line_match = re.search(r'(\w+ линия|\d+ линия)', description)
-                            if line_match:
-                                line_name = line_match.group(1)
-                                line_key = line_name.replace(' линия', '').strip()
+                    if not line_name:
+                        stats['no_line'] += 1
+                        missing_data['line'].append(f"{city}: {station_name}")
+                        logger.warning(f"No line info for station: {station_name} (description: {description})")
 
-                                # Проверяем альтернативные названия линий
-                                if line_key not in LINE_COLORS:
-                                    # Пробуем найти альтернативное название
-                                    for key in LINE_COLORS:
-                                        if key in line_key or line_key in key:
-                                            line_key = key
-                                            break
+                    if not line_color:
+                        stats['no_color'] += 1
+                        missing_data['color'].append(f"{city}: {station_name} (line: {line_name})")
 
-                                line_color = LINE_COLORS.get(line_key)
-
-                                if not line_color:
-                                    city_stations_without_color += 1
-                                    missing_color = True
-                                    stations_missing_color.append(f"{city}: {station_name} (line: {line_name})")
-                            else:
-                                city_stations_without_line += 1
-                                missing_line = True
-                                stations_missing_line.append(f"{city}: {station_name}")
-
+                    # Сохранение станции
                     lon, lat = map(float, pos.split())
-
-                    # Обновляем или создаем запись
                     obj, created = MetroStation.objects.update_or_create(
                         city=city,
                         name=station_name,
@@ -223,55 +250,106 @@ class Command(BaseCommand):
                         }
                     )
 
-                    action = "Added NEW" if created else "Updated EXISTING"
+                    action = "Added" if created else "Updated"
                     self.stdout.write(f"{action} station: {station_name} (line: {line_name}, color: {line_color})")
-
-                    stations_updated += 1
+                    stats['processed'] += 1
                     time.sleep(0.1)
-
-                total_stations_without_line += city_stations_without_line
-                total_stations_without_color += city_stations_without_color
-
-                self.stdout.write(self.style.SUCCESS(f"\nProcessed {stations_updated} stations for {city}"))
-                self.stdout.write(self.style.WARNING(f"Stations without line info: {city_stations_without_line}"))
-                self.stdout.write(self.style.WARNING(f"Stations without color info: {city_stations_without_color}"))
 
             except Exception as e:
                 logger.error(f"Error loading metro stations for {city}: {str(e)}")
                 self.stdout.write(self.style.ERROR(f"Error processing {city}: {str(e)}"))
 
-        # Выводим итоговую статистику
-        self.stdout.write("\n" + "=" * 50)
-        self.stdout.write(self.style.WARNING(f"TOTAL STATIONS WITHOUT LINE INFO: {total_stations_without_line}"))
-        if stations_missing_line:
-            self.stdout.write("\nStations missing line information:")
-            for station in stations_missing_line:
-                self.stdout.write(f" - {station}")
+        # Вывод статистики
+        self.print_stats(stats, missing_data)
 
-        self.stdout.write(
-            "\n" + self.style.WARNING(f"TOTAL STATIONS WITHOUT COLOR INFO: {total_stations_without_color}"))
-        if stations_missing_color:
-            self.stdout.write("\nStations missing color information:")
-            for station in stations_missing_color:
-                self.stdout.write(f" - {station}")
+    def get_line_info(self, original_name, description):
+        """Получает информацию о линии и цвете для станции"""
+        if original_name in SPECIAL_STATIONS:
+            return SPECIAL_STATIONS[original_name]['line'], SPECIAL_STATIONS[original_name]['line_color']
 
-        self.stdout.write("=" * 50)
+        if description:
+            line_match = re.search(r'(\w+ линия|\d+ линия|МЦК|МЦД-\d+)', description)
+            if line_match:
+                line_name = line_match.group(1)
+                line_key = line_name.replace(' линия', '').strip()
 
-    def cleanup_non_metro_stations(self):
-        """Remove entries that are clearly not metro stations from the database."""
-        deleted_count = 0
+                # Обработка числовых линий (СПб)
+                if line_key.isdigit():
+                    line_number = int(line_key)
+                    line_key = {
+                        1: 'Кировско-Выборгская',
+                        2: 'Московско-Петроградская',
+                        3: 'Невско-Василеостровская',
+                        4: 'Правобережная',
+                        5: 'Фрунзенско-Приморская',
+                    }.get(line_number, line_key)
+                    line_name = f"{line_key} линия"
+
+                # Поиск альтернативных названий
+                if line_key not in LINE_COLORS:
+                    for key in LINE_COLORS:
+                        if key in line_key or line_key in key:
+                            line_key = key
+                            break
+
+                return line_name, LINE_COLORS.get(line_key)
+
+        return None, None
+
+    def cleanup_and_normalize_stations(self):
+        """Нормализация названий и удаление нестандартных станций"""
+        normalized = deleted = 0
+
+        for old_name, new_name in STATION_NAME_MAPPING.items():
+            stations = MetroStation.objects.filter(name=old_name)
+            for station in stations:
+                existing = MetroStation.objects.filter(city=station.city, name=new_name).first()
+                if existing:
+                    existing.line = station.line or existing.line
+                    existing.line_color = station.line_color or existing.line_color
+                    existing.coordinates = station.coordinates or existing.coordinates
+                    existing.save()
+                    station.delete()
+                    deleted += 1
+                else:
+                    station.name = new_name
+                    station.save()
+                    normalized += 1
+
+        # Удаление нестандартных станций
         for station in MetroStation.objects.all():
             if self.is_non_metro_station(station.name):
                 station.delete()
-                deleted_count += 1
-                self.stdout.write(f"Deleted non-metro station: {station.name}")
+                deleted += 1
 
-        self.stdout.write(self.style.SUCCESS(f"\nDeleted {deleted_count} non-metro stations from database"))
+        self.stdout.write(self.style.SUCCESS(
+            f"\nNormalized {normalized} names, deleted {deleted} non-standard stations"
+        ))
+
+    def print_stats(self, stats, missing_data):
+        """Выводит итоговую статистику"""
+        self.stdout.write("\n" + "=" * 50)
+        self.stdout.write(self.style.SUCCESS(f"Processed {stats['processed']} stations"))
+        self.stdout.write(self.style.WARNING(f"Stations without line info: {stats['no_line']}"))
+        self.stdout.write(self.style.WARNING(f"Stations without color info: {stats['no_color']}"))
+
+        if missing_data['line']:
+            self.stdout.write("\nStations missing line information:")
+            for station in missing_data['line'][:20]:  # Ограничиваем вывод
+                self.stdout.write(f" - {station}")
+            if len(missing_data['line']) > 20:
+                self.stdout.write(f" ... and {len(missing_data['line']) - 20} more")
+
+        if missing_data['color']:
+            self.stdout.write("\nStations missing color information:")
+            for station in missing_data['color'][:20]:
+                self.stdout.write(f" - {station}")
+            if len(missing_data['color']) > 20:
+                self.stdout.write(f" ... and {len(missing_data['color']) - 20} more")
+
+        self.stdout.write("=" * 50 + "\n")
 
     def is_non_metro_station(self, name):
-        """Check if the given name is clearly not a metro station."""
+        """Проверяет, является ли название станцией метро"""
         name_lower = name.lower()
-        for keyword in NON_METRO_KEYWORDS:
-            if keyword.lower() in name_lower:
-                return True
-        return False
+        return any(keyword.lower() in name_lower for keyword in NON_METRO_KEYWORDS)

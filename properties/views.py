@@ -129,7 +129,39 @@ class PropertyListView(FilterView):
         context['property_types'] = PropertyType.objects.all()
         context['selected_property_types'] = self.request.GET.getlist('property_type', [])
 
-        # Добавляем информацию о текущем брокере для фильтра
+        # Получаем выбранный город из GET-параметров
+        selected_city = self.request.GET.get('location', '')
+        context['location'] = selected_city
+
+        # Получаем станции метро для выбранного города
+        metro_stations = MetroStation.objects.all()
+        if selected_city:
+            metro_stations = metro_stations.filter(city__iexact=selected_city)
+
+        # Группируем станции по линиям
+        metro_lines = []
+        if selected_city:
+            lines = metro_stations.exclude(line__isnull=True).exclude(line='').values_list('line', flat=True).distinct()
+            for line in lines:
+                stations = metro_stations.filter(line=line).order_by('name')
+                if stations.exists():
+                    metro_lines.append({
+                        'line': line,
+                        'line_color': stations.first().line_color,
+                        'stations': stations
+                    })
+
+            # Добавляем станции без линии в отдельную группу
+            no_line_stations = metro_stations.filter(Q(line__isnull=True) | Q(line=''))
+            if no_line_stations.exists():
+                metro_lines.append({
+                    'line': None,
+                    'line_color': '#cccccc',
+                    'stations': no_line_stations
+                })
+
+        context['metro_lines'] = metro_lines
+
         broker_id = self.request.GET.get('broker')
         if broker_id:
             context['current_broker'] = get_object_or_404(BrokerProfile, id=broker_id)
@@ -139,40 +171,6 @@ class PropertyListView(FilterView):
             context['is_broker'] = self.request.user.is_broker
             context['is_developer'] = self.request.user.is_developer
             context['is_client'] = not (self.request.user.is_broker or self.request.user.is_developer)
-
-        # Получаем выбранные станции метро из GET-параметров
-        selected_metro = self.request.GET.getlist('metro_station', [])
-
-        # Получаем уникальные линии метро для фильтра
-        metro_lines = MetroStation.objects.values('line', 'line_color').distinct()
-
-        # Формируем список линий с короткими названиями
-        metro_lines_data = []
-        for line in metro_lines:
-            if line['line']:
-                short_name = line['line'].split()[0]  # Берем первое слово из названия линии
-                metro_lines_data.append({
-                    'name': line['line'],
-                    'short_name': short_name,
-                    'color': line['line_color'] or '#cccccc'
-                })
-
-        # Получаем станции метро для выбранного города (если есть)
-        location = self.request.GET.get('location', '')
-        metro_stations = MetroStation.objects.all()
-        if location:
-            metro_stations = metro_stations.filter(city__iexact=location)
-
-        # Получаем полные данные выбранных станций
-        selected_metro_stations = MetroStation.objects.filter(name__in=selected_metro)
-
-        context.update({
-            'metro_lines': metro_lines_data,
-            'metro_stations': metro_stations.order_by('line', 'name'),
-            'selected_metro': selected_metro,
-            'selected_metro_stations': selected_metro_stations,
-        })
-
         return context
 
     def render_to_response(self, context, **response_kwargs):
