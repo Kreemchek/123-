@@ -128,6 +128,7 @@ class PropertyListView(FilterView):
         context['YANDEX_MAPS_API_KEY'] = settings.YANDEX_MAPS_API_KEY
         context['property_types'] = PropertyType.objects.all()
         context['selected_property_types'] = self.request.GET.getlist('property_type', [])
+        context['selected_rental_type'] = self.request.GET.get('rental_type', '')
 
         # Получаем выбранный город из GET-параметров
         selected_city = self.request.GET.get('location', '')

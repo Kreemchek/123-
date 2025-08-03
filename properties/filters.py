@@ -66,7 +66,16 @@ class PropertyFilter(FilterSet):
     # Расстояние до центра
     min_distance_to_center = NumberFilter(method='filter_by_distance_to_center')
     max_distance_to_center = NumberFilter(method='filter_by_distance_to_center')
+    rental_type = CharFilter(method='filter_rental_type', label='Тип аренды')
 
+    def filter_rental_type(self, queryset, name, value):
+        if value == 'monthly':
+            return queryset.filter(is_rental='monthly', monthly_price__isnull=False)
+        elif value == 'daily':
+            return queryset.filter(is_rental='daily', daily_price__isnull=False)
+        elif value == 'no':
+            return queryset.filter(is_rental='no')
+        return queryset
     # Тип недвижимости
     property_type = ModelMultipleChoiceFilter(
         field_name='property_type__name',  # Фильтруем по полю name модели PropertyType

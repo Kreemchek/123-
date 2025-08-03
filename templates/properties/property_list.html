@@ -5,787 +5,821 @@
 <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css">
 <script src="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js"></script>
 <style>
-    /* Основные стили карточек недвижимости */
-    .property-card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-        border: 2px solid #e5e7eb;
-        border-radius: 0.75rem;
-        overflow: hidden;
-        background: white;
-    }
+/* Основные стили карточек недвижимости */
+.property-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: white;
+}
 
-    .property-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.1);
-        border-color: #bfdbfe;
-    }
+.property-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.1);
+    border-color: #bfdbfe;
+}
 
-    .btn-primary {
-        @apply bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2;
-    }
+.btn-primary {
+    @apply bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2;
+}
 
-    .toggle-favorite {
-        cursor: pointer;
-        transition: transform 0.2s ease;
-    }
+.toggle-favorite {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
 
-    .toggle-favorite:hover {
-        transform: scale(1.1);
-    }
+.toggle-favorite:hover {
+    transform: scale(1.1);
+}
 
-    /* Стили для фильтров и карты */
+/* Стили для фильтров и карты */
+.filter-container {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 2rem;
+}
+
+@media (max-width: 1024px) {
     .filter-container {
-        display: grid;
-        grid-template-columns: 300px 1fr;
-        gap: 2rem;
+        grid-template-columns: 1fr;
     }
+}
 
-    @media (max-width: 1024px) {
-        .filter-container {
-            grid-template-columns: 1fr;
-        }
-    }
+/* Улучшенные стили для боковой панели фильтров */
+.filter-sidebar {
+    background: white;
+    padding: 1.75rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    border: 2px solid #e5e7eb;
+    height: fit-content;
+    position: sticky;
+    top: 1rem;
+    transition: all 0.3s ease;
+}
 
-    /* Улучшенные стили для боковой панели фильтров */
-    .filter-sidebar {
-        background: white;
-        padding: 1.75rem;
-        border-radius: 1rem;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-        border: 2px solid #e5e7eb;
-        height: fit-content;
-        position: sticky;
-        top: 1rem;
-        transition: all 0.3s ease;
-    }
+.filter-sidebar:hover {
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+    border-color: #d1d5db;
+}
 
-    .filter-sidebar:hover {
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
-        border-color: #d1d5db;
-    }
+/* Стили для секций фильтров */
+.filter-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: #f9fafb;
+    border-radius: 0.75rem;
+    border: 2px solid #e5e7eb;
+    transition: all 0.3s ease;
+    animation: slideIn 0.3s ease-out forwards;
+    opacity: 0;
+}
 
-    /* Стили для секций фильтров */
-    .filter-section {
-        margin-bottom: 2rem;
-        padding: 1.5rem;
-        background: #f9fafb;
-        border-radius: 0.75rem;
-        border: 2px solid #e5e7eb;
-        transition: all 0.3s ease;
-        animation: slideIn 0.3s ease-out forwards;
+.filter-section:hover {
+    background: #f3f4f6;
+    border-color: #d1d5db;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Анимация появления секций */
+@keyframes slideIn {
+    from {
         opacity: 0;
+        transform: translateX(-15px);
     }
-
-    .filter-section:hover {
-        background: #f3f4f6;
-        border-color: #d1d5db;
-        transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    to {
+        opacity: 1;
+        transform: translateX(0);
     }
+}
 
-    /* Анимация появления секций */
-    @keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateX(-15px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
+/* Задержки для анимации */
+.filter-section:nth-child(1) { animation-delay: 0.1s; }
+.filter-section:nth-child(2) { animation-delay: 0.2s; }
+.filter-section:nth-child(3) { animation-delay: 0.3s; }
+.filter-section:nth-child(4) { animation-delay: 0.4s; }
+.filter-section:nth-child(5) { animation-delay: 0.5s; }
+.filter-section:nth-child(6) { animation-delay: 0.6s; }
+.filter-section:nth-child(7) { animation-delay: 0.7s; }
+.filter-section:nth-child(8) { animation-delay: 0.8s; }
+.filter-section:nth-child(9) { animation-delay: 0.9s; }
+.filter-section:nth-child(10) { animation-delay: 1.0s; }
 
-    /* Задержки для анимации */
-    .filter-section:nth-child(1) { animation-delay: 0.1s; }
-    .filter-section:nth-child(2) { animation-delay: 0.2s; }
-    .filter-section:nth-child(3) { animation-delay: 0.3s; }
-    .filter-section:nth-child(4) { animation-delay: 0.4s; }
-    .filter-section:nth-child(5) { animation-delay: 0.5s; }
-    .filter-section:nth-child(6) { animation-delay: 0.6s; }
-    .filter-section:nth-child(7) { animation-delay: 0.7s; }
-    .filter-section:nth-child(8) { animation-delay: 0.8s; }
-    .filter-section:nth-child(9) { animation-delay: 0.9s; }
-    .filter-section:nth-child(10) { animation-delay: 1.0s; }
+/* Заголовки секций */
+.filter-section h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+    color: #111827;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 0.75rem;
+    position: relative;
+    transition: color 0.2s;
+}
 
-    /* Заголовки секций */
-    .filter-section h3 {
-        font-size: 1.125rem;
-        font-weight: 700;
-        margin-bottom: 1.25rem;
-        color: #111827;
-        border-bottom: 2px solid #e5e7eb;
-        padding-bottom: 0.75rem;
-        position: relative;
-        transition: color 0.2s;
-    }
+.filter-section:hover h3 {
+    color: #1e40af;
+}
 
-    .filter-section:hover h3 {
-        color: #1e40af;
-    }
+.filter-section h3::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 50px;
+    height: 2px;
+    background: #3b82f6;
+    transition: width 0.3s ease;
+}
 
-    .filter-section h3::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        width: 50px;
-        height: 2px;
-        background: #3b82f6;
-        transition: width 0.3s ease;
-    }
+.filter-section:hover h3::after {
+    width: 80px;
+}
 
-    .filter-section:hover h3::after {
-        width: 80px;
-    }
+/* Поля ввода */
+.filter-section input[type="text"],
+.filter-section input[type="number"],
+.filter-section select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #d1d5db;
+    border-radius: 0.75rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #374151;
+    background: white;
+    transition: all 0.3s ease;
+}
 
-    /* Поля ввода */
-    .filter-section input[type="text"],
-    .filter-section input[type="number"],
-    .filter-section select {
-        width: 100%;
-        padding: 0.75rem 1rem;
-        border: 2px solid #d1d5db;
-        border-radius: 0.75rem;
-        font-size: 0.9375rem;
-        font-weight: 600;
-        color: #374151;
-        background: white;
-        transition: all 0.3s ease;
-    }
+.filter-section input[type="text"]:focus,
+.filter-section input[type="number"]:focus,
+.filter-section select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    outline: none;
+}
 
-    .filter-section input[type="text"]:focus,
-    .filter-section input[type="number"]:focus,
-    .filter-section select:focus {
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-        outline: none;
-    }
+.filter-section input[type="text"]:hover,
+.filter-section input[type="number"]:hover,
+.filter-section select:hover {
+    border-color: #9ca3af;
+}
 
-    .filter-section input[type="text"]:hover,
-    .filter-section input[type="number"]:hover,
-    .filter-section select:hover {
-        border-color: #9ca3af;
-    }
+/* Сетка для двойных полей */
+.filter-section .grid-cols-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
 
-    /* Сетка для двойных полей */
-    .filter-section .grid-cols-2 {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 0.75rem;
-    }
+/* Лейблы */
+.filter-section label {
+    display: block;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #4b5563;
+    margin-bottom: 0.5rem;
+    transition: color 0.2s;
+}
 
-    /* Лейблы */
-    .filter-section label {
-        display: block;
-        font-size: 0.9375rem;
-        font-weight: 600;
-        color: #4b5563;
-        margin-bottom: 0.5rem;
-        transition: color 0.2s;
-    }
+.filter-section:hover label {
+    color: #111827;
+}
 
-    .filter-section:hover label {
-        color: #111827;
-    }
+/* Чекбоксы и радиокнопки */
+.filter-section .flex.items-center {
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+    margin-bottom: 0.5rem;
+}
 
-    /* Чекбоксы и радиокнопки */
-    .filter-section .flex.items-center {
-        padding: 0.75rem;
-        border-radius: 0.5rem;
-        transition: all 0.2s;
-        margin-bottom: 0.5rem;
-    }
+.filter-section .flex.items-center:hover {
+    background: rgba(59, 130, 246, 0.05);
+}
 
-    .filter-section .flex.items-center:hover {
-        background: rgba(59, 130, 246, 0.05);
-    }
+.filter-section .flex.items-center input[type="checkbox"],
+.filter-section .flex.items-center input[type="radio"] {
+    margin-right: 0.75rem;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #d1d5db;
+    border-radius: 0.375rem;
+    transition: all 0.2s;
+    cursor: pointer;
+}
 
-    .filter-section .flex.items-center input[type="checkbox"],
-    .filter-section .flex.items-center input[type="radio"] {
-        margin-right: 0.75rem;
-        width: 20px;
-        height: 20px;
-        border: 2px solid #d1d5db;
-        border-radius: 0.375rem;
-        transition: all 0.2s;
-        cursor: pointer;
-    }
+.filter-section .flex.items-center input[type="checkbox"]:checked,
+.filter-section .flex.items-center input[type="radio"]:checked {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+}
 
-    .filter-section .flex.items-center input[type="checkbox"]:checked,
-    .filter-section .flex.items-center input[type="radio"]:checked {
-        background-color: #3b82f6;
-        border-color: #3b82f6;
-    }
+.filter-section .flex.items-center label {
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+    transition: color 0.2s;
+}
 
-    .filter-section .flex.items-center label {
-        font-weight: 600;
-        color: #374151;
-        cursor: pointer;
-        transition: color 0.2s;
-    }
+.filter-section .flex.items-center:hover label {
+    color: #1e40af;
+}
 
-    .filter-section .flex.items-center:hover label {
-        color: #1e40af;
-    }
+/* Кнопки фильтров */
+.filter-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
 
-    /* Кнопки фильтров */
-    .filter-actions {
-        display: flex;
-        gap: 1rem;
-        margin-top: 1.5rem;
-    }
+#apply_filters {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
 
-    #apply_filters {
-        background: linear-gradient(135deg, #3b82f6, #2563eb);
-        color: white;
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.75rem;
-        font-weight: 700;
-        border: none;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-    }
+#apply_filters:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(37, 99, 235, 0.15);
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+}
 
-    #apply_filters:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(37, 99, 235, 0.15);
-        background: linear-gradient(135deg, #2563eb, #1d4ed8);
-    }
+#apply_filters:active {
+    transform: translateY(0);
+}
 
-    #apply_filters:active {
-        transform: translateY(0);
-    }
+#reset_filters {
+    background: white;
+    color: #374151;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    font-weight: 700;
+    border: 2px solid #d1d5db;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
 
-    #reset_filters {
-        background: white;
-        color: #374151;
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.75rem;
-        font-weight: 700;
-        border: 2px solid #d1d5db;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-    }
+#reset_filters:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    border-color: #9ca3af;
+    background: #f9fafb;
+}
 
-    #reset_filters:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-        border-color: #9ca3af;
-        background: #f9fafb;
-    }
+#reset_filters:active {
+    transform: translateY(0);
+}
 
-    #reset_filters:active {
-        transform: translateY(0);
-    }
+/* Иконки для кнопок */
+.filter-actions button i {
+    font-size: 1.1em;
+    transition: transform 0.3s ease;
+}
 
-    /* Иконки для кнопок */
-    .filter-actions button i {
-        font-size: 1.1em;
-        transition: transform 0.3s ease;
-    }
+#apply_filters:hover i {
+    transform: rotate(5deg) scale(1.1);
+}
 
-    #apply_filters:hover i {
-        transform: rotate(5deg) scale(1.1);
-    }
+#reset_filters:hover i {
+    transform: rotate(-5deg) scale(1.1);
+}
 
-    #reset_filters:hover i {
-        transform: rotate(-5deg) scale(1.1);
-    }
+/* Подсветка активных фильтров */
+.filter-section:has(input:not([value=""])) {
+    background: #f0f7ff;
+    border-color: #bfdbfe;
+}
 
-    /* Подсветка активных фильтров */
-    .filter-section:has(input:not([value=""])) {
-        background: #f0f7ff;
-        border-color: #bfdbfe;
-    }
+.filter-section:has(input:not([value=""])) h3 {
+    color: #1e40af;
+}
 
-    .filter-section:has(input:not([value=""])) h3 {
-        color: #1e40af;
-    }
+.filter-section:has(input:not([value=""])) h3::after {
+    background: #1e40af;
+}
 
-    .filter-section:has(input:not([value=""])) h3::after {
-        background: #1e40af;
-    }
+/* Стили для карты */
+.map-container-wrapper {
+    position: relative;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    border: 2px solid #e5e7eb;
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+    width: 100%;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+}
 
-    /* Стили для карты */
-    .map-container-wrapper {
-        position: relative;
-        border-radius: 1rem;
-        overflow: hidden;
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-        border: 2px solid #e5e7eb;
-        margin-bottom: 2rem;
-        transition: all 0.3s ease;
-        width: 100%;
-        max-width: 1000px;
-        margin-left: auto;
-        margin-right: auto;
-    }
+#all-properties-map {
+    width: 100%;
+    height: 500px;
+    display: block;
+    transition: height 0.3s ease;
+}
 
-    #all-properties-map {
-        width: 100%;
-        height: 500px;
-        display: block;
-        transition: height 0.3s ease;
-    }
+/* Индикатор загрузки карты */
+.map-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    border-radius: 16px;
+}
 
-    /* Индикатор загрузки карты */
-    .map-loading {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(255, 255, 255, 0.9);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 999;
-        border-radius: 16px;
-    }
+.map-loading-spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #1e40af;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
 
-    .map-loading-spinner {
-        border: 4px solid #f3f3f3;
-        border-top: 4px solid #1e40af;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        animation: spin 1s linear infinite;
-    }
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
+/* Контейнер для карты и поиска */
+.map-search-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    width: 100%;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
 
-    /* Контейнер для карты и поиска */
-    .map-search-container {
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-        width: 100%;
-        max-width: 1200px;
-        margin-left: auto;
-        margin-right: auto;
-    }
+/* Контейнер для поиска и кнопки добавления */
+.search-add-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
 
-    /* Контейнер для поиска и кнопки добавления */
+@media (min-width: 768px) {
     .search-add-container {
-        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+}
+
+.search-form {
+    flex-grow: 1;
+    max-width: calc(100% - 180px);
+}
+
+@media (max-width: 768px) {
+    .search-add-container {
         flex-direction: column;
-        gap: 1.5rem;
     }
-
-    @media (min-width: 768px) {
-        .search-add-container {
-            flex-direction: row;
-            align-items: center;
-        }
-    }
-
     .search-form {
-        flex-grow: 1;
-        max-width: calc(100% - 180px);
-    }
-
-    @media (max-width: 768px) {
-        .search-add-container {
-            flex-direction: column;
-        }
-        .search-form {
-            max-width: 100%;
-            width: 100%;
-        }
-    }
-
-    /* Стили для пагинации */
-    .pagination {
-        display: flex;
-        justify-content: center;
-        gap: 0.75rem;
-        margin-top: 2rem;
-    }
-
-    .page-item {
-        padding: 0.75rem 1rem;
-        border-radius: 0.75rem;
-        border: 2px solid #e5e7eb;
-        transition: all 0.2s;
-        font-weight: 600;
-    }
-
-    .page-item:hover {
-        background: #f3f4f6;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    }
-
-    .page-item.bg-blue-600 {
-        box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
-    }
-
-    /* Стили для модального окна городов */
-    #city-dropdown {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 1000;
-        padding: 2rem;
-        overflow-y: auto;
-        backdrop-filter: blur(5px);
-        display: none;
-    }
-
-    #city-dropdown > .container {
-        background-color: white;
-        border-radius: 1rem;
-        padding: 2rem;
-        max-width: 800px;
-        margin: 2rem auto;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-    }
-
-    .city-search-container {
-        background-color: white;
-        border-radius: 0.75rem;
-        padding: 1.5rem;
-        margin-bottom: 1rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    #city-search:focus {
-        outline: none;
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-    }
-
-    .city-option {
-        padding: 1rem;
-        border: 1px solid #e5e7eb;
-        border-radius: 0.75rem;
-        font-size: 1.125rem;
-        transition: all 0.2s ease;
-        text-align: left;
-        background: white;
-    }
-
-    .city-option:hover {
-        background-color: #f0f7ff;
-        border-color: #bfdbfe;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .city-option.hidden {
-        display: none;
-    }
-
-    #close-city-modal {
-        font-size: 1.8rem;
-        line-height: 1;
-        cursor: pointer;
-        background: none;
-        border: none;
-        padding: 0 0.5rem;
-    }
-
-    /* Обновленные стили для модального окна метро */
-    #metro-dropdown {
-        position: fixed;
-        top: -100px;
-        left: 0;
-        right: 0;
-        bottom: 20px;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 1000;
-        padding: 1rem;
-        overflow-y: auto;
-        backdrop-filter: blur(5px);
-        display: none;
-    }
-
-    #metro-dropdown > .container {
-        background-color: white;
-        border-radius: 1rem;
-        padding: 1.5rem;
-        max-width: 400px;
-        margin: 0 auto;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        max-height: calc(100vh - 40px);
-        overflow-y: auto;
-    }
-
-    .metro-dropdown-header {
-        position: sticky;
-        top: 0;
-        background: white;
-        padding: 1rem 1.5rem;
-        border-bottom: 1px solid #e5e7eb;
-        z-index: 10;
-    }
-
-    .metro-dropdown-content {
-        padding: 0 1.5rem 1.5rem;
-    }
-
-    .metro-dropdown-footer {
-        position: sticky;
-        bottom: 0;
-        background: white;
-        padding: 1rem 1.5rem;
-        border-top: 1px solid #e5e7eb;
-        z-index: 10;
-    }
-
-    .metro-search-container {
-        background-color: white;
-        border-radius: 0.75rem;
-        padding: 1.5rem;
-        margin-bottom: 1rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    #metro-search {
+        max-width: 100%;
         width: 100%;
-        padding: 0.75rem 1rem;
-        border: 2px solid #e5e7eb;
-        border-radius: 0.5rem;
-        font-size: 1rem;
-        transition: all 0.2s;
     }
+}
 
-    #metro-search:focus {
-        outline: none;
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+/* Стили для пагинации */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 2rem;
+}
+
+.page-item {
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    border: 2px solid #e5e7eb;
+    transition: all 0.2s;
+}
+
+.page-item:hover {
+    background: #f3f4f6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.page-item.bg-blue-600 {
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+}
+
+/* Стили для модального окна городов */
+#city-dropdown {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    padding: 2rem;
+    overflow-y: auto;
+    backdrop-filter: blur(5px);
+    display: none;
+}
+
+#city-dropdown > .container {
+    background-color: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    max-width: 800px;
+    margin: 2rem auto;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.city-search-container {
+    background-color: white;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#city-search:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.city-option {
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    font-size: 1.125rem;
+    transition: all 0.2s ease;
+    text-align: left;
+    background: white;
+}
+
+.city-option:hover {
+    background-color: #f0f7ff;
+    border-color: #bfdbfe;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.city-option.hidden {
+    display: none;
+}
+
+#close-city-modal {
+    font-size: 1.8rem;
+    line-height: 1;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0 0.5rem;
+}
+
+/* Обновленные стили для модального окна метро */
+/* Модальное окно метро */
+#metro-dropdown {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.metro-dropdown-container {
+    background-color: white;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 800px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.metro-dropdown-header {
+    padding: 16px;
+    border-bottom: 1px solid #e5e7eb;
+    position: relative;
+}
+
+.metro-dropdown-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+}
+
+.metro-dropdown-footer {
+    padding: 16px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+/* Стили для линий и станций метро */
+.metro-lines-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+}
+
+.metro-line-section {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.metro-line-header {
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    background-color: white;
+}
+
+.metro-line-header:hover {
+    background-color: #f9fafb;
+}
+
+.metro-line-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.metro-stations-container {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.metro-stations-container.expanded {
+    max-height: 300px;
+}
+
+.metro-station-option {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    width: 100%;
+    cursor: pointer;
+    background-color: white;
+    border: none;
+    text-align: left;
+}
+
+.metro-station-option:hover {
+    background-color: #f3f4f6;
+}
+
+.metro-station-option.selected {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.metro-station-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.metro-line-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    flex-grow: 1;
+}
+
+.metro-station-option {
+    display: flex;
+    align-items: center;
+    padding: 0.6rem 1rem;
+    width: 100%;
+    text-align: left;
+    background: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.metro-station-option:last-child {
+    border-bottom: none;
+}
+
+.metro-station-option:hover {
+    background-color: #f0f7ff;
+}
+
+.metro-station-option.selected {
+    background-color: #3b82f6 !important;
+    color: white !important;
+}
+
+.metro-station-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 0.75rem;
+    flex-shrink: 0;
+}
+
+.metro-station-name {
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-grow: 1;
+}
+
+/* Улучшенный скроллбар */
+.metro-lines-container::-webkit-scrollbar,
+.metro-stations-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.metro-lines-container::-webkit-scrollbar-track,
+.metro-stations-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.metro-lines-container::-webkit-scrollbar-thumb,
+.metro-stations-container::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.metro-lines-container::-webkit-scrollbar-thumb:hover,
+.metro-stations-container::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Анимация при открытии/закрытии */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
     }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
-    /* Обновленные стили для станций метро */
+.metro-stations-container.expanded {
+    animation: slideDown 0.2s ease-out;
+}
+
+/* Адаптивные стили */
+@media (max-width: 768px) {
     .metro-lines-container {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 1.5rem;
-    }
-
-    .metro-line-section {
-        margin-bottom: 1.5rem;
-        break-inside: avoid;
+        max-height: calc(100vh - 150px);
     }
 
     .metro-line-header {
-        display: flex;
-        align-items: center;
-        margin-bottom: 0.75rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 2px solid #e5e7eb;
-    }
-
-    .metro-line-color {
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        margin-right: 0.75rem;
-        flex-shrink: 0;
-    }
-
-    .metro-line-name {
-        font-weight: 600;
-        font-size: 1.1rem;
-    }
-
-    .metro-stations-grid {
-        display: grid !important;
-        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-        gap: 0.25rem !important;
-        max-height: 300px;
-        overflow-y: auto;
-        padding-right: 4px;
-    }
-
-    /* Полоса прокрутки */
-    .metro-stations-grid::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .metro-stations-grid::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 3px;
-    }
-
-    .metro-stations-grid::-webkit-scrollbar-thumb {
-        background: #c1c1c1;
-        border-radius: 3px;
-    }
-
-    .metro-stations-grid::-webkit-scrollbar-thumb:hover {
-        background: #a8a8a8;
+        padding: 0.75rem;
     }
 
     .metro-station-option {
-        padding: 0.25rem 0.5rem !important;
-        font-size: 0.75rem !important;
-        transition: all 0.2s ease;
-        text-align: left;
-        background: white;
-        display: flex;
-        align-items: center;
-        cursor: pointer;
-        border: none !important;
-        margin: 0 !important;
-        border-radius: 0.25rem !important;
-        height: 28px;
+        padding: 0.5rem 0.75rem;
     }
 
-    .metro-station-option:hover {
-        background-color: #f0f7ff !important;
-        transform: none !important;
-        box-shadow: none !important;
+    .metro-stations-container.expanded {
+        max-height: 250px;
+    }
+}
+
+/* Стили для поиска */
+.metro-search-container {
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
+    padding: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* Стили для футера */
+.metro-dropdown-footer {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    padding: 1rem;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    z-index: 10;
+}
+
+.metro-action-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#apply-metro-selection {
+    background: #3b82f6;
+    color: white;
+    border: none;
+}
+
+#apply-metro-selection:hover {
+    background: #2563eb;
+}
+
+#clear-metro-selection {
+    background: white;
+    color: #374151;
+    border: 1px solid #d1d5db;
+}
+
+#clear-metro-selection:hover {
+    background: #f3f4f6;
+}
+
+/* Адаптивные стили */
+@media (max-width: 1024px) {
+    .filter-toggle {
+        display: block;
+        margin-bottom: 1.5rem;
+        width: 100%;
     }
 
-    .metro-station-option.selected {
-        background-color: #3b82f6 !important;
-        color: white !important;
+    .filter-sidebar {
+        display: none;
     }
 
-    .metro-station-color {
-        width: 12px !important;
-        height: 12px !important;
-        border-radius: 50%;
-        margin-right: 0.25rem !important;
-        flex-shrink: 0;
+    .filter-sidebar.active {
+        display: block;
+        animation: slideDown 0.3s ease-out;
     }
 
-    .metro-station-name {
-        flex-grow: 1;
-        font-size: 0.75rem !important;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .metro-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 1rem;
-        margin-top: 1.5rem;
-    }
-
-    .metro-action-btn {
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.5rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    #apply-metro-selection {
-        background: #3b82f6;
-        color: white;
-        border: none;
-    }
-
-    #apply-metro-selection:hover {
-        background: #2563eb;
-    }
-
-    #clear-metro-selection {
-        background: white;
-        color: #374151;
-        border: 1px solid #d1d5db;
-    }
-
-    #clear-metro-selection:hover {
-        background: #f3f4f6;
-    }
-
-    /* Адаптивные стили */
-    @media (max-width: 1024px) {
-        .filter-toggle {
-            display: block;
-            margin-bottom: 1.5rem;
-            width: 100%;
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
         }
-
-        .filter-sidebar {
-            display: none;
-        }
-
-        .filter-sidebar.active {
-            display: block;
-            animation: slideDown 0.3s ease-out;
-        }
-
-        .metro-lines-container {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-        }
-
-        .metro-stations-grid {
-            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        to {
+            opacity: 1;
+            transform: translateY(0);
         }
     }
+}
 
-    @media (max-width: 768px) {
-        .sticky-column {
-            position: relative;
-            top: auto;
-        }
-
-        .filter-section {
-            padding: 1rem;
-        }
-
-        .filter-actions {
-            flex-direction: column;
-        }
-
-        .metro-lines-container {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-
-        .metro-stations-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-        }
+@media (max-width: 768px) {
+    .sticky-column {
+        position: relative;
+        top: auto;
     }
 
-    @media (max-width: 480px) {
-        .metro-lines-container {
-            grid-template-columns: repeat(1, minmax(0, 1fr));
-        }
-
-        .metro-stations-grid {
-            grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
-        }
-
-        .metro-station-option {
-            height: 32px;
-        }
+    .filter-section {
+        padding: 1rem;
     }
+
+    .filter-actions {
+        flex-direction: column;
+    }
+}
 </style>
 {% endblock %}
 
@@ -862,6 +896,29 @@
     {% endfor %}
 </div>
                         </div>
+                    <div class="filter-section">
+    <h3>Вид размещения</h3>
+    <div class="flex flex-col gap-2">
+        <div class="flex items-center">
+            <input type="radio" name="rental_type" value="no" id="rental_type_no"
+                   {% if filter.form.rental_type.value != 'monthly' and filter.form.rental_type.value != 'daily' %}checked{% endif %}
+                   class="mr-2">
+            <label for="rental_type_no" class="text-sm font-medium">Продажа</label>
+        </div>
+        <div class="flex items-center">
+            <input type="radio" name="rental_type" value="monthly" id="rental_type_monthly"
+                   {% if filter.form.rental_type.value == 'monthly' %}checked{% endif %}
+                   class="mr-2">
+            <label for="rental_type_monthly" class="text-sm font-medium">Аренда помесячно</label>
+        </div>
+        <div class="flex items-center">
+            <input type="radio" name="rental_type" value="daily" id="rental_type_daily"
+                   {% if filter.form.rental_type.value == 'daily' %}checked{% endif %}
+                   class="mr-2">
+            <label for="rental_type_daily" class="text-sm font-medium">Аренда посуточно</label>
+        </div>
+    </div>
+</div>
                      <!-- Город -->
                        <!-- В секции фильтра по городу замените текущий input на этот код -->
 <div class="filter-section">
@@ -1074,34 +1131,39 @@
                 {% if metro_lines %}
                     <!-- Особый вариант для Москвы -->
                     {% if location == "Москва" %}
-                    <div class="metro-lines-container grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                    <div class="metro-lines-container grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 overflow-y-auto max-h-[calc(100vh-200px)]">
                         {% for line in metro_lines %}
-                            <div class="metro-line-section">
-                                <div class="metro-line-header flex items-center mb-3">
-                                    <div class="metro-line-color w-6 h-6 rounded-full mr-2"
-                                         style="background-color: {{ line.line_color }}"></div>
-                                    <h3 class="metro-line-name text-lg font-semibold">
-                                        {{ line.line|default:"Другие станции" }}
-                                    </h3>
-                                </div>
+                          <div class="metro-line-section border border-gray-200 rounded-lg mb-2 overflow-hidden">
+    <div class="metro-line-header flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50 transition-colors"
+         onclick="toggleMetroLine(this)">
+        <div class="flex items-center">
+            <div class="metro-line-color w-5 h-5 rounded-full mr-3"
+                 style="background-color: {{ line.line_color }}"></div>
+            <h3 class="metro-line-name font-medium">{{ line.line|default:"Другие станции" }}</h3>
+        </div>
+        <i class="bi bi-chevron-down transition-transform duration-200"></i>
+    </div>
 
-                                <div class="metro-stations-grid max-h-60 overflow-y-auto pr-2">
-                                    {% for station in line.stations %}
-                                        <button type="button"
-                                                class="metro-station-option flex items-center px-3 py-2 border rounded-lg transition-colors {% if station.name in filter.form.metro_station.value %}bg-blue-100 border-blue-500{% else %}border-gray-200 hover:bg-gray-50{% endif %}"
-                                                data-station="{{ station.name }}">
-                                            <div class="metro-station-color w-4 h-4 rounded-full mr-2"
-                                                 style="background-color: {{ station.line_color|default:'#cccccc' }}"></div>
-                                            <span class="metro-station-name text-sm">{{ station.name }}</span>
-                                        </button>
-                                    {% endfor %}
-                                </div>
-                            </div>
+    <div class="metro-stations-container transition-all duration-300 overflow-y-auto"
+         style="max-height: 0">
+       <div class="metro-stations-container">
+    {% for station in line.stations %}
+        <button type="button"
+                class="metro-station-option flex items-center px-3 py-1.5 rounded text-sm transition-colors {% if station.name in filter.form.metro_station.value %}bg-blue-100 text-blue-800{% else %}hover:bg-gray-200{% endif %}"
+                data-station="{{ station.name }}">
+            <div class="metro-station-color w-3 h-3 rounded-full mr-2 flex-shrink-0"
+                 style="background-color: {{ station.line_color|default:'#cccccc' }}"></div>
+            <span class="metro-station-name truncate">{{ station.name }}</span>
+        </button>
+    {% endfor %}
+</div>
+    </div>
+</div>
                         {% endfor %}
                     </div>
                     {% else %}
                     <!-- Стандартный вариант для других городов -->
-                    <div class="metro-lines-container grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    <div class="metro-lines-container grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 overflow-y-auto max-h-[calc(100vh-200px)]">
                         {% for line in metro_lines %}
                             <div class="metro-line-section">
                                 <div class="metro-line-header flex items-center mb-3">
@@ -1331,6 +1393,7 @@
                                 Сбросить
                             </a>
                         </div>
+
                     </form>
                 </div>
             </div>
@@ -1899,17 +1962,43 @@
       });
 
       // Поиск станций
-      metroSearch.addEventListener('input', function() {
-          const searchTerm = this.value.toLowerCase();
-          document.querySelectorAll('.metro-station-option').forEach(option => {
-              const stationName = option.querySelector('.metro-station-name').textContent.toLowerCase();
-              if (stationName.includes(searchTerm)) {
-                  option.classList.remove('hidden');
-              } else {
-                  option.classList.add('hidden');
-              }
-          });
-      });
+  metroSearch.addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+
+    document.querySelectorAll('.metro-line-section').forEach(section => {
+        const header = section.querySelector('.metro-line-header');
+        const stationsContainer = section.querySelector('.metro-stations-container');
+        let hasVisibleStations = false;
+
+        // Показываем/скрываем станции
+        section.querySelectorAll('.metro-station-option').forEach(option => {
+            const stationName = option.querySelector('.metro-station-name').textContent.toLowerCase();
+            if (stationName.includes(searchTerm)) {
+                option.classList.remove('hidden');
+                hasVisibleStations = true;
+            } else {
+                option.classList.add('hidden');
+            }
+        });
+
+        // Показываем/скрываем всю линию
+        if (searchTerm.length > 0) {
+            if (hasVisibleStations) {
+                section.classList.remove('hidden');
+                header.classList.add('expanded');
+                stationsContainer.classList.add('expanded');
+                header.querySelector('.bi-chevron-down').classList.add('rotate-180');
+            } else {
+                section.classList.add('hidden');
+            }
+        } else {
+            section.classList.remove('hidden');
+            header.classList.remove('expanded');
+            stationsContainer.classList.remove('expanded');
+            header.querySelector('.bi-chevron-down').classList.remove('rotate-180');
+        }
+    });
+});
 
       // Выбор/отмена выбора станции
        document.addEventListener('click', function(e) {
@@ -2005,6 +2094,152 @@
           }
       }
   }
+// Функция для переключения видимости станций метро
+// Функция для переключения видимости станций метро
+function toggleMetroLine(header) {
+    const lineSection = header.closest('.metro-line-section');
+    const stationsContainer = lineSection.querySelector('.metro-stations-container');
+    const chevron = header.querySelector('.bi-chevron-down');
+    const linesContainer = document.querySelector('.metro-lines-container');
+
+    // Получаем текущее состояние (до изменения)
+    const wasExpanded = header.classList.contains('expanded');
+
+    // Закрываем все другие открытые линии
+    document.querySelectorAll('.metro-line-section').forEach(section => {
+        if (section !== lineSection) {
+            section.querySelector('.metro-stations-container').style.maxHeight = '0';
+            section.querySelector('.metro-line-header').classList.remove('expanded');
+            section.querySelector('.bi-chevron-down').classList.remove('rotate-180');
+        }
+    });
+
+    // Переключаем текущую линию
+    if (!wasExpanded) {
+        stationsContainer.style.maxHeight = '300px';
+        header.classList.add('expanded');
+        chevron.classList.add('rotate-180');
+
+        // Прокручиваем контейнер так, чтобы заголовок оставался видимым
+        const containerRect = linesContainer.getBoundingClientRect();
+        const headerRect = header.getBoundingClientRect();
+
+        // Если заголовок близко к верху, прокручиваем немного вниз
+        if (headerRect.top < containerRect.top + 50) {
+            linesContainer.scrollBy({
+                top: headerRect.top - containerRect.top - 50,
+                behavior: 'smooth'
+            });
+        }
+    } else {
+        stationsContainer.style.maxHeight = '0';
+        header.classList.remove('expanded');
+        chevron.classList.remove('rotate-180');
+    }
+}
+
+// Инициализация при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+    // Открываем линии с выбранными станциями
+    const selectedStations = document.getElementById('metro-hidden-input').value
+        ? document.getElementById('metro-hidden-input').value.split(',')
+        : [];
+
+    if (selectedStations.length > 0) {
+        document.querySelectorAll('.metro-station-option').forEach(option => {
+            if (selectedStations.includes(option.getAttribute('data-station'))) {
+                const lineSection = option.closest('.metro-line-section');
+                const stationsContainer = lineSection.querySelector('.metro-stations-container');
+                const header = lineSection.querySelector('.metro-line-header');
+
+                header.classList.add('expanded');
+                stationsContainer.style.maxHeight = '300px';
+                lineSection.querySelector('.bi-chevron-down').classList.add('rotate-180');
+            }
+        });
+    }
+
+
+    // Обработчик выбора станции
+    document.addEventListener('click', function(e) {
+        const stationOption = e.target.closest('.metro-station-option');
+        if (stationOption) {
+            e.preventDefault();
+            const station = stationOption.getAttribute('data-station');
+            let selectedStations = document.getElementById('metro-hidden-input').value
+                ? document.getElementById('metro-hidden-input').value.split(',')
+                : [];
+
+            if (selectedStations.includes(station)) {
+                // Удаляем станцию
+                selectedStations = selectedStations.filter(s => s !== station);
+                stationOption.classList.remove('bg-blue-100', 'text-blue-800');
+                stationOption.classList.add('hover:bg-gray-200');
+            } else {
+                // Добавляем станцию (максимум 5)
+                if (selectedStations.length < 5) {
+                    selectedStations.push(station);
+                    stationOption.classList.add('bg-blue-100', 'text-blue-800');
+                    stationOption.classList.remove('hover:bg-gray-200');
+                } else {
+                    alert('Можно выбрать не более 5 станций');
+                    return;
+                }
+            }
+
+            document.getElementById('metro-hidden-input').value = selectedStations.join(',');
+            updateSelectedStationsText();
+        }
+    });
+
+    function updateSelectedStationsText() {
+        const selectedStations = document.getElementById('metro-hidden-input').value
+            ? document.getElementById('metro-hidden-input').value.split(',')
+            : [];
+        const selectedMetroText = document.getElementById('selected-metro-text');
+
+        if (selectedStations.length === 0) {
+            selectedMetroText.innerHTML = 'Выберите станции метро';
+            return;
+        }
+
+        let html = '';
+        selectedStations.slice(0, 3).forEach(station => {
+            html += `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-1">
+                        ${station}
+                    </span>`;
+        });
+
+        if (selectedStations.length > 3) {
+            html += `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                        +${selectedStations.length - 3}
+                    </span>`;
+        }
+
+        selectedMetroText.innerHTML = html;
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Открываем линии с выбранными станциями
+    const selectedStations = document.getElementById('metro-hidden-input').value
+        ? document.getElementById('metro-hidden-input').value.split(',')
+        : [];
+
+    if (selectedStations.length > 0) {
+        document.querySelectorAll('.metro-station-option').forEach(option => {
+            if (selectedStations.includes(option.getAttribute('data-station'))) {
+                const lineSection = option.closest('.metro-line-section');
+                const stationsContainer = lineSection.querySelector('.metro-stations-container');
+                const header = lineSection.querySelector('.metro-line-header');
+
+                header.classList.add('expanded');
+                stationsContainer.style.maxHeight = stationsContainer.scrollHeight + 'px';
+                lineSection.querySelector('.bi-chevron-down').classList.add('rotate-180');
+            }
+        });
+    }
+});
 </script>
 
 

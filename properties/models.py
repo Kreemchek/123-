@@ -55,6 +55,12 @@ class Property(models.Model):
         ('monthly', 'Аренда помесячно'),
         ('daily', 'Аренда посуточно'),
     ]
+    is_rental = models.CharField(
+        max_length=10,
+        choices=IS_RENTAL_CHOICES,
+        default='no',
+        verbose_name=_('Тип аренды')
+    )
 
     title = models.CharField(max_length=200, blank=True, verbose_name=_('Заголовок'))
     description = models.TextField(verbose_name=_('Описание'))
@@ -71,12 +77,7 @@ class Property(models.Model):
         blank=True,  # И это
         default=None
     )
-    is_rental = models.CharField(
-        max_length=10,
-        choices=IS_RENTAL_CHOICES,
-        default='no',
-        verbose_name=_('Тип аренды')
-    )
+
     monthly_price = models.DecimalField(
         max_digits=12,
         decimal_places=2,
