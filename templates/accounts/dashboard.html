@@ -320,7 +320,7 @@
                             </div>
                             <div>
                                 <h4 class="text-base lg:text-lg font-bold text-gray-800">
-    <a href="{% url 'property-detail' fav.property.id %}" class="hover:text-blue-600 transition-colors">
+    <a href="{% url 'properties:property-detail' fav.property.id %}" class="hover:text-blue-600 transition-colors">
         🏠 {{ fav.property.title }}
     </a>
                                     </h4>
@@ -353,7 +353,7 @@
                     </div>
 
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-    <a href="{% url 'property-detail' fav.property.id %}"
+    <a href="{% url 'properties:property-detail' fav.property.id %}"
        class="btn-custom w-full sm:w-auto text-center">
         <i class="fas fa-eye mr-2"></i>
         Просмотр
@@ -361,7 +361,7 @@
 
     <div class="flex gap-2 w-full sm:w-auto mt-2 sm:mt-0">
         <form method="POST"
-              action="{% url 'property-favorite' fav.id %}"
+              action="{% url 'properties:property-favorite' fav.id %}"
               class="w-full">
             {% csrf_token %}
             <button type="submit"

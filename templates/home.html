@@ -305,6 +305,17 @@ document.addEventListener('DOMContentLoaded', function() {
         'вторичка': 'resale_flat'
     };
 
+    // Города для автодополнения
+    const cities = ['Москва', 'Санкт-Петербург', 'Новосибирск', 'Екатеринбург', 'Казань',
+                   'Нижний Новгород', 'Челябинск', 'Самара', 'Омск', 'Ростов-на-Дону'];
+
+    // Типы сделок
+    const dealTypes = {
+        'аренда': 'rent',
+        'купить': 'sale',
+        'продажа': 'sale'
+    };
+
     // Автодополнение
     searchInput.addEventListener('input', function() {
         const query = this.value.trim();
@@ -322,6 +333,22 @@ document.addEventListener('DOMContentLoaded', function() {
             if (type.toLowerCase().includes(query.toLowerCase())) {
                 suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
                                 data-type="${propertyTypes[type]}">${type}</div>`;
+            }
+        });
+
+        // Подсказки по городам
+        cities.forEach(city => {
+            if (city.toLowerCase().includes(query.toLowerCase())) {
+                suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                                data-city="${city}">${city}</div>`;
+            }
+        });
+
+        // Подсказки по типам сделок
+        Object.keys(dealTypes).forEach(deal => {
+            if (deal.toLowerCase().includes(query.toLowerCase())) {
+                suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                                data-deal="${dealTypes[deal]}">${deal}</div>`;
             }
         });
 
@@ -354,6 +381,16 @@ document.addEventListener('DOMContentLoaded', function() {
                             data-query="2-комнатная">2-комнатная</div>`;
             suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
                             data-query="3-комнатная">3-комнатная</div>`;
+            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                            data-query="4-комнатная">4-комнатная</div>`;
+        }
+
+        // Комбинированные подсказки
+        if (query.toLowerCase().includes('квартира') || query.toLowerCase().includes('дом')) {
+            cities.forEach(city => {
+                suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                                data-combined="${city}">${query.split(' ')[0]} в ${city}</div>`;
+            });
         }
 
         if (suggestions) {
@@ -368,12 +405,15 @@ document.addEventListener('DOMContentLoaded', function() {
     suggestionsContainer.addEventListener('click', function(e) {
         if (e.target.dataset.type) {
             searchInput.value = e.target.textContent;
-            // Можно сразу добавить скрытое поле с типом
-            const hiddenInput = document.createElement('input');
-            hiddenInput.type = 'hidden';
-            hiddenInput.name = 'property_type';
-            hiddenInput.value = e.target.dataset.type;
-            searchForm.appendChild(hiddenInput);
+            addHiddenInput('property_type', e.target.dataset.type);
+        }
+        else if (e.target.dataset.city) {
+            searchInput.value = e.target.dataset.city;
+            addHiddenInput('location', e.target.dataset.city);
+        }
+        else if (e.target.dataset.deal) {
+            searchInput.value = e.target.textContent;
+            addHiddenInput('deal_type', e.target.dataset.deal);
         }
         else if (e.target.dataset.query) {
             searchInput.value = e.target.dataset.query;
@@ -381,6 +421,16 @@ document.addEventListener('DOMContentLoaded', function() {
         else if (e.target.dataset.geo) {
             searchInput.value = 'рядом со мной';
             getGeolocation();
+        }
+        else if (e.target.dataset.combined) {
+            searchInput.value = e.target.textContent;
+            const type = e.target.textContent.split(' ')[0];
+            const city = e.target.dataset.combined;
+
+            if (propertyTypes[type.toLowerCase()]) {
+                addHiddenInput('property_type', propertyTypes[type.toLowerCase()]);
+            }
+            addHiddenInput('location', city);
         }
 
         suggestionsContainer.classList.add('hidden');
@@ -438,14 +488,48 @@ document.addEventListener('DOMContentLoaded', function() {
     // Обработка формы
     searchForm.addEventListener('submit', function(e) {
         e.preventDefault();
+        const searchValue = searchInput.value.trim();
+
+        // Очищаем предыдущие скрытые поля
+        const hiddenInputs = searchForm.querySelectorAll('input[type="hidden"]');
+        hiddenInputs.forEach(input => {
+            if (!['radius_filter'].includes(input.name)) {
+                input.remove();
+            }
+        });
+
+        // Обработка запросов типа "2-комнатная квартира в Москве"
+        const roomsMatch = searchValue.match(/(\d+)-комнатная/i);
+        if (roomsMatch) {
+            addHiddenInput('rooms', roomsMatch[1]);
+        }
+
+        // Обработка запросов с указанием города
+        cities.forEach(city => {
+            if (searchValue.toLowerCase().includes(city.toLowerCase())) {
+                addHiddenInput('location', city);
+            }
+        });
+
+        // Обработка типа сделки (аренда/покупка)
+        Object.keys(dealTypes).forEach(deal => {
+            if (searchValue.toLowerCase().includes(deal.toLowerCase())) {
+                addHiddenInput('deal_type', dealTypes[deal]);
+            }
+        });
+
+        // Обработка типа недвижимости
+        Object.keys(propertyTypes).forEach(type => {
+            if (searchValue.toLowerCase().includes(type.toLowerCase())) {
+                addHiddenInput('property_type', propertyTypes[type]);
+            }
+        });
 
         // Обработка запросов типа "цена 5-10 млн"
-        const searchValue = searchInput.value.trim();
         const priceMatch = searchValue.match(/цена\s*(\d+)\s*-\s*(\d+)\s*млн/i);
         if (priceMatch) {
             const minPrice = priceMatch[1] + '000000';
             const maxPrice = priceMatch[2] + '000000';
-
             addHiddenInput('min_price', minPrice);
             addHiddenInput('max_price', maxPrice);
         }
@@ -471,16 +555,26 @@ document.addEventListener('DOMContentLoaded', function() {
             addHiddenInput('max_area', areaMatch[2]);
         }
 
-        // Обработка запросов типа "1-комнатная"
-        const roomsMatch = searchValue.match(/(\d+)-комнатная/i);
-        if (roomsMatch) {
-            addHiddenInput('rooms', roomsMatch[1]);
+        // Обработка запросов типа "площадь от 80 м²"
+        const areaFromMatch = searchValue.match(/площадь\s*от\s*(\d+)\s*м²/i);
+        if (areaFromMatch) {
+            addHiddenInput('min_area', areaFromMatch[1]);
+        }
+
+        // Если в запросе есть "рядом со мной" и есть геоданные, добавляем фильтр радиуса
+        if ((searchValue.toLowerCase().includes('рядом') ||
+             searchValue.toLowerCase().includes('недалеко')) &&
+            geoCoordsInput.value) {
+            // Фильтр радиуса уже добавлен через geoCoordsInput
         }
 
         this.submit();
     });
 
     function addHiddenInput(name, value) {
+        const existing = searchForm.querySelector(`input[name="${name}"]`);
+        if (existing) existing.remove();
+
         const input = document.createElement('input');
         input.type = 'hidden';
         input.name = name;
@@ -489,7 +583,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showToast(message, type) {
-        // Реализация toast-уведомлений
         const toast = document.createElement('div');
         toast.className = `fixed bottom-4 right-4 px-4 py-2 rounded-lg text-white ${
             type === 'success' ? 'bg-green-500' : 'bg-red-500'

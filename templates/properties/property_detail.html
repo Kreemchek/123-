@@ -390,6 +390,64 @@
         animation: spin 1s linear infinite;
         display: inline-block;
     }
+    #map-fallback {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-top: 1rem;
+    text-align: center;
+}
+
+#map-fallback p {
+    margin-bottom: 0.5rem;
+}
+
+#map-fallback button {
+    margin-top: 0.5rem;
+}
+    .toast-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .toast {
+        padding: 12px 24px;
+        border-radius: 8px;
+        color: white;
+        font-weight: 500;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+        max-width: 300px;
+    }
+
+    .toast.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .toast.success {
+        background-color: #10b981;
+    }
+
+    .toast.error {
+        background-color: #ef4444;
+    }
+
+    .toast.warning {
+        background-color: #f59e0b;
+    }
+
+    .toast.info {
+        background-color: #3b82f6;
+    }
 </style>
 
 <div class="registration-container">
@@ -549,56 +607,74 @@
                     </div>
                     {% endif %}
                 </div>
-             <div class="animate-block mb-6 md:mb-8">
-                    <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-3 md:mb-4">Расположение на карте</h2>
 
-                    <!-- Форма редактирования адреса -->
-                    {% if request.user == property.broker.user or request.user == property.developer or request.user.is_admin %}
-                    <div class="edit-address-container mb-6">
-                        <h3 class="text-xl font-semibold mb-4">Укажите адрес объекта</h3>
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Город</label>
-                            <input type="text" id="city-input" class="w-full px-3 py-2 border rounded-lg"
-                                   value="{{ property.location|default:'' }}" placeholder="Город будет определен автоматически">
-                        </div>
+            <!-- Расположение на карте -->
+<!-- В секции карты (замените текущий блок) -->
+<!-- Расположение на карте -->
+<div class="animate-block mb-6 md:mb-8">
+    <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-3 md:mb-4">Расположение на карте</h2>
 
-                        <div id="map-container">
-                            <div id="map"></div>
-                            <div class="map-controls">
-                                <button type="button" id="locate-me" class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">
-                                    <i class="bi bi-geo-alt"></i> Мое местоположение
-                                </button>
-                            </div>
-                            <div class="search-container">
-                                <input type="text" class="search-input" placeholder="Поиск объектов..." id="search-objects">
-                                <div class="search-results" id="search-results"></div>
-                            </div>
-                        </div>
-                        <div class="address-display" id="address-display">
-                            {{ property.address|default:"Адрес не выбран" }}
-                        </div>
+    {% if request.user == property.broker.user or request.user == property.developer or request.user.is_admin %}
+    <!-- Форма редактирования адреса (только для брокеров, застройщиков и админов) -->
+    <div class="edit-address-container mb-6">
+        <h3 class="text-xl font-semibold mb-4">Укажите адрес объекта</h3>
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Город</label>
+            <input type="text" id="city-input" class="w-full px-3 py-2 border rounded-lg"
+                   value="{{ property.location|default:'' }}" placeholder="Город будет определен автоматически">
+        </div>
 
-                        <div class="mt-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Метро</label>
-                            <input type="text" id="metro-input" class="w-full px-3 py-2 border rounded-lg"
-                                   placeholder="Станция метро будет определена автоматически"
-                                   value="{{ property.metro_station|default:'' }}">
-                        </div>
+        <div id="map-container">
+            <div id="map"></div>
+            <div class="map-controls">
+                <button type="button" id="locate-me" class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">
+                    <i class="bi bi-geo-alt"></i> Мое местоположение
+                </button>
+            </div>
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Поиск объектов..." id="search-objects">
+                <div class="search-results" id="search-results"></div>
+            </div>
+        </div>
+        <div class="address-display" id="address-display">
+            {{ property.address|default:"Адрес не выбран" }}
+        </div>
 
-                        <div class="mt-4 flex justify-end">
-                            <button id="save-address-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                                Сохранить изменения
-                            </button>
-                        </div>
-                    </div>
-                    {% endif %}
+        <div class="mt-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Метро</label>
+            <input type="text" id="metro-input" class="w-full px-3 py-2 border rounded-lg"
+                   placeholder="Станция метро будет определена автоматически"
+                   value="{{ property.metro_station|default:'' }}">
+        </div>
 
-                    <!-- Отображение карты для всех пользователей -->
-                    <div id="map-view-container">
-                        <div id="map-view"></div>
-                    </div>
+        <div class="mt-4 flex justify-end">
+            <button id="save-address-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                Опубликовать объект
+            </button>
+        </div>
+    </div>
+    {% endif %}
 
-                </div>
+    <!-- Отображение карты для всех пользователей -->
+   <div id="map-view-container" style="width: 100%; height: 400px; margin-bottom: 1rem; border-radius: 0.5rem; overflow: hidden;">
+        <div id="map-view"></div>
+        <div id="map-fallback" style="display: none; padding: 20px; text-align: center;">
+            <p>Не удалось загрузить карту.</p>
+            <button onclick="retryMapLoading()" class="btn-primary mt-2">
+                Попробовать снова
+            </button>
+            <p class="text-sm text-gray-500 mt-2">Или обновите страницу</p>
+        </div>
+        {% if property.address %}
+            <div class="address-display mt-4">
+                <strong>Адрес:</strong> {{ property.address }}
+                {% if property.metro_station and property.metro_station != "Не указано" %}
+                    <br><strong>Метро:</strong> {{ property.metro_station|strip_metro }}
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
 
                 <!-- Описание объекта -->
                 <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-3 md:mb-4">Описание</h2>
@@ -682,6 +758,42 @@
 <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
 <script src="https://api-maps.yandex.ru/2.1/?apikey={{ YANDEX_MAPS_API_KEY }}&lang=ru_RU"></script>
 <script>
+
+// Функция для повторной попытки загрузки карты
+function loadMapWithRetry(attempt = 0) {
+    if (attempt > 2) {
+        console.error('Превышено количество попыток загрузки карты');
+        document.getElementById('map-fallback').style.display = 'block';
+        return;
+    }
+
+    if (typeof ymaps === 'undefined') {
+        console.log('API Яндекс.Карт еще не загружен, попытка', attempt + 1);
+        setTimeout(() => loadMapWithRetry(attempt + 1), 1000);
+        return;
+    }
+
+    try {
+        if (coordinates_json) {
+            console.log('Инициализация карты для всех пользователей');
+            initViewMap();
+        } else {
+            console.log('Координаты отсутствуют');
+            document.getElementById('map-fallback').style.display = 'block';
+            showToast('Адрес объекта не указан', 'warning');
+        }
+    } catch (e) {
+        console.error('Ошибка инициализации карты:', e);
+        document.getElementById('map-fallback').style.display = 'block';
+        showToast('Ошибка загрузки карты', 'error');
+    }
+}
+
+// Инициализация после загрузки API
+ymaps.ready(function() {
+    console.log('API Яндекс.Карт загружен');
+    loadMapWithRetry();
+});
     // Анимация при скролле
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -784,42 +896,49 @@
     }
 
     // Инициализация карты для просмотра
-    let viewMap, viewPlacemark;
+// Инициализация переменных из Django-контекста
+const coordinates_json = '{{ coordinates_json|escapejs }}' || null;
+const metro_coordinates_json = '{{ metro_coordinates_json|escapejs }}' || null;
+const property_address = '{{ property.address|escapejs }}' || 'Адрес не указан';
+const metro_station = '{{ property.metro_station|escapejs }}' || 'Метро не указано';
 
-  function initViewMap() {
-    let coords = [55.751574, 37.617635]; // Москва по умолчанию
+function initViewMap() {
+    console.log('[MAP] Инициализация карты просмотра');
 
-    {% if coordinates_json %}
-        try {
-            const coordsData = JSON.parse('{{ coordinates_json|escapejs }}');
+    try {
+        let coords = [55.751574, 37.617635]; // Москва по умолчанию
+
+        if (coordinates_json) {
+            const coordsData = JSON.parse(coordinates_json);
             coords = [coordsData.y, coordsData.x];
-            console.log('InitViewMap - Coordinates:', coords);
-        } catch (e) {
-            console.error('Error parsing coordinates:', e);
+            console.log('[MAP] Координаты:', coords);
         }
-    {% endif %}
 
-    ymaps.ready(function() {
+        // Создаем карту
         viewMap = new ymaps.Map('map-view', {
             center: coords,
             zoom: 15,
             controls: ['zoomControl', 'fullscreenControl']
         });
 
+        // Добавляем метку
         viewPlacemark = new ymaps.Placemark(coords, {
-            hintContent: '{{ property.address|escapejs }}'
+            hintContent: property_address
         }, {
             preset: 'islands#redDotIcon',
             draggable: false
         });
-        viewMap.geoObjects.add(viewPlacemark);
 
-        {% if metro_coordinates_json %}
+        viewMap.geoObjects.add(viewPlacemark);
+        console.log('[MAP] Карта успешно инициализирована');
+
+        // Добавляем метро если есть
+        if (metro_coordinates_json) {
             try {
-                const metroCoordsData = JSON.parse('{{ metro_coordinates_json|escapejs }}');
+                const metroCoordsData = JSON.parse(metro_coordinates_json);
                 const metroCoords = [metroCoordsData.y, metroCoordsData.x];
                 const metroPlacemark = new ymaps.Placemark(metroCoords, {
-                    hintContent: '{{ property.metro_station|escapejs }}'
+                    hintContent: metro_station
                 }, {
                     preset: 'islands#blueCircleDotIcon',
                     iconColor: '#1e88e5'
@@ -837,47 +956,66 @@
                 );
                 viewMap.geoObjects.add(polyline);
             } catch (e) {
-                console.error('Error parsing metro coordinates:', e);
+                console.error('[MAP] Ошибка загрузки метро:', e);
             }
-        {% endif %}
-    });
+        }
+
+    } catch (error) {
+        console.error('[MAP] Ошибка:', error);
+        document.getElementById('map-fallback').style.display = 'block';
+        throw error;
+    }
 }
 
+// Инициализация после загрузки API
+ymaps.ready(function() {
+    console.log('API Яндекс.Карт загружен');
+
+    if (coordinates_json) {
+        initViewMap();
+    } else {
+        console.log('Координаты отсутствуют');
+        document.getElementById('map-fallback').style.display = 'block';
+    }
+});
 
     // Инициализация карты для редактирования
     let editMap, editPlacemark;
     let searchResults = [];
 
     function initEditMap() {
-    let initialCoords = [55.751574, 37.617635]; // Москва по умолчанию
+        console.log('[DEBUG] Начало инициализации карты редактирования');
 
-    {% if coordinates_json %}
-        try {
-            const coordsData = JSON.parse('{{ coordinates_json|escapejs }}');
-            initialCoords = [coordsData.y, coordsData.x];
-            console.log('InitEditMap - Initial coordinates:', initialCoords);
-        } catch (e) {
-            console.error('Error parsing coordinates:', e);
-        }
-    {% endif %}
+        let initialCoords = [55.751574, 37.617635]; // Москва по умолчанию
 
-    ymaps.ready(function() {
-        editMap = new ymaps.Map('map', {
-            center: initialCoords,
-            zoom: 15,
-            controls: ['zoomControl', 'fullscreenControl']
-        });
+        {% if coordinates_json %}
+            try {
+                const coordsData = JSON.parse('{{ coordinates_json|escapejs }}');
+                initialCoords = [coordsData.y, coordsData.x];
+                console.log('[DEBUG] Edit map initial coordinates:', initialCoords);
+            } catch (e) {
+                console.error('[DEBUG] Error parsing coordinates:', e);
+            }
+        {% endif %}
 
-        editPlacemark = new ymaps.Placemark(initialCoords, {}, {
-            preset: 'islands#redDotIcon',
-            draggable: true
-        });
-        editMap.geoObjects.add(editPlacemark);
+        ymaps.ready(function() {
+            console.log('[DEBUG] YMaps ready, creating edit map...');
+            editMap = new ymaps.Map('map', {
+                center: initialCoords,
+                zoom: 15,
+                controls: ['zoomControl', 'fullscreenControl']
+            });
+
+            editPlacemark = new ymaps.Placemark(initialCoords, {}, {
+                preset: 'islands#redDotIcon',
+                draggable: true
+            });
+            editMap.geoObjects.add(editPlacemark);
 
             // Обработчик клика по карте
             editMap.events.add('click', function(e) {
-                const coords = e.get('coords'); // Получаем [широта, долгота] от Яндекс
-                console.log('Map click coordinates:', coords);
+                const coords = e.get('coords');
+                console.log('[DEBUG] Map click coordinates:', coords);
                 updatePlacemark(coords);
                 getAddress(coords);
                 findNearestMetro(coords);
@@ -887,9 +1025,8 @@
             document.getElementById('locate-me').addEventListener('click', function() {
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(function(position) {
-                        // Получаем [широта, долгота] от браузера
                         const coords = [position.coords.latitude, position.coords.longitude];
-                        console.log('Geolocation coordinates:', coords);
+                        console.log('[DEBUG] Geolocation coordinates:', coords);
                         editMap.setCenter(coords, 15);
                         updatePlacemark(coords);
                         getAddress(coords);
@@ -1035,25 +1172,44 @@
     }
 
     // Функция для показа уведомлений
-    function showToast(message, type) {
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        toast.textContent = message;
-        document.body.appendChild(toast);
+// Улучшенная функция для показа уведомлений
+function showToast(message, type = 'info') {
+    console.log(`[Toast] Показ уведомления: ${message} (${type})`);
 
-        // Показываем уведомление
-        setTimeout(() => {
-            toast.classList.add('show');
-        }, 10);
-
-        // Удаляем через 3 секунды
-        setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => {
-                toast.remove();
-            }, 300);
-        }, 3000);
+    const container = document.getElementById('toast-container');
+    if (!container) {
+        console.error('Контейнер для уведомлений не найден');
+        return;
     }
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    container.appendChild(toast);
+
+    // Показываем уведомление
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 10);
+
+    // Автоматическое скрытие через 5 секунд
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            toast.remove();
+        }, 300);
+    }, 5000);
+
+    // Возможность закрыть уведомление кликом
+    toast.addEventListener('click', () => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            toast.remove();
+        }, 300);
+    });
+}
+
+
 
     // Обработчик сохранения адреса
     document.getElementById('save-address-btn').addEventListener('click', async function() {
@@ -1127,16 +1283,72 @@
     }
 });
     // Основная инициализация
-    document.addEventListener('DOMContentLoaded', function() {
+// Основная инициализация
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOMContentLoaded: начал выполнение');
+
+    try {
+        // Инициализация свайпера и модального окна
         const swiper = initSwiper();
         setupModal();
         setupFavorites();
-        ymaps.ready(initViewMap);
 
-        // Инициализируем карту редактирования только для авторизованных пользователей с правами
-        {% if request.user == property.broker.user or request.user == property.developer or request.user.is_admin %}
-            ymaps.ready(initEditMap);
-        {% endif %}
-    });
+        // Проверка загрузки API Яндекс.Карт
+        if (typeof ymaps === 'undefined') {
+            console.error('API Яндекс.Карт не загружен');
+            showToast('Не удалось загрузить карты. Пожалуйста, попробуйте перезагрузить страницу.', 'error');
+            document.getElementById('map-fallback').style.display = 'block';
+            return;
+        }
+
+        // Инициализация карт
+        ymaps.ready(function() {
+            console.log('API Яндекс.Карт загружен, начинаем инициализацию');
+
+            try {
+               // Always try to initialize view map if coordinates exist, regardless of user type
+if (typeof coordinates_json !== 'undefined' && coordinates_json) {
+    console.log('Инициализация карты просмотра...');
+    try {
+        initViewMap();
+        showToast('Карта успешно загружена', 'success');
+    } catch (e) {
+        console.error('Ошибка инициализации карты просмотра:', e);
+        showToast('Ошибка при загрузке карты', 'error');
+        document.getElementById('map-fallback').style.display = 'block';
+    }
+} else {
+    console.log('Нет координат для инициализации карты просмотра');
+    showToast('Адрес объекта не указан', 'warning');
+    document.getElementById('map-fallback').style.display = 'block';
+}
+
+                {% if request.user.is_authenticated %}
+                    {% if request.user == property.broker.user or request.user == property.developer or request.user.is_admin %}
+                        console.log('Инициализация карты редактирования...');
+                        initEditMap();
+                    {% endif %}
+                {% endif %}
+            } catch (e) {
+                console.error('Ошибка инициализации карт:', e);
+                showToast('Ошибка при загрузке карты. Пожалуйста, попробуйте позже.', 'error');
+                document.getElementById('map-fallback').style.display = 'block';
+            }
+        });
+    } catch (e) {
+        console.error('Ошибка в основном блоке инициализации:', e);
+        showToast('Произошла ошибка при загрузке страницы', 'error');
+    }
+});
+
+// Функция для повторной загрузки
+function retryMapLoading() {
+    console.log('Попытка перезагрузки карты...');
+    showToast('Пытаемся загрузить карту...', 'info');
+    location.reload();
+}
+
 </script>
+    <div id="toast-container" class="toast-container"></div>
 {% endblock %}

@@ -69,13 +69,21 @@ class PropertyFilter(FilterSet):
     rental_type = CharFilter(method='filter_rental_type', label='Тип аренды')
 
     def filter_rental_type(self, queryset, name, value):
-        if value == 'monthly':
-            return queryset.filter(is_rental='monthly', monthly_price__isnull=False)
-        elif value == 'daily':
-            return queryset.filter(is_rental='daily', daily_price__isnull=False)
-        elif value == 'no':
-            return queryset.filter(is_rental='no')
-        return queryset
+        if not value:
+            return queryset
+
+        rental_types = [t.strip() for t in value.split(',') if t.strip()]
+        q_objects = Q()
+
+        for rental_type in rental_types:
+            if rental_type == 'monthly':
+                q_objects |= Q(is_rental='monthly', monthly_price__isnull=False)
+            elif rental_type == 'daily':
+                q_objects |= Q(is_rental='daily', daily_price__isnull=False)
+            elif rental_type == 'no':
+                q_objects |= Q(is_rental='no')
+
+        return queryset.filter(q_objects) if q_objects else queryset
     # Тип недвижимости
     property_type = ModelMultipleChoiceFilter(
         field_name='property_type__name',  # Фильтруем по полю name модели PropertyType
@@ -194,56 +202,138 @@ class PropertyFilter(FilterSet):
     search = CharFilter(method='universal_search', label='Универсальный поиск')
 
     def universal_search(self, queryset, name, value):
-        print(f"Universal search triggered with value: {value}")
         if not value:
             return queryset
 
-        # Обработка специальных запросов (цена, площадь)
-        value = re.sub(r'цена\s*(\d+)\s*-\s*(\d+)\s*млн',
-                       lambda m: f"{m.group(1)}000000 {m.group(2)}000000", value, flags=re.IGNORECASE)
-        value = re.sub(r'площадь\s*(\d+)\s*-\s*(\d+)\s*м²',
-                       lambda m: f"{m.group(1)} {m.group(2)}", value, flags=re.IGNORECASE)
-
-        search_terms = re.findall(r'(?:"([^"]+)"|(\S+))', value)
-        search_terms = [term[0] or term[1] for term in search_terms]
-
+        value = value.lower().strip()
         q_objects = Q()
 
-        for term in search_terms:
-            # Поиск по типам недвижимости
-            type_mapping = {
-                'квартира': 'apartment',
-                'дом': 'house',
-                'коммерческая': 'commercial',
-                'новостройка': 'new_flat',
-                'вторичка': 'resale_flat'
-            }
-            if term.lower() in type_mapping:
-                q_objects |= Q(property_type__name=type_mapping[term.lower()])
-                continue
+        # Обработка запросов типа "2-комнатная квартира в Москве"
+        room_match = re.search(r'(\d+)\s*-?\s*комнатн(ая|ые|ую|ой)', value)
+        type_match = re.search(
+            r'(квартир[ауеы]|студи[юя]|апартамент[ыа]|дом|коммерческ[аяой]|новостройк[аи]|вторичк[ау])', value)
+        city_match = re.search(
+            r'(в|на)\s+(москв[еу]|санкт\s*-?\s*петербург[е]|спб|екатеринбург[е]|новосибирск[е]|казан[и]|нижн[еий][йм]\s*новгород[е]|самар[е]|омск[е]|челябинск[е]|ростов[е]\s*-?\s*на\s*-?\s*дону|уф[е]|красноярск[е]|перм[и]|воронеж[е]|волгоград[е]|краснодар[е]|сочи|подольск|мытищ|балаших|люберц|химк|зеленоград)',
+            value)
+        rent_match = re.search(r'(снять|аренд[ауеы]|посуточн[аяой]|помесячн[аяой])', value)
+        buy_match = re.search(r'(куп[иить]|приобрести|продаж[ае]|покупк[ае])', value)
+        price_match = re.search(r'(цена|стоимость)\s*(от|до)?\s*(\d+)\s*(млн|тыс|т\.?р|р\.?)', value)
+        area_match = re.search(r'(площадь|площадью|метраж)\s*(\d+)\s*-?\s*(\d+)?\s*(м|м²|кв\.?\s*м)', value)
 
-            # Попробуем преобразовать в число (для комнат, площади, цены)
-            try:
-                numeric_term = float(term.replace(',', '.'))
-                q_objects |= (
-                        Q(rooms=numeric_term) |
-                        Q(total_area=numeric_term) |
-                        Q(living_area=numeric_term) |
-                        Q(price=numeric_term) |
-                        Q(monthly_price=numeric_term) |
-                        Q(daily_price=numeric_term))
-                continue
-            except ValueError:
-                pass
+        # Обработка количества комнат
+        if room_match:
+            rooms = int(room_match.group(1))
+            q_objects &= Q(rooms=rooms)
 
-            # Текстовый поиск по всем полям
-            q_objects |= (
-                    Q(title__icontains=term) |
-                    Q(description__icontains=term) |
-                    Q(location__icontains=term) |
-                    Q(address__icontains=term) |
-                    Q(metro_station__icontains=term) |
-                    Q(property_type__name__icontains=term)
-            )
+        # Обработка типа недвижимости
+        type_mapping = {
+            'квартир': 'apartment',
+            'студи': 'studio',
+            'апартамент': 'apartment',
+            'дом': 'house',
+            'коммерческ': 'commercial',
+            'новостройк': 'new_flat',
+            'вторичк': 'resale_flat'
+        }
 
-        return queryset.filter(q_objects).distinct()
+        if type_match:
+            type_key = next((k for k in type_mapping.keys() if type_match.group(1).startswith(k)), None)
+            if type_key:
+                q_objects &= Q(property_type__name=type_mapping[type_key])
+
+        # Обработка города
+        city_mapping = {
+            'москв': 'Москва',
+            'санкт-петербург': 'Санкт-Петербург',
+            'спб': 'Санкт-Петербург',
+            'екатеринбург': 'Екатеринбург',
+            'новосибирск': 'Новосибирск',
+            'казан': 'Казань',
+            'нижн новгород': 'Нижний Новгород',
+            'самар': 'Самара',
+            'омск': 'Омск',
+            'челябинск': 'Челябинск',
+            'ростов-на-дону': 'Ростов-на-Дону',
+            'уф': 'Уфа',
+            'красноярск': 'Красноярск',
+            'перм': 'Пермь',
+            'воронеж': 'Воронеж',
+            'волгоград': 'Волгоград',
+            'краснодар': 'Краснодар',
+            'сочи': 'Сочи',
+            'подольск': 'Подольск',
+            'мытищ': 'Мытищи',
+            'балаших': 'Балашиха',
+            'люберц': 'Люберцы',
+            'химк': 'Химки',
+            'зеленоград': 'Зеленоград'
+        }
+
+        if city_match:
+            city_key = next((k for k in city_mapping.keys() if city_match.group(2).startswith(k)), None)
+            if city_key:
+                q_objects &= Q(location__iexact=city_mapping[city_key])
+
+        # Обработка аренды/покупки
+        if rent_match:
+            q_objects &= (Q(is_rental='monthly') | Q(is_rental='daily'))
+        elif buy_match:
+            q_objects &= Q(is_rental='no')
+
+        # Обработка цены
+        if price_match:
+            amount = float(price_match.group(3))
+            unit = price_match.group(4)
+
+            if 'млн' in unit:
+                amount *= 1000000
+            elif 'тыс' in unit:
+                amount *= 1000
+
+            if price_match.group(2) == 'от':
+                q_objects &= Q(price__gte=amount)
+            elif price_match.group(2) == 'до':
+                q_objects &= Q(price__lte=amount)
+            else:
+                # Примерный диапазон (+-20%)
+                q_objects &= Q(price__gte=amount * 0.8, price__lte=amount * 1.2)
+
+        # Обработка площади
+        if area_match:
+            min_area = float(area_match.group(2))
+            max_area = float(area_match.group(3)) if area_match.group(3) else min_area
+            q_objects &= Q(total_area__gte=min_area, total_area__lte=max_area)
+
+        # Обработка общих фраз
+        common_phrases = {
+            'снять квартиру': (Q(is_rental='monthly') | Q(is_rental='daily')) & Q(property_type__name='apartment'),
+            'купить квартиру': Q(is_rental='no') & Q(property_type__name='apartment'),
+            'снять студию': (Q(is_rental='monthly') | Q(is_rental='daily')) & Q(property_type__name='studio'),
+            'снять апартаменты': (Q(is_rental='monthly') | Q(is_rental='daily')) & Q(property_type__name='apartment'),
+            'снять дом': (Q(is_rental='monthly') | Q(is_rental='daily')) & Q(property_type__name='house'),
+            'купить дом': Q(is_rental='no') & Q(property_type__name='house'),
+            'новостройка': Q(property_type__name='new_flat'),
+            'вторичка': Q(property_type__name='resale_flat')
+        }
+
+        for phrase, condition in common_phrases.items():
+            if phrase in value:
+                q_objects &= condition
+                break
+
+        # Если не найдено конкретных фильтров, ищем по всем полям
+        if not q_objects:
+            terms = value.split()
+            for term in terms:
+                if len(term) > 2:  # Игнорируем слишком короткие термины
+                    q_objects |= (
+                            Q(title__icontains=term) |
+                            Q(description__icontains=term) |
+                            Q(location__icontains=term) |
+                            Q(address__icontains=term) |
+                            Q(metro_station__icontains=term) |
+                            Q(property_type__name__icontains=term)
+                    )
+
+        return queryset.filter(q_objects).distinct() if q_objects else queryset
+

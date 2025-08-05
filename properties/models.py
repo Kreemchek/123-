@@ -196,6 +196,13 @@ class Property(models.Model):
         null=True,
         verbose_name='Координаты метро'
     )
+    creator = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name='Создатель'
+    )
 
     # Метод для геокодирования адреса
     # В models.py

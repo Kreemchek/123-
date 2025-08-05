@@ -924,25 +924,25 @@
         {% endfor %}
     </div>
 </div>
-                   <div class="filter-section">
+                 <div class="filter-section">
     <h3 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-100">Вид размещения</h3>
     <div class="grid grid-cols-1 gap-2">
         <div class="flex items-center p-3 rounded-lg border-2 border-blue-100 hover:border-blue-300 transition-colors">
-            <input type="radio" name="rental_type" value="no" id="rental_type_no"
-                   {% if filter.form.rental_type.value != 'monthly' and filter.form.rental_type.value != 'daily' %}checked{% endif %}
-                   class="w-5 h-5 text-blue-600 focus:ring-blue-500">
+            <input type="checkbox" name="rental_type" value="no" id="rental_type_no"
+                   {% if 'no' in selected_rental_types %}checked{% endif %}
+                   class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
             <label for="rental_type_no" class="ml-2 text-sm font-medium text-gray-700">Купить</label>
         </div>
         <div class="flex items-center p-3 rounded-lg border-2 border-blue-100 hover:border-blue-300 transition-colors">
-            <input type="radio" name="rental_type" value="monthly" id="rental_type_monthly"
-                   {% if filter.form.rental_type.value == 'monthly' %}checked{% endif %}
-                   class="w-5 h-5 text-blue-600 focus:ring-blue-500">
+            <input type="checkbox" name="rental_type" value="monthly" id="rental_type_monthly"
+                   {% if 'monthly' in selected_rental_types %}checked{% endif %}
+                   class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
             <label for="rental_type_monthly" class="ml-2 text-sm font-medium text-gray-700">Аренда помесячно</label>
         </div>
         <div class="flex items-center p-3 rounded-lg border-2 border-blue-100 hover:border-blue-300 transition-colors">
-            <input type="radio" name="rental_type" value="daily" id="rental_type_daily"
-                   {% if filter.form.rental_type.value == 'daily' %}checked{% endif %}
-                   class="w-5 h-5 text-blue-600 focus:ring-blue-500">
+            <input type="checkbox" name="rental_type" value="daily" id="rental_type_daily"
+                   {% if 'daily' in selected_rental_types %}checked{% endif %}
+                   class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
             <label for="rental_type_daily" class="ml-2 text-sm font-medium text-gray-700">Аренда посуточно</label>
         </div>
     </div>
@@ -2269,6 +2269,168 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.querySelector('input[name="search"]');
+    const searchForm = document.querySelector('.search-form');
+    let suggestionsContainer = document.createElement('div');
+    suggestionsContainer.className = 'absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg hidden';
+    searchForm.appendChild(suggestionsContainer);
+
+    const propertyTypes = {
+        'Квартира': 'apartment',
+        'Дом': 'house',
+        'Коммерческая': 'commercial',
+        'Новостройка': 'new_flat',
+        'Вторичка': 'resale_flat'
+    };
+
+    const cities = [
+        'Москва', 'Санкт-Петербург', 'Екатеринбург', 'Новосибирск',
+        'Казань', 'Нижний Новгород', 'Самара', 'Омск', 'Челябинск',
+        'Ростов-на-Дону', 'Уфа', 'Красноярск', 'Пермь', 'Воронеж',
+        'Волгоград', 'Краснодар', 'Сочи'
+    ];
+
+    searchInput.addEventListener('input', function() {
+        const query = this.value.trim();
+        suggestionsContainer.innerHTML = '';
+
+        if (query.length < 2) {
+            suggestionsContainer.classList.add('hidden');
+            return;
+        }
+
+        let suggestions = '';
+
+        // Подсказки по типам недвижимости
+        Object.keys(propertyTypes).forEach(type => {
+            if (type.toLowerCase().includes(query.toLowerCase())) {
+                suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                                data-type="${propertyTypes[type]}">${type}</div>`;
+            }
+        });
+
+        // Подсказки по городам
+        cities.forEach(city => {
+            if (city.toLowerCase().includes(query.toLowerCase())) {
+                suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                                data-city="${city}">${city}</div>`;
+            }
+        });
+
+        // Подсказки по параметрам
+        if (/цена\s*\d*/i.test(query)) {
+            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                            data-query="цена 5-10 млн">цена 5-10 млн</div>`;
+            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                            data-query="цена до 5 млн">цена до 5 млн</div>`;
+            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                            data-query="цена от 10 млн">цена от 10 млн</div>`;
+        }
+
+        if (/площадь\s*\d*/i.test(query)) {
+            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                            data-query="площадь 50-70 м²">площадь 50-70 м²</div>`;
+            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                            data-query="площадь от 80 м²">площадь от 80 м²</div>`;
+        }
+
+        if (query.toLowerCase().includes('рядом') || query.toLowerCase().includes('недалеко')) {
+            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                            data-geo="true">рядом со мной</div>`;
+        }
+
+        if (query.toLowerCase().includes('комнат')) {
+            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                            data-query="1-комнатная">1-комнатная</div>`;
+            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                            data-query="2-комнатная">2-комнатная</div>`;
+            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                            data-query="3-комнатная">3-комнатная</div>`;
+        }
+
+        // Комбинированные подсказки
+        if (query.toLowerCase().includes('квартир')) {
+            cities.forEach(city => {
+                suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                                data-query="${query.split(' ')[0]} квартира в ${city}">${query.split(' ')[0]} квартира в ${city}</div>`;
+            });
+        }
+
+        if (query.toLowerCase().includes('аренд') || query.toLowerCase().includes('снять')) {
+            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                            data-query="аренда квартиры">аренда квартиры</div>`;
+            cities.forEach(city => {
+                suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                                data-query="аренда квартиры в ${city}">аренда квартиры в ${city}</div>`;
+            });
+        }
+
+        if (query.toLowerCase().includes('куп') || query.toLowerCase().includes('приобрести')) {
+            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                            data-query="купить квартиру">купить квартиру</div>`;
+            cities.forEach(city => {
+                suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                                data-query="купить квартиру в ${city}">купить квартиру в ${city}</div>`;
+            });
+        }
+
+        if (suggestions) {
+            suggestionsContainer.innerHTML = suggestions;
+            suggestionsContainer.classList.remove('hidden');
+        } else {
+            suggestionsContainer.classList.add('hidden');
+        }
+    });
+
+    // Обработка выбора подсказки
+    suggestionsContainer.addEventListener('click', function(e) {
+        const suggestion = e.target.closest('[data-type], [data-city], [data-query], [data-geo]');
+        if (!suggestion) return;
+
+        if (suggestion.hasAttribute('data-type')) {
+            const type = suggestion.getAttribute('data-type');
+            searchInput.value = suggestion.textContent;
+            // Здесь можно сразу применить фильтр по типу
+            document.querySelector(`input[value="${type}"]`).checked = true;
+            document.getElementById('apply_filters').click();
+        }
+        else if (suggestion.hasAttribute('data-city')) {
+            const city = suggestion.getAttribute('data-city');
+            searchInput.value = city;
+            document.getElementById('city-hidden-input').value = city;
+            document.getElementById('selected-city-text').textContent = city;
+            document.getElementById('apply_filters').click();
+        }
+        else if (suggestion.hasAttribute('data-query')) {
+            searchInput.value = suggestion.getAttribute('data-query');
+            document.getElementById('apply_filters').click();
+        }
+        else if (suggestion.hasAttribute('data-geo')) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    searchInput.value = `рядом со мной (${lat.toFixed(4)}, ${lon.toFixed(4)})`;
+                    // Здесь можно добавить логику для фильтрации по радиусу
+                    document.getElementById('apply_filters').click();
+                });
+            } else {
+                searchInput.value = 'Геолокация не поддерживается';
+            }
+        }
+
+        suggestionsContainer.classList.add('hidden');
+    });
+
+    // Закрытие подсказок при клике вне
+    document.addEventListener('click', function(e) {
+        if (!searchForm.contains(e.target)) {
+            suggestionsContainer.classList.add('hidden');
+        }
+    });
 });
 </script>
 

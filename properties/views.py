@@ -128,7 +128,7 @@ class PropertyListView(FilterView):
         context['YANDEX_MAPS_API_KEY'] = settings.YANDEX_MAPS_API_KEY
         context['property_types'] = PropertyType.objects.all()
         context['selected_property_types'] = self.request.GET.getlist('property_type', [])
-        context['selected_rental_type'] = self.request.GET.get('rental_type', '')
+        context['selected_rental_types'] = self.request.GET.getlist('rental_type', [])
 
         # Получаем выбранный город из GET-параметров
         selected_city = self.request.GET.get('location', '')
@@ -184,6 +184,7 @@ class PropertyListView(FilterView):
             return JsonResponse(data)
         return super().render_to_response(context, **response_kwargs)
 
+
 class PropertyDetailView(DetailView):
     model = Property
     template_name = 'properties/property_detail.html'
@@ -191,45 +192,105 @@ class PropertyDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['images'] = self.object.images.all()
+        property = self.object
+
+        # Логирование базовой информации
+        logger.debug("=" * 50)
+        logger.debug(f"PropertyDetailView: начал обработку для property_id={property.id}")
+        logger.debug(f"Пользователь: {self.request.user} (аутентифицирован: {self.request.user.is_authenticated})")
+
+        # Добавляем логирование координат
+        logger.debug(f"Координаты объекта {property.id}: {property.coordinates}")
+        if property.coordinates:
+            try:
+                logger.debug(f"Координаты (x, y): {property.coordinates.x}, {property.coordinates.y}")
+                logger.debug(f"SRID: {property.coordinates.srid}")
+            except Exception as e:
+                logger.error(f"Ошибка при чтении координат: {str(e)}")
+
+        # Основные данные контекста
+        context['images'] = property.images.all()
         context['YANDEX_MAPS_API_KEY'] = settings.YANDEX_MAPS_API_KEY
+        logger.debug(f"Yandex Maps API Key: {settings.YANDEX_MAPS_API_KEY}")
 
-        # Координаты объекта в формате JSON
-        if self.object.coordinates:
-            context['coordinates_json'] = json.dumps({
-                'x': float(self.object.coordinates.x),
-                'y': float(self.object.coordinates.y)
-            }, cls=DjangoJSONEncoder)
+        # Проверки прав пользователя
+        context['is_current_broker'] = (
+                self.request.user.is_authenticated and
+                self.request.user == property.broker.user
+        )
+        context['is_admin'] = self.request.user.is_authenticated and self.request.user.is_admin
+        logger.debug(f"is_current_broker: {context['is_current_broker']}")
+        logger.debug(f"is_admin: {context['is_admin']}")
 
-        # Координаты метро в формате JSON
-        if self.object.metro_coordinates:
-            context['metro_coordinates_json'] = json.dumps({
-                'x': float(self.object.metro_coordinates.x),
-                'y': float(self.object.metro_coordinates.y)
-            }, cls=DjangoJSONEncoder)
+        # Координаты объекта
+        if property.coordinates:
+            try:
+                context['coordinates_json'] = json.dumps({
+                    'x': float(property.coordinates.x),
+                    'y': float(property.coordinates.y)
+                }, cls=DjangoJSONEncoder)
+                logger.debug(f"Сформирован coordinates_json: {context['coordinates_json']}")
+            except Exception as e:
+                logger.error(f"Ошибка сериализации координат: {e}")
+                context['coordinates_json'] = None
+                logger.debug("Не удалось сериализовать координаты")
+        else:
+            context['coordinates_json'] = None
+            logger.debug("У объекта нет координат")
 
-        # Остальной контекст
+        # Координаты метро
+        if property.metro_coordinates:
+            try:
+                context['metro_coordinates_json'] = json.dumps({
+                    'x': float(property.metro_coordinates.x),
+                    'y': float(property.metro_coordinates.y)
+                }, cls=DjangoJSONEncoder)
+                logger.debug(f"Сформирован metro_coordinates_json: {context['metro_coordinates_json']}")
+            except Exception as e:
+                logger.error(f"Ошибка сериализации координат метро: {e}")
+                context['metro_coordinates_json'] = None
+        else:
+            context['metro_coordinates_json'] = None
+            logger.debug("У объекта нет координат метро")
+
+        # Дополнительные проверки
+        context['has_coordinates'] = bool(property.coordinates)
+        context['is_client'] = (
+                self.request.user.is_authenticated and
+                not (self.request.user.is_broker or self.request.user.is_developer or self.request.user.is_admin)
+        )
+        logger.debug(f"has_coordinates: {context['has_coordinates']}")
+        logger.debug(f"is_client: {context['is_client']}")
+
+        # Проверка избранного
         if self.request.user.is_authenticated:
             context['is_favorite'] = Favorite.objects.filter(
                 user=self.request.user,
-                property=self.object
+                property=property
             ).exists()
+            logger.debug(f"is_favorite: {context['is_favorite']}")
 
             context['contact_paid'] = Payment.objects.filter(
                 user=self.request.user,
-                description__contains=f"Контакт с брокером {self.object.broker.id} по объекту {self.object.id}",
+                description__contains=f"Контакт с брокером {property.broker.id} по объекту {property.id}",
                 status='completed'
             ).exists()
+            logger.debug(f"contact_paid: {context['contact_paid']}")
 
             context['existing_request'] = ContactRequest.objects.filter(
                 requester=self.request.user,
-                broker=self.object.broker.user,
-                property=self.object
+                broker=property.broker.user,
+                property=property
             ).first()
+            logger.debug(f"existing_request: {context['existing_request']}")
 
             context['is_broker'] = self.request.user.user_type == User.UserType.BROKER
+            logger.debug(f"is_broker: {context['is_broker']}")
 
-        context['has_coordinates'] = bool(self.object.coordinates)
+        # Логирование завершения
+        logger.debug("=" * 50)
+        logger.debug("PropertyDetailView: завершил обработку")
+        logger.debug(f"Ключи контекста: {list(context.keys())}")
 
         return context
 
