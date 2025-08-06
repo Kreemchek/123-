@@ -52,6 +52,28 @@
         from { transform: translateX(100%); opacity: 0; }
         to { transform: translateX(0); opacity: 1; }
     }
+        /* Добавьте эти стили в существующий блок style */
+    .hot-property-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: linear-gradient(45deg, #ff4d4d, #f95700);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 12px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .hot-property-card {
+        border: 2px solid #ff4d4d;
+        transition: all 0.3s ease;
+    }
+
+    .hot-property-card:hover {
+        box-shadow: 0 10px 20px rgba(255, 77, 77, 0.2);
+    }
 </style>
 
 <!-- Герой-секция -->
@@ -90,7 +112,7 @@
                 </div>
 
                 <div class="text-xs text-gray-500 mt-2 pl-2">
-                    Примеры: "2-комнатная в Москве", "новостройка от 5 млн", "дом 100 м²"
+
                 </div>
 
                 <button type="button" id="show-filters" class="mt-2 text-blue-600 text-sm font-medium self-start flex items-center">
@@ -162,63 +184,82 @@
 </div>
 
 <!-- Популярные объекты -->
-<div class="bg-gray-50 py-20">
+<!-- Популярные объекты -->
+<!-- Горячие объекты -->
+<!-- Горячие объекты -->
+<!-- Горячие объекты -->
+
     <div class="container mx-auto px-4">
-        <h2 class="text-4xl font-bold text-center mb-12">🔥 Популярные объекты</h2>
+        <div class="rounded-3xl border-2 border-red-500 p-6">
+            <h2 class="text-4xl font-bold text-center mb-12">🔥 Горячие предложения</h2>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {% for property in featured_properties %}
-            <div class="bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden">
-                <div class="relative h-64 overflow-hidden group">
-                    {% if property.main_image %}
-                        <img src="{{ property.main_image.url }}"
-                             alt="{{ property.title }}"
-                             class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    {% else %}
-                        <div class="w-full h-full bg-gradient-to-r from-blue-400 to-blue-600 flex items-center justify-center">
-                            <i class="fas fa-home text-white text-6xl"></i>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {% for property in hot_properties %}
+                <div class="bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden border-2 border-red-500">
+                    <div class="relative h-64 overflow-hidden group">
+                        {% if property.main_image %}
+                            <img src="{{ property.main_image.url }}"
+                                 alt="{{ property.title }}"
+                                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        {% else %}
+                            <div class="w-full h-full bg-gradient-to-r from-red-400 to-red-600 flex items-center justify-center">
+                                <i class="fas fa-fire text-white text-6xl"></i>
+                            </div>
+                        {% endif %}
+
+                        <div class="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-red-700 text-white px-4 py-2
+                                   rounded-full text-sm font-bold shadow-md">
+                            🔥 HOT
                         </div>
-                    {% endif %}
-
-                    {% if property.is_premium %}
-                    <div class="absolute top-4 right-4 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white px-4 py-2
-                               rounded-full text-sm font-bold shadow-md">
-                        ⚡ PREMIUM
                     </div>
-                    {% endif %}
+
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold mb-3">{{ property.title }}</h3>
+                        <div class="flex items-center mb-4 text-gray-600">
+                            <i class="fas fa-map-marker-alt mr-2"></i>
+                            <span>{{ property.location }}</span>
+                        </div>
+
+                        <!-- Добавленная информация о метро и комнатах -->
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            {% if property.metro_station %}
+                            <div class="flex items-center text-sm bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
+                                <i class="fas fa-subway mr-2"></i>
+                                {{ property.metro_station }}
+                            </div>
+                            {% endif %}
+
+                            <div class="flex items-center text-sm bg-purple-100 text-purple-800 px-3 py-1 rounded-full">
+                                <i class="fas fa-door-open mr-2"></i>
+                                {{ property.rooms }} комн.
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-2xl font-bold text-red-600">{{ property.price|floatformat:"0" }} ₽</span>
+                            <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full">
+                                {{ property.total_area|floatformat:"0" }} м²
+                            </span>
+                        </div>
+
+                        <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}{% endif %}"
+                           class="block w-full bg-red-600 hover:bg-red-700 text-white text-center py-3 rounded-xl
+                                  transition-all transform hover:scale-105">
+                            🔥 Узнать подробности
+                        </a>
+                    </div>
                 </div>
-
-                <div class="p-6">
-                    <h3 class="text-2xl font-bold mb-3">{{ property.title }}</h3>
-                    <div class="flex items-center mb-4 text-gray-600">
-                        <i class="fas fa-map-marker-alt mr-2"></i>
-                        <span>{{ property.location }}</span>
-                    </div>
-
-                    <div class="flex justify-between items-center mb-4">
-                        <span class="text-2xl font-bold text-blue-600">{{ property.price|floatformat:"0" }} ₽</span>
-                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
-                            {{ property.total_area|floatformat:"0" }} м²
-                        </span>
-                    </div>
-
-                    <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}{% endif %}"
-                       class="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-3 rounded-xl
-                              transition-all transform hover:scale-105">
-                        📌 Подробнее
-                    </a>
-                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
 
-        <!-- Кнопка "Смотреть все" -->
-        <div class="text-center mt-12">
-            <a href="{% if user.is_authenticated %}{% url 'properties:property-list' %}{% else %}{% url 'register' %}?next={% url 'properties:property-list' %}{% endif %}"
-               class="inline-block bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold px-12 py-4
-                      rounded-2xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
-                Смотреть все объекты
-            </a>
+            <!-- Кнопка "Смотреть все" -->
+            <div class="text-center mt-12">
+                <a href="{% if user.is_authenticated %}{% url 'properties:property-list' %}?is_hot=true{% else %}{% url 'register' %}?next={% url 'properties:property-list' %}?is_hot=true{% endif %}"
+                   class="inline-block bg-gradient-to-r from-red-600 to-red-700 text-white font-bold px-12 py-4
+                          rounded-2xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+                    Смотреть все предложения
+                </a>
+            </div>
         </div>
     </div>
 </div>
@@ -298,7 +339,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Типы недвижимости для автодополнения
     const propertyTypes = {
-        'квартира': 'apartment',
+        'квартира': ['new_flat', 'resale_flat'],
+        'студия': 'studio',
         'дом': 'house',
         'коммерческая': 'commercial',
         'новостройка': 'new_flat',
@@ -307,13 +349,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Города для автодополнения
     const cities = ['Москва', 'Санкт-Петербург', 'Новосибирск', 'Екатеринбург', 'Казань',
-                   'Нижний Новгород', 'Челябинск', 'Самара', 'Омск', 'Ростов-на-Дону'];
+                   'Нижний Новгород', 'Челябинск', 'Самара', 'Омск', 'Ростов-на-Дону', 'Магадан'];
 
     // Типы сделок
     const dealTypes = {
-        'аренда': 'rent',
-        'купить': 'sale',
-        'продажа': 'sale'
+        'аренда': ['monthly', 'daily'],
+        'снять': ['monthly', 'daily'],
+        'купить': 'no',
+        'продажа': 'no'
     };
 
     // Автодополнение
@@ -332,7 +375,7 @@ document.addEventListener('DOMContentLoaded', function() {
         Object.keys(propertyTypes).forEach(type => {
             if (type.toLowerCase().includes(query.toLowerCase())) {
                 suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
-                                data-type="${propertyTypes[type]}">${type}</div>`;
+                                data-type="${type}">${type}</div>`;
             }
         });
 
@@ -348,7 +391,7 @@ document.addEventListener('DOMContentLoaded', function() {
         Object.keys(dealTypes).forEach(deal => {
             if (deal.toLowerCase().includes(query.toLowerCase())) {
                 suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
-                                data-deal="${dealTypes[deal]}">${deal}</div>`;
+                                data-deal="${deal}">${deal}</div>`;
             }
         });
 
@@ -383,13 +426,27 @@ document.addEventListener('DOMContentLoaded', function() {
                             data-query="3-комнатная">3-комнатная</div>`;
             suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
                             data-query="4-комнатная">4-комнатная</div>`;
+            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                            data-query="5-комнатная">5-комнатная</div>`;
         }
 
         // Комбинированные подсказки
-        if (query.toLowerCase().includes('квартира') || query.toLowerCase().includes('дом')) {
+        if (query.toLowerCase().includes('квартира') || query.toLowerCase().includes('студия') || query.toLowerCase().includes('дом')) {
+            cities.forEach(city => {
+                const type = query.split(' ')[0].toLowerCase();
+                if (propertyTypes[type]) {
+                    suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
+                                    data-combined="${type} ${city}">${type} в ${city}</div>`;
+                }
+            });
+        }
+
+        // Подсказки для запросов типа "2-комнатная квартира в Москве"
+        const roomMatch = query.match(/(\d+)-комнатная/i);
+        if (roomMatch) {
             cities.forEach(city => {
                 suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
-                                data-combined="${city}">${query.split(' ')[0]} в ${city}</div>`;
+                                data-combined="${roomMatch[1]} ${city}">${roomMatch[0]} квартира в ${city}</div>`;
             });
         }
 
@@ -405,7 +462,7 @@ document.addEventListener('DOMContentLoaded', function() {
     suggestionsContainer.addEventListener('click', function(e) {
         if (e.target.dataset.type) {
             searchInput.value = e.target.textContent;
-            addHiddenInput('property_type', e.target.dataset.type);
+            addHiddenInput('property_type', propertyTypes[e.target.dataset.type]);
         }
         else if (e.target.dataset.city) {
             searchInput.value = e.target.dataset.city;
@@ -413,7 +470,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         else if (e.target.dataset.deal) {
             searchInput.value = e.target.textContent;
-            addHiddenInput('deal_type', e.target.dataset.deal);
+            addHiddenInput('is_rental', dealTypes[e.target.dataset.deal]);
         }
         else if (e.target.dataset.query) {
             searchInput.value = e.target.dataset.query;
@@ -423,14 +480,23 @@ document.addEventListener('DOMContentLoaded', function() {
             getGeolocation();
         }
         else if (e.target.dataset.combined) {
-            searchInput.value = e.target.textContent;
-            const type = e.target.textContent.split(' ')[0];
-            const city = e.target.dataset.combined;
-
-            if (propertyTypes[type.toLowerCase()]) {
-                addHiddenInput('property_type', propertyTypes[type.toLowerCase()]);
+            const parts = e.target.dataset.combined.split(' ');
+            if (parts.length === 2) {
+                const [type, city] = parts;
+                searchInput.value = `${type} в ${city}`;
+                if (propertyTypes[type]) {
+                    addHiddenInput('property_type', propertyTypes[type]);
+                }
+                addHiddenInput('location', city);
+            } else if (parts.length === 3) {
+                // Обработка "2-комнатная Москва"
+                const rooms = parts[0];
+                const city = parts[1];
+                searchInput.value = `${rooms}-комнатная квартира в ${city}`;
+                addHiddenInput('rooms', rooms);
+                addHiddenInput('location', city);
+                addHiddenInput('property_type', 'new_flat,resale_flat');
             }
-            addHiddenInput('location', city);
         }
 
         suggestionsContainer.classList.add('hidden');
@@ -499,73 +565,108 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // Обработка запросов типа "2-комнатная квартира в Москве"
-        const roomsMatch = searchValue.match(/(\d+)-комнатная/i);
+        const roomsMatch = searchValue.match(/(\d+)\s*-?\s*комнатн(ая|ые|ую|ой)/i);
         if (roomsMatch) {
             addHiddenInput('rooms', roomsMatch[1]);
         }
 
-        // Обработка запросов с указанием города
-        cities.forEach(city => {
-            if (searchValue.toLowerCase().includes(city.toLowerCase())) {
+        // Обработка типа недвижимости
+        const typeMatch = searchValue.match(/(квартир[ауеы]|студи[юя]|апартамент[ыа]|дом|коммерческ[аяой]|новостройк[аи]|вторичк[ау])/i);
+        if (typeMatch) {
+            const typeKey = typeMatch[1].toLowerCase();
+            if (typeKey.startsWith('квартир') || typeKey.startsWith('апартамент')) {
+                addHiddenInput('property_type', 'new_flat,resale_flat');
+            } else if (typeKey.startsWith('студи')) {
+                addHiddenInput('apartment_type', 'studio');
+            } else if (typeKey.startsWith('дом')) {
+                addHiddenInput('property_type', 'house');
+            } else if (typeKey.startsWith('коммерческ')) {
+                addHiddenInput('property_type', 'commercial');
+            } else if (typeKey.startsWith('новостройк')) {
+                addHiddenInput('property_type', 'new_flat');
+            } else if (typeKey.startsWith('вторичк')) {
+                addHiddenInput('property_type', 'resale_flat');
+            }
+        }
+
+        // Обработка города
+        const cityMatch = searchValue.match(/(в|на)\s+(москв[еу]|санкт\s*-?\s*петербург[е]|спб|екатеринбург[е]|новосибирск[е]|казан[и]|нижн[еий][йм]\s*новгород[е]|самар[е]|омск[е]|челябинск[е]|ростов[е]\s*-?\s*на\s*-?\s*дону|уф[е]|красноярск[е]|перм[и]|воронеж[е]|волгоград[е]|краснодар[е]|сочи|подольск|мытищ|балаших|люберц|химк|зеленоград|магадан[е])/i);
+        if (cityMatch) {
+            const cityKey = cityMatch[2].toLowerCase();
+            let city = '';
+
+            if (cityKey.startsWith('москв')) city = 'Москва';
+            else if (cityKey.startsWith('санкт-петербург') || cityKey.startsWith('спб')) city = 'Санкт-Петербург';
+            else if (cityKey.startsWith('екатеринбург')) city = 'Екатеринбург';
+            else if (cityKey.startsWith('новосибирск')) city = 'Новосибирск';
+            else if (cityKey.startsWith('казан')) city = 'Казань';
+            else if (cityKey.startsWith('нижн') && cityKey.includes('новгород')) city = 'Нижний Новгород';
+            else if (cityKey.startsWith('самар')) city = 'Самара';
+            else if (cityKey.startsWith('омск')) city = 'Омск';
+            else if (cityKey.startsWith('челябинск')) city = 'Челябинск';
+            else if (cityKey.startsWith('ростов') && cityKey.includes('дону')) city = 'Ростов-на-Дону';
+            else if (cityKey.startsWith('уф')) city = 'Уфа';
+            else if (cityKey.startsWith('красноярск')) city = 'Красноярск';
+            else if (cityKey.startsWith('перм')) city = 'Пермь';
+            else if (cityKey.startsWith('воронеж')) city = 'Воронеж';
+            else if (cityKey.startsWith('волгоград')) city = 'Волгоград';
+            else if (cityKey.startsWith('краснодар')) city = 'Краснодар';
+            else if (cityKey.startsWith('сочи')) city = 'Сочи';
+            else if (cityKey.startsWith('магадан')) city = 'Магадан';
+
+            if (city) {
                 addHiddenInput('location', city);
             }
-        });
+        }
 
         // Обработка типа сделки (аренда/покупка)
-        Object.keys(dealTypes).forEach(deal => {
-            if (searchValue.toLowerCase().includes(deal.toLowerCase())) {
-                addHiddenInput('deal_type', dealTypes[deal]);
-            }
-        });
+        const rentMatch = searchValue.match(/(снять|аренд[ауеы]|посуточн[аяой]|помесячн[аяой])/i);
+        const buyMatch = searchValue.match(/(куп[иить]|приобрести|продаж[ае]|покупк[ае])/i);
 
-        // Обработка типа недвижимости
-        Object.keys(propertyTypes).forEach(type => {
-            if (searchValue.toLowerCase().includes(type.toLowerCase())) {
-                addHiddenInput('property_type', propertyTypes[type]);
-            }
-        });
+        if (rentMatch) {
+            addHiddenInput('is_rental', 'monthly,daily');
+        } else if (buyMatch) {
+            addHiddenInput('is_rental', 'no');
+        }
 
-        // Обработка запросов типа "цена 5-10 млн"
-        const priceMatch = searchValue.match(/цена\s*(\d+)\s*-\s*(\d+)\s*млн/i);
+        // Обработка цены
+        const priceMatch = searchValue.match(/(цена|стоимость)\s*(от|до)?\s*(\d+)\s*(млн|тыс|т\.?р|р\.?)/i);
         if (priceMatch) {
-            const minPrice = priceMatch[1] + '000000';
-            const maxPrice = priceMatch[2] + '000000';
-            addHiddenInput('min_price', minPrice);
-            addHiddenInput('max_price', maxPrice);
+            let amount = parseFloat(priceMatch[3]);
+            const unit = priceMatch[4];
+
+            if (unit.includes('млн')) amount *= 1000000;
+            else if (unit.includes('тыс')) amount *= 1000;
+
+            if (priceMatch[2] === 'от') {
+                addHiddenInput('min_price', amount);
+            } else if (priceMatch[2] === 'до') {
+                addHiddenInput('max_price', amount);
+            } else {
+                // Примерный диапазон (+-20%)
+                addHiddenInput('min_price', amount * 0.8);
+                addHiddenInput('max_price', amount * 1.2);
+            }
         }
 
-        // Обработка запросов типа "цена до 5 млн"
-        const priceToMatch = searchValue.match(/цена\s*до\s*(\d+)\s*млн/i);
-        if (priceToMatch) {
-            const maxPrice = priceToMatch[1] + '000000';
-            addHiddenInput('max_price', maxPrice);
-        }
-
-        // Обработка запросов типа "цена от 10 млн"
-        const priceFromMatch = searchValue.match(/цена\s*от\s*(\d+)\s*млн/i);
-        if (priceFromMatch) {
-            const minPrice = priceFromMatch[1] + '000000';
-            addHiddenInput('min_price', minPrice);
-        }
-
-        // Обработка запросов типа "площадь 50-70 м²"
-        const areaMatch = searchValue.match(/площадь\s*(\d+)\s*-\s*(\d+)\s*м²/i);
+        // Обработка площади
+        const areaMatch = searchValue.match(/(площадь|площадью|метраж)\s*(\d+)\s*-?\s*(\d+)?\s*(м|м²|кв\.?\s*м)/i);
         if (areaMatch) {
-            addHiddenInput('min_area', areaMatch[1]);
-            addHiddenInput('max_area', areaMatch[2]);
-        }
-
-        // Обработка запросов типа "площадь от 80 м²"
-        const areaFromMatch = searchValue.match(/площадь\s*от\s*(\d+)\s*м²/i);
-        if (areaFromMatch) {
-            addHiddenInput('min_area', areaFromMatch[1]);
+            const minArea = parseFloat(areaMatch[2]);
+            const maxArea = areaMatch[3] ? parseFloat(areaMatch[3]) : minArea;
+            addHiddenInput('min_area', minArea);
+            addHiddenInput('max_area', maxArea);
         }
 
         // Если в запросе есть "рядом со мной" и есть геоданные, добавляем фильтр радиуса
         if ((searchValue.toLowerCase().includes('рядом') ||
-             searchValue.toLowerCase().includes('недалеко')) &&
-            geoCoordsInput.value) {
-            // Фильтр радиуса уже добавлен через geoCoordsInput
+             searchValue.toLowerCase().includes('недалеко'))) {
+            if (geoCoordsInput.value) {
+                // Фильтр радиуса уже добавлен через geoCoordsInput
+            } else {
+                getGeolocation();
+                return; // Ждем получения геоданных
+            }
         }
 
         this.submit();

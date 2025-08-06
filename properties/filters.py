@@ -225,11 +225,11 @@ class PropertyFilter(FilterSet):
             rooms = int(room_match.group(1))
             q_objects &= Q(rooms=rooms)
 
-        # Обработка типа недвижимости
+        # Универсальная обработка типа недвижимости
         type_mapping = {
-            'квартир': 'apartment',
+            'квартир': ['new_flat', 'resale_flat'],
             'студи': 'studio',
-            'апартамент': 'apartment',
+            'апартамент': ['new_flat', 'resale_flat'],
             'дом': 'house',
             'коммерческ': 'commercial',
             'новостройк': 'new_flat',
@@ -239,7 +239,18 @@ class PropertyFilter(FilterSet):
         if type_match:
             type_key = next((k for k in type_mapping.keys() if type_match.group(1).startswith(k)), None)
             if type_key:
-                q_objects &= Q(property_type__name=type_mapping[type_key])
+                type_value = type_mapping[type_key]
+                if isinstance(type_value, list):
+                    # Для нескольких типов создаем OR условие
+                    q = Q()
+                    for t in type_value:
+                        q |= Q(property_type__name=t)
+                    q_objects &= q
+                elif type_value == 'studio':
+                    # Особый случай для студий - ищем по полю apartment_type
+                    q_objects &= Q(apartment_type='studio')
+                else:
+                    q_objects &= Q(property_type__name=type_value)
 
         # Обработка города
         city_mapping = {
@@ -260,13 +271,7 @@ class PropertyFilter(FilterSet):
             'воронеж': 'Воронеж',
             'волгоград': 'Волгоград',
             'краснодар': 'Краснодар',
-            'сочи': 'Сочи',
-            'подольск': 'Подольск',
-            'мытищ': 'Мытищи',
-            'балаших': 'Балашиха',
-            'люберц': 'Люберцы',
-            'химк': 'Химки',
-            'зеленоград': 'Зеленоград'
+            'сочи': 'Сочи'
         }
 
         if city_match:
@@ -304,18 +309,23 @@ class PropertyFilter(FilterSet):
             max_area = float(area_match.group(3)) if area_match.group(3) else min_area
             q_objects &= Q(total_area__gte=min_area, total_area__lte=max_area)
 
-        # Обработка общих фраз
+        # Универсальные фразы для поиска
         common_phrases = {
-            'снять квартиру': (Q(is_rental='monthly') | Q(is_rental='daily')) & Q(property_type__name='apartment'),
-            'купить квартиру': Q(is_rental='no') & Q(property_type__name='apartment'),
-            'снять студию': (Q(is_rental='monthly') | Q(is_rental='daily')) & Q(property_type__name='studio'),
-            'снять апартаменты': (Q(is_rental='monthly') | Q(is_rental='daily')) & Q(property_type__name='apartment'),
+            'снять квартиру': (Q(is_rental='monthly') | Q(is_rental='daily')) &
+                              (Q(property_type__name='new_flat') | Q(property_type__name='resale_flat')),
+            'купить квартиру': Q(is_rental='no') &
+                               (Q(property_type__name='new_flat') | Q(property_type__name='resale_flat')),
+            'снять студию': (Q(is_rental='monthly') | Q(is_rental='daily')) & Q(apartment_type='studio'),
+            'снять апартаменты': (Q(is_rental='monthly') | Q(is_rental='daily')) &
+                                 (Q(property_type__name='new_flat') | Q(property_type__name='resale_flat')),
             'снять дом': (Q(is_rental='monthly') | Q(is_rental='daily')) & Q(property_type__name='house'),
             'купить дом': Q(is_rental='no') & Q(property_type__name='house'),
             'новостройка': Q(property_type__name='new_flat'),
-            'вторичка': Q(property_type__name='resale_flat')
+            'вторичка': Q(property_type__name='resale_flat'),
+            'коммерческая': Q(property_type__name='commercial')
         }
 
+        # Проверяем полные фразы в первую очередь
         for phrase, condition in common_phrases.items():
             if phrase in value:
                 q_objects &= condition
@@ -332,7 +342,8 @@ class PropertyFilter(FilterSet):
                             Q(location__icontains=term) |
                             Q(address__icontains=term) |
                             Q(metro_station__icontains=term) |
-                            Q(property_type__name__icontains=term)
+                            Q(property_type__name__icontains=term) |
+                            Q(apartment_type__icontains=term)
                     )
 
         return queryset.filter(q_objects).distinct() if q_objects else queryset

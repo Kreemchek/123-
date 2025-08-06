@@ -14,17 +14,20 @@ class BrokerChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return obj.user.get_full_name() if hasattr(obj, 'user') else str(obj)
 
+
 @admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
-    actions = ['approve_properties']
-    list_display = ('title', 'price', 'property_type', 'status', 'get_broker_name', 'developer', 'is_approved', 'created_at')
-    list_filter = ('status', 'property_type', 'is_approved', 'is_premium')
-    search_fields = ('title', 'description', 'address', 'broker__user__last_name', 'broker__user__first_name', 'developer__username')
-    list_editable = ('is_approved', 'status',)
+    actions = ['approve_properties', 'mark_as_hot', 'unmark_as_hot']
+    list_display = (
+    'title', 'price', 'property_type', 'status', 'get_broker_name', 'developer', 'is_approved', 'is_hot', 'created_at')
+    list_filter = ('status', 'property_type', 'is_approved', 'is_premium', 'is_hot')
+    search_fields = (
+    'title', 'description', 'address', 'broker__user__last_name', 'broker__user__first_name', 'developer__username')
+    list_editable = ('is_approved', 'status', 'is_hot')
     readonly_fields = ('created_at', 'updated_at')
     fieldsets = (
         (None, {
-            'fields': ('title', 'description', 'property_type', 'is_approved', 'status')
+            'fields': ('title', 'description', 'property_type', 'is_approved', 'status', 'is_hot')
         }),
         ('Характеристики', {
             'fields': ('price', 'living_area', 'total_area', 'rooms', 'location', 'address')
@@ -58,6 +61,18 @@ class PropertyAdmin(admin.ModelAdmin):
 
     def approve_properties(self, request, queryset):
         queryset.update(is_approved=True, status='active')
+
+    approve_properties.short_description = "Одобрить выбранные объекты"
+
+    def mark_as_hot(self, request, queryset):
+        queryset.update(is_hot=True)
+
+    mark_as_hot.short_description = "Пометить как горячее предложение"
+
+    def unmark_as_hot(self, request, queryset):
+        queryset.update(is_hot=False)
+
+    unmark_as_hot.short_description = "Снять пометку горячего предложения"
 
     def save_model(self, request, obj, form, change):
         if 'is_approved' in form.changed_data and obj.is_approved:

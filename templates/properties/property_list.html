@@ -558,9 +558,11 @@
 }
 
 .metro-line-section {
-    border: 1px solid #e5e7eb;
+    border: none !important; /* Убираем обводку */
     border-radius: 8px;
     overflow: hidden;
+    margin-bottom: 8px; /* Добавляем отступ между линиями */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Необязательно: добавляем легкую тень для разделения */
 }
 
 .metro-line-header {
@@ -837,7 +839,9 @@
     margin-right: 8px !important;
     flex-shrink: 0 !important;
 }
-
+#metro-dropdown .metro-line-section {
+    border: none !important;
+}
 /* Размер шрифта для названий линий */
 .metro-line-header .metro-line-name {
     font-size: 0.85rem !important;
@@ -1161,11 +1165,11 @@
             <!-- Особый вариант для Москвы -->
             {% if location == "Москва" %}
             <div class="metro-lines-container grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 overflow-y-auto max-h-[calc(100vh-200px)]">
-                {% for line in metro_lines %}
-                  <div class="metro-line-section border border-gray-200 rounded-lg mb-2 overflow-hidden">
+               {% for line in metro_lines %}
+<div class="metro-line-section" style="border: none !important; border-radius: 8px; overflow: hidden; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
    <div class="metro-line-header flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50 transition-colors"
      onclick="toggleMetroLine(this)">
-    <div class="flex items-center min-w-0"> <!-- Добавлен min-w-0 для предотвращения переполнения -->
+    <div class="flex items-center min-w-0">
         <div class="metro-line-color w-4 h-4 rounded-full mr-2 flex-shrink-0"
              style="background-color: {{ line.line_color }}"></div>
         <h3 class="metro-line-name font-medium text-sm truncate">{{ line.line|default:"Другие станции" }}</h3>

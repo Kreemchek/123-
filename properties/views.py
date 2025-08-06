@@ -388,7 +388,7 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
 
             messages.success(
                 self.request,
-                f"Объект успешно создан! С вашего баланса списано {listing_type.price} ₽. Теперь укажите точный адрес объекта."
+                f"Объект успешно создан! С вашего баланса будет списано {listing_type.price} после заполнения точного адреса ₽. "
             )
 
             if 'selected_listing_type' in self.request.session:
@@ -848,3 +848,14 @@ class MetroStationsView(View):
             ]
         }
         return JsonResponse(data)
+
+
+def home_view(request):
+    featured_properties = Property.objects.filter(is_premium=True, is_approved=True)[:6]
+    hot_properties = Property.objects.filter(is_hot=True, is_approved=True)[:6]  # Добавьте эту строку
+
+    context = {
+        'featured_properties': featured_properties,
+        'hot_properties': hot_properties,  # Добавьте эту строку
+    }
+    return render(request, 'home.html', context)

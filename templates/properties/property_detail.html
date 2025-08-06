@@ -656,24 +656,28 @@
     {% endif %}
 
     <!-- Отображение карты для всех пользователей -->
-   <div id="map-view-container" style="width: 100%; height: 400px; margin-bottom: 1rem; border-radius: 0.5rem; overflow: hidden;">
-        <div id="map-view"></div>
-        <div id="map-fallback" style="display: none; padding: 20px; text-align: center;">
-            <p>Не удалось загрузить карту.</p>
-            <button onclick="retryMapLoading()" class="btn-primary mt-2">
-                Попробовать снова
-            </button>
-            <p class="text-sm text-gray-500 mt-2">Или обновите страницу</p>
-        </div>
-        {% if property.address %}
-            <div class="address-display mt-4">
-                <strong>Адрес:</strong> {{ property.address }}
-                {% if property.metro_station and property.metro_station != "Не указано" %}
-                    <br><strong>Метро:</strong> {{ property.metro_station|strip_metro }}
-                {% endif %}
-            </div>
-        {% endif %}
+<!-- Отображение карты для всех пользователей -->
+<!-- Отображение карты для всех пользователей -->
+{% if not request.user == property.broker.user and not request.user == property.developer and not request.user.is_admin %}
+<div id="map-view-container" style="width: 100%; height: 400px; margin-bottom: 1rem; border-radius: 0.5rem; overflow: hidden;">
+    <div id="map-view"></div>
+    <div id="map-fallback" style="display: none; padding: 20px; text-align: center;">
+        <p>Не удалось загрузить карту.</p>
+        <button onclick="retryMapLoading()" class="btn-primary mt-2">
+            Попробовать снова
+        </button>
+        <p class="text-sm text-gray-500 mt-2">Или обновите страницу</p>
     </div>
+    {% if property.address %}
+        <div class="address-display mt-4">
+            <strong>Адрес:</strong> {{ property.address }}
+            {% if property.metro_station and property.metro_station != "Не указано" %}
+                <br><strong>Метро:</strong> {{ property.metro_station|strip_metro }}
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endif %}
 </div>
 
                 <!-- Описание объекта -->
@@ -718,10 +722,10 @@
 
                     <div class="mt-6 md:mt-8 flex flex-col gap-4">
                         {% if user.is_authenticated and user.user_type == 'client' %}
-                            <a href="{% url 'properties:contact_broker' broker_id=property.broker.id property_id=property.id %}">
-                               class="btn-primary hover:bg-blue-700 transition-colors">
-                               <i class="bi bi-chat-left-text mr-2"></i> Написать (1 руб.)
-                            </a>
+                           <a href="{% url 'properties:contact_broker' broker_id=property.broker.id property_id=property.id %}"
+   class="btn-primary hover:bg-blue-700 transition-colors">
+   <i class="bi bi-chat-left-text mr-2"></i> Написать (1 руб.)
+</a>
                         {% elif not user.is_authenticated %}
                             <a href="{% url 'login' %}?next={{ request.path }}"
                                class="btn-primary hover:bg-blue-700 transition-colors">
@@ -974,7 +978,7 @@ ymaps.ready(function() {
     if (coordinates_json) {
         initViewMap();
     } else {
-        console.log('Координаты отсутствуют');
+
         document.getElementById('map-fallback').style.display = 'block';
     }
 });
@@ -1285,6 +1289,7 @@ function showToast(message, type = 'info') {
     // Основная инициализация
 // Основная инициализация
 
+// Основная инициализация
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOMContentLoaded: начал выполнение');
 
@@ -1296,7 +1301,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Проверка загрузки API Яндекс.Карт
         if (typeof ymaps === 'undefined') {
-            console.error('API Яндекс.Карт не загружен');
             showToast('Не удалось загрузить карты. Пожалуйста, попробуйте перезагрузить страницу.', 'error');
             document.getElementById('map-fallback').style.display = 'block';
             return;
@@ -1304,25 +1308,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Инициализация карт
         ymaps.ready(function() {
-            console.log('API Яндекс.Карт загружен, начинаем инициализацию');
-
             try {
-               // Always try to initialize view map if coordinates exist, regardless of user type
-if (typeof coordinates_json !== 'undefined' && coordinates_json) {
-    console.log('Инициализация карты просмотра...');
-    try {
-        initViewMap();
-        showToast('Карта успешно загружена', 'success');
-    } catch (e) {
-        console.error('Ошибка инициализации карты просмотра:', e);
-        showToast('Ошибка при загрузке карты', 'error');
-        document.getElementById('map-fallback').style.display = 'block';
-    }
-} else {
-    console.log('Нет координат для инициализации карты просмотра');
-    showToast('Адрес объекта не указан', 'warning');
-    document.getElementById('map-fallback').style.display = 'block';
-}
+                // Инициализация карты просмотра только для не-брокеров/не-застройщиков/не-админов
+                const isEditor = {% if request.user == property.broker.user or request.user == property.developer or request.user.is_admin %}true{% else %}false{% endif %};
+                if (!isEditor && typeof coordinates_json !== 'undefined' && coordinates_json) {
+                    console.log('Инициализация карты просмотра...');
+                    try {
+                        initViewMap();
+                    } catch (e) {
+                        console.error('Ошибка инициализации карты просмотра:', e);
+                        document.getElementById('map-fallback').style.display = 'block';
+                    }
+                } else if (!isEditor) {
+                    console.log('Нет координат для инициализации карты просмотра');
+                    showToast('Адрес объекта не указан', 'warning');
+                    document.getElementById('map-fallback').style.display = 'block';
+                }
 
                 {% if request.user.is_authenticated %}
                     {% if request.user == property.broker.user or request.user == property.developer or request.user.is_admin %}

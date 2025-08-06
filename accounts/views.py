@@ -44,7 +44,17 @@ from brokers.models import BrokerProfile,BrokerReview
 
 
 def home_view(request):
-    return render(request, 'home.html')
+    # Получаем горячие объекты (одобренные и помеченные как горячие)
+    hot_properties = Property.objects.filter(is_hot=True, is_approved=True)[:6]
+
+    # Получаем премиум объекты (если они нужны)
+    featured_properties = Property.objects.filter(is_premium=True, is_approved=True)[:6]
+
+    context = {
+        'hot_properties': hot_properties,
+        'featured_properties': featured_properties,
+    }
+    return render(request, 'home.html', context)
 
 
 class RegisterView(CreateView):
