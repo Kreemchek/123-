@@ -100,3 +100,5 @@ class ListingTypeAdmin(admin.ModelAdmin):
     list_display = ('name', 'price', 'duration_days', 'is_featured')
     list_filter = ('is_featured',)
     search_fields = ('name', 'description')
+
+

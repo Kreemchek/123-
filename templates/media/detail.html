@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ media_item.title }} | WinWinDeal{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/plyr/3.7.8/plyr.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/css/lightgallery-bundle.min.css">
+<style>
+    .media-content {
+        max-height: 70vh;
+    }
+    .media-player {
+        background-color: #f3f4f6;
+        border-radius: 0.5rem;
+    }
+    .plyr {
+        border-radius: 0.5rem;
+        margin: 0 auto;
+        width: 100%;
+    }
+    .plyr__poster {
+        background-size: cover;
+    }
+    .related-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+    .media-badge {
+        padding: 4px 8px;
+        border-radius: 9999px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    .video-badge { background-color: rgba(239, 68, 68, 0.9); }
+    .photo-badge { background-color: rgba(16, 185, 129, 0.9); }
+    .file-badge { background-color: rgba(59, 130, 246, 0.9); }
+    .article-badge { background-color: rgba(139, 92, 246, 0.9); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-6">
+        <a href="{% url 'media_content:list' %}" class="text-blue-600 hover:text-blue-800 flex items-center">
+            <i class="fas fa-arrow-left mr-2"></i> Назад к медиа-библиотеке
+        </a>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+        <div class="p-6">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <span class="media-badge {{ media_item.media_type }}-badge text-white">
+                        {{ media_item.get_media_type_display }}
+                    </span>
+                </div>
+                <span class="text-gray-500 text-sm">{{ media_item.created_at|date:"d.m.Y" }}</span>
+            </div>
+
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-4">{{ media_item.title }}</h1>
+
+            {% if media_item.author %}
+            <div class="flex items-center mb-6">
+                <div class="mr-3">
+                    <i class="fas fa-user-circle text-2xl text-gray-400"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-900">{{ media_item.author.get_full_name|default:media_item.author.username }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+<div class="media-player flex justify-center items-center mb-6 p-4">
+    {% if media_item.media_type == 'video' %}
+        <div class="plyr__video-embed w-full">
+            <video controls playsinline data-poster="{{ media_item.thumbnail_url }}">
+                <source src="{{ media_item.file_url }}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+                Ваш браузер не поддерживает видео тег.
+            </video>
+        </div>
+    {% elif media_item.media_type == 'photo' %}
+        <img src="{{ media_item.file_url }}" alt="{{ media_item.title }}" class="media-content object-contain mx-auto">
+    {% elif media_item.media_type == 'file' %}
+        <div class="text-center p-8">
+            <i class="fas fa-file-alt text-6xl text-gray-400 mb-4"></i>
+            <p class="text-gray-700 mb-4">Файл для скачивания</p>
+            <a href="{{ media_item.file_url }}" download
+               class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                <i class="fas fa-download mr-2"></i> Скачать ({{ media_item.file.size|filesizeformat }})
+            </a>
+        </div>
+    {% elif media_item.media_type == 'article' %}
+        <div class="w-full">
+            <div class="prose max-w-none">
+                {{ media_item.description|linebreaks }}
+            </div>
+            {% if media_item.file %}
+            <div class="mt-6">
+                <a href="{{ media_item.file_url }}" download
+                   class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    <i class="fas fa-download mr-2"></i> Скачать приложение ({{ media_item.file.size|filesizeformat }})
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+
+            {% if media_item.description and media_item.media_type != 'article' %}
+            <div class="prose max-w-none border-t pt-4 mt-4">
+                <h3 class="text-lg font-semibold mb-2">Описание</h3>
+                {{ media_item.description|linebreaks }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if related_items %}
+    <div class="mt-12">
+        <h2 class="text-xl font-bold text-gray-900 mb-6">Похожие материалы</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {% for item in related_items %}
+                <a href="{{ item.get_absolute_url }}" class="related-item bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300">
+                    <div class="relative">
+                        {% if item.thumbnail %}
+                            <img src="{{ item.thumbnail.url }}" alt="{{ item.title }}" class="w-full h-40 object-cover">
+                        {% else %}
+                            <div class="w-full h-40 bg-gray-100 flex items-center justify-center">
+                                <i class="fas fa-{{ item.media_type }} text-4xl text-gray-400"></i>
+                            </div>
+                        {% endif %}
+                        <span class="media-badge {{ item.media_type }}-badge text-white absolute top-2 right-2">
+                            {{ item.get_media_type_display }}
+                        </span>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-medium text-gray-900 mb-1 line-clamp-2">{{ item.title }}</h3>
+                        <p class="text-gray-500 text-sm">{{ item.created_at|date:"d.m.Y" }}</p>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if media_item.media_type == 'video' %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plyr/3.7.8/plyr.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const players = Plyr.setup('video', {
+            controls: [
+                'play-large',
+                'play',
+                'progress',
+                'current-time',
+                'mute',
+                'volume',
+                'captions',
+                'settings',
+                'fullscreen'
+            ],
+            ratio: '16:9',
+            fullscreen: { enabled: true, fallback: true, iosNative: false },
+            storage: { enabled: true, key: 'plyr' }
+        });
+
+        // Обработка ошибок
+        players.forEach(player => {
+            player.on('error', event => {
+                console.error('Ошибка видеоплеера:', event.detail);
+            });
+        });
+    });
+</script>
+{% endif %}
+{% endblock %}

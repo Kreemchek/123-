@@ -15,6 +15,8 @@ from django.views.generic import DeleteView
 from django.http import JsonResponse, HttpResponseForbidden
 from django.views import View
 from django.contrib import messages
+
+from media_content.models import MediaItem
 from .models import StatusLog, SupportSettings
 import random
 import string
@@ -50,10 +52,18 @@ def home_view(request):
     # Получаем премиум объекты (если они нужны)
     featured_properties = Property.objects.filter(is_premium=True, is_approved=True)[:6]
 
+    # Получаем рекомендуемые медиаматериалы (только отмеченные для главной страницы)
+    featured_media = MediaItem.objects.filter(
+        is_featured=True,  # Только отмеченные для главной
+        is_published=True  # Только опубликованные
+    ).order_by('-created_at')[:6]  # 6 последних медиа
+
     context = {
         'hot_properties': hot_properties,
         'featured_properties': featured_properties,
+        'featured_media': featured_media,
     }
+
     return render(request, 'home.html', context)
 
 

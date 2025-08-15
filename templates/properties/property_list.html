@@ -1596,6 +1596,8 @@
           });
 
           // Настройка контрола геолокации
+
+          // Настройка контрола геолокации
           allPropertiesMap.controls.get('geolocationControl').options.set({
               position: { top: '15px', right: '15px' },
               size: 'small',
@@ -1620,14 +1622,56 @@
           });
 
           // Настройка внешнего вида меток
+   // Настройка внешнего вида меток
           objectManager.objects.options.set({
               preset: 'islands#darkBlueHomeIcon',
               balloonContentLayout: ymaps.templateLayoutFactory.createClass(
-                  `<div style="padding: 10px;">
-                      <img src="$[properties.image]" style="width: 100%; height: 120px; object-fit: cover; margin-bottom: 10px;">
-                      <h3 style="margin: 0 0 5px 0; font-size: 16px;">$[properties.title]</h3>
-                      <p style="margin: 0; font-weight: bold; color: #0060f4;">$[properties.price]</p>
-                      <a href="$[properties.url]" style="display: inline-block; margin-top: 10px; color: #0060f4;">Подробнее</a>
+                  `<div style="padding: 10px; max-width: 300px;">
+                      <img src="$[properties.image]" style="width: 100%; height: 150px; object-fit: cover; margin-bottom: 10px; border-radius: 8px;">
+                      <h3 style="margin: 0 0 10px 0; font-size: 18px; font-weight: bold;">$[properties.title]</h3>
+
+                      <!-- Информационный блок -->
+                      <div style="background: #f8fafc; border-radius: 8px; padding: 12px; margin-bottom: 12px; border: 1px solid #e2e8f0;">
+                          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                              <!-- Город -->
+                              <div style="display: flex; align-items: center; gap: 6px;">
+                                  <div style="width: 20px; height: 20px; background: #dbeafe; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                      <i class="bi bi-geo-alt" style="color: #2563eb; font-size: 12px;"></i>
+                                  </div>
+                                  <span style="font-size: 13px; color: #1e293b;">$[properties.location]</span>
+                              </div>
+
+                              <!-- Комнаты -->
+                              <div style="display: flex; align-items: center; gap: 6px;">
+                                  <div style="width: 20px; height: 20px; background: #f3e8ff; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                      <i class="bi bi-door-open" style="color: #7e22ce; font-size: 12px;"></i>
+                                  </div>
+                                  <span style="font-size: 13px; color: #1e293b;">$[properties.rooms] комн.</span>
+                              </div>
+
+                              <!-- Метро (если есть) -->
+                              $[properties.metroHTML]
+
+                              <!-- Метраж -->
+                              <div style="display: flex; align-items: center; gap: 6px;">
+                                  <div style="width: 20px; height: 20px; background: #dcfce7; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                                      <i class="bi bi-arrows-fullscreen" style="color: #16a34a; font-size: 12px;"></i>
+                                  </div>
+                                  <span style="font-size: 13px; color: #1e293b;">$[properties.area] м²</span>
+                              </div>
+                          </div>
+                      </div>
+
+                      <!-- Цена -->
+                      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                          <span style="font-size: 20px; font-weight: bold; color: #2563eb;">$[properties.price]</span>
+                          $[properties.favoriteHTML]
+                      </div>
+
+                      <!-- Кнопка -->
+                      <a href="$[properties.url]" style="display: block; text-align: center; padding: 8px; background: #2563eb; color: white; border-radius: 6px; font-weight: 500; text-decoration: none;">
+                          Подробнее
+                      </a>
                   </div>`
               ),
               hideIconOnBalloonOpen: false,

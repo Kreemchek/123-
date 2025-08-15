@@ -14,6 +14,7 @@ urlpatterns = [
     path('payment/', include('payments.urls')),  # Оставляем другие платежные URLs
     path('developers/', include('developers.urls')),
     path('properties/', include('properties.urls')),
+    path('media/', include('media_content.urls')),
 
     path('password_reset/',
          auth_views.PasswordResetView.as_view(

@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Медиа-библиотека | WinWinDeal{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/css/lightgallery-bundle.min.css">
+<style>
+    .media-card {
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    .media-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+    .media-badge {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        padding: 4px 8px;
+        border-radius: 9999px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    .video-badge {
+        background-color: rgba(239, 68, 68, 0.9);
+    }
+    .photo-badge {
+        background-color: rgba(16, 185, 129, 0.9);
+    }
+    .file-badge {
+        background-color: rgba(59, 130, 246, 0.9);
+    }
+    .article-badge {
+        background-color: rgba(139, 92, 246, 0.9);
+    }
+    .pagination .active a {
+        background-color: #3B82F6;
+        color: white;
+    }
+    .media-type-nav .active {
+        border-bottom: 3px solid #3B82F6;
+        font-weight: 600;
+    }
+    /* Добавляем стиль для видео-превью */
+    .video-preview {
+        position: relative;
+    }
+    .video-preview::after {
+        content: '\f04b'; /* Иконка play */
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 2rem;
+        text-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Медиа-библиотека</h1>
+        <p class="text-gray-600">Полезные материалы для работы с недвижимостью</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+        {% for item in media_items %}
+            {% include "media/includes/_media_card.html" with item=item %}
+        {% empty %}
+            <div class="col-span-full text-center py-12">
+                <i class="fas fa-folder-open text-4xl text-gray-300 mb-4"></i>
+                <p class="text-gray-500 text-lg">Медиа-материалы не найдены</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+    <div class="flex justify-center mt-8">
+        <nav class="pagination">
+            <ul class="flex items-center space-x-2">
+                {% if page_obj.has_previous %}
+                    <li>
+                        <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-1 rounded border text-blue-600 hover:bg-blue-50">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="active">
+                            <a href="?page={{ num }}" class="px-3 py-1 rounded border">{{ num }}</a>
+                        </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li>
+                            <a href="?page={{ num }}" class="px-3 py-1 rounded border hover:bg-gray-50">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li>
+                        <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-1 rounded border text-blue-600 hover:bg-blue-50">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/lightgallery.min.js"></script>
+<script>
+    // Инициализация галереи для изображений
+    document.addEventListener('DOMContentLoaded', function() {
+        if (document.querySelectorAll('[data-gallery]').length > 0) {
+            lightGallery(document.querySelector('[data-gallery]'), {
+                selector: '.gallery-item',
+                download: false,
+                thumbnail: true
+            });
+        }
+    });
+</script>
+{% endblock %}

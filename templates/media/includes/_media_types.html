@@ -1,0 +1,18 @@
+<div class="media-type-nav mb-6 border-b border-gray-200">
+    <ul class="flex space-x-8 -mb-px">
+        <li class="mr-2">
+            <a href="{% url 'media_content:list' %}"
+               class="inline-block py-2 px-1 border-b-2 font-medium text-sm {% if not request.GET.media_type %}border-blue-500 text-blue-600 active{% else %}border-transparent hover:text-gray-600 hover:border-gray-300{% endif %}">
+                Все материалы
+            </a>
+        </li>
+        {% for type in media_types %}
+        <li class="mr-2">
+            <a href="?media_type={{ type.0 }}"
+               class="inline-block py-2 px-1 border-b-2 font-medium text-sm {% if request.GET.media_type == type.0 %}border-blue-500 text-blue-600 active{% else %}border-transparent hover:text-gray-600 hover:border-gray-300{% endif %}">
+                {{ type.1 }}
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>

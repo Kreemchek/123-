@@ -88,6 +88,7 @@ INSTALLED_APPS = [
     'clients.apps.ClientsConfig',
     'properties.apps.PropertiesConfig',
     'payments.apps.PaymentsConfig',
+    'media_content.apps.MediaContentConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -314,3 +315,7 @@ WHITENOISE_MANIFEST_STRICT = False
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 SESSION_COOKIE_DOMAIN = None
+
+THUMBNAIL_WIDTH = 800
+THUMBNAIL_HEIGHT = 600
+THUMBNAIL_QUALITY = 85

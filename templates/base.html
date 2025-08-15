@@ -4,39 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}WinWinDeal{% endblock %}</title>
-      <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
     <!-- Остальные стили -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-<link rel="preload" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" as="style">
-<link rel="preload" href="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" as="style">
+    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2" as="font" type="font/woff2" crossorigin>
 
-
-<!-- Предварительное соединение с CDN -->
-<link rel="preconnect" href="https://cdn.jsdelivr.net">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Предварительное соединение с CDN -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <style>
         /* Критические стили для LCP элемента */
-  .hero h1 {
-    opacity: 0;
-    animation: fadeIn 0.5s ease-out forwards;
-    font-family: 'Inter', sans-serif;
-  }
-  @keyframes fadeIn {
-    to { opacity: 1; }
-  }
-
+        .hero h1 {
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out forwards;
+            font-family: 'Inter', sans-serif;
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
 
         @font-face {
-      font-family: 'Inter';
-      font-style: normal;
-      font-weight: 400;
-      font-display: swap;
-      src: url('https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2') format('woff2');
-    }
+            font-family: 'Inter';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url('https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2') format('woff2');
+        }
         /* Добавленные стили для бейджа и кнопки */
         .bonus-badge {
             background: linear-gradient(45deg, #fcd34d, #fbbf24);
@@ -54,7 +52,7 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
-            html, body {
+        html, body {
             height: 100%;
         }
         body {
@@ -70,6 +68,30 @@
             flex-shrink: 0;
         }
 
+        /* Стили для кнопки Медиа */
+        .media-nav-btn {
+            font-weight: 600;
+            position: relative;
+            padding: 0.25rem 0.5rem;
+        }
+        .media-nav-btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: white;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        .media-nav-btn:hover::after {
+            transform: scaleX(1);
+        }
+        .media-nav-btn.active {
+            font-weight: 700;
+            text-shadow: 0 0 8px rgba(255,255,255,0.5);
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
@@ -95,63 +117,69 @@
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <a href="{% url 'home' %}" class="text-2xl font-bold">WinWinDeal</a>
 
-            <div class="hidden md:flex space-x-6">
-    {% if user.is_authenticated %}
-        <a href="{% url 'broker-list' %}" class="hover:text-blue-200">Брокеры</a>
-        <a href="{% url 'properties:property-list' %}" class="hover:text-blue-200">Объекты</a>
-        <a href="{% url 'developer-list' %}" class="hover:text-blue-200">Застройщики</a>
+            <div class="hidden md:flex space-x-6 items-center">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'broker-list' %}" class="hover:text-blue-200">Брокеры</a>
+                    <a href="{% url 'properties:property-list' %}" class="hover:text-blue-200">Объекты</a>
+                    <a href="{% url 'developer-list' %}" class="hover:text-blue-200">Застройщики</a>
+                    <a href="{% url 'media_content:list' %}"
+   class="media-nav-btn hover:text-blue-200 border-2 border-white px-3 py-1 rounded-lg font-bold transition-all hover:bg-white hover:text-blue-600">
+    Медиа
+</a>
+                {% else %}
+                    <a href="{% url 'register' %}" class="hover:text-blue-200">Брокеры</a>
+                    <a href="{% url 'register' %}" class="hover:text-blue-200">Объекты</a>
+                    <a href="{% url 'register' %}" class="hover:text-blue-200">Застройщики</a>
+                    <a href="{% url 'register' %}"
+                       class="media-nav-btn hover:text-blue-200 border-2 border-white px-3 py-1 rounded-lg font-bold transition-all hover:bg-white hover:text-blue-600">
+                        Медиа
+                    </a>
+                {% endif %}
+            </div>
 
-    {% else %}
-        <a href="{% url 'register' %}" class="hover:text-blue-200">Брокеры</a>
-        <a href="{% url 'register' %}" class="hover:text-blue-200">Объекты</a>
-        <a href="{% url 'register' %}" class="hover:text-blue-200">Застройщики</a>
+            <div class="flex items-center space-x-2 md:space-x-4">
+                {% if user.is_authenticated %}
+                    <div class="flex items-center space-x-1 md:space-x-3">
+                        <!-- Иконка профиля -->
+                        <a href="{% url 'dashboard' %}"
+                           class="hover:text-blue-200 flex items-center p-1 md:p-0"
+                           aria-label="Профиль">
+                            <i class="fas fa-user-circle text-lg md:text-xl"></i>
+                        </a>
 
-    {% endif %}
-</div>
+                        <!-- Баланс -->
+                        <span class="bonus-badge text-yellow-800 px-2 py-1 md:px-3 rounded-full text-xs md:text-sm font-medium whitespace-nowrap">
+                            {{ user.balance }} ₽
+                        </span>
 
-          <div class="flex items-center space-x-2 md:space-x-4">
-    {% if user.is_authenticated %}
-        <div class="flex items-center space-x-1 md:space-x-3">
-            <!-- Иконка профиля -->
-            <a href="{% url 'dashboard' %}"
-               class="hover:text-blue-200 flex items-center p-1 md:p-0"
-               aria-label="Профиль">
-                <i class="fas fa-user-circle text-lg md:text-xl"></i>
-            </a>
+                        <!-- Кнопка пополнения -->
+                        <a href="{% url 'payment_topup' %}"
+                           class="topup-btn text-white px-2 py-1 md:px-3 rounded-lg text-xs md:text-sm font-medium whitespace-nowrap">
+                            Пополнить
+                        </a>
+                    </div>
 
-            <!-- Баланс -->
-            <span class="bonus-badge text-yellow-800 px-2 py-1 md:px-3 rounded-full text-xs md:text-sm font-medium whitespace-nowrap">
-                {{ user.balance }} ₽
-            </span>
-
-            <!-- Кнопка пополнения -->
-            <a href="{% url 'payment_topup' %}"
-               class="topup-btn text-white px-2 py-1 md:px-3 rounded-lg text-xs md:text-sm font-medium whitespace-nowrap">
-                Пополнить
-            </a>
-        </div>
-
-        <!-- Кнопка выхода -->
-        <a href="{% url 'logout' %}"
-           class="hover:text-blue-200 text-sm md:text-base p-1 md:p-0"
-           aria-label="Выйти">
-            <i class="fas fa-sign-out-alt md:hidden"></i>
-            <span class="hidden md:inline">Выйти</span>
-        </a>
-    {% else %}
-        <!-- Кнопки для неавторизованных -->
-        <a href="{% url 'login' %}"
-           class="hover:text-blue-200 text-sm md:text-base p-1 md:p-0"
-           aria-label="Войти">
-            <i class="fas fa-sign-in-alt md:hidden"></i>
-            <span class="hidden md:inline">Войти</span>
-        </a>
-        <a href="{% url 'register' %}"
-           class="bg-blue-700 px-2 py-1 md:px-4 md:py-2 rounded hover:bg-blue-800 text-xs md:text-base whitespace-nowrap">
-            Регистрация
-        </a>
-    {% endif %}
-</div>
+                    <!-- Кнопка выхода -->
+                    <a href="{% url 'logout' %}"
+                       class="hover:text-blue-200 text-sm md:text-base p-1 md:p-0"
+                       aria-label="Выйти">
+                        <i class="fas fa-sign-out-alt md:hidden"></i>
+                        <span class="hidden md:inline">Выйти</span>
+                    </a>
+                {% else %}
+                    <!-- Кнопки для неавторизованных -->
+                    <a href="{% url 'login' %}"
+                       class="hover:text-blue-200 text-sm md:text-base p-1 md:p-0"
+                       aria-label="Войти">
+                        <i class="fas fa-sign-in-alt md:hidden"></i>
+                        <span class="hidden md:inline">Войти</span>
+                    </a>
+                    <a href="{% url 'register' %}"
+                       class="bg-blue-700 px-2 py-1 md:px-4 md:py-2 rounded hover:bg-blue-800 text-xs md:text-base whitespace-nowrap">
+                        Регистрация
+                    </a>
+                {% endif %}
+            </div>
         </div>
     </nav>
 
@@ -159,57 +187,69 @@
         {% block content %}{% endblock %}
     </main>
 
-   <footer class="bg-gray-800 text-white py-8">
-    <div class="container mx-auto px-4">
-        <div class="flex flex-col md:flex-row justify-between">
-            <div class="mb-6 md:mb-0">
-                <h3 class="text-xl font-bold mb-4">WinWinDeal</h3>
-                <p>Сервис выгодных сделок с недвижимостью</p>
-            </div>
-            <div class="grid grid-cols-2 gap-8">
-                <ul class="space-y-2">
-                    <li><a href="{% url 'home' %}" class="hover:text-blue-300">Главная</a></li>
-                    {% if user.is_authenticated %}
-                        <li><a href="{% url 'broker-list' %}" class="hover:text-blue-300">Брокеры</a></li>
-                        <li><a href="{% url 'properties:property-list' %}" class="hover:text-blue-300">Объекты</a></li>
-                    {% else %}
-                        <li><a href="{% url 'register' %}" class="hover:text-blue-300">Брокеры</a></li>
-                        <li><a href="{% url 'register' %}" class="hover:text-blue-300">Объекты</a></li>
-                    {% endif %}
-                </ul>
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Контакты</h4>
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between">
+                <div class="mb-6 md:mb-0">
+                    <h3 class="text-xl font-bold mb-4">WinWinDeal</h3>
+                    <p>Сервис выгодных сделок с недвижимостью</p>
+                </div>
+                <div class="grid grid-cols-2 gap-8">
                     <ul class="space-y-2">
-                        <li><i class="fas fa-envelope mr-2"></i> winwindealrlty@gmail.com</li>
-                        <li><i class="fas fa-phone mr-2"></i> +7 964 523-43-33</li>
-                        <li>
-                            <a href="https://t.me/winwindealrlty" target="_blank" class="hover:text-blue-300">
-                                <i class="fab fa-telegram mr-2"></i> Telegram
-                            </a>
-                        </li>
+                        <li><a href="{% url 'home' %}" class="hover:text-blue-300">Главная</a></li>
+                        {% if user.is_authenticated %}
+                            <li><a href="{% url 'broker-list' %}" class="hover:text-blue-300">Брокеры</a></li>
+                            <li><a href="{% url 'properties:property-list' %}" class="hover:text-blue-300">Объекты</a></li>
+                            <li>
+                                <a href=""
+                                   class="font-bold border-b-2 border-white pb-1 hover:text-blue-300">
+                                    Медиа
+                                </a>
+                            </li>
+                        {% else %}
+                            <li><a href="{% url 'register' %}" class="hover:text-blue-300">Брокеры</a></li>
+                            <li><a href="{% url 'register' %}" class="hover:text-blue-300">Объекты</a></li>
+                            <li>
+    <a href="{% url 'media_content:list' %}"
+       class="font-bold border-b-2 border-white pb-1 hover:text-blue-300">
+        Медиа
+    </a>
+</li>
+                        {% endif %}
                     </ul>
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">Контакты</h4>
+                        <ul class="space-y-2">
+                            <li><i class="fas fa-envelope mr-2"></i> winwindealrlty@gmail.com</li>
+                            <li><i class="fas fa-phone mr-2"></i> +7 964 523-43-33</li>
+                            <li>
+                                <a href="https://t.me/winwindealrlty" target="_blank" class="hover:text-blue-300">
+                                    <i class="fab fa-telegram mr-2"></i> Telegram
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </div>
 
-       <!-- Добавленный блок "Есть вопросы? Напишите нам" -->
-   <div class="mt-4">
-    <h4 class="text-sm font-semibold mb-2 text-gray-300">Есть вопросы?</h4>
-    {% if user.is_authenticated %}
-        <a href="{% url 'contact_support' %}"
-           class="text-blue-300 hover:text-white text-sm transition-colors">
-            Написать в поддержку
-        </a>
-    {% else %}
-        <span class="text-gray-400 text-sm">Авторизуйтесь, чтобы написать в поддержку</span>
-    {% endif %}
-</div>
+            <!-- Добавленный блок "Есть вопросы? Напишите нам" -->
+            <div class="mt-4">
+                <h4 class="text-sm font-semibold mb-2 text-gray-300">Есть вопросы?</h4>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'contact_support' %}"
+                       class="text-blue-300 hover:text-white text-sm transition-colors">
+                        Написать в поддержку
+                    </a>
+                {% else %}
+                    <span class="text-gray-400 text-sm">Авторизуйтесь, чтобы написать в поддержку</span>
+                {% endif %}
+            </div>
 
-        <div class="border-t border-gray-700 mt-8 pt-6 text-center">
-            <p>&copy; 2025 WinWinDeal. Все права защищены.</p>
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center">
+                <p>&copy; 2025 WinWinDeal. Все права защищены.</p>
+            </div>
         </div>
-    </div>
-</footer>
+    </footer>
 
     {% block extra_js %}{% endblock %}
 </body>

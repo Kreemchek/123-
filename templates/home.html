@@ -52,7 +52,7 @@
         from { transform: translateX(100%); opacity: 0; }
         to { transform: translateX(0); opacity: 1; }
     }
-        /* Добавьте эти стили в существующий блок style */
+    /* Добавьте эти стили в существующий блок style */
     .hot-property-badge {
         position: absolute;
         top: 10px;
@@ -73,6 +73,33 @@
 
     .hot-property-card:hover {
         box-shadow: 0 10px 20px rgba(255, 77, 77, 0.2);
+    }
+
+    /* Стили для медиа секции */
+    .media-card {
+        transition: all 0.3s ease;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .media-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    .media-icon {
+        transition: transform 0.3s ease;
+    }
+    .media-card:hover .media-icon {
+        transform: scale(1.1);
+    }
+    .media-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
     }
 </style>
 
@@ -183,85 +210,132 @@
     </div>
 </div>
 
-<!-- Популярные объекты -->
-<!-- Популярные объекты -->
-<!-- Горячие объекты -->
-<!-- Горячие объекты -->
-<!-- Горячие объекты -->
+<!-- Горячие предложения -->
+<div class="container mx-auto px-4">
+    <div class="rounded-3xl border-2 border-red-500 p-6">
+        <h2 class="text-4xl font-bold text-center mb-12">🔥 Горячие предложения</h2>
 
-    <div class="container mx-auto px-4">
-        <div class="rounded-3xl border-2 border-red-500 p-6">
-            <h2 class="text-4xl font-bold text-center mb-12">🔥 Горячие предложения</h2>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {% for property in hot_properties %}
-                <div class="bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden border-2 border-red-500">
-                    <div class="relative h-64 overflow-hidden group">
-                        {% if property.main_image %}
-                            <img src="{{ property.main_image.url }}"
-                                 alt="{{ property.title }}"
-                                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                        {% else %}
-                            <div class="w-full h-full bg-gradient-to-r from-red-400 to-red-600 flex items-center justify-center">
-                                <i class="fas fa-fire text-white text-6xl"></i>
-                            </div>
-                        {% endif %}
-
-                        <div class="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-red-700 text-white px-4 py-2
-                                   rounded-full text-sm font-bold shadow-md">
-                            🔥 HOT
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for property in hot_properties %}
+            <div class="bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden border-2 border-red-500">
+                <div class="relative h-64 overflow-hidden group">
+                    {% if property.main_image %}
+                        <img src="{{ property.main_image.url }}"
+                             alt="{{ property.title }}"
+                             class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    {% else %}
+                        <div class="w-full h-full bg-gradient-to-r from-red-400 to-red-600 flex items-center justify-center">
+                            <i class="fas fa-fire text-white text-6xl"></i>
                         </div>
-                    </div>
+                    {% endif %}
 
-                    <div class="p-6">
-                        <h3 class="text-2xl font-bold mb-3">{{ property.title }}</h3>
-                        <div class="flex items-center mb-4 text-gray-600">
-                            <i class="fas fa-map-marker-alt mr-2"></i>
-                            <span>{{ property.location }}</span>
-                        </div>
-
-                        <!-- Добавленная информация о метро и комнатах -->
-                        <div class="flex flex-wrap gap-2 mb-4">
-                            {% if property.metro_station %}
-                            <div class="flex items-center text-sm bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
-                                <i class="fas fa-subway mr-2"></i>
-                                {{ property.metro_station }}
-                            </div>
-                            {% endif %}
-
-                            <div class="flex items-center text-sm bg-purple-100 text-purple-800 px-3 py-1 rounded-full">
-                                <i class="fas fa-door-open mr-2"></i>
-                                {{ property.rooms }} комн.
-                            </div>
-                        </div>
-
-                        <div class="flex justify-between items-center mb-4">
-                            <span class="text-2xl font-bold text-red-600">{{ property.price|floatformat:"0" }} ₽</span>
-                            <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full">
-                                {{ property.total_area|floatformat:"0" }} м²
-                            </span>
-                        </div>
-
-                        <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}{% endif %}"
-                           class="block w-full bg-red-600 hover:bg-red-700 text-white text-center py-3 rounded-xl
-                                  transition-all transform hover:scale-105">
-                            🔥 Узнать подробности
-                        </a>
+                    <div class="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-red-700 text-white px-4 py-2
+                               rounded-full text-sm font-bold shadow-md">
+                        🔥 HOT
                     </div>
                 </div>
-                {% endfor %}
-            </div>
 
-            <!-- Кнопка "Смотреть все" -->
-            <div class="text-center mt-12">
-                <a href="{% if user.is_authenticated %}{% url 'properties:property-list' %}?is_hot=true{% else %}{% url 'register' %}?next={% url 'properties:property-list' %}?is_hot=true{% endif %}"
-                   class="inline-block bg-gradient-to-r from-red-600 to-red-700 text-white font-bold px-12 py-4
-                          rounded-2xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
-                    Смотреть все предложения
-                </a>
+                <div class="p-6">
+                    <h3 class="text-2xl font-bold mb-3">{{ property.title }}</h3>
+                    <div class="flex items-center mb-4 text-gray-600">
+                        <i class="fas fa-map-marker-alt mr-2"></i>
+                        <span>{{ property.location }}</span>
+                    </div>
+
+                    <!-- Добавленная информация о метро и комнатах -->
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        {% if property.metro_station %}
+                        <div class="flex items-center text-sm bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
+                            <i class="fas fa-subway mr-2"></i>
+                            {{ property.metro_station }}
+                        </div>
+                        {% endif %}
+
+                        <div class="flex items-center text-sm bg-purple-100 text-purple-800 px-3 py-1 rounded-full">
+                            <i class="fas fa-door-open mr-2"></i>
+                            {{ property.rooms }} комн.
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-2xl font-bold text-red-600">{{ property.price|floatformat:"0" }} ₽</span>
+                        <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full">
+                            {{ property.total_area|floatformat:"0" }} м²
+                        </span>
+                    </div>
+
+                    <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}{% endif %}"
+                       class="block w-full bg-red-600 hover:bg-red-700 text-white text-center py-3 rounded-xl
+                              transition-all transform hover:scale-105">
+                        🔥 Узнать подробности
+                    </a>
+                </div>
             </div>
+            {% endfor %}
+        </div>
+
+        <!-- Кнопка "Смотреть все" -->
+        <div class="text-center mt-12">
+            <a href="{% if user.is_authenticated %}{% url 'properties:property-list' %}?is_hot=true{% else %}{% url 'register' %}?next={% url 'properties:property-list' %}?is_hot=true{% endif %}"
+               class="inline-block bg-gradient-to-r from-red-600 to-red-700 text-white font-bold px-12 py-4
+                      rounded-2xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+                Смотреть все предложения
+            </a>
         </div>
     </div>
+</div>
+
+<!-- Медиа секция -->
+<!-- Featured Media Section -->
+<div class="container mx-auto px-4 py-16">
+    <div class="text-center mb-12">
+        <h2 class="text-4xl font-bold mb-4">Рекомендуемые материалы</h2>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">Лучшие видеообзоры, фотоотчеты и аналитика</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {% for media in featured_media %}
+        <a href="{{ media.get_absolute_url }}" class="media-card">
+            <div class="bg-white rounded-lg shadow-md h-full flex flex-col">
+<!-- home.html -->
+<div class="relative h-48 bg-gradient-to-r from-blue-500 to-blue-700 flex items-center justify-center">
+    {% if media.media_type == 'video' %}
+        {% if media.get_thumbnail_url %}
+            <img src="{{ media.get_thumbnail_url }}" alt="{{ media.title }}" class="w-full h-full object-cover">
+        {% else %}
+            <i class="fas fa-play-circle text-white text-6xl media-icon"></i>
+        {% endif %}
+        <span class="media-badge">Видео</span>
+    {% elif media.media_type == 'photo' %}
+        {% if media.get_thumbnail_url %}
+            <img src="{{ media.get_thumbnail_url }}" alt="{{ media.title }}" class="w-full h-full object-cover">
+        {% else %}
+            <i class="fas fa-camera text-white text-6xl media-icon"></i>
+        {% endif %}
+        <span class="media-badge">Фото</span>
+    {% else %}
+        <i class="fas fa-file-alt text-white text-6xl media-icon"></i>
+        <span class="media-badge">Файл</span>
+    {% endif %}
+</div>         <div class="p-6 flex-grow">
+                    <h3 class="text-xl font-bold mb-2">{{ media.title }}</h3>
+                    <p class="text-gray-600 mb-4">{{ media.description|truncatechars:100 }}</p>
+                    <div class="flex items-center text-blue-600 font-medium">
+                        <span>Подробнее</span>
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </div>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+
+<div class="text-center mt-12">
+    <a href="{% url 'media_content:list' %}"
+       class="inline-block bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold px-12 py-4
+              rounded-2xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+        Все медиаматериалы
+    </a>
 </div>
 
 <!-- Модальное окно для фильтров -->
