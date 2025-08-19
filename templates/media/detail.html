@@ -6,18 +6,30 @@
 {% block extra_css %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/plyr/3.7.8/plyr.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/css/lightgallery-bundle.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css">
 <style>
     .media-content {
-        max-height: 70vh;
+        max-width: 100%;
+        height: auto;
+        max-height: 60vh;
+        object-fit: contain;
+        cursor: pointer;
     }
     .media-player {
-        background-color: #f3f4f6;
+        background-color: transparent;
         border-radius: 0.5rem;
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-start;
+        margin: 0;
+        max-width: 800px;
     }
     .plyr {
         border-radius: 0.5rem;
-        margin: 0 auto;
         width: 100%;
+        max-width: 100%;
+        max-height: 60vh;
     }
     .plyr__poster {
         background-size: cover;
@@ -37,6 +49,77 @@
     .photo-badge { background-color: rgba(16, 185, 129, 0.9); }
     .file-badge { background-color: rgba(59, 130, 246, 0.9); }
     .article-badge { background-color: rgba(139, 92, 246, 0.9); }
+
+    .external-video-container {
+        position: relative;
+        width: 100%;
+        height: 0;
+        padding-bottom: 56.25%;
+        overflow: hidden;
+        border-radius: 0.5rem;
+    }
+
+    .external-video-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    @media (max-width: 768px) {
+        .media-content, .plyr {
+            max-height: 50vh;
+        }
+        .media-player {
+            max-width: 100%;
+        }
+        .external-video-container {
+            padding-bottom: 75%;
+        }
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        overflow: auto;
+    }
+    .modal-content {
+        display: block;
+        margin: auto;
+        max-width: 90%;
+        max-height: 90vh;
+        object-fit: contain;
+    }
+    .close {
+        position: absolute;
+        top: 15px;
+        right: 35px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    .close:hover {
+        color: #bbb;
+    }
+    .modal-caption {
+        margin: auto;
+        display: block;
+        width: 80%;
+        max-width: 700px;
+        text-align: center;
+        color: #ccc;
+        padding: 10px 0;
+        height: 150px;
+    }
 </style>
 {% endblock %}
 
@@ -72,41 +155,91 @@
             </div>
             {% endif %}
 
-<div class="media-player flex justify-center items-center mb-6 p-4">
-    {% if media_item.media_type == 'video' %}
-        <div class="plyr__video-embed w-full">
-            <video controls playsinline data-poster="{{ media_item.thumbnail_url }}">
-                <source src="{{ media_item.file_url }}" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
-                Ваш браузер не поддерживает видео тег.
-            </video>
-        </div>
-    {% elif media_item.media_type == 'photo' %}
-        <img src="{{ media_item.file_url }}" alt="{{ media_item.title }}" class="media-content object-contain mx-auto">
-    {% elif media_item.media_type == 'file' %}
-        <div class="text-center p-8">
-            <i class="fas fa-file-alt text-6xl text-gray-400 mb-4"></i>
-            <p class="text-gray-700 mb-4">Файл для скачивания</p>
-            <a href="{{ media_item.file_url }}" download
-               class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                <i class="fas fa-download mr-2"></i> Скачать ({{ media_item.file.size|filesizeformat }})
-            </a>
-        </div>
-    {% elif media_item.media_type == 'article' %}
-        <div class="w-full">
-            <div class="prose max-w-none">
-                {{ media_item.description|linebreaks }}
+            <div class="media-player mb-6">
+                {% if media_item.media_type == 'video' %}
+                    {% if media_item.is_external_video %}
+                        <!-- Внешнее видео -->
+                        <div class="w-full" style="max-width: 100%;">
+                            {% with video_data=media_item.external_video_data %}
+                                {% if video_data.type == 'youtube' %}
+                                    <div class="external-video-container">
+                                        <iframe src="https://www.youtube.com/embed/{{ video_data.id }}?rel=0&showinfo=0"
+                                                frameborder="0"
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                allowfullscreen></iframe>
+                                    </div>
+                                {% elif video_data.type == 'vk' %}
+                                    <div class="external-video-container">
+                                        <iframe src="https://vk.com/video_ext.php?oid={{ video_data.owner_id }}&id={{ video_data.video_id }}&hash=&hd=2"
+                                                frameborder="0"
+                                                allowfullscreen></iframe>
+                                    </div>
+                                {% elif video_data.type == 'rutube' %}
+                                    <div class="external-video-container">
+                                        <iframe src="https://rutube.ru/play/embed/{{ video_data.id }}"
+                                                frameborder="0"
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                allowfullscreen></iframe>
+                                    </div>
+                                {% else %}
+                                    <div class="text-center p-8 bg-gray-100 rounded-lg">
+                                        <i class="fas fa-exclamation-triangle text-3xl text-yellow-500 mb-4"></i>
+                                        <p class="text-gray-700">Неподдерживаемый тип внешнего видео</p>
+                                        <a href="{{ media_item.external_url }}" target="_blank"
+                                           class="text-blue-600 hover:text-blue-800 mt-2 inline-block">
+                                            Открыть в новом окне
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                    {% else %}
+                        <!-- Локальное видео -->
+                        <div class="w-full" style="max-width: 100%;">
+                            <video class="js-player" controls playsinline data-poster="{{ media_item.thumbnail_url }}">
+                                <source src="{{ media_item.file_url }}" type='video/mp4'>
+                                Ваш браузер не поддерживает видео тег.
+                            </video>
+                        </div>
+                    {% endif %}
+                {% elif media_item.media_type == 'photo' %}
+                    <div class="flex justify-start">
+                        <img src="{{ media_item.file_url }}" alt="{{ media_item.title }}"
+                             class="media-content rounded-lg shadow-md"
+                             onclick="openModal('{{ media_item.file_url }}', '{{ media_item.title }}')">
+                    </div>
+                {% elif media_item.media_type == 'file' %}
+                    <div class="text-center p-8">
+                        <i class="fas fa-file-alt text-6xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-700 mb-4">Файл для скачивания</p>
+                        <a href="{{ media_item.file_url }}" download
+                           class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-download mr-2"></i> Скачать ({{ media_item.file.size|filesizeformat }})
+                        </a>
+                    </div>
+                {% elif media_item.media_type == 'article' %}
+                    <div class="w-full">
+                        {% if media_item.thumbnail_url %}
+                        <div class="mb-6 flex justify-start">
+                            <img src="{{ media_item.thumbnail_url }}" alt="{{ media_item.title }}"
+                                 class="media-content rounded-lg shadow-md"
+                                 onclick="openModal('{{ media_item.thumbnail_url }}', '{{ media_item.title }}')">
+                        </div>
+                        {% endif %}
+                        <div class="prose max-w-none">
+                            {{ media_item.description|linebreaks }}
+                        </div>
+                        {% if media_item.file %}
+                        <div class="mt-6">
+                            <a href="{{ media_item.file_url }}" download
+                               class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                <i class="fas fa-download mr-2"></i> Скачать приложение ({{ media_item.file.size|filesizeformat }})
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
             </div>
-            {% if media_item.file %}
-            <div class="mt-6">
-                <a href="{{ media_item.file_url }}" download
-                   class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                    <i class="fas fa-download mr-2"></i> Скачать приложение ({{ media_item.file.size|filesizeformat }})
-                </a>
-            </div>
-            {% endif %}
-        </div>
-    {% endif %}
-</div>
 
             {% if media_item.description and media_item.media_type != 'article' %}
             <div class="prose max-w-none border-t pt-4 mt-4">
@@ -115,6 +248,13 @@
             </div>
             {% endif %}
         </div>
+    </div>
+
+    <!-- Модальное окно для увеличения изображений -->
+    <div id="imageModal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage">
+        <div id="caption" class="modal-caption"></div>
     </div>
 
     {% if related_items %}
@@ -148,11 +288,11 @@
 {% endblock %}
 
 {% block extra_js %}
-{% if media_item.media_type == 'video' %}
+{% if media_item.media_type == 'video' and not media_item.is_external_video %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/plyr/3.7.8/plyr.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const players = Plyr.setup('video', {
+        const players = Plyr.setup('.js-player', {
             controls: [
                 'play-large',
                 'play',
@@ -169,13 +309,45 @@
             storage: { enabled: true, key: 'plyr' }
         });
 
-        // Обработка ошибок
         players.forEach(player => {
             player.on('error', event => {
                 console.error('Ошибка видеоплеера:', event.detail);
+                const container = player.elements.container;
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'text-center p-4 text-red-600 bg-red-100 rounded-lg';
+                errorMsg.innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i> Не удалось загрузить видео';
+                container.parentNode.appendChild(errorMsg);
             });
         });
     });
 </script>
 {% endif %}
+
+<script>
+function openModal(imageSrc, title) {
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImage');
+    const captionText = document.getElementById('caption');
+
+    modal.style.display = 'block';
+    modalImg.src = imageSrc;
+    captionText.innerHTML = title;
+
+    modal.onclick = function(event) {
+        if (event.target === modal) {
+            closeModal();
+        }
+    };
+}
+
+function closeModal() {
+    document.getElementById('imageModal').style.display = 'none';
+}
+
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeModal();
+    }
+});
+</script>
 {% endblock %}

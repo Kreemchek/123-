@@ -101,57 +101,118 @@
         border-radius: 4px;
         font-size: 12px;
     }
+    .animate-fade-in-down {
+    animation: fadeInDown 0.8s ease-out;
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 1s ease-out;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 </style>
 
 <!-- Герой-секция -->
-<div class="hero bg-blue-600 text-white py-20">
-    <div class="container mx-auto px-4 text-center">
-        <h1 class="text-4xl md:text-6xl font-bold mb-6 animate-pulse">Сервис выгодных сделок с недвижимостью</h1>
-        <p class="text-xl mb-8 opacity-95">База проверенных брокеров и эксклюзивных предложений</p>
+<!-- Герой-секция -->
+<!-- Герой-секция -->
+<div class="hero py-16 md:py-24">
+    <div class="container mx-auto px-4">
+        <!-- Округлый контейнер с градиентом -->
+        <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-3xl p-8 md:p-12
+                    shadow-2xl shadow-blue-500/30 transform hover:scale-[1.01]
+                    transition-all duration-500 ease-in-out relative overflow-hidden">
 
-        <!-- Улучшенная форма поиска -->
-        <div class="max-w-3xl mx-auto bg-white rounded-xl p-2 shadow-2xl">
-            <form class="flex flex-col" id="search-form"
-                  action="{% if user.is_authenticated %}{% url 'properties:property-list' %}{% else %}{% url 'register' %}?next={% url 'properties:property-list' %}{% endif %}"
-                  method="get">
-                <div class="relative flex items-center">
-                    <input type="text"
-                           name="search"
-                           placeholder="🔍 Введите город, метро, '2-комнатная', 'цена 5-10 млн', 'рядом со мной'..."
-                           class="flex-grow px-6 py-4 rounded-lg text-gray-800 border-0 focus:ring-4 focus:ring-blue-200"
-                           id="location-search"
-                           autocomplete="off">
+            <!-- Декоративные элементы -->
+            <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full -translate-y-16 translate-x-16"></div>
+            <div class="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-12 -translate-x-12"></div>
 
-                    <button type="button" id="geolocation-btn" class="absolute right-16 text-gray-500 hover:text-blue-600">
-                        <i class="fas fa-location-arrow"></i>
-                    </button>
+            <div class="text-center relative z-10">
+                <!-- Заголовок с анимацией -->
+                <h1 class="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6
+                           leading-tight drop-shadow-lg animate-fade-in-down">
+                    Сервис выгодных сделок с недвижимостью
+                </h1>
 
-                    <button type="submit"
-                            class="bg-blue-700 hover:bg-blue-800 px-6 py-4 rounded-lg
-                                   font-bold text-white transition-all duration-300
-                                   transform hover:scale-105 ml-2">
-                        Найти
-                    </button>
+                <!-- Подзаголовок -->
+                <p class="text-xl md:text-2xl text-blue-100 mb-8 opacity-95
+                          font-light leading-relaxed animate-fade-in-up">
+                    База проверенных брокеров и эксклюзивных предложений
+                </p>
+
+                <!-- Улучшенная форма поиска -->
+                <div class="max-w-3xl mx-auto bg-white/95 backdrop-blur-sm rounded-2xl
+                           p-3 shadow-2xl transform hover:scale-[1.02] transition-all
+                           duration-300 border border-white/20">
+                    <form class="flex flex-col" id="search-form"
+                          action="{% if user.is_authenticated %}{% url 'properties:property-list' %}{% else %}{% url 'register' %}?next={% url 'properties:property-list' %}{% endif %}"
+                          method="get">
+                        <div class="relative flex items-center">
+                            <input type="text"
+                                   name="search"
+                                   placeholder="🔍 Введите город, метро, '2-комнатная', 'цена 5-10 млн', 'рядом со мной'..."
+                                   class="flex-grow px-6 py-4 rounded-xl text-gray-800 border-0
+                                          focus:ring-4 focus:ring-blue-200/50 focus:outline-none
+                                          placeholder-gray-500 text-lg"
+                                   id="location-search"
+                                   autocomplete="off">
+
+                            <button type="button" id="geolocation-btn"
+                                    class="absolute right-16 text-gray-500 hover:text-blue-600
+                                           transition-colors duration-200">
+                                <i class="fas fa-location-arrow text-lg"></i>
+                            </button>
+
+                            <button type="submit"
+                                    class="bg-gradient-to-r from-blue-700 to-blue-800
+                                           hover:from-blue-800 hover:to-blue-900 px-6 py-4
+                                           rounded-xl font-bold text-white transition-all
+                                           duration-300 transform hover:scale-105 ml-2
+                                           shadow-lg shadow-blue-600/30">
+                                Найти
+                            </button>
+                        </div>
+
+                        <div id="search-suggestions" class="hidden bg-white mt-2 rounded-xl
+                                                          shadow-lg z-10 max-h-60 overflow-auto
+                                                          border border-gray-200">
+                            <!-- Здесь будут подсказки -->
+                        </div>
+
+                        <button type="button" id="show-filters"
+                                class="mt-3 text-blue-100 hover:text-white text-sm font-medium
+                                       self-start flex items-center transition-colors duration-200">
+                            <i class="fas fa-sliders-h mr-2"></i> Быстрые фильтры
+                        </button>
+                    </form>
+
+                    <!-- Скрытый инпут для геолокации -->
+                    <input type="hidden" id="geo-coords" name="radius_filter">
                 </div>
-
-                <div id="search-suggestions" class="hidden bg-white mt-1 rounded-lg shadow-lg z-10 max-h-60 overflow-auto">
-                    <!-- Здесь будут подсказки -->
-                </div>
-
-                <div class="text-xs text-gray-500 mt-2 pl-2">
-
-                </div>
-
-                <button type="button" id="show-filters" class="mt-2 text-blue-600 text-sm font-medium self-start flex items-center">
-                    <i class="fas fa-sliders-h mr-2"></i> Быстрые фильтры
-                </button>
-            </form>
-
-            <!-- Скрытый инпут для геолокации -->
-            <input type="hidden" id="geo-coords" name="radius_filter">
+            </div>
         </div>
     </div>
 </div>
+
 
 <!-- Категории -->
 <div class="container mx-auto px-4 py-16">
@@ -287,6 +348,7 @@
 
 <!-- Медиа секция -->
 <!-- Featured Media Section -->
+<!-- Медиа секция -->
 <div class="container mx-auto px-4 py-16">
     <div class="text-center mb-12">
         <h2 class="text-4xl font-bold mb-4">Рекомендуемые материалы</h2>
@@ -297,27 +359,34 @@
         {% for media in featured_media %}
         <a href="{{ media.get_absolute_url }}" class="media-card">
             <div class="bg-white rounded-lg shadow-md h-full flex flex-col">
-<!-- home.html -->
-<div class="relative h-48 bg-gradient-to-r from-blue-500 to-blue-700 flex items-center justify-center">
-    {% if media.media_type == 'video' %}
-        {% if media.get_thumbnail_url %}
-            <img src="{{ media.get_thumbnail_url }}" alt="{{ media.title }}" class="w-full h-full object-cover">
-        {% else %}
-            <i class="fas fa-play-circle text-white text-6xl media-icon"></i>
-        {% endif %}
-        <span class="media-badge">Видео</span>
-    {% elif media.media_type == 'photo' %}
-        {% if media.get_thumbnail_url %}
-            <img src="{{ media.get_thumbnail_url }}" alt="{{ media.title }}" class="w-full h-full object-cover">
-        {% else %}
-            <i class="fas fa-camera text-white text-6xl media-icon"></i>
-        {% endif %}
-        <span class="media-badge">Фото</span>
-    {% else %}
-        <i class="fas fa-file-alt text-white text-6xl media-icon"></i>
-        <span class="media-badge">Файл</span>
-    {% endif %}
-</div>         <div class="p-6 flex-grow">
+                <div class="relative h-48 bg-gradient-to-r from-blue-500 to-blue-700 flex items-center justify-center">
+                    {% if media.media_type == 'video' %}
+                        {% if media.thumbnail_url %}
+                            <img src="{{ media.thumbnail_url }}" alt="{{ media.title }}" class="w-full h-full object-cover">
+                        {% else %}
+                            <i class="fas fa-play-circle text-white text-6xl media-icon"></i>
+                        {% endif %}
+                        <span class="media-badge">Видео</span>
+                    {% elif media.media_type == 'photo' %}
+                        {% if media.thumbnail_url %}
+                            <img src="{{ media.thumbnail_url }}" alt="{{ media.title }}" class="w-full h-full object-cover">
+                        {% else %}
+                            <i class="fas fa-camera text-white text-6xl media-icon"></i>
+                        {% endif %}
+                        <span class="media-badge">Фото</span>
+                    {% elif media.media_type == 'article' %}
+                        {% if media.thumbnail_url %}
+                            <img src="{{ media.thumbnail_url }}" alt="{{ media.title }}" class="w-full h-full object-cover">
+                        {% else %}
+                            <i class="fas fa-newspaper text-white text-6xl media-icon"></i>
+                        {% endif %}
+                        <span class="media-badge">Статья</span>
+                    {% else %}
+                        <i class="fas fa-file-alt text-white text-6xl media-icon"></i>
+                        <span class="media-badge">Файл</span>
+                    {% endif %}
+                </div>
+                <div class="p-6 flex-grow">
                     <h3 class="text-xl font-bold mb-2">{{ media.title }}</h3>
                     <p class="text-gray-600 mb-4">{{ media.description|truncatechars:100 }}</p>
                     <div class="flex items-center text-blue-600 font-medium">
@@ -330,12 +399,13 @@
         {% endfor %}
     </div>
 
-<div class="text-center mt-12">
-    <a href="{% url 'media_content:list' %}"
-       class="inline-block bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold px-12 py-4
-              rounded-2xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
-        Все медиаматериалы
-    </a>
+    <div class="text-center mt-12">
+        <a href="{% url 'media_content:list' %}"
+           class="inline-block bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold px-12 py-4
+                  rounded-2xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+            Все медиаматериалы
+        </a>
+    </div>
 </div>
 
 <!-- Модальное окно для фильтров -->
