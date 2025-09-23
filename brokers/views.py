@@ -1,3 +1,4 @@
+# brokers/views.py
 from django.db.models import Q
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404
@@ -14,6 +15,8 @@ from django.views.generic import TemplateView
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.views import View
+from django_filters.views import FilterView
+from .filters import BrokerFilter
 
 
 
@@ -45,6 +48,7 @@ class PropertyCreateWithSubscriptionCheck(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
+# brokers/views.py
 class BrokerListView(ListView):
     model = BrokerProfile
     template_name = 'brokers/broker_list.html'
@@ -52,22 +56,67 @@ class BrokerListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        search_query = self.request.GET.get('search', '')
+        queryset = super().get_queryset().filter(
+            is_archived=False,
+            is_approved=True,
+            user__is_verified=True
+        )
 
+        # Применяем фильтры из GET-параметров
+        search_query = self.request.GET.get('search', '')
+        rating_filter = self.request.GET.get('rating', '')
+        experience_filter = self.request.GET.get('experience', '')
+        services = self.request.GET.getlist('services')
+        specializations = self.request.GET.getlist('specialization')
+
+        # Поиск по имени
         if search_query:
             queryset = queryset.filter(
                 Q(user__first_name__icontains=search_query) |
                 Q(user__last_name__icontains=search_query) |
-                Q(user__patronymic__icontains=search_query))
+                Q(user__patronymic__icontains=search_query)
+            )
 
-            # Фильтруем только подтвержденных и неархивированных брокеров
-        return queryset.filter(
-            is_archived=False,
-            is_approved=True,
-            user__is_verified=True  # Добавляем проверку верификации пользователя
-        )
+        # Фильтр по рейтингу
+        if rating_filter:
+            try:
+                rating = float(rating_filter)
+                queryset = queryset.filter(rating__gte=rating)
+            except ValueError:
+                pass
 
+        # Фильтр по опыту работы
+        if experience_filter:
+            if experience_filter == '0-2':
+                queryset = queryset.filter(experience__lt=2)
+            elif experience_filter == '2-5':
+                queryset = queryset.filter(experience__gte=2, experience__lt=5)
+            elif experience_filter == '5-10':
+                queryset = queryset.filter(experience__gte=5, experience__lt=10)
+            elif experience_filter == '10+':
+                queryset = queryset.filter(experience__gte=10)
+
+        # Фильтр по услугам
+        if services:
+            q_objects = Q()
+            for service in services:
+                q_objects |= Q(services__contains=service)
+            queryset = queryset.filter(q_objects)
+
+        # Фильтр по специализации - ИСПРАВЛЕНО
+        if specializations:
+            q_objects = Q()
+            for spec in specializations:
+                q_objects |= Q(specializations__contains=spec)  # ← specializations вместо specialization
+            queryset = queryset.filter(q_objects)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Добавляем параметры фильтрации в контекст для пагинации
+        context['current_filters'] = self.request.GET.urlencode()
+        return context
 class BrokerDetailView(DetailView):
     model = BrokerProfile
     template_name = 'brokers/broker_detail.html'

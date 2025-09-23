@@ -61,17 +61,17 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-ваш-резерв
 
 handler500 = 'accounts.views.server_error'
 ALLOWED_HOSTS = [
-"*"
-
+    "*",  # Разрешает все хосты (уже есть)
+    "localhost",
+    "127.0.0.1",
+    "192.168.1.98",  # Ваш IP (уже есть)
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
-    'http://192.168.1.98:8000',
-
+    'http://192.168.1.98:8000',  # Ваш IP (уже есть)
 ]
-
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -260,7 +260,7 @@ LOGIN_URL = 'login'
     # Настройки S3 (оставьте ваши текущие AWS-ключи и endpoint)
     #AWS_ACCESS_KEY_ID = '95bf86962b9e4d1d94958be095e5d901'
    # AWS_SECRET_ACCESS_KEY = 'fpwzZRsVN2jkAkUD9hvYQ5'
-    #AWS_STORAGE_BUCKET_NAME = 'winwindeal'
+    #AWS_STORAGE_BUCKET_NAME = 'money'
    # AWS_S3_ENDPOINT_URL = 'https://hb.ru-1.storage.cloud.mail.ru'
    # AWS_S3_REGION_NAME = 'ru-1'
 

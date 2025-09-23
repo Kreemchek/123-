@@ -3,26 +3,12 @@
 
 {% block content %}
 <style>
-    .registration-container {
-        max-width: 1000px;
-        margin: 2rem auto;
-        padding: 2rem;
-        background: white;
-        border-radius: 1rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .custom-input {
-        width: 100%;
-        padding: 0.75rem 1rem;
-        border: 2px solid #e5e7eb;
+    .debug-info {
+        background-color: #f3f4f6;
+        padding: 1rem;
         border-radius: 0.5rem;
-        font-size: 16px;
-        transition: all 0.2s ease;
-    }
-    .custom-input:focus {
-        border-color: #3b82f6;
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        margin-bottom: 1rem;
+        font-family: monospace;
     }
 </style>
 
@@ -31,33 +17,115 @@
         <i class="bi bi-person-badge mr-2"></i>Профессиональная информация
     </h1>
 
+    <!-- DEBUG INFORMATION -->
+    <div class="debug-info">
+        <h3>DEBUG INFO:</h3>
+        <p><strong>Form class name:</strong> {{ form.class.name }}</p>
+        <p><strong>Form fields:</strong> {{ form.fields.keys }}</p>
+        <p><strong>Form has services field:</strong> {% if 'services' in form.fields %}YES{% else %}NO{% endif %}</p>
+        <p><strong>Form has specializations field:</strong> {% if 'specializations' in form.fields %}YES{% else %}NO{% endif %}</p>
+        {% if 'services' in form.fields %}
+            <p><strong>Services choices:</strong> {{ form.fields.services.choices }}</p>
+        {% endif %}
+        {% if 'specializations' in form.fields %}
+            <p><strong>Specializations choices:</strong> {{ form.fields.specializations.choices }}</p>
+        {% endif %}
+        <p><strong>Form instance:</strong> {{ form.instance }}</p>
+    </div>
+
     <form method="post" class="space-y-6">
         {% csrf_token %}
 
-        <!-- Вывод ошибок -->
-        {% if form.errors %}
+        <!-- Вывод общих ошибок формы -->
+        {% if form.non_field_errors %}
         <div class="bg-red-50 p-4 rounded-lg mb-6">
-            {% for field, errors in form.errors.items %}
-                {% for error in errors %}
-                    <p class="text-red-600">✖ {{ error }}</p>
-                {% endfor %}
+            {% for error in form.non_field_errors %}
+                <p class="text-red-600">✖ {{ error }}</p>
             {% endfor %}
         </div>
         {% endif %}
-     <!-- Поля формы -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <label class="block text-sm font-medium mb-2">{{ form.experience.label }}</label>
-                {{ form.experience }}
-            </div>
+
+        <!-- Опыт работы -->
+        <div>
+            <label class="block text-sm font-medium mb-2">{{ form.experience.label }}</label>
+            {{ form.experience }}
+            {% if form.experience.errors %}
+                <div class="text-red-600 text-sm mt-1">
+                    {% for error in form.experience.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
 
-
-
+        <!-- О себе -->
         <div>
             <label class="block text-sm font-medium mb-2">{{ form.about.label }}</label>
             {{ form.about }}
+            {% if form.about.errors %}
+                <div class="text-red-600 text-sm mt-1">
+                    {% for error in form.about.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
+
+        <!-- Услуги -->
+        {% if 'services' in form.fields %}
+        <div>
+            <label class="block text-sm font-medium mb-2">{{ form.services.label }}</label>
+            <div class="checkbox-group">
+                {% for checkbox in form.services %}
+                <label class="checkbox-item">
+                    {{ checkbox.tag }}
+                    {{ checkbox.choice_label }}
+                </label>
+                {% empty %}
+                <p class="text-red-500">No services checkboxes available!</p>
+                {% endfor %}
+            </div>
+            {% if form.services.errors %}
+                <div class="text-red-600 text-sm mt-1">
+                    {% for error in form.services.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="bg-yellow-50 p-4 rounded-lg">
+            <p class="text-yellow-700">Поле 'services' отсутствует в форме!</p>
+        </div>
+        {% endif %}
+
+        <!-- Специализация -->
+        {% if 'specializations' in form.fields %}
+        <div>
+            <label class="block text-sm font-medium mb-2">{{ form.specializations.label }}</label>
+            <div class="checkbox-group">
+                {% for checkbox in form.specializations %}
+                <label class="checkbox-item">
+                    {{ checkbox.tag }}
+                    {{ checkbox.choice_label }}
+                </label>
+                {% empty %}
+                <p class="text-red-500">No specializations checkboxes available!</p>
+                {% endfor %}
+            </div>
+            {% if form.specializations.errors %}
+                <div class="text-red-600 text-sm mt-1">
+                    {% for error in form.specializations.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="bg-yellow-50 p-4 rounded-lg">
+            <p class="text-yellow-700">Поле 'specializations' отсутствует в форме!</p>
+        </div>
+        {% endif %}
 
         <button type="submit"
                 class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium">

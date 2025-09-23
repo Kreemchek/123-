@@ -32,8 +32,8 @@ from .models import (User, UserActivity,
                      ExclusiveProperty, PropertyListing, UserAgreement )
 
 from .forms import (UserRegistrationForm, RoleSelectionForm,
-                    ProfileForm, ContactRequestForm, BrokerProfileForm)
-
+                    ProfileForm, ContactRequestForm)
+from brokers.forms import BrokerProfileForm  # Добавьте эту строку
 from dateutil.relativedelta import relativedelta
 from django.utils import timezone
 from properties.forms import PropertyForm
@@ -735,17 +735,21 @@ def delete_request(request, pk):
         messages.success(request, "Запрос успешно удален")
     return redirect('dashboard')
 
+
 class CompleteBrokerInfoView(LoginRequiredMixin, UpdateView):
     form_class = BrokerProfileForm
     template_name = 'accounts/complete_broker_info.html'
     success_url = reverse_lazy('dashboard')
 
     def get_object(self):
+        # Получаем или создаем профиль брокера с начальными значениями
         broker_profile, created = BrokerProfile.objects.get_or_create(
             user=self.request.user,
             defaults={
                 'experience': 0,
-                'about': ''
+                'about': '',
+                'services': [],  # Добавляем пустой список для услуг
+                'specializations': []  # Добавляем пустой список для специализации
             }
         )
         return broker_profile
@@ -753,6 +757,11 @@ class CompleteBrokerInfoView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         broker_profile = form.save(commit=False)
         broker_profile.user = self.request.user
+
+        # Сохраняем выбранные услуги и специализации
+        broker_profile.services = form.cleaned_data.get('services', [])
+        broker_profile.specializations = form.cleaned_data.get('specializations', [])
+
         broker_profile.save()
 
         # Обновляем пользователя
@@ -760,23 +769,17 @@ class CompleteBrokerInfoView(LoginRequiredMixin, UpdateView):
         user.is_verified = True
         user.save()
 
+        messages.success(self.request, 'Профиль брокера успешно обновлен!')
         return redirect(self.get_success_url())
 
-
+    def form_invalid(self, form):
+        messages.error(self.request, 'Пожалуйста, исправьте ошибки в форме.')
+        return super().form_invalid(form)
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         form.fields['experience'].required = True
-
         return form
-
-    def get_queryset(self):
-        # Фильтруем подтвержденные профили брокеров
-        return BrokerProfile.objects.filter(
-            user__is_verified=True,
-            user__user_type=User.UserType.BROKER,
-            is_approved=True  # Если требуется модерация
-        )
 
 
 class DirectContactBrokerConsultView(LoginRequiredMixin, View):

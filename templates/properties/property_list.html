@@ -852,6 +852,592 @@
     margin-bottom: 10rem !important;
     padding-bottom: 1.5rem !important;
 }
+
+/* СТИЛИ ДЛЯ КАРТОЧЕК ОБЪЕКТОВ */
+.listings {
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 18px;
+}
+
+.card {
+    border-radius: 14px !important;
+    padding: 12px !important;
+    background: white !important;
+    border: 1px solid rgba(0,0,0,0.08) !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important;
+    display: flex !important;
+    gap: 12px !important;
+    align-items: flex-start !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+    text-decoration: none !important;
+    color: inherit !important;
+}
+
+.card:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.12) !important;
+    text-decoration: none !important;
+    color: inherit !important;
+}
+
+.thumb {
+    width: 150px !important;
+    height: 110px !important;
+    border-radius: 10px !important;
+    flex-shrink: 0 !important;
+    background-size: cover !important;
+    background-position: center !important;
+    border: 1px solid rgba(0,0,0,0.06) !important;
+}
+
+.meta {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+}
+
+.meta .type {
+    font-size: 12px !important;
+    color: #64748b !important;
+    margin: 0 !important;
+}
+
+.meta h3 {
+    margin: 0 !important;
+    font-size: 16px !important;
+    color: #1e293b !important;
+}
+
+.meta .meta-row {
+    display: flex !important;
+    gap: 10px !important;
+    align-items: center !important;
+    color: #64748b !important;
+    font-size: 13px !important;
+    margin: 0 !important;
+}
+
+.price {
+    font-weight: 800 !important;
+    font-size: 16px !important;
+    color: #7b61ff !important;
+}
+
+.btn {
+    background: white !important;
+    border: 1px solid rgba(0,0,0,0.08) !important;
+    padding: 8px 12px !important;
+    border-radius: 8px !important;
+    color: #64748b !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    font-size: 12px !important;
+    transition: all 0.2s ease !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+}
+
+.btn:hover {
+    background: rgba(0,0,0,0.02) !important;
+}
+
+.toggle-favorite {
+    background: none !important;
+    border: none !important;
+    cursor: pointer !important;
+    color: #9ca3af !important;
+    transition: color 0.2s ease !important;
+    padding: 4px !important;
+}
+
+.toggle-favorite:hover {
+    color: #ef4444 !important;
+}
+
+/* Адаптивность для карточек */
+@media (max-width: 768px) {
+    .listings {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+
+    .card {
+        flex-direction: column !important;
+    }
+
+    .thumb {
+        width: 100% !important;
+        height: 200px !important;
+    }
+}
+/* Остальные существующие стили из filtry.html */
+:root{
+  --bg: #f8fafc; /* light background */
+  --panel: #ffffff; /* card background */
+  --muted: #64748b;
+  --text: #1e293b;
+  --accent-1: linear-gradient(135deg,#7b61ff 0%, #36d1dc 100%);
+  --glass: rgba(0,0,0,0.04);
+  --glass-2: rgba(0,0,0,0.02);
+  --glass-3: rgba(0,0,0,0.06);
+  --card-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  --glass-border: rgba(0,0,0,0.08);
+  --success: #10b981;
+  --danger: #ef4444;
+  --glass-border-2: rgba(0,0,0,0.06);
+  --glass-highlight: rgba(0,0,0,0.02);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body.properties-page{
+  margin:0;
+  background: radial-gradient(1200px 600px at 10% 10%, rgba(55,102,255,0.04), transparent),
+              radial-gradient(900px 450px at 95% 80%, rgba(54,209,220,0.03), transparent),
+              var(--bg);
+  color:var(--text);
+  font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  padding:28px;
+}
+
+/* layout */
+.properties-page .shell{
+  max-width:1320px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:320px 1fr;
+  gap:28px;
+  align-items:start;
+}
+
+.properties-page header.topbar{
+  grid-column:1 / -1;
+  display:flex;
+  gap:18px;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:6px;
+}
+
+.properties-page .brand{
+  display:flex;align-items:center;gap:12px
+}
+.properties-page .logo{
+  width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#6f53ff,#2bd7db);
+  display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(77,52,255,0.15);
+  font-weight:800;color:white;font-family:Manrope;font-size:18px
+}
+.properties-page .brand h1{font-size:18px;margin:0;color:var(--text)}
+.properties-page .brand p{margin:0;color:var(--muted);font-size:13px}
+
+/* top search */
+.properties-page .searchbar{
+  flex:1;max-width:820px;display:flex;align-items:center;gap:12px;background:white;
+  border-radius:12px;padding:10px 14px;border:1px solid var(--glass-border);
+  box-shadow: var(--card-shadow);
+}
+.properties-page .searchbar input{flex:1;background:transparent;border:0;color:var(--text);font-size:15px;padding:10px;outline:none}
+.properties-page .search-actions{display:flex;gap:8px}
+.properties-page .btn{
+  background:white;
+  border:1px solid var(--glass-border);
+  padding:10px 14px;border-radius:10px;color:var(--muted);font-weight:600;cursor:pointer;font-size:14px;
+  transition: all 0.2s ease;
+}
+.properties-page .btn:hover{
+  background:var(--glass-highlight);
+}
+.properties-page .btn-accent{
+  background:var(--accent-1);border:0;color:white;padding:10px 16px;border-radius:12px;font-weight:700;box-shadow:0 6px 30px rgba(99,72,255,0.15);
+}
+.properties-page .btn-accent:hover{
+  transform: translateY(-1px);
+  box-shadow:0 8px 35px rgba(99,72,255,0.2);
+}
+
+/* left filters */
+.properties-page aside.filters{
+  background:white;padding:18px;border-radius:16px;border:1px solid var(--glass-border-2);
+  position:sticky;top:28px;height:calc(100vh - 56px);overflow:auto;box-shadow:var(--card-shadow)
+}
+.properties-page aside h2{font-size:16px;margin:0 0 10px 0;color:var(--text)}
+.properties-page .filter-group{background:var(--glass-highlight);border-radius:12px;padding:12px;margin-bottom:12px;border:1px solid var(--glass-border)}
+.properties-page label.field{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+.properties-page select,.properties-page input[type=text],.properties-page input[type=number]{width:100%;padding:10px;border-radius:10px;border:1px solid var(--glass-border);background:white;color:var(--text);font-size:14px}
+.properties-page .two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.properties-page .range{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.properties-page .checkbox-row{display:flex;flex-wrap:wrap;gap:8px}
+.properties-page .chip{padding:8px 10px;border-radius:10px;border:1px solid var(--glass-border);font-size:13px;background:white;color:var(--muted);cursor:pointer;transition: all 0.2s ease;}
+.properties-page .chip:hover{
+  border-color: #7b61ff;
+  color: #7b61ff;
+}
+.properties-page .chip.active{background:linear-gradient(90deg,#3aa7ff22,#6f53ff22);border:1px solid rgba(120,110,255,0.3);color:#4c37d4}
+
+.properties-page .filters-footer{display:flex;gap:8px;position:sticky;bottom:18px;padding-top:8px;background:linear-gradient(180deg, transparent, rgba(255,255,255,0.9));}
+
+/* main content */
+.properties-page main.content{min-height:60vh}
+.properties-page .map{
+  border-radius:16px;height:320px;background:linear-gradient(135deg, rgba(120,80,255,0.06), rgba(54,209,220,0.04));border:1px solid var(--glass-border);display:flex;flex-direction:column;overflow:hidden;position:relative;box-shadow:var(--card-shadow)
+}
+.properties-page .map .placeholder{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;color:var(--muted);
+  background:repeating-linear-gradient(45deg, rgba(0,0,0,0.02) 0 2px, transparent 2px 6px);
+}
+.properties-page .map .placeholder .title{font-size:18px;font-weight:700;color:var(--text)}
+.properties-page .map .controls{position:absolute;right:12px;top:12px;display:flex;flex-direction:column;gap:8px}
+.properties-page .map .pin{width:48px;height:48px;border-radius:12px;background:var(--accent-1);display:flex;align-items:center;justify-content:center;color:white;font-weight:800}
+
+.properties-page .listings{margin-top:18px;display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:18px}
+.properties-page .card{
+  border-radius:14px;padding:12px;background:white;border:1px solid var(--glass-border);box-shadow:var(--card-shadow);display:flex;gap:12px;align-items:flex-start;transition:transform .24s cubic-bezier(.2,.9,.3,1),box-shadow .24s
+}
+.properties-page .card:hover{transform:translateY(-4px);box-shadow:0 15px 40px rgba(0,0,0,0.12)}
+.properties-page .thumb{width:150px;height:110px;border-radius:10px;flex-shrink:0;background-size:cover;background-position:center;border:1px solid rgba(0,0,0,0.06)}
+.properties-page .meta{flex:1;display:flex;flex-direction:column;gap:6px}
+.properties-page .meta .type{font-size:12px;color:var(--muted)}
+.properties-page .meta h3{margin:0;font-size:16px;color:var(--text)}
+.properties-page .meta .meta-row{display:flex;gap:10px;align-items:center;color:var(--muted);font-size:13px}
+.properties-page .price{font-weight:800;font-size:16px;color:#7b61ff}
+.properties-page .badge{padding:6px 8px;border-radius:8px;background:rgba(0,0,0,0.03);border:1px solid var(--glass-border);font-size:12px;color:var(--muted)}
+.properties-page .card .actions{display:flex;gap:8px;align-items:center}
+
+.properties-page footer.lic{grid-column:1 / -1;margin-top:18px;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;align-items:center}
+
+/* tiny responsiveness */
+@media (max-width:980px){
+  .properties-page .shell{grid-template-columns:1fr;}
+  .properties-page aside.filters{position:relative;height:auto}
+  .properties-page header.topbar{flex-direction:column;align-items:flex-start;gap:12px}
+  .properties-page .searchbar{max-width:100%}
+}
+
+/* micro interactions */
+.properties-page .pulse{animation:pulse 4s infinite}
+@keyframes pulse{0%{transform:translateY(0)}50%{transform:translateY(-4px)}100%{transform:translateY(0)}}
+
+/* nice scrollbar for filters */
+.properties-page aside.filters::-webkit-scrollbar{width:10px}
+.properties-page aside.filters::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.1);border-radius:10px;border:2px solid transparent;background-clip:padding-box}
+.properties-page aside.filters::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,0.2);border-radius:10px;border:2px solid transparent;background-clip:padding-box}
+.properties-page aside.filters::-webkit-scrollbar-track{background:transparent}
+
+/* Стили для кнопки переключения фильтров на мобильных устройствах */
+@media (max-width: 980px) {
+    .properties-page .filter-toggle {
+        display: block;
+        margin-bottom: 1rem;
+        width: 100%;
+        padding: 12px;
+        background: var(--accent-1);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        text-align: center;
+    }
+
+    .properties-page aside.filters {
+        display: none;
+        margin-bottom: 1rem;
+    }
+
+    .properties-page aside.filters.active {
+        display: block;
+        animation: slideDown 0.3s ease-out;
+    }
+}
+
+/* Анимация появления */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Стили для иконок */
+.properties-page .icon {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* Стили для состояния загрузки */
+.properties-page .loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Стили для уведомлений */
+.properties-page .notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 18px;
+    border-radius: 10px;
+    background: white;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border-left: 4px solid var(--success);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+}
+
+.properties-page .notification.show {
+    transform: translateX(0);
+}
+
+.properties-page .notification.error {
+    border-left-color: var(--danger);
+}
+
+/* Стили для выбранных фильтров */
+.properties-page .selected-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.properties-page .selected-filter {
+    background: linear-gradient(90deg,#3aa7ff22,#6f53ff22);
+    border: 1px solid rgba(120,110,255,0.3);
+    color: #4c37d4;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.properties-page .selected-filter button {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* Стили для пустого состояния */
+.properties-page .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+}
+
+.properties-page .empty-state h3 {
+    margin-bottom: 10px;
+    color: var(--text);
+}
+
+.properties-page .empty-state p {
+    margin-bottom: 20px;
+}
+
+/* Стили для скелетона (загрузка) */
+.properties-page .skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: 8px;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.properties-page .card.skeleton .thumb {
+    background: #f0f0f0;
+}
+
+.properties-page .card.skeleton .meta h3 {
+    height: 20px;
+    margin-bottom: 10px;
+}
+
+.properties-page .card.skeleton .meta .type {
+    height: 14px;
+    width: 60%;
+    margin-bottom: 8px;
+}
+
+.properties-page .card.skeleton .meta .price {
+    height: 18px;
+    width: 40%;
+}
+
+/* Стили для аккордеона в фильтрах */
+.properties-page .filter-accordion {
+    margin-bottom: 12px;
+}
+
+.properties-page .filter-accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.properties-page .filter-accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.properties-page .filter-accordion.active .filter-accordion-content {
+    max-height: 500px;
+}
+
+.properties-page .filter-accordion-header::after {
+    content: "▼";
+    font-size: 10px;
+    transition: transform 0.3s ease;
+}
+
+.properties-page .filter-accordion.active .filter-accordion-header::after {
+    transform: rotate(180deg);
+}
+
+/* Стили для иконок в кнопках */
+.properties-page .btn i {
+    margin-right: 6px;
+}
+
+/* Стили для темной темы */
+@media (prefers-color-scheme: dark) {
+    .properties-page {
+        --bg: #0f172a;
+        --panel: #1e293b;
+        --muted: #94a3b8;
+        --text: #f1f5f9;
+        --glass: rgba(255,255,255,0.04);
+        --glass-2: rgba(255,255,255,0.02);
+        --glass-3: rgba(255,255,255,0.06);
+        --card-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        --glass-border: rgba(255,255,255,0.08);
+        --glass-border-2: rgba(255,255,255,0.06);
+        --glass-highlight: rgba(255,255,255,0.02);
+    }
+
+    .properties-page body {
+        background: radial-gradient(1200px 600px at 10% 10%, rgba(55,102,255,0.08), transparent),
+                    radial-gradient(900px 450px at 95% 80%, rgba(54,209,220,0.06), transparent),
+                    var(--bg);
+    }
+
+    .properties-page .searchbar,
+    .properties-page aside.filters,
+    .properties-page .card,
+    .properties-page .btn {
+        background: var(--panel);
+        border-color: var(--glass-border);
+    }
+
+    .properties-page .chip {
+        background: var(--panel);
+    }
+
+    .properties-page .badge {
+        background: rgba(255,255,255,0.05);
+    }
+
+    .properties-page .map .placeholder {
+        background: repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0 2px, transparent 2px 6px);
+    }
+}
+
+/* Стили для кастомного скроллбара */
+.properties-page ::-webkit-scrollbar {
+    width: 8px;
+}
+
+.properties-page ::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.properties-page ::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.1);
+    border-radius: 4px;
+}
+
+.properties-page ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0,0,0,0.2);
+}
+
+@media (prefers-color-scheme: dark) {
+    .properties-page ::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.1);
+    }
+
+    .properties-page ::-webkit-scrollbar-thumb:hover {
+        background: rgba(255,255,255,0.2);
+    }
+}
+
+/* Стили для градиентной подсветки чипсов при наведении */
+.chip {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+.chip .chip-hover-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+}
+
+.chip span {
+    position: relative;
+    z-index: 2;
+}
+
+.chip:hover .chip-hover-gradient {
+    opacity: 0.1;
+}
+
+.chip:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(123, 97, 255, 0.15);
+    border-color: #7b61ff;
+}
+
+.chip.active {
+    background: linear-gradient(90deg, rgba(58, 167, 255, 0.13), rgba(111, 83, 255, 0.13));
+    border: 1px solid rgba(120, 110, 255, 0.3);
+    color: #4c37d4;
+}
+
+.chip.active .chip-hover-gradient {
+    opacity: 0.15;
+}
+
 </style>
 {% endblock %}
 
@@ -860,6 +1446,7 @@
 {% endblock %}
 
 {% block content %}
+<body class="properties-page">
 <div class="container mx-auto px-4 py-8">
     <!-- Контейнер для карты и поиска -->
     <div class="map-search-container">
@@ -902,88 +1489,235 @@
 
 
      <div class="flex flex-col lg:flex-row gap-8">
-        <aside class="w-full lg:w-64 flex-shrink-0 order-first">
-            <div class="bg-white rounded-lg shadow p-6 sticky-column">
-                <button class="filter-toggle btn-primary mb-4 lg:hidden">
-                    <i class="bi bi-funnel"></i> Фильтры
-                </button>
-                <div class="filter-sidebar lg:block" id="filter-sidebar">
-                    <form method="get" id="filter-form">
-                        <!-- Тип недвижимости -->
-                       <div class="filter-section">
-    <h3 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-100">Тип недвижимости</h3>
-    <div class="property-type-filter grid grid-cols-1 gap-2">
-        {% for pt in property_types %}
-            <div class="property-type-item flex items-center p-2 rounded-lg border-2 border-blue-100 hover:border-blue-300 transition-colors">
-                <input type="checkbox"
-                       name="property_type"
-                       value="{{ pt.name }}"
-                       id="property_type_{{ pt.name }}"
-                       class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
-                       {% if pt.name in selected_property_types %}checked{% endif %}>
-                <label for="property_type_{{ pt.name }}" class="ml-2 text-sm font-medium text-gray-700">
-                    {{ pt.get_name_display }}
-                </label>
-            </div>
-        {% endfor %}
-    </div>
-</div>
-                 <div class="filter-section">
-    <h3 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-100">Вид размещения</h3>
-    <div class="grid grid-cols-1 gap-2">
-        <div class="flex items-center p-3 rounded-lg border-2 border-blue-100 hover:border-blue-300 transition-colors">
-            <input type="checkbox" name="rental_type" value="no" id="rental_type_no"
-                   {% if 'no' in selected_rental_types %}checked{% endif %}
-                   class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
-            <label for="rental_type_no" class="ml-2 text-sm font-medium text-gray-700">Купить</label>
-        </div>
-        <div class="flex items-center p-3 rounded-lg border-2 border-blue-100 hover:border-blue-300 transition-colors">
-            <input type="checkbox" name="rental_type" value="monthly" id="rental_type_monthly"
-                   {% if 'monthly' in selected_rental_types %}checked{% endif %}
-                   class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
-            <label for="rental_type_monthly" class="ml-2 text-sm font-medium text-gray-700">Аренда помесячно</label>
-        </div>
-        <div class="flex items-center p-3 rounded-lg border-2 border-blue-100 hover:border-blue-300 transition-colors">
-            <input type="checkbox" name="rental_type" value="daily" id="rental_type_daily"
-                   {% if 'daily' in selected_rental_types %}checked{% endif %}
-                   class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
-            <label for="rental_type_daily" class="ml-2 text-sm font-medium text-gray-700">Аренда посуточно</label>
-        </div>
-    </div>
-</div>
-
-                     <!-- Город -->
-                       <!-- В секции фильтра по городу замените текущий input на этот код -->
-<div class="filter-section">
-    <h3 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-100">Город</h3>
-    <div class="relative">
-        <button type="button"
-                id="city-input"
-                class="w-full px-3 py-2 border-2 border-blue-500 rounded-lg text-sm font-medium bg-white hover:bg-blue-50 transition-colors text-left relative shadow-sm hover:shadow-md"
-                onclick="document.getElementById('city-dropdown').classList.remove('hidden')">
-            <span id="selected-city-text" class="text-gray-700">
-                {% if filter.form.location.value %}
-                    {{ filter.form.location.value }}
-                {% else %}
-                    Выберите город
-                {% endif %}
-            </span>
-            <i class="bi bi-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
+<aside class="w-full lg:w-80 flex-shrink-0 order-first">
+    <div class="bg-white rounded-lg shadow p-6 sticky-column">
+        <button class="filter-toggle btn-primary mb-4 lg:hidden">
+            <i class="bi bi-funnel"></i> Фильтры
         </button>
+        <div class="filter-sidebar lg:block" id="filter-sidebar">
+            <form method="get" id="filter-form">
+                <!-- Тип недвижимости -->
+            <!-- Тип недвижимости -->
+<!-- Тип недвижимости -->
 
-        <input type="hidden"
-               name="location"
-               value="{{ filter.form.location.value|default:'' }}"
-               id="city-hidden-input">
 
-       <div id="city-dropdown" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4">
+<!-- Замените существующий блок "Тип недвижимости" на этот код -->
+<!-- Замените существующий блок "Тип недвижимости" на этот код -->
+<div class="filter-group" style="background: #f9fafb; border-radius: 12px; padding: 12px; margin-bottom: 12px; border: 1px solid #e5e7eb;">
+    <h3 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-100">Тип недвижимости</h3>
+    <div class="checkbox-row" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px">
+        <!-- Новостройка -->
+        <label class="chip {% if 'new_flat' in selected_property_types %}active{% endif %}"
+               style="cursor: pointer; padding: 8px 10px; border-radius: 10px; font-size: 13px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden;">
+            <input type="checkbox" name="property_type" value="new_flat"
+                   {% if 'new_flat' in selected_property_types %}checked{% endif %}
+                   style="display: none;">
+            <span class="relative z-10">Новостройка</span>
+            <div class="chip-hover-gradient" style="position: absolute; inset: 0; background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%); opacity: 0; transition: opacity 0.2s ease; z-index: 1;"></div>
+        </label>
+
+        <!-- Вторичка -->
+        <label class="chip {% if 'resale_flat' in selected_property_types %}active{% endif %}"
+               style="cursor: pointer; padding: 8px 10px; border-radius: 10px; font-size: 13px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden;">
+            <input type="checkbox" name="property_type" value="resale_flat"
+                   {% if 'resale_flat' in selected_property_types %}checked{% endif %}
+                   style="display: none;">
+            <span class="relative z-10">Вторичка</span>
+            <div class="chip-hover-gradient" style="position: absolute; inset: 0; background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%); opacity: 0; transition: opacity 0.2s ease; z-index: 1;"></div>
+        </label>
+
+        <!-- Дом -->
+        <label class="chip {% if 'house' in selected_property_types %}active{% endif %}"
+               style="cursor: pointer; padding: 8px 10px; border-radius: 10px; font-size: 13px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden;">
+            <input type="checkbox" name="property_type" value="house"
+                   {% if 'house' in selected_property_types %}checked{% endif %}
+                   style="display: none;">
+            <span class="relative z-10">Дом</span>
+            <div class="chip-hover-gradient" style="position: absolute; inset: 0; background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%); opacity: 0; transition: opacity 0.2s ease; z-index: 1;"></div>
+        </label>
+
+        <!-- Нежилое помещение -->
+        <label class="chip {% if 'commercial' in selected_property_types %}active{% endif %}"
+               style="cursor: pointer; padding: 8px 10px; border-radius: 10px; font-size: 13px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden;">
+            <input type="checkbox" name="property_type" value="commercial"
+                   {% if 'commercial' in selected_property_types %}checked{% endif %}
+                   style="display: none;">
+            <span class="relative z-10">Нежилое помещение</span>
+            <div class="chip-hover-gradient" style="position: absolute; inset: 0; background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%); opacity: 0; transition: opacity 0.2s ease; z-index: 1;"></div>
+        </label>
+    </div>
+
+    <h3 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-100" style="margin-top: 16px;">Вид размещения</h3>
+    <div class="checkbox-row" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px">
+        <!-- Купить -->
+        <label class="chip {% if 'no' in selected_rental_types %}active{% endif %}"
+               style="cursor: pointer; padding: 8px 10px; border-radius: 10px; font-size: 13px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden;">
+            <input type="checkbox" name="rental_type" value="no"
+                   {% if 'no' in selected_rental_types %}checked{% endif %}
+                   style="display: none;">
+            <span class="relative z-10">Купить</span>
+            <div class="chip-hover-gradient" style="position: absolute; inset: 0; background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%); opacity: 0; transition: opacity 0.2s ease; z-index: 1;"></div>
+        </label>
+
+        <!-- Аренда помесячно -->
+        <label class="chip {% if 'monthly' in selected_rental_types %}active{% endif %}"
+               style="cursor: pointer; padding: 8px 10px; border-radius: 10px; font-size: 13px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden;">
+            <input type="checkbox" name="rental_type" value="monthly"
+                   {% if 'monthly' in selected_rental_types %}checked{% endif %}
+                   style="display: none;">
+            <span class="relative z-10">Аренда помесячно</span>
+            <div class="chip-hover-gradient" style="position: absolute; inset: 0; background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%); opacity: 0; transition: opacity 0.2s ease; z-index: 1;"></div>
+        </label>
+
+        <!-- Аренда посуточно -->
+        <label class="chip {% if 'daily' in selected_rental_types %}active{% endif %}"
+               style="cursor: pointer; padding: 8px 10px; border-radius: 10px; font-size: 13px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden;">
+            <input type="checkbox" name="rental_type" value="daily"
+                   {% if 'daily' in selected_rental_types %}checked{% endif %}
+                   style="display: none;">
+            <span class="relative z-10">Аренда посуточно</span>
+            <div class="chip-hover-gradient" style="position: absolute; inset: 0; background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%); opacity: 0; transition: opacity 0.2s ease; z-index: 1;"></div>
+        </label>
+    </div>
+</div>
+
+                <!-- Город и Метро -->
+                <div class="filter-group" style="background: #f9fafb; border-radius: 12px; padding: 12px; margin-bottom: 12px; border: 1px solid #e5e7eb;">
+                    <label class="field" style="display: block; font-size: 13px; color: #64748b; margin-bottom: 6px">Город</label>
+                    <div class="relative">
+                        <button type="button" id="city-input" class="w-full px-3 py-2 border-2 border-blue-500 rounded-lg text-sm font-medium bg-white hover:bg-blue-50 transition-colors text-left relative shadow-sm hover:shadow-md">
+                            <span id="selected-city-text">
+                                {% if filter.form.location.value %}
+                                    {{ filter.form.location.value }}
+                                {% else %}
+                                    Выберите город
+                                {% endif %}
+                            </span>
+                            <i class="bi bi-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
+                        </button>
+                        <input type="hidden" name="location" value="{{ filter.form.location.value|default:'' }}" id="city-hidden-input">
+                    </div>
+
+                    <label class="field" style="display: block; font-size: 13px; color: #64748b; margin-bottom: 6px; margin-top: 8px">Метро</label>
+                    <div class="relative">
+                        <button type="button" id="metro-input" class="w-full px-3 py-2 border-2 border-blue-500 rounded-lg text-sm font-medium bg-white hover:bg-blue-50 transition-colors text-left relative shadow-sm hover:shadow-md">
+                            <div id="selected-metro-text">
+                                {% if filter.form.metro_station.value %}
+                                    {% for station in filter.form.metro_station.value|slice:":3" %}
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            {{ station }}
+                                        </span>
+                                    {% endfor %}
+                                    {% if filter.form.metro_station.value|length > 3 %}
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                            +{{ filter.form.metro_station.value|length|add:"-3" }}
+                                        </span>
+                                    {% endif %}
+                                {% else %}
+                                    Выберите станции метро
+                                {% endif %}
+                            </div>
+                            <i class="bi bi-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
+                        </button>
+                        <input type="hidden" name="metro_station" value="{% if filter.form.metro_station.value %}{{ filter.form.metro_station.value }}{% endif %}" id="metro-hidden-input">
+                    </div>
+
+                    <label class="field" style="display: block; font-size: 13px; color: #64748b; margin-bottom: 6px; margin-top: 8px">Расстояние до центра, км</label>
+                    <div class="two" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px">
+                        <input type="number" name="min_distance_to_center" value="{{ filter.form.min_distance_to_center.value|default:'' }}" placeholder="От" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e5e7eb; background: white; color: #1e293b; font-size: 14px" />
+                        <input type="number" name="max_distance_to_center" value="{{ filter.form.max_distance_to_center.value|default:'' }}" placeholder="До" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e5e7eb; background: white; color: #1e293b; font-size: 14px" />
+                    </div>
+                </div>
+
+                <!-- Цена -->
+                <div class="filter-group" style="background: #f9fafb; border-radius: 12px; padding: 12px; margin-bottom: 12px; border: 1px solid #e5e7eb;">
+                    <label class="field" style="display: block; font-size: 13px; color: #64748b; margin-bottom: 6px">Цена, ₽</label>
+                    <div class="two" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px">
+                        <input type="number" name="min_price" value="{{ filter.form.min_price.value|default:'' }}" placeholder="От" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e5e7eb; background: white; color: #1e293b; font-size: 14px" />
+                        <input type="number" name="max_price" value="{{ filter.form.max_price.value|default:'' }}" placeholder="До" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e5e7eb; background: white; color: #1e293b; font-size: 14px" />
+                    </div>
+
+                    <label class="field" style="display: block; font-size: 13px; color: #64748b; margin-bottom: 6px; margin-top: 8px">Цена за м², ₽</label>
+                    <div class="two" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px">
+                        <input type="number" name="min_price_per_sqm" value="{{ filter.form.min_price_per_sqm.value|default:'' }}" placeholder="От" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e5e7eb; background: white; color: #1e293b; font-size: 14px" />
+                        <input type="number" name="max_price_per_sqm" value="{{ filter.form.max_price_per_sqm.value|default:'' }}" placeholder="До" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e5e7eb; background: white; color: #1e293b; font-size: 14px" />
+                    </div>
+                </div>
+
+                <!-- Площадь -->
+                <div class="filter-group" style="background: #f9fafb; border-radius: 12px; padding: 12px; margin-bottom: 12px; border: 1px solid #e5e7eb;">
+                    <label class="field" style="display: block; font-size: 13px; color: #64748b; margin-bottom: 6px">Площадь, м²</label>
+                    <div class="two" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px">
+                        <input type="number" name="min_area" value="{{ filter.form.min_area.value|default:'' }}" placeholder="Общая от" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e5e7eb; background: white; color: #1e293b; font-size: 14px" />
+                        <input type="number" name="max_area" value="{{ filter.form.max_area.value|default:'' }}" placeholder="Общая до" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e5e7eb; background: white; color: #1e293b; font-size: 14px" />
+                    </div>
+
+                    <div class="two" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px">
+                        <input type="number" name="min_living_area" value="{{ filter.form.min_living_area.value|default:'' }}" placeholder="Жилая от" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e5e7eb; background: white; color: #1e293b; font-size: 14px" />
+                        <input type="number" name="max_living_area" value="{{ filter.form.max_living_area.value|default:'' }}" placeholder="Жилая до" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e5e7eb; background: white; color: #1e293b; font-size: 14px" />
+                    </div>
+                </div>
+
+                <!-- Комнаты и Этаж -->
+                <div class="filter-group" style="background: #f9fafb; border-radius: 12px; padding: 12px; margin-bottom: 12px; border: 1px solid #e5e7eb;">
+                    <label class="field" style="display: block; font-size: 13px; color: #64748b; margin-bottom: 6px">Количество комнат</label>
+                    <div class="two" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px">
+                        <input type="number" name="rooms__gte" value="{{ filter.form.rooms__gte.value|default:'' }}" placeholder="От" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e5e7eb; background: white; color: #1e293b; font-size: 14px" />
+                        <input type="number" name="rooms__lte" value="{{ filter.form.rooms__lte.value|default:'' }}" placeholder="До" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e5e7eb; background: white; color: #1e293b; font-size: 14px" />
+                    </div>
+
+                    <label class="field" style="display: block; font-size: 13px; color: #64748b; margin-bottom: 6px; margin-top: 8px">Этаж</label>
+                    <div class="two" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px">
+                        <input type="number" name="min_floor" value="{{ filter.form.min_floor.value|default:'' }}" placeholder="От" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e5e7eb; background: white; color: #1e293b; font-size: 14px" />
+                        <input type="number" name="max_floor" value="{{ filter.form.max_floor.value|default:'' }}" placeholder="До" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e5e7eb; background: white; color: #1e293b; font-size: 14px" />
+                    </div>
+
+                    <label class="field" style="display: block; font-size: 13px; color: #64748b; margin-bottom: 6px; margin-top: 8px">Этажность дома</label>
+                    <div class="two" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px">
+                        <input type="number" name="min_total_floors" value="{{ filter.form.min_total_floors.value|default:'' }}" placeholder="От" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e5e7eb; background: white; color: #1e293b; font-size: 14px" />
+                        <input type="number" name="max_total_floors" value="{{ filter.form.max_total_floors.value|default:'' }}" placeholder="До" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e5e7eb; background: white; color: #1e293b; font-size: 14px" />
+                    </div>
+                </div>
+
+                <!-- Год постройки и Чекбоксы -->
+                <div class="filter-group" style="background: #f9fafb; border-radius: 12px; padding: 12px; margin-bottom: 12px; border: 1px solid #e5e7eb;">
+                    <label class="field" style="display: block; font-size: 13px; color: #64748b; margin-bottom: 6px">Год постройки</label>
+                    <div class="two" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px">
+                        <input type="number" name="min_construction_year" value="{{ filter.form.min_construction_year.value|default:'' }}" placeholder="От" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e5e7eb; background: white; color: #1e293b; font-size: 14px" />
+                        <input type="number" name="max_construction_year" value="{{ filter.form.max_construction_year.value|default:'' }}" placeholder="До" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e5e7eb; background: white; color: #1e293b; font-size: 14px" />
+                    </div>
+
+                    <div style="margin-top: 12px">
+                        <label class="checkbox-row" style="display: flex; align-items: center; margin-bottom: 8px">
+                            <input type="checkbox" id="has_finishing" name="has_finishing" style="margin-right: 8px" {% if filter.form.has_finishing.value %}checked{% endif %} />
+                            <span style="vertical-align: middle; color: #64748b">Только с отделкой</span>
+                        </label>
+                        <label class="checkbox-row" style="display: flex; align-items: center">
+                            <input type="checkbox" id="is_delivered" name="is_delivered" style="margin-right: 8px" {% if filter.form.is_delivered.value %}checked{% endif %} />
+                            <span style="vertical-align: middle; color: #64748b">Только сданные</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="filters-footer" style="display: flex; gap: 8px; position: sticky; bottom: 18px; padding-top: 8px; background: linear-gradient(180deg, transparent, rgba(255,255,255,0.9));">
+                    <a href="?" class="btn" style="background: white; border: 1px solid #e5e7eb; padding: 10px 14px; border-radius: 10px; color: #64748b; font-weight: 600; cursor: pointer; font-size: 14px; transition: all 0.2s ease;">Сбросить</a>
+                    <button type="submit" class="btn btn-accent" style="background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%); border: 0; color: white; padding: 10px 16px; border-radius: 12px; font-weight: 700; box-shadow: 0 6px 30px rgba(99, 72, 255, 0.15);">Применить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</aside>
+
+<!-- Старые модальные окна для города и метро -->
+<!-- Модальное окно выбора города -->
+<div id="city-dropdown" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
         <div class="sticky top-0 bg-white p-4 border-b border-gray-200 z-10">
             <div class="flex justify-between items-center">
                 <h2 class="text-xl font-bold">Выберите город</h2>
                 <button id="close-city-modal" class="text-gray-500 hover:text-gray-700 text-2xl">
-    ×
-</button>
+                    ×
+                </button>
             </div>
 
             <div class="mt-4">
@@ -1000,149 +1734,111 @@
             </button>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                <!-- Здесь остаются ваши city-option кнопки -->
                 <button type="button"
-        class="city-option py-2 px-3 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-base"
-        data-city="Москва">
-    Москва
-</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Московская область">Московская область</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Санкт-Петербург">Санкт-Петербург</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Ленинградская область">Ленинградская область</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Екатеринбург">Екатеринбург</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Краснодар">Краснодар</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Новосибирск">Новосибирск</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Красноярск">Красноярск</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Челябинск">Челябинск</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Ростов-на-Дону">Ростов-на-Дону</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Тюмень">Тюмень</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Уфа">Уфа</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Казань">Казань</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Пермь">Пермь</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Нижний Новгород">Нижний Новгород</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Самара">Самара</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Саратов">Саратов</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Омск">Омск</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Балашиха">Балашиха</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Волгоград">Волгоград</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Воронеж">Воронеж</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Иркутск">Иркутск</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Хабаровск">Хабаровск</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Томск">Томск</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Ярославль">Ярославль</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Сочи">Сочи</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Сургут">Сургут</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Подольск">Подольск</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Мытищи">Мытищи</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Владивосток">Владивосток</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Калуга">Калуга</button>
-            <button type="button"
-                    class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
-                    data-city="Пятигорск">Пятигорск</button>
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Москва">Москва</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Московская область">Московская область</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Санкт-Петербург">Санкт-Петербург</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Ленинградская область">Ленинградская область</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Екатеринбург">Екатеринбург</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Краснодар">Краснодар</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Новосибирск">Новосибирск</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Красноярск">Красноярск</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Челябинск">Челябинск</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Ростов-на-Дону">Ростов-на-Дону</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Тюмень">Тюмень</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Уфа">Уфа</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Казань">Казань</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Пермь">Пермь</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Нижний Новгород">Нижний Новгород</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Самара">Самара</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Саратов">Саратов</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Омск">Омск</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Балашиха">Балашиха</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Волгоград">Волгоград</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Воронеж">Воронеж</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Иркутск">Иркутск</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Хабаровск">Хабаровск</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Томск">Томск</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Ярославль">Ярославль</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Сочи">Сочи</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Сургут">Сургут</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Подольск">Подольск</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Мытищи">Мытищи</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Владивосток">Владивосток</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Калуга">Калуга</button>
+                <button type="button"
+                        class="city-option py-3 px-4 text-left hover:bg-blue-50 rounded-lg border border-gray-200 text-lg"
+                        data-city="Пятигорск">Пятигорск</button>
+            </div>
         </div>
     </div>
 </div>
-    </div>
-</div>
-                       <!-- Метро -->
-<!-- В секции фильтра по метро -->
-<div class="filter-section">
-    <h3 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-100">Метро</h3>
-    <div class="relative">
-        <button type="button"
-                id="metro-input"
-                class="w-full px-3 py-2 border-2 border-blue-500 rounded-lg text-sm font-medium bg-white hover:bg-blue-50 transition-colors text-left relative shadow-sm hover:shadow-md"
-                onclick="document.getElementById('metro-dropdown').classList.remove('hidden')">
-            <div id="selected-metro-text" class="text-gray-700 flex items-center flex-wrap gap-1">
-                {% if filter.form.metro_station.value %}
-                    {% for station in filter.form.metro_station.value|slice:":3" %}
-                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            {{ station }}
-                        </span>
-                    {% endfor %}
-                    {% if filter.form.metro_station.value|length > 3 %}
-                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                            +{{ filter.form.metro_station.value|length|add:"-3" }}
-                        </span>
-                    {% endif %}
-                {% else %}
-                    Выберите станции метро
-                {% endif %}
-            </div>
-            <i class="bi bi-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
-        </button>
 
-      <input type="hidden"
-       name="metro_station"
-       value="{% if filter.form.metro_station.value %}{{ filter.form.metro_station.value }}{% endif %}"
-       id="metro-hidden-input">
 
-        <!-- Модальное окно выбора станций метро -->
-     <!-- Модальное окно выбора станций метро -->
-<!-- Модальное окно выбора станций метро -->
+<!-- Модальное окно выбора метро -->
 <div id="metro-dropdown" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
-        <!-- Заголовок -->
         <div class="sticky top-0 bg-white p-4 border-b border-gray-200 z-10">
             <div class="flex justify-between items-center">
                 <h2 class="text-xl font-bold">Выберите станции метро</h2>
@@ -1158,51 +1854,47 @@
             </div>
         </div>
 
-        <!-- Контент с прокруткой -->
-       <div class="p-4 overflow-y-auto flex-1">
-    {% if location %}
-        {% if metro_lines %}
-            <!-- Особый вариант для Москвы -->
-            {% if location == "Москва" %}
-            <div class="metro-lines-container grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 overflow-y-auto max-h-[calc(100vh-200px)]">
-               {% for line in metro_lines %}
-<div class="metro-line-section" style="border: none !important; border-radius: 8px; overflow: hidden; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
-   <div class="metro-line-header flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50 transition-colors"
-     onclick="toggleMetroLine(this)">
-    <div class="flex items-center min-w-0">
-        <div class="metro-line-color w-4 h-4 rounded-full mr-2 flex-shrink-0"
-             style="background-color: {{ line.line_color }}"></div>
-        <h3 class="metro-line-name font-medium text-sm truncate">{{ line.line|default:"Другие станции" }}</h3>
-    </div>
-    <i class="bi bi-chevron-down transition-transform duration-200 flex-shrink-0"></i>
-</div>
+        <div class="p-4 overflow-y-auto flex-1">
+            {% if location %}
+                {% if metro_lines %}
+                    {% if location == "Москва" %}
+                    <div class="metro-lines-container grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 overflow-y-auto max-h-[calc(100vh-200px)]">
+                        {% for line in metro_lines %}
+                            <div class="metro-line-section" style="border: none !important; border-radius: 8px; overflow: hidden; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
+                                <div class="metro-line-header flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50 transition-colors"
+                                    onclick="toggleMetroLine(this)">
+                                    <div class="flex items-center min-w-0">
+                                        <div class="metro-line-color w-4 h-4 rounded-full mr-2 flex-shrink-0"
+                                            style="background-color: {{ line.line_color }}"></div>
+                                        <h3 class="metro-line-name font-medium text-sm truncate">{{ line.line|default:"Другие станции" }}</h3>
+                                    </div>
+                                    <i class="bi bi-chevron-down transition-transform duration-200 flex-shrink-0"></i>
+                                </div>
 
-    <div class="metro-stations-container transition-all duration-300 overflow-y-auto"
-         style="max-height: 0">
-       <div class="metro-stations-container">
-    {% for station in line.stations %}
-        <button type="button"
-                class="metro-station-option flex items-center px-3 py-1.5 rounded text-sm transition-colors {% if station.name in filter.form.metro_station.value %}bg-blue-100 text-blue-800{% else %}hover:bg-gray-200{% endif %}"
-                data-station="{{ station.name }}">
-            <div class="metro-station-color w-3 h-3 rounded-full mr-2 flex-shrink-0"
-                 style="background-color: {{ station.line_color|default:'#cccccc' }}"></div>
-            <span class="metro-station-name truncate">{{ station.name }}</span>
-        </button>
-    {% endfor %}
-</div>
-    </div>
-</div>
-
+                                <div class="metro-stations-container transition-all duration-300 overflow-y-auto"
+                                    style="max-height: 0">
+                                    <div class="metro-stations-container">
+                                        {% for station in line.stations %}
+                                            <button type="button"
+                                                    class="metro-station-option flex items-center px-3 py-1.5 rounded text-sm transition-colors {% if station.name in filter.form.metro_station.value %}bg-blue-100 text-blue-800{% else %}hover:bg-gray-200{% endif %}"
+                                                    data-station="{{ station.name }}">
+                                                <div class="metro-station-color w-3 h-3 rounded-full mr-2 flex-shrink-0"
+                                                    style="background-color: {{ station.line_color|default:'#cccccc' }}"></div>
+                                                <span class="metro-station-name truncate">{{ station.name }}</span>
+                                            </button>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
                         {% endfor %}
                     </div>
                     {% else %}
-                    <!-- Стандартный вариант для других городов -->
                     <div class="metro-lines-container grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 overflow-y-auto max-h-[calc(100vh-200px)]">
                         {% for line in metro_lines %}
                             <div class="metro-line-section">
                                 <div class="metro-line-header flex items-center mb-3">
                                     <div class="metro-line-color w-4 h-4 rounded-full mr-2"
-                                         style="background-color: {{ line.line_color }}"></div>
+                                        style="background-color: {{ line.line_color }}"></div>
                                     <h3 class="metro-line-name text-lg font-semibold">
                                         {{ line.line|default:"Другие станции" }}
                                     </h3>
@@ -1210,14 +1902,14 @@
 
                                 <div class="metro-stations-grid max-h-60 overflow-y-auto pr-2">
                                     {% for station in line.stations %}
-                    <button type="button"
-                            class="metro-station-option flex items-center px-3 py-1.5 rounded text-sm transition-colors {% if station.name in filter.form.metro_station.value %}bg-blue-100 text-blue-800{% else %}hover:bg-gray-200{% endif %}"
-                            data-station="{{ station.name }}">
-                        <div class="metro-station-color w-3 h-3 rounded-full mr-2 flex-shrink-0"
-                             style="background-color: {{ station.line_color|default:'#cccccc' }}"></div>
-                        <span class="metro-station-name truncate">{{ station.name }}</span>
-                    </button>
-                {% endfor %}
+                                        <button type="button"
+                                                class="metro-station-option flex items-center px-3 py-1.5 rounded text-sm transition-colors {% if station.name in filter.form.metro_station.value %}bg-blue-100 text-blue-800{% else %}hover:bg-gray-200{% endif %}"
+                                                data-station="{{ station.name }}">
+                                            <div class="metro-station-color w-3 h-3 rounded-full mr-2 flex-shrink-0"
+                                                style="background-color: {{ station.line_color|default:'#cccccc' }}"></div>
+                                            <span class="metro-station-name truncate">{{ station.name }}</span>
+                                        </button>
+                                    {% endfor %}
                                 </div>
                             </div>
                         {% endfor %}
@@ -1231,7 +1923,6 @@
             {% endif %}
         </div>
 
-        <!-- Футер -->
         <div class="sticky bottom-0 bg-white p-4 border-t border-gray-200 flex justify-end gap-3">
             <button type="button"
                     id="clear-metro-selection"
@@ -1246,183 +1937,12 @@
         </div>
     </div>
 </div>
-
-
-
-                       <!-- Расстояние до центра -->
-<div class="filter-section">
-    <h3 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-100">Расстояние до центра, км</h3>
-    <div class="grid grid-cols-2 gap-4">
-        <div class="flex flex-col">
-            <label class="block text-sm font-semibold text-gray-700 mb-2">От</label>
-            <input type="number" name="min_distance_to_center" value="{{ filter.form.min_distance_to_center.value|default:'' }}"
-                   class="w-full px-4 py-2 border-2 border-blue-100 rounded-lg text-sm font-medium focus:border-blue-500 focus:ring-blue-500">
-        </div>
-        <div class="flex flex-col">
-            <label class="block text-sm font-semibold text-gray-700 mb-2">До</label>
-            <input type="number" name="max_distance_to_center" value="{{ filter.form.max_distance_to_center.value|default:'' }}"
-                   class="w-full px-4 py-2 border-2 border-blue-100 rounded-lg text-sm font-medium focus:border-blue-500 focus:ring-blue-500">
-        </div>
-    </div>
-</div>
-
-<div class="filter-section">
-    <h3 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-100">Цена, ₽</h3>
-    <div class="grid grid-cols-2 gap-4 mb-4">
-        <div class="flex flex-col">
-            <label class="block text-sm font-semibold text-gray-700 mb-2">От</label>
-            <input type="number" name="min_price" value="{{ filter.form.min_price.value|default:'' }}"
-                   class="w-full px-4 py-2 border-2 border-blue-100 rounded-lg text-sm font-medium focus:border-blue-500 focus:ring-blue-500">
-        </div>
-        <div class="flex flex-col">
-            <label class="block text-sm font-semibold text-gray-700 mb-2">До</label>
-            <input type="number" name="max_price" value="{{ filter.form.max_price.value|default:'' }}"
-                   class="w-full px-4 py-2 border-2 border-blue-100 rounded-lg text-sm font-medium focus:border-blue-500 focus:ring-blue-500">
-        </div>
-    </div>
-
-    <h3 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-100">Цена за м², ₽</h3>
-    <div class="grid grid-cols-2 gap-4">
-        <div class="flex flex-col">
-            <label class="block text-sm font-semibold text-gray-700 mb-2">От</label>
-            <input type="number" name="min_price_per_sqm" value="{{ filter.form.min_price_per_sqm.value|default:'' }}"
-                   class="w-full px-4 py-2 border-2 border-blue-100 rounded-lg text-sm font-medium focus:border-blue-500 focus:ring-blue-500">
-        </div>
-        <div class="flex flex-col">
-            <label class="block text-sm font-semibold text-gray-700 mb-2">До</label>
-            <input type="number" name="max_price_per_sqm" value="{{ filter.form.max_price_per_sqm.value|default:'' }}"
-                   class="w-full px-4 py-2 border-2 border-blue-100 rounded-lg text-sm font-medium focus:border-blue-500 focus:ring-blue-500">
-        </div>
-    </div>
-</div>
-
-<div class="filter-section">
-    <h3 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-100">Площадь, м²</h3>
-    <div class="grid grid-cols-2 gap-4 mb-4">
-        <div class="flex flex-col">
-            <label class="block text-sm font-semibold text-gray-700 mb-2">Общая от</label>
-            <input type="number" name="min_area" value="{{ filter.form.min_area.value|default:'' }}"
-                   class="w-full px-4 py-2 border-2 border-blue-100 rounded-lg text-sm font-medium focus:border-blue-500 focus:ring-blue-500">
-        </div>
-        <div class="flex flex-col">
-            <label class="block text-sm font-semibold text-gray-700 mb-2">Общая до</label>
-            <input type="number" name="max_area" value="{{ filter.form.max_area.value|default:'' }}"
-                   class="w-full px-4 py-2 border-2 border-blue-100 rounded-lg text-sm font-medium focus:border-blue-500 focus:ring-blue-500">
-        </div>
-    </div>
-
-    <div class="grid grid-cols-2 gap-4">
-        <div class="flex flex-col">
-            <label class="block text-sm font-semibold text-gray-700 mb-2">Жилая от</label>
-            <input type="number" name="min_living_area" value="{{ filter.form.min_living_area.value|default:'' }}"
-                   class="w-full px-4 py-2 border-2 border-blue-100 rounded-lg text-sm font-medium focus:border-blue-500 focus:ring-blue-500">
-        </div>
-        <div class="flex flex-col">
-            <label class="block text-sm font-semibold text-gray-700 mb-2">Жилая до</label>
-            <input type="number" name="max_living_area" value="{{ filter.form.max_living_area.value|default:'' }}"
-                   class="w-full px-4 py-2 border-2 border-blue-100 rounded-lg text-sm font-medium focus:border-blue-500 focus:ring-blue-500">
-        </div>
-    </div>
-</div>
-
-<div class="filter-section">
-    <h3 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-100">Количество комнат</h3>
-    <div class="grid grid-cols-2 gap-4">
-        <div class="flex flex-col">
-            <label class="block text-sm font-semibold text-gray-700 mb-2">От</label>
-            <input type="number" name="rooms__gte" value="{{ filter.form.rooms__gte.value|default:'' }}"
-                   class="w-full px-4 py-2 border-2 border-blue-100 rounded-lg text-sm font-medium focus:border-blue-500 focus:ring-blue-500">
-        </div>
-        <div class="flex flex-col">
-            <label class="block text-sm font-semibold text-gray-700 mb-2">До</label>
-            <input type="number" name="rooms__lte" value="{{ filter.form.rooms__lte.value|default:'' }}"
-                   class="w-full px-4 py-2 border-2 border-blue-100 rounded-lg text-sm font-medium focus:border-blue-500 focus:ring-blue-500">
-        </div>
-    </div>
-</div>
-
-<div class="filter-section">
-    <h3 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-100">Этаж</h3>
-    <div class="grid grid-cols-2 gap-4 mb-4">
-        <div class="flex flex-col">
-            <label class="block text-sm font-semibold text-gray-700 mb-2">От</label>
-            <input type="number" name="min_floor" value="{{ filter.form.min_floor.value|default:'' }}"
-                   class="w-full px-4 py-2 border-2 border-blue-100 rounded-lg text-sm font-medium focus:border-blue-500 focus:ring-blue-500">
-        </div>
-        <div class="flex flex-col">
-            <label class="block text-sm font-semibold text-gray-700 mb-2">До</label>
-            <input type="number" name="max_floor" value="{{ filter.form.max_floor.value|default:'' }}"
-                   class="w-full px-4 py-2 border-2 border-blue-100 rounded-lg text-sm font-medium focus:border-blue-500 focus:ring-blue-500">
-        </div>
-    </div>
-
-    <h3 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-100">Этажность дома</h3>
-    <div class="grid grid-cols-2 gap-4">
-        <div class="flex flex-col">
-            <label class="block text-sm font-semibold text-gray-700 mb-2">От</label>
-            <input type="number" name="min_total_floors" value="{{ filter.form.min_total_floors.value|default:'' }}"
-                   class="w-full px-4 py-2 border-2 border-blue-100 rounded-lg text-sm font-medium focus:border-blue-500 focus:ring-blue-500">
-        </div>
-        <div class="flex flex-col">
-            <label class="block text-sm font-semibold text-gray-700 mb-2">До</label>
-            <input type="number" name="max_total_floors" value="{{ filter.form.max_total_floors.value|default:'' }}"
-                   class="w-full px-4 py-2 border-2 border-blue-100 rounded-lg text-sm font-medium focus:border-blue-500 focus:ring-blue-500">
-        </div>
-    </div>
-</div>
-
-<div class="filter-section">
-    <h3 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-100">Год постройки</h3>
-    <div class="grid grid-cols-2 gap-4">
-        <div class="flex flex-col">
-            <label class="block text-sm font-semibold text-gray-700 mb-2">От</label>
-            <input type="number" name="min_construction_year" value="{{ filter.form.min_construction_year.value|default:'' }}"
-                   class="w-full px-4 py-2 border-2 border-blue-100 rounded-lg text-sm font-medium focus:border-blue-500 focus:ring-blue-500">
-        </div>
-        <div class="flex flex-col">
-            <label class="block text-sm font-semibold text-gray-700 mb-2">До</label>
-            <input type="number" name="max_construction_year" value="{{ filter.form.max_construction_year.value|default:'' }}"
-                   class="w-full px-4 py-2 border-2 border-blue-100 rounded-lg text-sm font-medium focus:border-blue-500 focus:ring-blue-500">
-        </div>
-    </div>
-</div>
-
-<div class="filter-section checkbox-section">
-    <div class="flex flex-col gap-3">
-        <div class="flex items-center p-3 rounded-lg border-2 border-blue-100 hover:border-blue-300 transition-colors">
-            {{ filter.form.has_finishing }}
-            <label for="{{ filter.form.has_finishing.id_for_label }}" class="ml-2 text-sm font-medium text-gray-700">
-                Только с отделкой
-            </label>
-        </div>
-
-        <div class="flex items-center p-3 rounded-lg border-2 border-blue-100 hover:border-blue-300 transition-colors">
-            {{ filter.form.is_delivered }}
-            <label for="{{ filter.form.is_delivered.id_for_label }}" class="ml-2 text-sm font-medium text-gray-700">
-                Только сданные
-            </label>
-        </div>
-    </div>
-</div>
-
-<div class="filter-actions flex justify-between mt-6">
-    <a href="?" id="reset_filters" class="px-3 py-3 text-sm font-semibold border-2 border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
-        Сбросить
-    </a>
-    <button type="submit" id="apply_filters" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors">
-        Применить
-    </button>
-</div>
-
-                    </form>
-                </div>
-            </div>
-        </aside>
         <div style="display:none">API Key: {{ YANDEX_MAPS_API_KEY }}</div>
 
 
-  <div class="flex-1">
-            <!-- Карта всех объектов -->
+   <!-- Основной контент -->
+            <div class="flex-1">
+                        <!-- Карта всех объектов -->
             <div class="flex justify-end">
                 <div class="custom-map-container relative" style="width: 1000px; height: 500px;">
                     <div id="all-properties-map" class="rounded-xl overflow-hidden"></div>
@@ -1433,76 +1953,30 @@
                 </div>
             </div>
 
-            <!-- Карточки объектов -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
+                <!-- Карточки объектов с новой структурой -->
+       <!-- Карточки объектов с новой структурой -->
+<!-- Карточки объектов -->
+<!-- Карточки объектов -->
+<section class="listings" aria-label="Список объектов" style="margin-top: 18px; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 18px;">
     {% if properties %}
         {% for property in properties %}
-            <a href="{% url 'properties:property-detail' property.id %}"
-               class="property-card group bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-blue-100 block transform hover:-translate-y-1">
-
-                <!-- Изображение с эффектом hover -->
-                <div class="relative overflow-hidden">
-                    <img src="{{ property.main_image.url }}"
-                         class="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-105"
-                         alt="{{ property.title }}">
-                    {% if property.is_featured %}
-                    <span class="absolute top-3 right-3 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-md">
-                        ★ Premium
-                    </span>
-                    {% endif %}
-                </div>
-
-                <!-- Контент карточки -->
-                <div class="p-5 space-y-4">
-                    <!-- Заголовок -->
-                    <h3 class="text-xl font-bold text-gray-800 leading-tight">
-                        {{ property.title }}
-                    </h3>
-
-                    <!-- Информационный блок -->
-                    <div class="rounded-xl p-4 bg-white border border-gray-200 shadow-sm">
-    <div class="grid grid-cols-2 gap-3">
-        <!-- Город - насыщенный синий -->
-        <div class="flex items-center gap-3">
-            <div class="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center shadow-xs">
-                <i class="bi bi-geo-alt text-blue-600 text-sm"></i>
-            </div>
-            <span class="truncate text-sm font-medium text-gray-800">{{ property.location }}</span>
-        </div>
-
-        <!-- Комнаты - насыщенный фиолетовый -->
-        <div class="flex items-center gap-3">
-            <div class="w-6 h-6 bg-purple-100 rounded-lg flex items-center justify-center shadow-xs">
-                <i class="bi bi-door-open text-purple-600 text-sm"></i>
-            </div>
-            <span class="text-sm font-medium text-gray-800">{{ property.rooms }} комн.</span>
-        </div>
-
-        <!-- Метро - насыщенный красный -->
-        {% if property.metro_station and property.metro_station != "Не указано" %}
-        <div class="flex items-center gap-3">
-            <div class="w-6 h-6 bg-red-100 rounded-lg flex items-center justify-center shadow-xs">
-                <i class="bi bi-subway text-red-600 text-sm"></i>
-            </div>
-            <span class="truncate text-sm font-medium text-gray-800">{{ property.metro_station|cut:"метро " }}</span>
-        </div>
-        {% else %}
-        <div></div>
-        {% endif %}
-
-        <!-- Метраж - насыщенный зеленый -->
-        <div class="flex items-center gap-3">
-            <div class="w-6 h-6 bg-green-100 rounded-lg flex items-center justify-center shadow-xs">
-                <i class="bi bi-arrows-fullscreen text-green-600 text-sm"></i>
-            </div>
-            <span class="text-sm font-medium text-gray-800">{{ property.total_area }} м²</span>
-        </div>
-    </div>
-</div>
-
-                    <!-- Цена и кнопка -->
-                    <div class="flex items-center justify-between pt-2">
-                        <span class="text-2xl font-bold text-blue-600">
+            <article class="card" style="border-radius: 14px; padding: 12px; background: white; border: 1px solid rgba(0,0,0,0.08); box-shadow: 0 4px 20px rgba(0,0,0,0.08); display: flex; gap: 12px; align-items: flex-start; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                <div class="thumb" style="width: 150px; height: 110px; border-radius: 10px; flex-shrink: 0; background-size: cover; background-position: center; border: 1px solid rgba(0,0,0,0.06); background-image: url('{{ property.main_image.url }}')"></div>
+                <div class="meta" style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+                    <div class="type" style="font-size: 12px; color: #64748b;">
+                        {{ property.get_property_type_display }},
+                        {{ property.total_area }} м²,
+                        {{ property.floor }}/{{ property.total_floors }} этаж
+                    </div>
+                    <h3 style="margin: 0; font-size: 16px; color: #1e293b;">{{ property.title }}</h3>
+                    <div class="meta-row" style="display: flex; gap: 10px; align-items: center; color: #64748b; font-size: 13px;">
+                        <span>{{ property.rooms }} комн.</span>
+                        <span>•</span>
+                        {% if property.metro_station and property.metro_station != "Не указано" %}
+                            <span>{{ property.metro_station }}</span>
+                            <span>•</span>
+                        {% endif %}
+                        <span class="price" style="font-weight: 800; font-size: 16px; color: #7b61ff;">
                             {% if property.is_rental == 'monthly' and property.monthly_price %}
                                 {{ property.monthly_price|space_format }} ₽/мес
                             {% elif property.is_rental == 'daily' and property.daily_price %}
@@ -1511,26 +1985,31 @@
                                 {{ property.price|space_format }} ₽
                             {% endif %}
                         </span>
-                        {% if user.is_authenticated %}
-                        <button class="toggle-favorite text-gray-400 hover:text-red-500 transition-colors"
-                                data-property-id="{{ property.id }}"
-                                onclick="event.stopPropagation()">
-                            <i class="bi bi-heart{% if property in user.favorites.all %}-fill text-red-500{% endif %} text-xl"></i>
-                        </button>
-                        {% endif %}
                     </div>
-                 <div class="mt-4">
-            <button class="w-full py-2 px-4 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2" onclick="event.stopPropagation()">
-                <i class="bi bi-eye"></i> Подробнее
-            </button>
-        </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+                        <div style="color: #64748b; font-size: 13px;">{{ property.total_area }} м²</div>
+                        <div class="actions" style="display: flex; gap: 8px; align-items: center;">
+                            {% if user.is_authenticated %}
+                            <button class="toggle-favorite" style="background: none; border: none; cursor: pointer; color: #9ca3af; transition: color 0.2s ease;"
+                                    data-property-id="{{ property.id }}"
+                                    onclick="event.preventDefault(); toggleFavorite({{ property.id }})">
+                                <i class="bi {% if property in user.favorites.all %}bi-heart-fill text-red-500{% else %}bi-heart{% endif %} text-xl"></i>
+                            </button>
+                            {% endif %}
+                            <a href="{% url 'properties:property-detail' property.id %}"
+                               class="btn"
+                               style="background: white; border: 1px solid rgba(0,0,0,0.08); padding: 8px 12px; border-radius: 8px; color: #64748b; font-weight: 600; cursor: pointer; font-size: 12px; transition: all 0.2s ease; text-decoration: none; display: inline-block;">
+                                Подробнее
+                            </a>
+                        </div>
+                    </div>
                 </div>
-            </a>
+            </article>
         {% endfor %}
     {% else %}
-        <div class="col-span-full text-center py-12 text-gray-500">
-            <i class="bi bi-house-x text-3xl"></i>
-            <p class="mt-2">
+        <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: #64748b;">
+            <i class="bi bi-house-x" style="font-size: 2rem;"></i>
+            <p style="margin-top: 10px;">
                 {% if user.is_authenticated and user.is_broker %}
                     У вас пока нет объектов
                 {% else %}
@@ -1539,35 +2018,39 @@
             </p>
         </div>
     {% endif %}
-</div>
-            <!-- Пагинация -->
-            {% if is_paginated %}
-            <div class="pagination flex justify-center gap-2 mt-8">
-                {% if page_obj.has_previous %}
-                <a href="?page={{ page_obj.previous_page_number }}"
-                   class="page-item px-4 py-2 rounded-lg border-2 border-gray-200 hover:bg-gray-50">
-                    <i class="bi bi-chevron-left"></i>
-                </a>
-                {% endif %}
+</section>
 
-                {% for num in page_obj.paginator.page_range %}
-                <a href="?page={{ num }}"
-                   class="page-item px-4 py-2 rounded-lg border-2 {% if num == page_obj.number %}bg-blue-600 text-white border-blue-600{% else %}border-gray-200 hover:bg-gray-50{% endif %}">
-                    {{ num }}
-                </a>
-                {% endfor %}
+                <!-- Пагинация -->
+                {% if is_paginated %}
+                <div class="pagination flex justify-center gap-2 mt-8">
+                    {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}"
+                       class="page-item px-4 py-2 rounded-lg border-2 border-gray-200 hover:bg-gray-50">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                    {% endif %}
 
-                {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}"
-                   class="page-item px-4 py-2 rounded-lg border-2 border-gray-200 hover:bg-gray-50">
-                    <i class="bi bi-chevron-right"></i>
-                </a>
+                    {% for num in page_obj.paginator.page_range %}
+                    <a href="?page={{ num }}"
+                       class="page-item px-4 py-2 rounded-lg border-2 {% if num == page_obj.number %}bg-blue-600 text-white border-blue-600{% else %}border-gray-200 hover:bg-gray-50{% endif %}">
+                        {{ num }}
+                    </a>
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}"
+                       class="page-item px-4 py-2 rounded-lg border-2 border-gray-200 hover:bg-gray-50">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                    {% endif %}
+                </div>
                 {% endif %}
             </div>
-            {% endif %}
         </div>
     </div>
 </div>
+
+
 <script>
   // Функция инициализации карты
   function initMap() {
@@ -2477,6 +2960,34 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('click', function(e) {
         if (!searchForm.contains(e.target)) {
             suggestionsContainer.classList.add('hidden');
+        }
+    });
+});
+// Обработчики для чипсов типа недвижимости и вида размещения
+// Обработчики для чипсов типа недвижимости и вида размещения
+document.addEventListener('DOMContentLoaded', function() {
+    // Обработчик для чипсов
+    document.querySelectorAll('.chip').forEach(chip => {
+        chip.addEventListener('click', function(e) {
+            e.preventDefault();
+            const checkbox = this.querySelector('input[type="checkbox"]');
+            if (checkbox) {
+                checkbox.checked = !checkbox.checked;
+                this.classList.toggle('active', checkbox.checked);
+
+                // Автоматически применяем фильтры при изменении
+                setTimeout(() => {
+                    document.getElementById('filter-form').submit();
+                }, 300);
+            }
+        });
+    });
+
+    // Инициализация состояния чипсов при загрузке
+    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        const chip = checkbox.closest('.chip');
+        if (chip) {
+            chip.classList.toggle('active', checkbox.checked);
         }
     });
 });

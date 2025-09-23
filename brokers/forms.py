@@ -1,13 +1,69 @@
+# brokers/forms.py
 from django import forms
 from .models import BrokerProfile, BrokerReview
 
+
 class BrokerProfileForm(forms.ModelForm):
+    # Используем TypedMultipleChoiceField для лучшей обработки данных
+    services = forms.TypedMultipleChoiceField(
+        choices=BrokerProfile.SERVICES_CHOICES,
+        widget=forms.CheckboxSelectMultiple,
+        label='Услуги',
+        required=False,
+        coerce=str
+    )
+
+    specializations = forms.TypedMultipleChoiceField(
+        choices=BrokerProfile.SPECIALIZATION_CHOICES,
+        widget=forms.CheckboxSelectMultiple,
+        label='Специализация',
+        required=False,
+        coerce=str
+    )
+
     class Meta:
         model = BrokerProfile
-        fields = ['experience',  'about', 'avatar']
+        fields = ['experience', 'about']
         widgets = {
-            'about': forms.Textarea(attrs={'rows': 4}),
+            'about': forms.Textarea(attrs={'rows': 4, 'class': 'custom-input'}),
+            'experience': forms.NumberInput(attrs={'class': 'custom-input'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Явно добавляем поля, если они были удалены
+        if 'services' not in self.fields:
+            self.fields['services'] = forms.TypedMultipleChoiceField(
+                choices=BrokerProfile.SERVICES_CHOICES,
+                widget=forms.CheckboxSelectMultiple,
+                label='Услуги',
+                required=False,
+                coerce=str
+            )
+
+        if 'specializations' not in self.fields:
+            self.fields['specializations'] = forms.TypedMultipleChoiceField(
+                choices=BrokerProfile.SPECIALIZATION_CHOICES,
+                widget=forms.CheckboxSelectMultiple,
+                label='Специализация',
+                required=False,
+                coerce=str
+            )
+
+        # Устанавливаем начальные значения
+        if self.instance and self.instance.pk:
+            self.fields['services'].initial = self.instance.services or []
+            self.fields['specializations'].initial = self.instance.specializations or []
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.services = self.cleaned_data.get('services', [])
+        instance.specializations = self.cleaned_data.get('specializations', [])
+
+        if commit:
+            instance.save()
+        return instance
 
 class BrokerReviewForm(forms.ModelForm):
     class Meta:

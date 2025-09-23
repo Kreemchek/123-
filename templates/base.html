@@ -6,7 +6,7 @@
     <title>{% block title %}WinWinDeal{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Остальные стили -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
@@ -18,84 +18,263 @@
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <style>
-        /* Критические стили для LCP элемента */
-        .hero h1 {
-            opacity: 0;
-            animation: fadeIn 0.5s ease-out forwards;
-            font-family: 'Inter', sans-serif;
-        }
-        @keyframes fadeIn {
-            to { opacity: 1; }
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 400;
-            font-display: swap;
-            src: url('https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2') format('woff2');
-        }
-        /* Добавленные стили для бейджа и кнопки */
-        .bonus-badge {
-            background: linear-gradient(45deg, #fcd34d, #fbbf24);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
-        }
-        .bonus-badge:hover {
-            transform: scale(1.05);
-        }
-        .topup-btn {
-            background: linear-gradient(45deg, #10b981, #059669);
-            transition: all 0.3s;
-        }
-        .topup-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
+        /* Базовые стили для всех страниц */
         html, body {
             height: 100%;
         }
         body {
             display: flex;
             flex-direction: column;
-            background-color: #f9fafb; /* bg-gray-50 */
+            background-color: #f9fafb;
         }
         main {
             flex: 1 0 auto;
-            padding-bottom: 2rem; /* Дополнительный отступ снизу */
+            padding-bottom: 2rem;
         }
         footer {
             flex-shrink: 0;
         }
 
-        /* Стили для кнопки Медиа */
-        .media-nav-btn {
+        /* Стили для сообщений */
+        .fixed.top-4.right-4 {
+            z-index: 50;
+        }
+
+        /* Стили хедера из variant_7 - ДЛЯ ВСЕХ СТРАНИЦ */
+        :root {
+            --bg: #0b0d12;
+            --bg-soft: #0f1218;
+            --card: rgba(255,255,255,.05);
+            --text: #e8ecf2;
+            --muted: #b3b9c6;
+            --brand: #7c66ff;
+            --brand-2: #30d0ff;
+            --accent: #ff6a3d;
+            --ok: #51d67b;
+            --warn: #ffba3b;
+            --ring: 0 0 0 8px color-mix(in oklab, var(--brand) 22%, transparent);
+            --radius: 20px;
+            --shadow-1: 0 20px 60px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06);
+            --glow: 0 0 0 1px rgba(124,102,255,.2), 0 0 80px rgba(92,76,255,.25);
+            --grid-gap: clamp(14px, 2vw, 20px);
+        }
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg: #f6f7fb;
+                --bg-soft: #ffffff;
+                --card: rgba(0,0,0,.04);
+                --text: #0b1324;
+                --muted: #5d6474;
+                --shadow-1: 0 20px 60px rgba(18, 26, 44, .08), inset 0 1px 0 rgba(255,255,255,.8);
+                --glow: 0 0 0 1px rgba(124,102,255,.15), 0 0 60px rgba(92,76,255,.15);
+            }
+        }
+
+        .topbar {
+            position: sticky; top: 0; z-index: 50; backdrop-filter: blur(14px) saturate(120%);
+            background: color-mix(in oklab, var(--bg-soft) 80%, transparent);
+            border-bottom: 1px solid rgba(255,255,255,.06);
+        }
+        .topbar-container { max-width: 1240px; margin: 0 auto; padding: 18px clamp(16px, 4vw, 28px); }
+        .topbar-row { display: flex; align-items: center; gap: 18px; justify-content: space-between; flex-wrap: wrap; }
+        .topbar-brand { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: .5px; }
+        .topbar-brand .logo {
+            width: 34px; height: 34px; border-radius: 12px; background: linear-gradient(135deg, var(--brand), var(--brand-2));
+            box-shadow: var(--glow);
+            display: grid; place-items: center; color: white; font-weight: 800;
+        }
+        .topbar-nav { display: flex; gap: 8px; flex-wrap: wrap; }
+        .topbar-chip {
+            display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 999px;
+            background: var(--card); color: var(--text); border: 1px solid rgba(255,255,255,.08);
+            transition: .25s ease; text-decoration: none; font-weight: 600;
+        }
+        .topbar-chip:hover { transform: translateY(-1px); box-shadow: var(--shadow-1); }
+        .topbar-balance { display:flex; align-items:center; gap:10px; background:linear-gradient(180deg, rgba(124,102,255,.18), rgba(124,102,255,.05)); padding:10px 14px; border-radius:14px; border:1px solid rgba(124,102,255,.25); }
+        .topbar-btn { cursor:pointer; border:none; padding:12px 16px; border-radius:14px; font-weight:700; }
+        .topbar-btn-primary { background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: #fff; box-shadow: var(--glow); }
+        .topbar-btn-ghost { background: var(--card); color: var(--text); border: 1px solid rgba(255,255,255,.08); }
+
+        .muted { color: var(--muted); }
+        .hidden-sm { display: inline-flex; }
+        @media (max-width:640px){ .hidden-sm { display:none; } }
+
+        /* Стили для home.html и property_list.html - ТОЛЬКО ДЛЯ ЭТИХ СТРАНИЦ */
+        .home-page :root,
+        .properties-page :root {
+            --bg: #f8fafc;
+            --panel: #ffffff;
+            --muted: #64748b;
+            --text: #1e293b;
+            --accent-1: linear-gradient(135deg,#7b61ff 0%, #36d1dc 100%);
+            --glass: rgba(0,0,0,0.04);
+            --glass-2: rgba(0,0,0,0.02);
+            --glass-3: rgba(0,0,0,0.06);
+            --card-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --glass-border: rgba(0,0,0,0.08);
+            --success: #10b981;
+            --danger: #ef4444;
+            --glass-border-2: rgba(0,0,0,0.06);
+            --glass-highlight: rgba(0,0,0,0.02);
+        }
+
+        .home-page .filter-group,
+        .properties-page .filter-group {
+            background: var(--glass-highlight);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .home-page .field,
+        .properties-page .field {
+            display: block;
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .home-page .two,
+        .properties-page .two {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .home-page .checkbox-row,
+        .properties-page .checkbox-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .home-page .filter-chip,
+        .properties-page .filter-chip {
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid var(--glass-border);
+            font-size: 13px;
+            background: white;
+            color: var(--muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .home-page .filter-chip:hover,
+        .properties-page .filter-chip:hover {
+            border-color: #7b61ff;
+            color: #7b61ff;
+        }
+
+        .home-page .filter-chip.active,
+        .properties-page .filter-chip.active {
+            background: linear-gradient(90deg,#3aa7ff22,#6f53ff22);
+            border: 1px solid rgba(120,110,255,0.3);
+            color: #4c37d4;
+        }
+
+        .home-page .card,
+        .properties-page .card {
+            border-radius: 14px;
+            padding: 12px;
+            background: white;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--card-shadow);
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            transition: transform .24s cubic-bezier(.2,.9,.3,1),box-shadow .24s;
+        }
+
+        .home-page .card:hover,
+        .properties-page .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+        }
+
+        .home-page .thumb,
+        .properties-page .thumb {
+            width: 150px;
+            height: 110px;
+            border-radius: 10px;
+            flex-shrink: 0;
+            background-size: cover;
+            background-position: center;
+            border: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .home-page .meta,
+        .properties-page .meta {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .home-page .price,
+        .properties-page .price {
+            font-weight: 800;
+            font-size: 16px;
+            color: #7b61ff;
+        }
+
+        .home-page .filter-btn,
+        .properties-page .filter-btn {
+            background: white;
+            border: 1px solid var(--glass-border);
+            padding: 10px 14px;
+            border-radius: 10px;
+            color: var(--muted);
             font-weight: 600;
-            position: relative;
-            padding: 0.25rem 0.5rem;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
         }
-        .media-nav-btn::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background-color: white;
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
+
+        .home-page .filter-btn:hover,
+        .properties-page .filter-btn:hover {
+            background: var(--glass-highlight);
         }
-        .media-nav-btn:hover::after {
-            transform: scaleX(1);
-        }
-        .media-nav-btn.active {
+
+        .home-page .btn-accent,
+        .properties-page .btn-accent {
+            background: var(--accent-1);
+            border: 0;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 12px;
             font-weight: 700;
-            text-shadow: 0 0 8px rgba(255,255,255,0.5);
+            box-shadow: 0 6px 30px rgba(99,72,255,0.15);
         }
+
+        .home-page .btn-accent:hover,
+        .properties-page .btn-accent:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 35px rgba(99,72,255,0.2);
+        }
+        .topbar-btn-ghost i {
+    font-size: 18px;
+}
+footer {
+    background: linear-gradient(135deg, rgba(124, 102, 255, 0.1), rgba(48, 208, 255, 0.05));
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin-top: 60px;
+    padding: 20px 0; /* Уменьшил padding */
+    color: var(--muted);
+    width: 100%; /* Добавил ширину 100% */
+}
+
+footer .container {
+    max-width: 1024px; /* Ограничил ширину до 1024px */
+    margin: 0 auto;
+    padding: 0 1rem;
+}
     </style>
     {% block extra_css %}{% endblock %}
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-50 {% if request.path == '/' %}home-page{% elif 'properties' in request.path %}properties-page{% endif %}">
     {% if messages %}
     <div class="fixed top-4 right-4 z-50 max-w-md w-full space-y-2">
         {% for message in messages %}
@@ -113,143 +292,193 @@
     </div>
     {% endif %}
 
-    <nav class="bg-blue-600 text-white shadow-lg">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <a href="{% url 'home' %}" class="text-2xl font-bold">WinWinDeal</a>
-
-            <div class="hidden md:flex space-x-6 items-center">
-                {% if user.is_authenticated %}
-                    <a href="{% url 'broker-list' %}" class="hover:text-blue-200">Брокеры</a>
-                    <a href="{% url 'properties:property-list' %}" class="hover:text-blue-200">Объекты</a>
-                    <a href="{% url 'developer-list' %}" class="hover:text-blue-200">Застройщики</a>
-                    <a href="{% url 'media_content:list' %}"
-   class="media-nav-btn hover:text-blue-200 border-2 border-white px-3 py-1 rounded-lg font-bold transition-all hover:bg-white hover:text-blue-600">
-    Медиа
-</a>
-                {% else %}
-                    <a href="{% url 'register' %}" class="hover:text-blue-200">Брокеры</a>
-                    <a href="{% url 'register' %}" class="hover:text-blue-200">Объекты</a>
-                    <a href="{% url 'register' %}" class="hover:text-blue-200">Застройщики</a>
-                    <a href="{% url 'register' %}"
-                       class="media-nav-btn hover:text-blue-200 border-2 border-white px-3 py-1 rounded-lg font-bold transition-all hover:bg-white hover:text-blue-600">
-                        Медиа
-                    </a>
-                {% endif %}
+<div class="topbar">
+    <div class="topbar-container topbar-row">
+        <a href="{% url 'home' %}" class="topbar-brand" style="text-decoration: none; color: inherit;">
+            <div class="logo">W</div>
+            <div>
+                <div style="font-size:14px; opacity:.8;">WinWinDeal</div>
+                <strong>Сервис выгодных сделок</strong>
             </div>
-
-            <div class="flex items-center space-x-2 md:space-x-4">
-                {% if user.is_authenticated %}
-                    <div class="flex items-center space-x-1 md:space-x-3">
-                        <!-- Иконка профиля -->
-                        <a href="{% url 'dashboard' %}"
-                           class="hover:text-blue-200 flex items-center p-1 md:p-0"
-                           aria-label="Профиль">
-                            <i class="fas fa-user-circle text-lg md:text-xl"></i>
-                        </a>
-
-                        <!-- Баланс -->
-                        <span class="bonus-badge text-yellow-800 px-2 py-1 md:px-3 rounded-full text-xs md:text-sm font-medium whitespace-nowrap">
-                            {{ user.balance }} ₽
-                        </span>
-
-                        <!-- Кнопка пополнения -->
-                        <a href="{% url 'payment_topup' %}"
-                           class="topup-btn text-white px-2 py-1 md:px-3 rounded-lg text-xs md:text-sm font-medium whitespace-nowrap">
-                            Пополнить
-                        </a>
-                    </div>
-
-                    <!-- Кнопка выхода -->
-                    <a href="{% url 'logout' %}"
-                       class="hover:text-blue-200 text-sm md:text-base p-1 md:p-0"
-                       aria-label="Выйти">
-                        <i class="fas fa-sign-out-alt md:hidden"></i>
-                        <span class="hidden md:inline">Выйти</span>
-                    </a>
-                {% else %}
-                    <!-- Кнопки для неавторизованных -->
-                    <a href="{% url 'login' %}"
-                       class="hover:text-blue-200 text-sm md:text-base p-1 md:p-0"
-                       aria-label="Войти">
-                        <i class="fas fa-sign-in-alt md:hidden"></i>
-                        <span class="hidden md:inline">Войти</span>
-                    </a>
-                    <a href="{% url 'register' %}"
-                       class="bg-blue-700 px-2 py-1 md:px-4 md:py-2 rounded hover:bg-blue-800 text-xs md:text-base whitespace-nowrap">
-                        Регистрация
-                    </a>
-                {% endif %}
-            </div>
+        </a>
+        <nav class="topbar-nav" aria-label="Основная навигация">
+            {% if user.is_authenticated %}
+                <a class="topbar-chip" href="{% url 'broker-list' %}">Брокеры</a>
+                <a class="topbar-chip" href="{% url 'properties:property-list' %}">Объекты</a>
+                <a class="topbar-chip" href="{% url 'developer-list' %}">Застройщики</a>
+                <a class="topbar-chip" href="{% url 'media_content:list' %}">Медиа</a>
+            {% else %}
+                <a class="topbar-chip" href="{% url 'register' %}">Брокеры</a>
+                <a class="topbar-chip" href="{% url 'register' %}">Объекты</a>
+                <a class="topbar-chip" href="{% url 'register' %}">Застройщики</a>
+                <a class="topbar-chip" href="{% url 'register' %}">Медиа</a>
+            {% endif %}
+        </nav>
+        <div class="topbar-row" style="gap:10px;">
+            {% if user.is_authenticated %}
+                <div class="topbar-balance">
+                    <span class="pill">{{ user.balance }} ₽</span>
+                    <a href="{% url 'payment_topup' %}" class="topbar-btn topbar-btn-ghost">Пополнить</a>
+                </div>
+                <!-- Кнопка личного кабинета с иконкой Font Awesome -->
+                <a href="{% url 'dashboard' %}" class="topbar-btn topbar-btn-ghost" title="Личный кабинет" style="padding: 10px 14px;">
+                    <i class="fas fa-user-circle"></i>
+                </a>
+                <a href="{% url 'logout' %}" class="topbar-btn topbar-btn-primary hidden-sm">Выйти</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="topbar-btn topbar-btn-ghost">Войти</a>
+                <a href="{% url 'register' %}" class="topbar-btn topbar-btn-primary">Регистрация</a>
+            {% endif %}
         </div>
-    </nav>
+    </div>
+</div>
 
     <main class="container mx-auto px-4 py-8">
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="bg-gray-800 text-white py-8">
-        <div class="container mx-auto px-4">
-            <div class="flex flex-col md:flex-row justify-between">
-                <div class="mb-6 md:mb-0">
-                    <h3 class="text-xl font-bold mb-4">WinWinDeal</h3>
-                    <p>Сервис выгодных сделок с недвижимостью</p>
-                </div>
-                <div class="grid grid-cols-2 gap-8">
-                    <ul class="space-y-2">
-                        <li><a href="{% url 'home' %}" class="hover:text-blue-300">Главная</a></li>
+<footer class="mt-12">
+    <div class="container mx-auto px-4 max-w-6xl"> <!-- Увеличил max-w до 6xl -->
+        <div class="flex flex-col md:flex-row justify-between items-start py-4 border-t border-[rgba(255,255,255,0.08)]"> <!-- Уменьшил py -->
+            <div class="mb-4 md:mb-0"> <!-- Уменьшил mb -->
+                <h3 class="text-2xl font-bold mb-2 text-white">WinWinDeal</h3> <!-- Увеличил text-xl до text-2xl -->
+                <p class="text-[#b3b9c6] text-base">Сервис выгодных сделок с недвижимостью</p> <!-- Увеличил text-sm до text-base -->
+            </div>
+
+            <div class="grid grid-cols-2 gap-6"> <!-- Уменьшил gap с 8 до 6 -->
+                <div>
+                    <h4 class="text-white font-semibold mb-2 text-base border-b border-[rgba(255,255,255,0.2)] pb-1">Разделы</h4> <!-- Увеличил text-sm до text-base, уменьшил mb и pb -->
+                    <ul class="space-y-1"> <!-- Уменьшил space-y с 2 до 1 -->
+                        <li><a href="{% url 'home' %}" class="text-[#b3b9c6] hover:text-white text-base transition-colors font-medium">Главная</a></li> <!-- Увеличил text-sm до text-base -->
                         {% if user.is_authenticated %}
-                            <li><a href="{% url 'broker-list' %}" class="hover:text-blue-300">Брокеры</a></li>
-                            <li><a href="{% url 'properties:property-list' %}" class="hover:text-blue-300">Объекты</a></li>
-                            <li>
-                                <a href=""
-                                   class="font-bold border-b-2 border-white pb-1 hover:text-blue-300">
-                                    Медиа
-                                </a>
-                            </li>
+                            <li><a href="{% url 'broker-list' %}" class="text-[#b3b9c6] hover:text-white text-base transition-colors font-medium">Брокеры</a></li>
+                            <li><a href="{% url 'properties:property-list' %}" class="text-[#b3b9c6] hover:text-white text-base transition-colors font-medium">Объекты</a></li>
+                            <li><a href="{% url 'developer-list' %}" class="text-[#b3b9c6] hover:text-white text-base transition-colors font-medium">Застройщики</a></li>
+                            <li><a href="{% url 'media_content:list' %}" class="text-white font-bold text-base transition-colors border-b-2 border-[#7c66ff] pb-1">Медиа</a></li>
                         {% else %}
-                            <li><a href="{% url 'register' %}" class="hover:text-blue-300">Брокеры</a></li>
-                            <li><a href="{% url 'register' %}" class="hover:text-blue-300">Объекты</a></li>
-                            <li>
-    <a href="{% url 'media_content:list' %}"
-       class="font-bold border-b-2 border-white pb-1 hover:text-blue-300">
-        Медиа
-    </a>
-</li>
+                            <li><a href="{% url 'register' %}" class="text-[#b3b9c6] hover:text-white text-base transition-colors font-medium">Брокеры</a></li>
+                            <li><a href="{% url 'register' %}" class="text-[#b3b9c6] hover:text-white text-base transition-colors font-medium">Объекты</a></li>
+                            <li><a href="{% url 'register' %}" class="text-[#b3b9c6] hover:text-white text-base transition-colors font-medium">Застройщики</a></li>
+                            <li><a href="{% url 'register' %}" class="text-white font-bold text-base transition-colors border-b-2 border-[#7c66ff] pb-1">Медиа</a></li>
                         {% endif %}
                     </ul>
-                    <div>
-                        <h4 class="text-lg font-semibold mb-4">Контакты</h4>
-                        <ul class="space-y-2">
-                            <li><i class="fas fa-envelope mr-2"></i> winwindealrlty@gmail.com</li>
-                            <li><i class="fas fa-phone mr-2"></i> +7 964 523-43-33</li>
-                            <li>
-                                <a href="https://t.me/winwindealrlty" target="_blank" class="hover:text-blue-300">
-                                    <i class="fab fa-telegram mr-2"></i> Telegram
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-semibold mb-2 text-base border-b border-[rgba(255,255,255,0.2)] pb-1">Контакты</h4> <!-- Увеличил text-sm до text-base, уменьшил mb и pb -->
+                    <ul class="space-y-1"> <!-- Уменьшил space-y с 2 до 1 -->
+                        <li class="text-[#b3b9c6] text-base flex items-center"> <!-- Увеличил text-sm до text-base -->
+                            <i class="fas fa-envelope mr-2 w-4"></i>
+                            winwindealrlty@gmail.com
+                        </li>
+                        <li class="text-[#b3b9c6] text-base flex items-center"> <!-- Увеличил text-sm до text-base -->
+                            <i class="fas fa-phone mr-2 w-4"></i>
+                            +7 964 523-43-33
+                        </li>
+                        <li>
+                            <a href="https://t.me/winwindealrlty" target="_blank" class="text-[#b3b9c6] hover:text-white text-base transition-colors flex items-center"> <!-- Увеличил text-sm до text-base -->
+                                <i class="fab fa-telegram mr-2 w-4"></i>
+                                Telegram
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             </div>
-
-            <!-- Добавленный блок "Есть вопросы? Напишите нам" -->
-            <div class="mt-4">
-                <h4 class="text-sm font-semibold mb-2 text-gray-300">Есть вопросы?</h4>
-                {% if user.is_authenticated %}
-                    <a href="{% url 'contact_support' %}"
-                       class="text-blue-300 hover:text-white text-sm transition-colors">
-                        Написать в поддержку
-                    </a>
-                {% else %}
-                    <span class="text-gray-400 text-sm">Авторизуйтесь, чтобы написать в поддержку</span>
-                {% endif %}
-            </div>
-
-            <div class="border-t border-gray-700 mt-8 pt-6 text-center">
-                <p>&copy; 2025 WinWinDeal. Все права защищены.</p>
-            </div>
         </div>
-    </footer>
+
+        <div class="mt-3 pt-3 border-t border-[rgba(255,255,255,0.08)]"> <!-- Уменьшил mt и pt -->
+            <h4 class="text-[#b3b9c6] text-base font-semibold mb-1">Есть вопросы?</h4> <!-- Увеличил text-sm до text-base, уменьшил mb -->
+            {% if user.is_authenticated %}
+                <a href="{% url 'contact_support' %}" class="text-[#7c66ff] hover:text-[#30d0ff] text-base transition-colors font-medium"> <!-- Увеличил text-sm до text-base -->
+                    Написать в поддержку
+                </a>
+            {% else %}
+                <span class="text-[#b3b9c6] text-base">Авторизуйтесь, чтобы написать в поддержку</span> <!-- Увеличил text-sm до text-base -->
+            {% endif %}
+        </div>
+
+        <div class="border-t border-[rgba(255,255,255,0.08)] mt-4 pt-4 text-center"> <!-- Уменьшил mt -->
+            <p class="text-[#b3b9c6] text-base">© 2025 WinWinDeal. Сделки, в которых выигрывают все.</p> <!-- Увеличил text-sm до text-base -->
+        </div>
+    </div>
+</footer>
+
+    <script>
+        // Базовые функции для работы с фильтрами - ТОЛЬКО ДЛЯ home.html и property_list.html
+        document.addEventListener('DOMContentLoaded', function() {
+            // Проверяем, находимся ли мы на home или properties странице
+            const isHomePage = document.body.classList.contains('home-page');
+            const isPropertiesPage = document.body.classList.contains('properties-page');
+
+            if (isHomePage || isPropertiesPage) {
+                // Функция для переключения чипов
+                function initChips() {
+                    document.querySelectorAll('.filter-chip').forEach(chip => {
+                        chip.addEventListener('click', () => chip.classList.toggle('active'));
+                    });
+                }
+
+                // Функция для сброса фильтров
+                function initResetButton(selector = '#resetBtn') {
+                    const resetBtn = document.querySelector(selector);
+                    if (resetBtn) {
+                        resetBtn.addEventListener('click', () => {
+                            document.querySelectorAll('input').forEach(i => {
+                                if (i.type === 'checkbox') i.checked = false;
+                                else i.value = '';
+                            });
+                            document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+                            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+                        });
+                    }
+                }
+
+                // Инициализация
+                initChips();
+                initResetButton();
+
+                // Экспорт функций для использования в других шаблонах
+                window.filterUtils = {
+                    initChips,
+                    initResetButton,
+
+                    // Получение значений фильтров
+                    getFilterValues: function(container = document) {
+                        const values = {};
+
+                        // Получаем значения input'ов
+                        container.querySelectorAll('input').forEach(input => {
+                            if (input.type === 'checkbox') {
+                                values[input.id || input.name] = input.checked;
+                            } else if (input.value) {
+                                values[input.id || input.name] = input.value;
+                            }
+                        });
+
+                        // Получаем значения select'ов
+                        container.querySelectorAll('select').forEach(select => {
+                            if (select.value) {
+                                values[select.id || select.name] = select.value;
+                            }
+                        });
+
+                        // Получаем активные чипы
+                        values.activeChips = [];
+                        container.querySelectorAll('.filter-chip.active').forEach(chip => {
+                            values.activeChips.push(chip.textContent.trim());
+                        });
+
+                        return values;
+                    },
+
+                    // Применение фильтров (заглушка - переопределите в конкретных шаблонах)
+                    applyFilters: function() {
+                        console.log('Apply filters function - override this in your template');
+                    }
+                };
+            }
+        });
+    </script>
 
     {% block extra_js %}{% endblock %}
 </body>

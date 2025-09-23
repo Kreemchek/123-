@@ -8,6 +8,35 @@ from cloudinary.models import CloudinaryField
 class BrokerProfile(models.Model):
     """Профиль брокера недвижимости"""
 
+    # Константы для услуг
+    SERVICES_CHOICES = [
+        ('consultation', 'Консультации'),
+        ('selection', 'Подбор объекта'),
+        ('transaction', 'Проведение сделок'),
+        ('legal', 'Юридическое сопровождение'),
+    ]
+
+    # Константы для специализации
+    SPECIALIZATION_CHOICES = [
+        ('residential', 'Жилая недвижимость'),
+        ('commercial', 'Коммерческая недвижимость'),
+        ('country', 'Загородная недвижимость'),
+        ('rent', 'Аренда'),
+        ('mortgage', 'Ипотека'),
+    ]
+
+    services = models.JSONField(
+        default=list,
+        verbose_name='Услуги',
+        help_text='Список предоставляемых услуг'
+    )
+
+    specializations = models.JSONField(
+        default=list,
+        verbose_name='Специализация',
+        help_text='Список специализаций'
+    )
+
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
@@ -26,6 +55,7 @@ class BrokerProfile(models.Model):
     )
     avatar = CloudinaryField('avatar', blank=True, null=True)
     avatar.verbose_name = _('Avatar')
+
 
 
     is_archived = models.BooleanField(
@@ -58,7 +88,8 @@ class BrokerProfile(models.Model):
         verbose_name_plural = _('Профили брокеров')
         ordering = ['-rating']
 
-
+    def __str__(self):
+        return f"Профиль брокера: {self.user.get_full_name()}"
 
     def active_properties(self):
         return self.user.broker_properties.filter(status='active', is_approved=True)
@@ -71,6 +102,14 @@ class BrokerProfile(models.Model):
             avg_rating = approved_reviews.aggregate(models.Avg('rating'))['rating__avg']
             self.rating = round(avg_rating, 1)
             self.save()
+
+    def get_services_display(self):
+        """Возвращает отображаемые названия услуг"""
+        return [dict(self.SERVICES_CHOICES).get(service, service) for service in self.services]
+
+    def get_specializations_display(self):  # Измените название метода!
+        """Возвращает отображаемые названия специализаций"""
+        return [dict(self.SPECIALIZATION_CHOICES).get(spec, spec) for spec in self.specializations]
 
 
 class BrokerReview(models.Model):
