@@ -1395,49 +1395,251 @@ body.properties-page{
         background: rgba(255,255,255,0.2);
     }
 }
+    /* Анимации для поля поиска */
+    .search-container input:focus ~ .search-gradient-border {
+        opacity: 1;
+        animation: pulse-glow 2s infinite;
+    }
 
-/* Стили для градиентной подсветки чипсов при наведении */
-.chip {
-    position: relative;
-    overflow: hidden;
-    border: 1px solid #e5e7eb;
+    .search-container input:focus ~ .search-hints {
+        opacity: 1;
+    }
+
+    @keyframes pulse-glow {
+        0% { opacity: 0.7; }
+        50% { opacity: 1; }
+        100% { opacity: 0.7; }
+    }
+
+    /* Плавное появление подсказок при фокусе */
+    .search-container input::placeholder {
+        transition: color 0.3s ease;
+    }
+
+    .search-container input:focus::placeholder {
+        color: transparent;
+    }
+
+    /* Адаптивность для мобильных устройств */
+    @media (max-width: 768px) {
+        .search-container input {
+            padding: 14px 16px;
+            font-size: 16px; /* Увеличиваем для удобства на мобильных */
+        }
+
+        .search-hints {
+            display: none; /* Скрываем подсказки на мобильных */
+        }
+
+        .search-container button {
+            padding: 10px;
+        }
+    }
+/* Улучшенные стили для поиска */
+.search-container input:focus ~ .search-gradient-border {
+    opacity: 1;
+    animation: pulse-glow 2s infinite;
+    transform: scale(1.02);
+}
+
+.search-container input:focus ~ .search-hints {
+    opacity: 1;
+    transform: translateY(5px);
+}
+
+@keyframes pulse-glow {
+    0% {
+        opacity: 0.7;
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+    }
+    50% {
+        opacity: 1;
+        box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+    }
+    100% {
+        opacity: 0.7;
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+    }
+}
+
+/* Плавные переходы */
+.search-container input::placeholder {
     transition: all 0.3s ease;
 }
 
-.chip .chip-hover-gradient {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    z-index: 1;
+.search-container input:focus::placeholder {
+    color: transparent;
+    transform: translateY(-5px);
 }
 
-.chip span {
+/* Эффект при наведении на всю область поиска */
+.search-container:hover .search-gradient-border {
+    opacity: 0.3;
+}
+
+.search-container:hover input {
+    transform: translateY(-1px);
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 1024px) {
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .bg-gradient-to-r {
+        padding: 1.5rem;
+    }
+
+    .search-container input {
+        padding: 1rem 1.25rem;
+        font-size: 1rem;
+    }
+
+    .search-hints {
+        display: none;
+    }
+
+    .text-4xl {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .flex-col {
+        gap: 1.5rem;
+    }
+
+    .search-container input {
+        padding: 0.875rem 1rem;
+        font-size: 0.95rem;
+    }
+
+    .btn-primary {
+        padding: 0.875rem 1.5rem;
+        font-size: 0.95rem;
+    }
+}
+
+/* Микро-анимации для кнопки поиска */
+.search-container button:hover i {
+    animation: bounce 0.6s ease;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+/* Градиентный текст для заголовка */
+.gradient-text {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+/* Стили для мобильного меню фильтров */
+.mobile-filters-sidebar {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e0 #f7fafc;
+}
+
+.mobile-filters-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.mobile-filters-sidebar::-webkit-scrollbar-track {
+    background: #f7fafc;
+}
+
+.mobile-filters-sidebar::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 3px;
+}
+
+.mobile-filter-content {
+    transition: all 0.3s ease;
+    max-height: 0;
+    overflow: hidden;
+}
+
+.mobile-filter-content:not(.hidden) {
+    max-height: 500px;
+}
+
+.rotate-180 {
+    transform: rotate(180deg);
+}
+
+/* Гарантированно скрываем ПК фильтры на мобильных */
+@media (max-width: 1023px) {
+    .filter-sidebar {
+        display: none !important;
+    }
+
+    .filter-toggle {
+        display: none !important;
+    }
+
+    /* Скрываем старую мобильную кнопку если она есть */
+    .properties-page .filter-toggle {
+        display: none !important;
+    }
+}
+
+/* Убедимся, что на ПК мобильное меню скрыто */
+@media (min-width: 1024px) {
+    .mobile-filters-overlay,
+    .mobile-filters-sidebar {
+        display: none !important;
+    }
+
+    #mobile-filters-btn {
+        display: none !important;
+    }
+}
+/* Стили для мобильных модальных окон */
+/* Исправленные стили для мобильных модальных окон */
+#mobile-city-dropdown,
+#mobile-metro-dropdown {
+    z-index: 9999 !important; /* Увеличиваем z-index */
+    position: fixed !important;
+}
+/* Убедимся, что контейнеры модальных окон также имеют высокий z-index */
+#mobile-city-dropdown > div,
+#mobile-metro-dropdown > div {
+    z-index: 10000 !important;
     position: relative;
-    z-index: 2;
+}
+#mobile-city-dropdown .city-option,
+#mobile-metro-dropdown .metro-station-option {
+    padding: 1rem;
+    font-size: 1rem;
 }
 
-.chip:hover .chip-hover-gradient {
-    opacity: 0.1;
+#mobile-metro-dropdown .metro-line-section {
+    margin-bottom: 0.5rem;
 }
 
-.chip:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(123, 97, 255, 0.15);
-    border-color: #7b61ff;
+#mobile-metro-dropdown .metro-stations-container {
+    transition: max-height 0.3s ease;
+    overflow: hidden;
 }
 
-.chip.active {
-    background: linear-gradient(90deg, rgba(58, 167, 255, 0.13), rgba(111, 83, 255, 0.13));
-    border: 1px solid rgba(120, 110, 255, 0.3);
-    color: #4c37d4;
-}
+/* Адаптивность для мобильных модальных окон */
+@media (max-width: 640px) {
+    #mobile-city-dropdown,
+    #mobile-metro-dropdown {
+        padding: 0.5rem;
+    }
 
-.chip.active .chip-hover-gradient {
-    opacity: 0.15;
+    #mobile-city-dropdown .city-option,
+    #mobile-metro-dropdown .metro-station-option {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
 }
-
 </style>
 {% endblock %}
 
@@ -1447,45 +1649,450 @@ body.properties-page{
 
 {% block content %}
 <body class="properties-page">
-<div class="container mx-auto px-4 py-8">
-    <!-- Контейнер для карты и поиска -->
-    <div class="map-search-container">
-        <!-- Заголовок и поиск -->
-        <div class="bg-white rounded-xl shadow-sm p-4 mb-6 border-2 border-gray-100">
-        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-            <h1 class="text-3xl font-bold text-gray-800">
-                {% if user.is_authenticated and user.is_broker %}
-                    Мои объекты
-                {% else %}
-                    Каталог недвижимости
-                {% endif %}
-            </h1>
+<div class="container mx-auto px-4 py-6">
+    <!-- Улучшенный контейнер для поиска -->
+    <div class="mb-8">
+        <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 shadow-lg border border-blue-100/50">
+            <div class="flex flex-col lg:flex-row items-center justify-between gap-6">
+                <!-- Заголовок -->
+                <div class="text-center lg:text-left">
+                    <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                        {% if user.is_authenticated and user.is_broker %}
+                            Мои объекты
+                        {% else %}
+                            Каталог недвижимости
+                        {% endif %}
+                    </h1>
+                    <p class="text-gray-600 text-lg">Найдите идеальную недвижимость среди тысяч предложений</p>
+                </div>
 
-            <div class="w-full md:w-auto flex-1 flex flex-col sm:flex-row gap-4 items-stretch">
-                <form class="search-form flex-1">
-                    <div class="relative h-full">
-                        <input type="search"
-                               name="search"
-                               placeholder="Поиск по названию или локации..."
-                               class="w-full h-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <button type="submit" class="absolute right-3 top-3 text-gray-400 hover:text-blue-600">
-                            <i class="bi bi-search text-xl"></i>
-                        </button>
+                <!-- Улучшенное поле поиска -->
+                <div class="w-full lg:w-auto flex-1 max-w-2xl">
+                    <form class="search-form relative">
+                        <div class="relative">
+                            <div class="search-container relative">
+                                <!-- Градиентная обводка -->
+                                <div class="search-gradient-border absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 p-0.5 opacity-0 transition-all duration-500"></div>
+
+                                <!-- Основное поле ввода -->
+                                <input type="search"
+                                       name="search"
+                                       placeholder="🔍 Поиск по названию, локации, цене или типу недвижимости..."
+                                       class="w-full h-full px-6 py-5 rounded-2xl border-0 bg-white/95 backdrop-blur-sm text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-4 focus:ring-blue-200/50 shadow-xl transition-all duration-300 relative z-10 text-lg">
+
+                                <!-- Кнопка поиска -->
+                                <button type="submit"
+                                        class="absolute right-3 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-blue-300/50 z-20">
+                                    <i class="bi bi-search text-xl"></i>
+                                </button>
+
+                                <!-- Дополнительные подсказки -->
+                                <div class="search-hints absolute -bottom-10 left-0 right-0 flex justify-center gap-4 text-sm text-gray-600 opacity-0 transition-all duration-500 pointer-events-none">
+                                    <span class="bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full">квартира в Москве</span>
+                                    <span class="bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full">цена до 5 млн</span>
+                                    <span class="bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full">2-комнатная</span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Кнопка добавления -->
+                {% if user.is_authenticated and user.is_broker %}
+                    <div class="lg:flex-shrink-0">
+                        <a href="{% url 'properties:select-listing-type' %}"
+                           class="btn-primary flex items-center justify-center gap-3 whitespace-nowrap px-8 py-5 rounded-2xl transition-all duration-300 hover:scale-105 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold shadow-xl hover:shadow-2xl text-lg">
+                            <i class="bi bi-plus-lg text-xl"></i>
+                            <span>Добавить объект</span>
+                        </a>
                     </div>
-                </form>
-
-                {% if user.is_authenticated and user.is_broker %}
-                    <a href="{% url 'properties:select-listing-type' %}"
-                       class="btn-primary flex items-center justify-center gap-2 whitespace-nowrap px-6 py-3 rounded-lg transition-all hover:shadow-md">
-                        <i class="bi bi-plus-lg"></i> Добавить
-                    </a>
                 {% endif %}
             </div>
         </div>
     </div>
 
-        <!-- Карта всех объектов -->
-      <!-- Карта всех объектов -->
+
+
+<!-- Мобильная кнопка открытия фильтров -->
+<!-- Мобильная кнопка открытия фильтров -->
+<div class="lg:hidden mb-4">
+    <button class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 font-medium flex items-center justify-center shadow-lg" id="mobile-filters-btn">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+        </svg>
+        Фильтры
+        {% if request.GET.search or request.GET.property_type or request.GET.rental_type or request.GET.location or request.GET.min_price or request.GET.max_price %}
+        <span class="ml-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">!</span>
+        {% endif %}
+    </button>
+</div>
+
+<!-- Мобильное меню фильтров -->
+<div class="mobile-filters-overlay fixed inset-0 bg-black bg-opacity-50 z-50 hidden" id="mobile-filters-overlay"></div>
+
+<div class="mobile-filters-sidebar fixed left-0 top-0 h-full w-80 bg-white shadow-xl z-50 transform -translate-x-full transition-transform duration-300 overflow-y-auto" id="mobile-filters-sidebar">
+    <div class="sticky top-0 bg-white border-b border-gray-200 z-10">
+        <div class="flex justify-between items-center p-4">
+            <h2 class="text-xl font-semibold text-gray-900">Фильтры</h2>
+            <button class="p-2 rounded-lg hover:bg-gray-100 transition-colors" id="mobile-filters-close">
+                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="p-4">
+        <form method="get" class="space-y-6" id="mobile-filter-form">
+            <!-- Поиск -->
+            <div class="mobile-filter-section">
+                <div class="flex justify-between items-center py-3 cursor-pointer border-b border-gray-200" onclick="toggleMobileFilterSection(this)">
+                    <span class="font-medium text-gray-900">Поиск</span>
+                    <svg class="w-4 h-4 text-gray-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </div>
+                <div class="mobile-filter-content hidden pt-3">
+                    <input type="text" name="search" value="{{ request.GET.search }}"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                           placeholder="Введите запрос...">
+                </div>
+            </div>
+
+            <!-- Тип недвижимости -->
+            <div class="mobile-filter-section">
+                <div class="flex justify-between items-center py-3 cursor-pointer border-b border-gray-200" onclick="toggleMobileFilterSection(this)">
+                    <span class="font-medium text-gray-900">Тип недвижимости</span>
+                    <svg class="w-4 h-4 text-gray-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </div>
+                <div class="mobile-filter-content hidden pt-3">
+                    <div class="space-y-2">
+                        {% for value, label in property_type_choices %}
+                        <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                            <input type="checkbox" name="property_type" value="{{ value }}"
+                                   {% if value in request.GET.getlist %}checked{% endif %}
+                                   class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-3">
+                            <span class="text-sm text-gray-700">{{ label }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Вид размещения -->
+            <div class="mobile-filter-section">
+                <div class="flex justify-between items-center py-3 cursor-pointer border-b border-gray-200" onclick="toggleMobileFilterSection(this)">
+                    <span class="font-medium text-gray-900">Вид размещения</span>
+                    <svg class="w-4 h-4 text-gray-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </div>
+                <div class="mobile-filter-content hidden pt-3">
+                    <div class="space-y-2">
+                        <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                            <input type="checkbox" name="rental_type" value="no"
+                                   {% if "no" in request.GET.getlist %}checked{% endif %}
+                                   class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-3">
+                            <span class="text-sm text-gray-700">Купить</span>
+                        </label>
+                        <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                            <input type="checkbox" name="rental_type" value="monthly"
+                                   {% if "monthly" in request.GET.getlist %}checked{% endif %}
+                                   class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-3">
+                            <span class="text-sm text-gray-700">Аренда помесячно</span>
+                        </label>
+                        <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                            <input type="checkbox" name="rental_type" value="daily"
+                                   {% if "daily" in request.GET.getlist %}checked{% endif %}
+                                   class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-3">
+                            <span class="text-sm text-gray-700">Аренда посуточно</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Город (мобильная версия) -->
+            <div class="mobile-filter-section">
+                <div class="flex justify-between items-center py-3 cursor-pointer border-b border-gray-200" onclick="toggleMobileFilterSection(this)">
+                    <span class="font-medium text-gray-900">Город</span>
+                    <svg class="w-4 h-4 text-gray-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </div>
+                <div class="mobile-filter-content hidden pt-3">
+                    <div class="relative">
+                        <button type="button" id="mobile-city-input" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium bg-white hover:bg-gray-50 transition-colors text-left">
+                            <span id="mobile-selected-city-text">
+                                {% if filter.form.location.value %}
+                                    {{ filter.form.location.value }}
+                                {% else %}
+                                    Выберите город
+                                {% endif %}
+                            </span>
+                            <i class="bi bi-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
+                        </button>
+                        <input type="hidden" name="location" value="{{ filter.form.location.value|default:'' }}" id="mobile-city-hidden-input">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Метро (мобильная версия) -->
+            <div class="mobile-filter-section">
+                <div class="flex justify-between items-center py-3 cursor-pointer border-b border-gray-200" onclick="toggleMobileFilterSection(this)">
+                    <span class="font-medium text-gray-900">Метро</span>
+                    <svg class="w-4 h-4 text-gray-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </div>
+                <div class="mobile-filter-content hidden pt-3">
+                    <div class="relative">
+                        <button type="button" id="mobile-metro-input" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium bg-white hover:bg-gray-50 transition-colors text-left">
+                            <div id="mobile-selected-metro-text">
+                                {% if filter.form.metro_station.value %}
+                                    {% for station in filter.form.metro_station.value|slice:":2" %}
+                                        <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-1 mb-1">
+                                            {{ station }}
+                                        </span>
+                                    {% endfor %}
+                                    {% if filter.form.metro_station.value|length > 2 %}
+                                        <span class="inline-block bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">
+                                            +{{ filter.form.metro_station.value|length|add:"-2" }}
+                                        </span>
+                                    {% endif %}
+                                {% else %}
+                                    Выберите станции метро
+                                {% endif %}
+                            </div>
+                            <i class="bi bi-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
+                        </button>
+                        <input type="hidden" name="metro_station" value="{% if filter.form.metro_station.value %}{{ filter.form.metro_station.value }}{% endif %}" id="mobile-metro-hidden-input">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Цена -->
+            <div class="mobile-filter-section">
+                <div class="flex justify-between items-center py-3 cursor-pointer border-b border-gray-200" onclick="toggleMobileFilterSection(this)">
+                    <span class="font-medium text-gray-900">Цена</span>
+                    <svg class="w-4 h-4 text-gray-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </div>
+                <div class="mobile-filter-content hidden pt-3">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">От, ₽</label>
+                            <input type="number" name="min_price" value="{{ request.GET.min_price }}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                   placeholder="0">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">До, ₽</label>
+                            <input type="number" name="max_price" value="{{ request.GET.max_price }}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                   placeholder="Любая">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Площадь -->
+            <div class="mobile-filter-section">
+                <div class="flex justify-between items-center py-3 cursor-pointer border-b border-gray-200" onclick="toggleMobileFilterSection(this)">
+                    <span class="font-medium text-gray-900">Площадь, м²</span>
+                    <svg class="w-4 h-4 text-gray-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </div>
+                <div class="mobile-filter-content hidden pt-3">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">От</label>
+                            <input type="number" name="min_area" value="{{ request.GET.min_area }}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                   placeholder="0">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">До</label>
+                            <input type="number" name="max_area" value="{{ request.GET.max_area }}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                   placeholder="Любая">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Комнаты -->
+            <div class="mobile-filter-section">
+                <div class="flex justify-between items-center py-3 cursor-pointer border-b border-gray-200" onclick="toggleMobileFilterSection(this)">
+                    <span class="font-medium text-gray-900">Комнаты</span>
+                    <svg class="w-4 h-4 text-gray-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </div>
+                <div class="mobile-filter-content hidden pt-3">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">От</label>
+                            <input type="number" name="rooms__gte" value="{{ request.GET.rooms__gte }}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                   placeholder="0">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">До</label>
+                            <input type="number" name="rooms__lte" value="{{ request.GET.rooms__lte }}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                   placeholder="Любая">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Этаж -->
+            <div class="mobile-filter-section">
+                <div class="flex justify-between items-center py-3 cursor-pointer border-b border-gray-200" onclick="toggleMobileFilterSection(this)">
+                    <span class="font-medium text-gray-900">Этаж</span>
+                    <svg class="w-4 h-4 text-gray-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </div>
+                <div class="mobile-filter-content hidden pt-3">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">От</label>
+                            <input type="number" name="min_floor" value="{{ request.GET.min_floor }}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                   placeholder="0">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">До</label>
+                            <input type="number" name="max_floor" value="{{ request.GET.max_floor }}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                   placeholder="Любая">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Кнопки действий -->
+            <div class="sticky bottom-0 bg-white pt-4 pb-6 border-t border-gray-200 mt-6">
+                <div class="flex gap-3">
+                    <button type="button" onclick="resetMobileFilters()" class="flex-1 bg-gray-100 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors font-medium">
+                        Сбросить
+                    </button>
+                    <button type="submit" class="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-colors font-medium">
+                        Применить
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Модальное окно выбора города (мобильная версия) -->
+<div id="mobile-city-dropdown" class="fixed inset-0 z-60 hidden bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-full max-h-[90vh] overflow-y-auto">
+        <div class="sticky top-0 bg-white p-4 border-b border-gray-200 z-10">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-bold">Выберите город</h2>
+                <button id="mobile-close-city-modal" class="text-gray-500 hover:text-gray-700 text-2xl">
+                    ×
+                </button>
+            </div>
+
+            <div class="mt-4">
+                <input type="text"
+                       id="mobile-city-search"
+                       placeholder="Начните вводить название города..."
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+        </div>
+
+        <div class="p-4">
+            <button type="button" id="mobile-use-custom-city" class="hidden w-full mb-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                Применить выбранный город
+            </button>
+
+
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно выбора метро (мобильная версия) -->
+<div id="mobile-metro-dropdown" class="fixed inset-0 z-60 hidden bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-full max-h-[90vh] overflow-hidden flex flex-col">
+        <div class="sticky top-0 bg-white p-4 border-b border-gray-200 z-10">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-bold">Выберите станции метро</h2>
+                <button id="mobile-close-metro-modal" class="text-gray-500 hover:text-gray-700 text-2xl">
+                    ×
+                </button>
+            </div>
+            <div class="mt-4">
+                <input type="text"
+                       id="mobile-metro-search"
+                       placeholder="Начните вводить название станции..."
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+        </div>
+
+        <div class="p-4 overflow-y-auto flex-1">
+            {% if location %}
+                {% if metro_lines %}
+                    <div class="metro-lines-container space-y-3 overflow-y-auto max-h-[calc(100vh-200px)]">
+                        {% for line in metro_lines %}
+                            <div class="metro-line-section border rounded-lg overflow-hidden">
+                                <div class="metro-line-header flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50 transition-colors"
+                                    onclick="toggleMobileMetroLine(this)">
+                                    <div class="flex items-center min-w-0">
+                                        <div class="metro-line-color w-4 h-4 rounded-full mr-2 flex-shrink-0"
+                                            style="background-color: {{ line.line_color }}"></div>
+                                        <h3 class="metro-line-name font-medium text-sm truncate">{{ line.line|default:"Другие станции" }}</h3>
+                                    </div>
+                                    <i class="bi bi-chevron-down transition-transform duration-200 flex-shrink-0"></i>
+                                </div>
+
+                                <div class="metro-stations-container transition-all duration-300 overflow-hidden"
+                                    style="max-height: 0">
+                                    {% for station in line.stations %}
+                                        <button type="button"
+                                                class="metro-station-option flex items-center px-3 py-2 w-full text-left hover:bg-gray-50 transition-colors {% if station.name in filter.form.metro_station.value %}bg-blue-100 text-blue-800{% endif %}"
+                                                data-station="{{ station.name }}">
+                                            <div class="metro-station-color w-3 h-3 rounded-full mr-3 flex-shrink-0"
+                                                style="background-color: {{ station.line_color|default:'#cccccc' }}"></div>
+                                            <span class="metro-station-name truncate">{{ station.name }}</span>
+                                        </button>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-gray-500 py-4 text-center">Для выбранного города нет данных о станциях метро</p>
+                {% endif %}
+            {% else %}
+                <p class="text-gray-500 py-4 text-center">Сначала выберите город</p>
+            {% endif %}
+        </div>
+
+        <div class="sticky bottom-0 bg-white p-4 border-t border-gray-200 flex justify-end gap-3">
+            <button type="button"
+                    id="mobile-clear-metro-selection"
+                    class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50">
+                Очистить
+            </button>
+            <button type="button"
+                    id="mobile-apply-metro-selection"
+                    class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">
+                Применить
+            </button>
+        </div>
+    </div>
+</div>
+
+
 
 
      <div class="flex flex-col lg:flex-row gap-8">
@@ -1571,7 +2178,7 @@ body.properties-page{
 
         <!-- Аренда посуточно -->
         <label class="chip {% if 'daily' in selected_rental_types %}active{% endif %}"
-               style="cursor: pointer; padding: 8px 10px; border-radius: 10px; font-size: 13px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden;">
+               style="cursor: pointer; padding: 8px 10px; border-radius: 10px; font-size: 13px; background: #ffffff; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden;">
             <input type="checkbox" name="rental_type" value="daily"
                    {% if 'daily' in selected_rental_types %}checked{% endif %}
                    style="display: none;">
@@ -1957,63 +2564,322 @@ body.properties-page{
        <!-- Карточки объектов с новой структурой -->
 <!-- Карточки объектов -->
 <!-- Карточки объектов -->
-<section class="listings" aria-label="Список объектов" style="margin-top: 18px; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 18px;">
+<section class="listings" aria-label="Список объектов" style="margin-top: 18px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px;">
+<style>
+@media (max-width: 768px) {
+    .listings {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+}
+@media (min-width: 769px) and (max-width: 1024px) {
+    .listings {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
+    }
+}
+</style>
     {% if properties %}
         {% for property in properties %}
-            <article class="card" style="border-radius: 14px; padding: 12px; background: white; border: 1px solid rgba(0,0,0,0.08); box-shadow: 0 4px 20px rgba(0,0,0,0.08); display: flex; gap: 12px; align-items: flex-start; transition: transform 0.3s ease, box-shadow 0.3s ease;">
-                <div class="thumb" style="width: 150px; height: 110px; border-radius: 10px; flex-shrink: 0; background-size: cover; background-position: center; border: 1px solid rgba(0,0,0,0.06); background-image: url('{{ property.main_image.url }}')"></div>
-                <div class="meta" style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
-                    <div class="type" style="font-size: 12px; color: #64748b;">
-                        {{ property.get_property_type_display }},
-                        {{ property.total_area }} м²,
-                        {{ property.floor }}/{{ property.total_floors }} этаж
+            <article class="property-card" style="
+                border-radius: 20px;
+                background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+                border: 1px solid rgba(255, 255, 255, 0.8);
+                box-shadow:
+                    0 4px 20px rgba(0, 0, 0, 0.08),
+                    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+                    0 -1px 0 rgba(0, 0, 0, 0.02) inset;
+                overflow: hidden;
+                position: relative;
+                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                backdrop-filter: blur(10px);
+            ">
+                <!-- Градиентный акцент -->
+                <div class="card-accent" style="
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    height: 4px;
+                    background: linear-gradient(90deg, #7b61ff 0%, #36d1dc 50%, #7b61ff 100%);
+                    background-size: 200% 100%;
+                    animation: shimmer 3s ease-in-out infinite;
+                "></div>
+
+                <!-- Бейдж статуса -->
+                <div class="status-badge" style="
+                    position: absolute;
+                    top: 16px;
+                    right: 16px;
+                    z-index: 10;
+                    padding: 6px 12px;
+                    background: rgba(255, 255, 255, 0.95);
+                    backdrop-filter: blur(10px);
+                    border-radius: 12px;
+                    font-size: 11px;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+                    border: 1px solid rgba(255, 255, 255, 0.6);
+                ">
+                    {% if property.is_rental == 'monthly' %}
+                        <span style="color: #10b981;">Аренда</span>
+                    {% elif property.is_rental == 'daily' %}
+                        <span style="color: #f59e0b;">Посуточно</span>
+                    {% else %}
+                        <span style="color: #7b61ff;">Продажа</span>
+                    {% endif %}
+                </div>
+
+                <!-- Изображение с градиентным оверлеем -->
+                <div class="image-container" style="
+                    position: relative;
+                    height: 200px;
+                    overflow: hidden;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                ">
+                    <div class="property-image" style="
+                        width: 100%;
+                        height: 100%;
+                        background-image: url('{{ property.main_image.url }}');
+                        background-size: cover;
+                        background-position: center;
+                        transition: transform 0.6s ease;
+                    "></div>
+
+                    <!-- Градиентный оверлей -->
+                    <div class="image-overlay" style="
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: linear-gradient(
+                            to bottom,
+                            rgba(0, 0, 0, 0.1) 0%,
+                            transparent 30%,
+                            rgba(0, 0, 0, 0.15) 100%
+                        );
+                    "></div>
+
+                    <!-- Кнопка избранного -->
+
+                </div>
+
+                <!-- Контент карточки -->
+                <div class="card-content" style="padding: 24px;">
+                    <!-- Заголовок и тип -->
+                    <div class="property-header" style="margin-bottom: 16px;">
+                        <div class="property-type" style="
+                            font-size: 12px;
+                            font-weight: 600;
+                            text-transform: uppercase;
+                            letter-spacing: 0.5px;
+                            color: #7b61ff;
+                            margin-bottom: 6px;
+                        ">
+                            {{ property.get_property_type_display }}
+                        </div>
+                        <h3 class="property-title" style="
+                            margin: 0;
+                            font-size: 20px;
+                            font-weight: 700;
+                            line-height: 1.3;
+                            color: #1e293b;
+                            display: -webkit-box;
+                            -webkit-line-clamp: 2;
+                            -webkit-box-orient: vertical;
+                            overflow: hidden;
+                        ">
+                            {{ property.title }}
+                        </h3>
                     </div>
-                    <h3 style="margin: 0; font-size: 16px; color: #1e293b;">{{ property.title }}</h3>
-                    <div class="meta-row" style="display: flex; gap: 10px; align-items: center; color: #64748b; font-size: 13px;">
-                        <span>{{ property.rooms }} комн.</span>
-                        <span>•</span>
-                        {% if property.metro_station and property.metro_station != "Не указано" %}
-                            <span>{{ property.metro_station }}</span>
-                            <span>•</span>
-                        {% endif %}
-                        <span class="price" style="font-weight: 800; font-size: 16px; color: #7b61ff;">
-                            {% if property.is_rental == 'monthly' and property.monthly_price %}
-                                {{ property.monthly_price|space_format }} ₽/мес
-                            {% elif property.is_rental == 'daily' and property.daily_price %}
-                                {{ property.daily_price|space_format }} ₽/сут
-                            {% else %}
-                                {{ property.price|space_format }} ₽
+
+                    <!-- Основная информация -->
+                    <div class="property-info" style="margin-bottom: 20px;">
+                        <div class="info-grid" style="
+                            display: grid;
+                            grid-template-columns: repeat(2, 1fr);
+                            gap: 12px;
+                        ">
+                            <!-- Комнаты -->
+                            <div class="info-item" style="display: flex; align-items: center; gap: 8px;">
+                                <div class="info-icon" style="
+                                    width: 32px;
+                                    height: 32px;
+                                    border-radius: 8px;
+                                    background: rgba(123, 97, 255, 0.1);
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                ">
+                                    <i class="bi bi-door-open" style="color: #7b61ff; font-size: 14px;"></i>
+                                </div>
+                                <div>
+                                    <div class="info-value" style="font-size: 16px; font-weight: 700; color: #1e293b;">
+                                        {{ property.rooms }} комн.
+                                    </div>
+                                    <div class="info-label" style="font-size: 12px; color: #64748b;">Комнаты</div>
+                                </div>
+                            </div>
+
+                            <!-- Площадь -->
+                            <div class="info-item" style="display: flex; align-items: center; gap: 8px;">
+                                <div class="info-icon" style="
+                                    width: 32px;
+                                    height: 32px;
+                                    border-radius: 8px;
+                                    background: rgba(54, 209, 220, 0.1);
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                ">
+                                    <i class="bi bi-arrows-fullscreen" style="color: #36d1dc; font-size: 14px;"></i>
+                                </div>
+                                <div>
+                                    <div class="info-value" style="font-size: 16px; font-weight: 700; color: #1e293b;">
+                                        {{ property.total_area }} м²
+                                    </div>
+                                    <div class="info-label" style="font-size: 12px; color: #64748b;">Площадь</div>
+                                </div>
+                            </div>
+
+                            <!-- Метро -->
+                            {% if property.metro_station and property.metro_station != "Не указано" %}
+                            <div class="info-item" style="display: flex; align-items: center; gap: 8px; grid-column: 1 / -1;">
+                                <div class="info-icon" style="
+                                    width: 32px;
+                                    height: 32px;
+                                    border-radius: 8px;
+                                    background: rgba(239, 68, 68, 0.1);
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                ">
+                                    <i class="bi bi-train-front" style="color: #ef4444; font-size: 14px;"></i>
+                                </div>
+                                <div>
+                                    <div class="info-value" style="font-size: 16px; font-weight: 700; color: #1e293b;">
+                                        {{ property.metro_station }}
+                                    </div>
+                                    <div class="info-label" style="font-size: 12px; color: #64748b;">Метро</div>
+                                </div>
+                            </div>
                             {% endif %}
-                        </span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
-                        <div style="color: #64748b; font-size: 13px;">{{ property.total_area }} м²</div>
-                        <div class="actions" style="display: flex; gap: 8px; align-items: center;">
-                            {% if user.is_authenticated %}
-                            <button class="toggle-favorite" style="background: none; border: none; cursor: pointer; color: #9ca3af; transition: color 0.2s ease;"
-                                    data-property-id="{{ property.id }}"
-                                    onclick="event.preventDefault(); toggleFavorite({{ property.id }})">
-                                <i class="bi {% if property in user.favorites.all %}bi-heart-fill text-red-500{% else %}bi-heart{% endif %} text-xl"></i>
-                            </button>
-                            {% endif %}
-                            <a href="{% url 'properties:property-detail' property.id %}"
-                               class="btn"
-                               style="background: white; border: 1px solid rgba(0,0,0,0.08); padding: 8px 12px; border-radius: 8px; color: #64748b; font-weight: 600; cursor: pointer; font-size: 12px; transition: all 0.2s ease; text-decoration: none; display: inline-block;">
-                                Подробнее
-                            </a>
                         </div>
                     </div>
+
+                    <!-- Цена и кнопка -->
+                    <div class="property-footer" style="
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        padding-top: 16px;
+                        border-top: 1px solid rgba(0, 0, 0, 0.05);
+                    ">
+                        <div class="price-section">
+                            <div class="price" style="
+                                font-size: 24px;
+                                font-weight: 800;
+                                color: #7b61ff;
+                                line-height: 1.2;
+                            ">
+                                {% if property.is_rental == 'monthly' and property.monthly_price %}
+                                    {{ property.monthly_price|space_format }} ₽/мес
+                                {% elif property.is_rental == 'daily' and property.daily_price %}
+                                    {{ property.daily_price|space_format }} ₽/сут
+                                {% else %}
+                                    {{ property.price|space_format }} ₽
+                                {% endif %}
+                            </div>
+                            <div class="price-per-sqm" style="font-size: 12px; color: #64748b;">
+                                {{ property.price_per_sqm|space_format }} ₽/м²
+                            </div>
+                        </div>
+
+                        <a href="{% url 'properties:property-detail' property.id %}"
+                           class="details-btn"
+                           style="
+                                padding: 12px 20px;
+                                background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%);
+                                color: white;
+                                border-radius: 12px;
+                                font-weight: 600;
+                                text-decoration: none;
+                                transition: all 0.3s ease;
+                                box-shadow: 0 4px 15px rgba(123, 97, 255, 0.3);
+                                display: flex;
+                                align-items: center;
+                                gap: 6px;
+                           "
+                           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(123, 97, 255, 0.4)';"
+                           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(123, 97, 255, 0.3)';">
+                            <span>Подробнее</span>
+                            <i class="bi bi-arrow-right-short" style="font-size: 16px;"></i>
+                        </a>
+                    </div>
                 </div>
+
+                <!-- Ховер эффекты -->
+                <style>
+                    .property-card:hover {
+                        transform: translateY(-8px) scale(1.02);
+                        box-shadow:
+                            0 25px 50px rgba(0, 0, 0, 0.15),
+                            0 1px 0 rgba(255, 255, 255, 0.8) inset,
+                            0 -1px 0 rgba(0, 0, 0, 0.02) inset;
+                    }
+
+                    .property-card:hover .property-image {
+                        transform: scale(1.1);
+                    }
+
+                    .favorite-btn:hover {
+                        background: rgba(255, 255, 255, 1);
+                        transform: scale(1.1);
+                        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+                    }
+
+                    .favorite-btn:hover i {
+                        color: #ef4444 !important;
+                    }
+
+                    @keyframes shimmer {
+                        0% { background-position: -200% 0; }
+                        100% { background-position: 200% 0; }
+                    }
+                </style>
             </article>
         {% endfor %}
     {% else %}
-        <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: #64748b;">
-            <i class="bi bi-house-x" style="font-size: 2rem;"></i>
-            <p style="margin-top: 10px;">
+        <!-- Состояние при отсутствии объектов -->
+        <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+            <div style="
+                width: 120px;
+                height: 120px;
+                margin: 0 auto 24px;
+                background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 4px solid white;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            ">
+                <i class="bi bi-house-x" style="font-size: 48px; color: #94a3b8;"></i>
+            </div>
+            <h3 style="font-size: 24px; font-weight: 700; color: #1e293b; margin-bottom: 12px;">
                 {% if user.is_authenticated and user.is_broker %}
                     У вас пока нет объектов
                 {% else %}
                     Объекты не найдены
+                {% endif %}
+            </h3>
+            <p style="font-size: 16px; color: #64748b; max-width: 400px; margin: 0 auto; line-height: 1.5;">
+                {% if user.is_authenticated and user.is_broker %}
+                    Начните добавлять объекты, чтобы они отображались в вашем каталоге
+                {% else %}
+                    Попробуйте изменить параметры поиска или сбросить фильтры
                 {% endif %}
             </p>
         </div>
@@ -2052,6 +2918,446 @@ body.properties-page{
 
 
 <script>
+// Мобильное меню фильтров
+// Мобильное меню фильтров - основные функции
+function initMobileFilters() {
+    const mobileFiltersBtn = document.getElementById('mobile-filters-btn');
+    const mobileFiltersSidebar = document.getElementById('mobile-filters-sidebar');
+    const mobileFiltersOverlay = document.getElementById('mobile-filters-overlay');
+    const mobileFiltersClose = document.getElementById('mobile-filters-close');
+
+    // Функция закрытия мобильного меню фильтров
+    window.closeMobileFilters = function() {
+        if (mobileFiltersSidebar) {
+            mobileFiltersSidebar.classList.add('-translate-x-full');
+        }
+        if (mobileFiltersOverlay) {
+            mobileFiltersOverlay.classList.add('hidden');
+        }
+        document.body.style.overflow = '';
+    };
+
+    function openMobileFilters() {
+        if (mobileFiltersSidebar) {
+            mobileFiltersSidebar.classList.remove('-translate-x-full');
+        }
+        if (mobileFiltersOverlay) {
+            mobileFiltersOverlay.classList.remove('hidden');
+        }
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Обработчики событий
+    if (mobileFiltersBtn) {
+        mobileFiltersBtn.addEventListener('click', openMobileFilters);
+    }
+
+    if (mobileFiltersClose) {
+        mobileFiltersClose.addEventListener('click', closeMobileFilters);
+    }
+
+    if (mobileFiltersOverlay) {
+        mobileFiltersOverlay.addEventListener('click', closeMobileFilters);
+    }
+
+    // Закрытие по ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeMobileFilters();
+            // Также закрываем модальные окна если они открыты
+            document.querySelectorAll('#mobile-city-dropdown, #mobile-metro-dropdown').forEach(modal => {
+                modal.classList.add('hidden');
+            });
+        }
+    });
+
+    // Инициализация модальных окон
+    initMobileModals();
+}
+
+// Мобильные модальные окны для города и метро
+// Мобильные модальные окна для города и метро
+function initMobileModals() {
+    // Обновленные функции для управления модальными окнами
+    function openMobileModal(modal) {
+        // Сначала закрываем все другие модальные окна
+        closeAllMobileModals();
+
+        // Устанавливаем высокий z-index
+        modal.style.zIndex = '9999';
+        modal.classList.remove('hidden');
+
+        // Блокируем прокрутку body
+        document.body.style.overflow = 'hidden';
+        document.body.classList.add('modal-open');
+    }
+
+    function closeAllMobileModals() {
+        document.querySelectorAll('#mobile-city-dropdown, #mobile-metro-dropdown').forEach(modal => {
+            modal.classList.add('hidden');
+            modal.style.zIndex = '';
+        });
+
+        // Восстанавливаем прокрутку
+        document.body.style.overflow = '';
+        document.body.classList.remove('modal-open');
+    }
+
+    // Модальное окно города
+    const mobileCityInput = document.getElementById('mobile-city-input');
+    const mobileCityDropdown = document.getElementById('mobile-city-dropdown');
+    const mobileCitySearch = document.getElementById('mobile-city-search');
+    const mobileCloseCityModal = document.getElementById('mobile-close-city-modal');
+    const mobileUseCustomCityBtn = document.getElementById('mobile-use-custom-city');
+
+    let mobileCustomCity = '';
+
+    // Открытие модального окна города
+    if (mobileCityInput) {
+        mobileCityInput.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (typeof closeMobileFilters === 'function') {
+                closeMobileFilters();
+            }
+            if (mobileCityDropdown) {
+                openMobileModal(mobileCityDropdown);
+                setTimeout(() => {
+                    if (mobileCitySearch) mobileCitySearch.focus();
+                }, 100);
+            }
+        });
+    }
+
+    // Закрытие модального окна города
+    if (mobileCloseCityModal) {
+        mobileCloseCityModal.addEventListener('click', function() {
+            closeAllMobileModals();
+        });
+    }
+
+    // Закрытие при клике вне контента
+    if (mobileCityDropdown) {
+        mobileCityDropdown.addEventListener('click', function(e) {
+            if (e.target === mobileCityDropdown) {
+                closeAllMobileModals();
+            }
+        });
+    }
+
+    // Обработка выбора города из списка
+    document.querySelectorAll('#mobile-city-dropdown .city-option').forEach(option => {
+        option.addEventListener('click', function() {
+            const city = this.getAttribute('data-city');
+            const selectedCityText = document.getElementById('mobile-selected-city-text');
+            const cityHiddenInput = document.getElementById('mobile-city-hidden-input');
+
+            if (selectedCityText) selectedCityText.textContent = city;
+            if (cityHiddenInput) cityHiddenInput.value = city;
+            closeAllMobileModals();
+        });
+    });
+
+    // Поиск городов
+    if (mobileCitySearch) {
+        mobileCitySearch.addEventListener('input', function() {
+            const searchTerm = this.value.trim();
+            mobileCustomCity = searchTerm;
+
+            if (searchTerm.length > 2 && mobileUseCustomCityBtn) {
+                mobileUseCustomCityBtn.classList.remove('hidden');
+                mobileUseCustomCityBtn.textContent = `Применить "${searchTerm}"`;
+            } else if (mobileUseCustomCityBtn) {
+                mobileUseCustomCityBtn.classList.add('hidden');
+            }
+
+            document.querySelectorAll('#mobile-city-dropdown .city-option').forEach(option => {
+                const city = option.getAttribute('data-city').toLowerCase();
+                if (city.includes(searchTerm.toLowerCase())) {
+                    option.classList.remove('hidden');
+                } else {
+                    option.classList.add('hidden');
+                }
+            });
+        });
+    }
+
+    // Ручной ввод города
+    if (mobileUseCustomCityBtn) {
+        mobileUseCustomCityBtn.addEventListener('click', function() {
+            if (mobileCustomCity) {
+                const selectedCityText = document.getElementById('mobile-selected-city-text');
+                const cityHiddenInput = document.getElementById('mobile-city-hidden-input');
+
+                if (selectedCityText) selectedCityText.textContent = mobileCustomCity;
+                if (cityHiddenInput) cityHiddenInput.value = mobileCustomCity;
+                closeAllMobileModals();
+            }
+        });
+    }
+
+    // Модальное окно метро
+    const mobileMetroInput = document.getElementById('mobile-metro-input');
+    const mobileMetroDropdown = document.getElementById('mobile-metro-dropdown');
+    const mobileMetroSearch = document.getElementById('mobile-metro-search');
+    const mobileCloseMetroModal = document.getElementById('mobile-close-metro-modal');
+    const mobileApplyMetroBtn = document.getElementById('mobile-apply-metro-selection');
+    const mobileClearMetroBtn = document.getElementById('mobile-clear-metro-selection');
+
+    let mobileSelectedStations = [];
+
+    // Инициализация выбранных станций
+    const mobileMetroHiddenInput = document.getElementById('mobile-metro-hidden-input');
+    if (mobileMetroHiddenInput && mobileMetroHiddenInput.value) {
+        mobileSelectedStations = mobileMetroHiddenInput.value.split(',');
+    }
+
+    // Открытие модального окна метро
+    if (mobileMetroInput) {
+        mobileMetroInput.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (typeof closeMobileFilters === 'function') {
+                closeMobileFilters();
+            }
+            if (mobileMetroDropdown) {
+                openMobileModal(mobileMetroDropdown);
+                setTimeout(() => {
+                    if (mobileMetroSearch) mobileMetroSearch.focus();
+                }, 100);
+                updateMobileSelectedStationsInModal();
+            }
+        });
+    }
+
+    // Закрытие модального окна метро
+    if (mobileCloseMetroModal) {
+        mobileCloseMetroModal.addEventListener('click', function() {
+            closeAllMobileModals();
+        });
+    }
+
+    // Закрытие при клике вне контента
+    if (mobileMetroDropdown) {
+        mobileMetroDropdown.addEventListener('click', function(e) {
+            if (e.target === mobileMetroDropdown) {
+                closeAllMobileModals();
+            }
+        });
+    }
+
+    // Поиск станций метро
+    if (mobileMetroSearch) {
+        mobileMetroSearch.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+
+            document.querySelectorAll('#mobile-metro-dropdown .metro-line-section').forEach(section => {
+                let hasVisibleStations = false;
+
+                section.querySelectorAll('.metro-station-option').forEach(option => {
+                    const stationName = option.querySelector('.metro-station-name').textContent.toLowerCase();
+                    if (stationName.includes(searchTerm)) {
+                        option.classList.remove('hidden');
+                        hasVisibleStations = true;
+                    } else {
+                        option.classList.add('hidden');
+                    }
+                });
+
+                if (searchTerm.length > 0) {
+                    if (hasVisibleStations) {
+                        section.classList.remove('hidden');
+                        // Автоматически раскрываем линию при поиске
+                        const header = section.querySelector('.metro-line-header');
+                        const stationsContainer = section.querySelector('.metro-stations-container');
+                        if (header && stationsContainer) {
+                            header.classList.add('expanded');
+                            stationsContainer.style.maxHeight = stationsContainer.scrollHeight + 'px';
+                        }
+                    } else {
+                        section.classList.add('hidden');
+                    }
+                } else {
+                    section.classList.remove('hidden');
+                }
+            });
+        });
+    }
+
+    // Выбор/отмена выбора станции
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('#mobile-metro-dropdown .metro-station-option')) {
+            const option = e.target.closest('.metro-station-option');
+            const station = option.getAttribute('data-station');
+
+            if (mobileSelectedStations.includes(station)) {
+                mobileSelectedStations = mobileSelectedStations.filter(s => s !== station);
+                option.classList.remove('selected');
+            } else {
+                if (mobileSelectedStations.length < 5) {
+                    mobileSelectedStations.push(station);
+                    option.classList.add('selected');
+                } else {
+                    alert('Можно выбрать не более 5 станций');
+                }
+            }
+        }
+    });
+
+    // Очистка выбора метро
+    if (mobileClearMetroBtn) {
+        mobileClearMetroBtn.addEventListener('click', function() {
+            mobileSelectedStations = [];
+            updateMobileSelectedStationsInModal();
+        });
+    }
+
+    // Применение выбора метро
+    if (mobileApplyMetroBtn) {
+        mobileApplyMetroBtn.addEventListener('click', function() {
+            if (mobileMetroHiddenInput) {
+                mobileMetroHiddenInput.value = mobileSelectedStations.join(',');
+                updateMobileSelectedStationsText();
+            }
+            closeAllMobileModals();
+        });
+    }
+
+    // Функция обновления отображения выбранных станций в модальном окне
+    function updateMobileSelectedStationsInModal() {
+        document.querySelectorAll('#mobile-metro-dropdown .metro-station-option').forEach(option => {
+            const station = option.getAttribute('data-station');
+            if (mobileSelectedStations.includes(station)) {
+                option.classList.add('selected');
+            } else {
+                option.classList.remove('selected');
+            }
+        });
+    }
+
+    // Функция обновления текста выбранных станций
+    function updateMobileSelectedStationsText() {
+        const selectedMetroText = document.getElementById('mobile-selected-metro-text');
+        if (!selectedMetroText) return;
+
+        if (mobileSelectedStations.length === 0) {
+            selectedMetroText.innerHTML = 'Выберите станции метро';
+            return;
+        }
+
+        let html = '';
+        mobileSelectedStations.slice(0, 2).forEach(station => {
+            html += `<span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-1 mb-1">${station}</span>`;
+        });
+
+        if (mobileSelectedStations.length > 2) {
+            html += `<span class="inline-block bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">+${mobileSelectedStations.length - 2}</span>`;
+        }
+
+        selectedMetroText.innerHTML = html;
+    }
+
+    // Переключение линий метро в мобильной версии
+    window.toggleMobileMetroLine = function(header) {
+        const lineSection = header.closest('.metro-line-section');
+        const stationsContainer = lineSection.querySelector('.metro-stations-container');
+        const chevron = header.querySelector('.bi-chevron-down');
+
+        const isExpanded = header.classList.contains('expanded');
+
+        if (isExpanded) {
+            stationsContainer.style.maxHeight = '0';
+            header.classList.remove('expanded');
+            chevron.classList.remove('rotate-180');
+        } else {
+            stationsContainer.style.maxHeight = stationsContainer.scrollHeight + 'px';
+            header.classList.add('expanded');
+            chevron.classList.add('rotate-180');
+        }
+    };
+
+    // Инициализация при загрузке
+    updateMobileSelectedStationsText();
+}
+
+// Переключение секций фильтров
+function toggleMobileFilterSection(header) {
+    const section = header.parentElement;
+    const content = section.querySelector('.mobile-filter-content');
+    const icon = header.querySelector('svg');
+
+    // Закрываем другие секции
+    document.querySelectorAll('.mobile-filter-section').forEach(otherSection => {
+        if (otherSection !== section) {
+            const otherContent = otherSection.querySelector('.mobile-filter-content');
+            const otherIcon = otherSection.querySelector('svg');
+            otherContent.classList.add('hidden');
+            otherIcon.classList.remove('rotate-180');
+        }
+    });
+
+    // Переключаем текущую секцию
+    content.classList.toggle('hidden');
+    icon.classList.toggle('rotate-180');
+}
+
+// Сброс фильтров
+function resetMobileFilters() {
+    const form = document.getElementById('mobile-filter-form');
+    if (form) {
+        form.reset();
+        form.submit();
+    }
+}
+
+// Автоматическое открытие секций с активными фильтрами
+function openActiveFilterSections() {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    const sectionsToOpen = [];
+
+    if (urlParams.has('search')) sectionsToOpen.push('Поиск');
+    if (urlParams.has('property_type')) sectionsToOpen.push('Тип недвижимости');
+    if (urlParams.has('rental_type')) sectionsToOpen.push('Вид размещения');
+    if (urlParams.has('location')) sectionsToOpen.push('Город');
+    if (urlParams.has('min_price') || urlParams.has('max_price')) sectionsToOpen.push('Цена');
+
+    sectionsToOpen.forEach(sectionName => {
+        document.querySelectorAll('.mobile-filter-section').forEach(section => {
+            const header = section.querySelector('.font-medium');
+            if (header && header.textContent.trim() === sectionName) {
+                const content = section.querySelector('.mobile-filter-content');
+                const icon = section.querySelector('svg');
+                content.classList.remove('hidden');
+                icon.classList.add('rotate-180');
+            }
+        });
+    });
+}
+
+// Инициализация при загрузке
+document.addEventListener('DOMContentLoaded', function() {
+    initMobileFilters();
+    openActiveFilterSections();
+
+    // Скрываем ПК фильтры на мобильных устройствах
+    if (window.innerWidth < 1024) {
+        const pcFilters = document.querySelector('.filter-sidebar');
+        if (pcFilters) {
+            pcFilters.style.display = 'none';
+        }
+    }
+});
+
+// Обработчик изменения размера окна
+window.addEventListener('resize', function() {
+    const pcFilters = document.querySelector('.filter-sidebar');
+    if (pcFilters) {
+        if (window.innerWidth < 1024) {
+            pcFilters.style.display = 'none';
+        } else {
+            pcFilters.style.display = 'block';
+        }
+    }
+});
   // Функция инициализации карты
   function initMap() {
       console.log("[DEBUG] Начало инициализации карты");

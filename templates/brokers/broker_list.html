@@ -10,10 +10,24 @@
         <p class="text-gray-600 mt-2">Найдите идеального специалиста для ваших нужд</p>
     </div>
 
+    <!-- Мобильная кнопка открытия фильтров -->
+    <div class="lg:hidden mb-4">
+        <button class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center" id="mobile-filters-btn">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+            </svg>
+            Фильтры
+            {% if request.GET.search or request.GET.rating or request.GET.experience or request.GET.services or request.GET.specialization %}
+            <span class="ml-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">!</span>
+            {% endif %}
+        </button>
+    </div>
+
     <div class="flex flex-col lg:flex-row gap-8">
-        <!-- Боковая панель с фильтрами -->
-        <div class="lg:w-1/4">
+        <!-- Боковая панель с фильтрами (десктоп) -->
+        <div class="lg:w-1/4 hidden lg:block">
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-6">
+                <!-- Форма фильтров (встроенная вместо include) -->
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-xl font-semibold text-gray-900">Фильтры</h2>
                     <a href="{% url 'broker-list' %}" class="text-sm text-blue-600 hover:text-blue-800 transition-colors">
@@ -157,6 +171,184 @@
             </div>
         </div>
 
+        <!-- Мобильное меню фильтров -->
+        <div class="mobile-catalog-dropdown lg:hidden fixed top-0 left-0 right-0 bottom-0 bg-white z-50 overflow-y-auto transform -translate-x-full transition-transform duration-300" id="mobile-filters-dropdown">
+            <div class="sticky top-0 bg-white border-b border-gray-200 z-10">
+                <div class="flex justify-between items-center p-4">
+                    <h2 class="text-xl font-semibold text-gray-900">Фильтры</h2>
+                    <button class="p-2 rounded-lg hover:bg-gray-100 transition-colors" id="mobile-filters-close">
+                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-4">
+                <!-- Мобильная форма фильтров -->
+                <form method="get" class="space-y-6">
+                    <!-- Поиск по имени -->
+                    <div class="mobile-filter-section">
+                        <div class="flex justify-between items-center py-3 border-b border-gray-200">
+                            <span class="font-medium text-gray-900">Поиск по имени</span>
+                            <i class="fas fa-chevron-down text-gray-400 transition-transform"></i>
+                        </div>
+                        <div class="mobile-filter-content pt-3" style="display: none;">
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                    </svg>
+                                </span>
+                                <input type="text" name="search" value="{{ request.GET.search }}"
+                                       class="pl-10 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                       placeholder="Введите имя...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Рейтинг -->
+                    <div class="mobile-filter-section">
+                        <div class="flex justify-between items-center py-3 border-b border-gray-200">
+                            <span class="font-medium text-gray-900">Рейтинг</span>
+                            <i class="fas fa-chevron-down text-gray-400 transition-transform"></i>
+                        </div>
+                        <div class="mobile-filter-content pt-3" style="display: none;">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Минимальный рейтинг</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="range" name="rating" min="0" max="5" step="0.5"
+                                       value="{{ request.GET.rating|default:'0' }}"
+                                       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                       id="ratingSliderMobile">
+                                <span id="ratingValueMobile" class="text-sm font-medium text-gray-700 w-10 text-center">
+                                    {{ request.GET.rating|default:'0' }}
+                                </span>
+                            </div>
+                            <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                <span>0</span>
+                                <span class="flex items-center">
+                                    <svg class="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
+                                    5
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Опыт работы -->
+                    <div class="mobile-filter-section">
+                        <div class="flex justify-between items-center py-3 border-b border-gray-200">
+                            <span class="font-medium text-gray-900">Опыт работы</span>
+                            <i class="fas fa-chevron-down text-gray-400 transition-transform"></i>
+                        </div>
+                        <div class="mobile-filter-content pt-3" style="display: none;">
+                            <select name="experience" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option value="">Все уровни опыта</option>
+                                <option value="0-2" {% if request.GET.experience == "0-2" %}selected{% endif %}>Менее 2 лет</option>
+                                <option value="2-5" {% if request.GET.experience == "2-5" %}selected{% endif %}>2-5 лет</option>
+                                <option value="5-10" {% if request.GET.experience == "5-10" %}selected{% endif %}>5-10 лет</option>
+                                <option value="10+" {% if request.GET.experience == "10+" %}selected{% endif %}>Более 10 лет</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Услуги -->
+                    <div class="mobile-filter-section">
+                        <div class="flex justify-between items-center py-3 border-b border-gray-200">
+                            <span class="font-medium text-gray-900">Услуги</span>
+                            <i class="fas fa-chevron-down text-gray-400 transition-transform"></i>
+                        </div>
+                        <div class="mobile-filter-content pt-3" style="display: none;">
+                            <div class="space-y-2">
+                                <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <input type="checkbox" name="services" value="consultation"
+                                           {% if "consultation" in request.GET.getlist %}checked{% endif %}
+                                           class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                    <span class="ml-3 text-sm text-gray-700">Консультации</span>
+                                </label>
+                                <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <input type="checkbox" name="services" value="selection"
+                                           {% if "selection" in request.GET.getlist %}checked{% endif %}
+                                           class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                    <span class="ml-3 text-sm text-gray-700">Подбор объекта</span>
+                                </label>
+                                <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <input type="checkbox" name="services" value="transaction"
+                                           {% if "transaction" in request.GET.getlist %}checked{% endif %}
+                                           class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                    <span class="ml-3 text-sm text-gray-700">Проведение сделок</span>
+                                </label>
+                                <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <input type="checkbox" name="services" value="legal"
+                                           {% if "legal" in request.GET.getlist %}checked{% endif %}
+                                           class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                    <span class="ml-3 text-sm text-gray-700">Юридическое сопровождение</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Специализация -->
+                    <div class="mobile-filter-section">
+                        <div class="flex justify-between items-center py-3 border-b border-gray-200">
+                            <span class="font-medium text-gray-900">Специализация</span>
+                            <i class="fas fa-chevron-down text-gray-400 transition-transform"></i>
+                        </div>
+                        <div class="mobile-filter-content pt-3" style="display: none;">
+                            <div class="space-y-2">
+                                <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <input type="checkbox" name="specialization" value="residential"
+                                           {% if "residential" in request.GET.getlist %}checked{% endif %}
+                                           class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                    <span class="ml-3 text-sm text-gray-700">Жилая недвижимость</span>
+                                </label>
+                                <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <input type="checkbox" name="specialization" value="commercial"
+                                           {% if "commercial" in request.GET.getlist %}checked{% endif %}
+                                           class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                    <span class="ml-3 text-sm text-gray-700">Коммерческая недвижимость</span>
+                                </label>
+                                <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <input type="checkbox" name="specialization" value="country"
+                                           {% if "country" in request.GET.getlist %}checked{% endif %}
+                                           class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                    <span class="ml-3 text-sm text-gray-700">Загородная недвижимость</span>
+                                </label>
+                                <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <input type="checkbox" name="specialization" value="rent"
+                                           {% if "rent" in request.GET.getlist %}checked{% endif %}
+                                           class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                    <span class="ml-3 text-sm text-gray-700">Аренда</span>
+                                </label>
+                                <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <input type="checkbox" name="specialization" value="mortgage"
+                                           {% if "mortgage" in request.GET.getlist %}checked{% endif %}
+                                           class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                    <span class="ml-3 text-sm text-gray-700">Ипотека</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Кнопки действий -->
+                    <div class="sticky bottom-0 bg-white pt-4 pb-6 border-t border-gray-200 mt-6">
+                        <div class="flex gap-3">
+                            <a href="{% url 'broker-list' %}" class="flex-1 bg-gray-100 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors font-medium text-center">
+                                Сбросить
+                            </a>
+                            <button type="submit" class="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center">
+                                Применить
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Оверлей для мобильного меню -->
+        <div class="overlay lg:hidden" id="mobile-filters-overlay" style="display: none;"></div>
+
         <!-- Основной контент -->
         <div class="lg:w-3/4">
             <!-- Статистика и сортировка -->
@@ -194,66 +386,65 @@
                             </div>
 
                             <!-- Информация -->
-<!-- Информация -->
-<div class="flex-1 min-w-0">
-    <div class="flex items-start justify-between">
-        <div>
-            <h3 class="text-lg font-semibold text-gray-900 truncate">{{ broker.user.get_full_name }}</h3>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-900 truncate">{{ broker.user.get_full_name }}</h3>
 
-            <!-- Рейтинг -->
-            <div class="flex items-center mt-1">
-                <div class="flex items-center">
-                    {% with rating=broker.rating|default:0 %}
-                    {% for i in "12345"|make_list %}
-                        {% if forloop.counter <= rating %}
-                            <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                            </svg>
-                        {% else %}
-                            <svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                            </svg>
-                        {% endif %}
-                    {% endfor %}
-                    {% endwith %}
-                </div>
-                <span class="ml-1 text-sm text-gray-600">{{ broker.rating|default:"0.0" }}</span>
-            </div>
-        </div>
-    </div>
+                                        <!-- Рейтинг -->
+                                        <div class="flex items-center mt-1">
+                                            <div class="flex items-center">
+                                                {% with rating=broker.rating|default:0 %}
+                                                {% for i in "12345"|make_list %}
+                                                    {% if forloop.counter <= rating %}
+                                                        <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                        </svg>
+                                                    {% else %}
+                                                        <svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                        </svg>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                {% endwith %}
+                                            </div>
+                                            <span class="ml-1 text-sm text-gray-600">{{ broker.rating|default:"0.0" }}</span>
+                                        </div>
+                                    </div>
+                                </div>
 
-    <!-- Специализация -->
-    {% if broker.specializations %}
-    <p class="text-blue-600 text-sm font-medium mt-2">
-        {% for spec in broker.get_specializations_display %}
-            {% if forloop.first %}{{ spec }}{% endif %}
-        {% endfor %}
-        {% if broker.specializations|length > 1 %} +{{ broker.specializations|length|add:"-1" }}{% endif %}
-    </p>
-    {% endif %}
+                                <!-- Специализация -->
+                                {% if broker.specializations %}
+                                <p class="text-blue-600 text-sm font-medium mt-2">
+                                    {% for spec in broker.get_specializations_display %}
+                                        {% if forloop.first %}{{ spec }}{% endif %}
+                                    {% endfor %}
+                                    {% if broker.specializations|length > 1 %} +{{ broker.specializations|length|add:"-1" }}{% endif %}
+                                </p>
+                                {% endif %}
 
-    <!-- Опыт -->
-    <div class="flex items-center mt-2 text-gray-600 text-sm">
-        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
-        Опыт: {{ broker.experience }} лет
-    </div>
+                                <!-- Опыт -->
+                                <div class="flex items-center mt-2 text-gray-600 text-sm">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    Опыт: {{ broker.experience }} лет
+                                </div>
 
-    <!-- Услуги -->
-    <div class="mt-3 flex flex-wrap gap-1">
-        {% for service in broker.get_services_display|slice:":3" %}
-        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-            {{ service }}
-        </span>
-        {% endfor %}
-        {% if broker.services|length > 3 %}
-        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-            +{{ broker.services|length|add:"-3" }}
-        </span>
-        {% endif %}
-    </div>
-</div>
+                                <!-- Услуги -->
+                                <div class="mt-3 flex flex-wrap gap-1">
+                                    {% for service in broker.get_services_display|slice:":3" %}
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        {{ service }}
+                                    </span>
+                                    {% endfor %}
+                                    {% if broker.services|length > 3 %}
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        +{{ broker.services|length|add:"-3" }}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -293,7 +484,6 @@
                         &laquo;
                     </a>
                     {% endif %}
-
                     {% for num in paginator.page_range %}
                     {% if page_obj.number == num %}
                     <span class="px-3 py-2 rounded-lg bg-blue-600 text-white font-medium">{{ num }}</span>
@@ -318,74 +508,90 @@
     </div>
 </div>
 
-<script>
-    // Обновление значения рейтинга при движении слайдера
-    const ratingSlider = document.getElementById('ratingSlider');
-    const ratingValue = document.getElementById('ratingValue');
-
-    if (ratingSlider && ratingValue) {
-        ratingSlider.addEventListener('input', function() {
-            ratingValue.textContent = this.value;
-        });
+<style>
+    /* Стили для мобильного меню фильтров - аналогично base.html */
+    .mobile-filter-section {
+        border-bottom: 1px solid var(--border);
     }
 
-    // Плавная анимация применения фильтров
-    document.addEventListener('DOMContentLoaded', function() {
-        const form = document.querySelector('form');
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
+    .mobile-filter-section:last-child {
+        border-bottom: none;
+    }
 
-            // Показ индикатора загрузки
-            const submitButton = this.querySelector('button[type="submit"]');
-            const originalText = submitButton.innerHTML;
-            submitButton.innerHTML = '<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Применяем...';
-            submitButton.disabled = true;
+    .mobile-filter-section > div:first-child {
+        cursor: pointer;
+        padding: 12px 0;
+        transition: background-color 0.2s ease;
+    }
 
-            // Отправка формы
-            this.submit();
-        });
-    });
-</script>
+    .mobile-filter-section > div:first-child:hover {
+        background-color: rgba(var(--primary-rgb), 0.05);
+    }
 
-<style>
+    .mobile-filter-content {
+        background-color: #f8f9fa;
+        padding-left: 15px;
+        animation: slideDown 0.3s ease-out;
+    }
+
+    .mobile-filter-section.active .fa-chevron-down {
+        transform: rotate(90deg);
+        transition: transform 0.3s ease;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
     /* Кастомный стиль для range slider */
+    input[type="range"] {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 6px;
+        border-radius: 3px;
+        background: #e2e8f0;
+        outline: none;
+    }
+
     input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
         appearance: none;
-        height: 20px;
         width: 20px;
+        height: 20px;
         border-radius: 50%;
-        background: #2563eb;
+        background: #1d4ed8;
         cursor: pointer;
         border: 2px solid #ffffff;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     input[type="range"]::-moz-range-thumb {
-        height: 20px;
         width: 20px;
+        height: 20px;
         border-radius: 50%;
-        background: #2563eb;
+        background: #1d4ed8;
         cursor: pointer;
         border: 2px solid #ffffff;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
-    input[type="range"]::-webkit-slider-track {
-        height: 8px;
-        background: #e5e7eb;
-        border-radius: 4px;
-    }
-
-    input[type="range"]::-moz-range-track {
-        height: 8px;
-        background: #e5e7eb;
-        border-radius: 4px;
-    }
-
     /* Анимация для карточек */
     @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     .grid > div {
@@ -397,5 +603,191 @@
     .grid > div:nth-child(2) { animation-delay: 0.2s; }
     .grid > div:nth-child(3) { animation-delay: 0.3s; }
     .grid > div:nth-child(4) { animation-delay: 0.4s; }
+
+    /* Стили оверлея как в base.html */
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 40;
+        display: none;
+    }
+
+    .overlay.active {
+        display: block;
+    }
+
+    /* Адаптация мобильного меню под стили base.html */
+    .mobile-catalog-dropdown {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: white;
+        z-index: 50;
+        overflow-y: auto;
+        padding: 20px;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+
+    .mobile-catalog-dropdown.active {
+        transform: translateX(0);
+    }
 </style>
+
+<script>
+    // Мобильное меню фильтров - реализация 1 в 1 как в base.html
+    document.addEventListener('DOMContentLoaded', function() {
+        // Элементы мобильного меню фильтров
+        const mobileFiltersBtn = document.getElementById('mobile-filters-btn');
+        const mobileFiltersDropdown = document.getElementById('mobile-filters-dropdown');
+        const mobileFiltersClose = document.getElementById('mobile-filters-close');
+        const mobileFiltersOverlay = document.getElementById('mobile-filters-overlay');
+
+        // Функции для открытия/закрытия меню фильтров
+        function openFilters() {
+            mobileFiltersDropdown.classList.add('active');
+            mobileFiltersOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeFilters() {
+            mobileFiltersDropdown.classList.remove('active');
+            mobileFiltersOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Обработчики событий для мобильного меню фильтров
+        if (mobileFiltersBtn) mobileFiltersBtn.addEventListener('click', openFilters);
+        if (mobileFiltersClose) mobileFiltersClose.addEventListener('click', closeFilters);
+        if (mobileFiltersOverlay) mobileFiltersOverlay.addEventListener('click', closeFilters);
+
+        // Обработчики для аккордеона фильтров - как в base.html
+        document.querySelectorAll('.mobile-filter-section > div:first-child').forEach(header => {
+            header.addEventListener('click', function() {
+                const categoryItem = this.parentElement;
+                const content = categoryItem.querySelector('.mobile-filter-content');
+                const icon = this.querySelector('.fa-chevron-down');
+
+                // Закрываем все остальные открытые категории
+                document.querySelectorAll('.mobile-filter-section').forEach(item => {
+                    if (item !== categoryItem) {
+                        item.classList.remove('active');
+                        item.querySelector('.mobile-filter-content').style.display = 'none';
+                        item.querySelector('.fa-chevron-down').style.transform = 'rotate(0deg)';
+                    }
+                });
+
+                // Переключаем текущую категорию
+                categoryItem.classList.toggle('active');
+                if (content.style.display === 'block') {
+                    content.style.display = 'none';
+                    icon.style.transform = 'rotate(0deg)';
+                } else {
+                    content.style.display = 'block';
+                    icon.style.transform = 'rotate(90deg)';
+                }
+            });
+        });
+
+        // Обновление значения рейтинга для мобильной версии
+        const ratingSliderMobile = document.getElementById('ratingSliderMobile');
+        const ratingValueMobile = document.getElementById('ratingValueMobile');
+
+        if (ratingSliderMobile && ratingValueMobile) {
+            ratingSliderMobile.addEventListener('input', function() {
+                ratingValueMobile.textContent = this.value;
+            });
+        }
+
+        // Обновление значения рейтинга для десктопной версии
+        const ratingSlider = document.getElementById('ratingSlider');
+        const ratingValue = document.getElementById('ratingValue');
+
+        if (ratingSlider && ratingValue) {
+            ratingSlider.addEventListener('input', function() {
+                ratingValue.textContent = this.value;
+            });
+        }
+
+        // Плавная анимация применения фильтров
+        const forms = document.querySelectorAll('form');
+        forms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                const submitButton = this.querySelector('button[type="submit"]');
+                if (submitButton) {
+                    const originalText = submitButton.innerHTML;
+                    submitButton.innerHTML = '<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Применяем...';
+                    submitButton.disabled = true;
+
+                    // Закрываем мобильное меню после отправки формы
+                    if (window.innerWidth < 1024) {
+                        setTimeout(closeFilters, 500);
+                    }
+
+                    // Восстанавливаем кнопку через 2 секунды на случай ошибки
+                    setTimeout(() => {
+                        submitButton.innerHTML = originalText;
+                        submitButton.disabled = false;
+                    }, 2000);
+                }
+            });
+        });
+
+        // Автоматическое открытие соответствующих секций при наличии активных фильтров
+        function openActiveFilterSections() {
+            const urlParams = new URLSearchParams(window.location.search);
+
+            if (urlParams.has('search')) {
+                openSection('Поиск по имени');
+            }
+            if (urlParams.has('rating') && urlParams.get('rating') !== '0') {
+                openSection('Рейтинг');
+            }
+            if (urlParams.has('experience')) {
+                openSection('Опыт работы');
+            }
+            if (urlParams.has('services')) {
+                openSection('Услуги');
+            }
+            if (urlParams.has('specialization')) {
+                openSection('Специализация');
+            }
+        }
+
+        function openSection(sectionName) {
+            document.querySelectorAll('.mobile-filter-section').forEach(section => {
+                const header = section.querySelector('.font-medium');
+                if (header && header.textContent.trim() === sectionName) {
+                    const content = section.querySelector('.mobile-filter-content');
+                    const icon = section.querySelector('.fa-chevron-down');
+
+                    section.classList.add('active');
+                    content.style.display = 'block';
+                    icon.style.transform = 'rotate(90deg)';
+                }
+            });
+        }
+
+        // Открываем активные секции при загрузке страницы
+        openActiveFilterSections();
+    });
+
+    // Функция для показа уведомлений (как в base.html)
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+</script>
 {% endblock %}
