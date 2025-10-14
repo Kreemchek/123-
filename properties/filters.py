@@ -22,7 +22,7 @@ class MetroStationFilter(CharFilter):
         if not value:
             return qs
 
-        # Разделяем строку по запятым, удаляем пробелы и пустые значения
+        # Разделяем строку по запятым, удаляем пробелы и пустые значения,а также зап
         stations = [s.strip() for s in value.split(',') if s.strip()]
         if not stations:
             return qs
