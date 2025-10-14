@@ -30,7 +30,7 @@ jobs:
           # Создаем безопасный .env файл из секретов
           cat > .env << EOF
 DEBUG=0
-DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}
+DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY
 DATABASE_URL=postgres://real_estate_user:vladnext232@localhost:5432/real_estate_db
 YOOMONEY_ACCOUNT_ID=1105130
 YOOMONEY_SECRET_KEY=test_evMMyWGLIawYaOMUELuBxzSO5XJbnaDcrJeulp2lX8w
@@ -38,7 +38,7 @@ YOOMONEY_SECRET_KEY=test_evMMyWGLIawYaOMUELuBxzSO5XJbnaDcrJeulp2lX8w
 # Cloudinary
 CLOUDINARY_CLOUD_NAME=dqgwzhywm
 CLOUDINARY_API_KEY=164662831511784
-CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}
+CLOUDINARY_API_SECRET=$CLOUDINARY_API_SECRET
 
 # Email
 EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
@@ -46,7 +46,7 @@ EMAIL_HOST=smtp.yandex.ru
 EMAIL_PORT=465
 EMAIL_USE_SSL=True
 EMAIL_HOST_USER=goldinpav@yandex.ru
-EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_PASSWORD }}
+EMAIL_HOST_PASSWORD=$EMAIL_PASSWORD
 DEFAULT_FROM_EMAIL=WinWinDeal <goldinpav@yandex.ru>
 
 # Yandex Maps
@@ -105,3 +105,7 @@ EOF
           echo "✅ Nginx reloaded"
           
           echo "🎉 Deployment completed successfully! All changes from repository applied to production."
+      env:
+        DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+        CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+        EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
