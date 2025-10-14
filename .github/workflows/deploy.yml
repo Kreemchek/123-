@@ -2,7 +2,7 @@ name: Deploy to Yandex Cloud VM
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]  # ← ИСПРАВЛЕНО
 
 jobs:
   deploy:
@@ -19,14 +19,14 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           cd /home/wic/real_estate_portal
-          
+
           # Принудительно обновляем до версии из GitHub
           git fetch --all
-          git reset --hard origin/main
+          git reset --hard origin/master  # ← ИСПРАВЛЕНО
           git clean -fd
-          
+
           echo "✅ Repository updated to latest version from GitHub"
-          
+
           # Создаем .env файл построчно
           echo "DEBUG=False" > .env
           echo "SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
@@ -49,43 +49,43 @@ jobs:
           echo "CSRF_COOKIE_SECURE=True" >> .env
           echo "SESSION_COOKIE_SECURE=True" >> .env
           echo "SECURE_SSL_REDIRECT=False" >> .env
-          echo "ALLOWED_HOSTS=89.169.168.72,localhost,127.0.0.1,192.168.1.98" >> .env
-          
+          echo "ALLOWED_HOSTS=89.169.168.72,localhost,127.0.0.1,192.168.1.98,winwindeal.ru,www.winwindeal.ru,winwindeal.store,www.winwindeal.store" >> .env
+
           # Защищаем .env файл
           chmod 600 .env
           chown wic:wic .env
-          
+
           echo "✅ Environment file created"
-          
+
           # Создаем виртуальное окружение если его нет
           if [ ! -d "venv" ]; then
             python3 -m venv venv
             echo "✅ Virtual environment created"
           fi
-          
+
           # Активируем виртуальное окружение и устанавливаем зависимости Python
           source venv/bin/activate
-          
+
           # Обновляем pip и устанавливаем зависимости
           pip install --upgrade pip
           pip install -r requirements.txt
-          
+
           echo "✅ Python dependencies installed"
-          
+
           # Применяем миграции БД
           python manage.py migrate --noinput
-          
+
           echo "✅ Database migrations applied"
-          
+
           # Сбор статики Django
           python manage.py collectstatic --noinput
-          
+
           echo "✅ Static files collected"
-          
+
           # Перезапускаем Gunicorn
           sudo systemctl daemon-reload
           sudo systemctl restart real_estate_portal
-          
+
           echo "✅ Gunicorn restarted"
-          
-          echo "✅✅✅ ✅  Deployment completed successfully!"
+
+          echo "✅✅✅ Deployment completed successfully!"
