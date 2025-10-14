@@ -73,9 +73,11 @@ ALLOWED_HOSTS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:8000',
-    'http://127.0.0.1:8000',
-    'http://192.168.1.98:8000',  # Ваш IP (уже есть)
+    'https://winwindeal.ru',
+    'https://www.winwindeal.ru',
+    'https://winwindeal.store',
+    'https://www.winwindeal.store',
+    'https://89.169.168.72',
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
