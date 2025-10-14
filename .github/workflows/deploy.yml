@@ -88,4 +88,4 @@ jobs:
           
           echo "✅ Gunicorn restarted"
           
-          echo "✅✅✅ Deployment completed successfully!"
+          echo "✅✅✅ ✅  Deployment completed successfully!"
