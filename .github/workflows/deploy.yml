@@ -11,24 +11,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Deploy via SSH
-      uses: appleboy/ssh-action@master
-      with:
-        host: 89.169.168.72
-        username: wic
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          cd /home/wic/real_estate_portal
-          
-          # Принудительно обновляем до версии из GitHub (игнорируя локальные изменения)
-          git fetch --all
-          git reset --hard origin/main
-          git clean -fd  # Удаляем неотслеживаемые файлы
-          
-          echo "✅ Repository updated to latest version from GitHub"
-          
-          # Создаем безопасный .env файл из секретов
-          cat > .env << EOF
+    - name: Setup environment file
+      run: |
+        cat > .env << EOF
 # Database
 DB_ENGINE=django.contrib.gis.db.backends.postgis
 DB_NAME=real_estate_db
@@ -75,6 +60,79 @@ SECURE_SSL_REDIRECT=False
 # Hosts
 ALLOWED_HOSTS=89.169.168.72,localhost,127.0.0.1,192.168.1.98
 EOF
+
+    - name: Deploy via SSH
+      uses: appleboy/ssh-action@master
+      with:
+        host: 89.169.168.72
+        username: wic
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd /home/wic/real_estate_portal
+          
+          # Принудительно обновляем до версии из GitHub (игнорируя локальные изменения)
+          git fetch --all
+          git reset --hard origin/main
+          git clean -fd  # Удаляем неотслеживаемые файлы
+          
+          echo "✅ Repository updated to latest version from GitHub"
+          
+          # Копируем .env файл с GitHub runner на сервер
+          echo "${{ secrets.DJANGO_SECRET_KEY }}" > /tmp/secret_key.txt
+          
+          # Создаем .env файл на сервере
+          cat > .env << 'EOF'
+# Database
+DB_ENGINE=django.contrib.gis.db.backends.postgis
+DB_NAME=real_estate_db
+DB_USER=real_estate_user
+DB_PASSWORD=vladnext232
+DB_HOST=localhost
+DB_PORT=5432
+
+# Django Secrets
+SECRET_KEY=REPLACE_SECRET_KEY
+
+# Cloudinary
+CLOUDINARY_CLOUD_NAME=dqgwzhywm
+CLOUDINARY_API_KEY=164662831511784
+CLOUDINARY_API_SECRET=REPLACE_CLOUDINARY_SECRET
+
+# YooMoney
+YOOMONEY_ACCOUNT_ID=1105130
+YOOMONEY_SECRET_KEY=test_evMMyWGLIawYaOMUELuBxzSO5XJbnaDcrJeulp2lX8w
+
+# Email
+EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+EMAIL_HOST=smtp.yandex.ru
+EMAIL_PORT=465
+EMAIL_USE_SSL=True
+EMAIL_HOST_USER=goldinpav@yandex.ru
+EMAIL_HOST_PASSWORD=aGZYpvwhUCuFiAaYAgXeOIr-FIk
+DEFAULT_FROM_EMAIL=WinWinDeal <goldinpav@yandex.ru>
+
+# Yandex Maps
+YANDEX_MAPS_API_KEY=3585e6f5-6323-4098-8a4d-b279da5b0c4f
+YANDEX_GEOCODER_API_KEY=3585e6f5-6323-4098-8a4d-b279da5b0c4f
+YANDEX_GEO_SUGGEST_API_KEY=7979f3d5-7f35-4fd8-893c-e5f1ecaeb3a4
+
+# Environment
+DEBUG=False
+ENVIRONMENT=production
+
+# Security
+CSRF_COOKIE_SECURE=True
+SESSION_COOKIE_SECURE=True
+SECURE_SSL_REDIRECT=False
+
+# Hosts
+ALLOWED_HOSTS=89.169.168.72,localhost,127.0.0.1,192.168.1.98
+EOF
+          
+          # Заменяем плейсхолдеры на реальные значения
+          sed -i "s|REPLACE_SECRET_KEY|${{ secrets.DJANGO_SECRET_KEY }}|g" .env
+          sed -i "s|REPLACE_CLOUDINARY_SECRET|${{ secrets.CLOUDINARY_API_SECRET }}|g" .env
+          sed -i "s|REPLACE_EMAIL_PASSWORD|${{ secrets.EMAIL_PASSWORD }}|g" .env
           
           # Защищаем .env файл
           chmod 600 .env
