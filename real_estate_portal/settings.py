@@ -56,7 +56,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.append(str(BASE_DIR))
 
 
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-ваш-резервный-ключ-для-разработки')
+SECRET_KEY = 'xs-n-y_rwpn!5$25=lm@c4lyi%(fk4j@2t-fx6v1dfb$1i8%-3'
+
 
 
 handler500 = 'accounts.views.server_error'

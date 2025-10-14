@@ -15,7 +15,6 @@ django-filter==23.5
 django-storages==1.14.6
 django-widget-tweaks==1.5.0
 djangorestframework==3.14.0
-GDAL==3.6.2
 gunicorn==23.0.0
 idna==3.10
 jmespath==1.0.1
