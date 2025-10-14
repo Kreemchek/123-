@@ -62,10 +62,14 @@ SECRET_KEY = 'xs-n-y_rwpn!5$25=lm@c4lyi%(fk4j@2t-fx6v1dfb$1i8%-3'
 
 handler500 = 'accounts.views.server_error'
 ALLOWED_HOSTS = [
-    "*",  # Разрешает все хосты (уже есть)
-    "localhost",
-    "127.0.0.1",
-    "192.168.1.98",  # Ваш IPвфы залупа(уже есть)
+    '89.169.168.72',
+    'localhost',
+    '127.0.0.1',
+    '192.168.1.98',
+    'winwindeal.ru',
+    'www.winwindeal.ru',
+    'winwindeal.store',
+    'www.winwindeal.store',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -190,10 +194,10 @@ WSGI_APPLICATION = 'real_estate_portal.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'db',
+        'NAME': 'real_estate_db',
+        'USER': 'real_estate_user',
+        'PASSWORD': 'vladnext232',
+        'HOST': 'localhost',
         'PORT': '5432',
     }
 }
