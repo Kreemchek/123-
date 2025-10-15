@@ -3390,304 +3390,194 @@ window.addEventListener('resize', function() {
         }
     }
 });
-  // Функция инициализации карты
-  function initMap() {
-      console.log("[DEBUG] Начало инициализации карты");
 
-      if (typeof ymaps === 'undefined') {
-          console.error('[DEBUG] Yandex Maps API not loaded');
-          setTimeout(initMap, 100);
-          return;
-      }
+// Функция инициализации карты
+ function initMap() {
+    console.log("[DEBUG] Начало инициализации карты");
 
-      // Получаем контейнер карты
-      const mapContainer = document.getElementById('all-properties-map');
-      const mapWrapper = mapContainer.parentElement;
-      mapWrapper.style.width = '1200px';
-      mapWrapper.style.height = '300px';
+    if (typeof ymaps === 'undefined') {
+        console.error('[DEBUG] Yandex Maps API not loaded');
+        setTimeout(initMap, 100);
+        return;
+    }
 
-      if (mapContainer.offsetHeight === 0) {
-          mapContainer.style.height = mapWrapper.style.height || '500px';
-      }
-      ymaps.ready(function() {
-          const allPropertiesMap = new ymaps.Map('all-properties-map', {
-              center: [55.751574, 37.617635],
-              zoom: 10,
-              controls: ['zoomControl', 'geolocationControl']
-          });
+    // Получаем контейнер карты
+    const mapContainer = document.getElementById('all-properties-map');
+    const mapWrapper = mapContainer.parentElement;
+    mapWrapper.style.width = '1200px';
+    mapWrapper.style.height = '300px';
 
-          // Настройка контрола геолокации
+    if (mapContainer.offsetHeight === 0) {
+        mapContainer.style.height = mapWrapper.style.height || '500px';
+    }
 
-          // Настройка контрола геолокации
-          allPropertiesMap.controls.get('geolocationControl').options.set({
-              position: { top: '15px', right: '15px' },
-              size: 'small',
-              float: 'none',
-              noPlacemark: false
-          });
+    ymaps.ready(function() {
+        const allPropertiesMap = new ymaps.Map('all-properties-map', {
+            center: [55.751574, 37.617635],
+            zoom: 10,
+            controls: ['zoomControl', 'geolocationControl']
+        });
 
-          // Создаем коллекцию для хранения всех объектов
-          const objectManager = new ymaps.ObjectManager({
-              clusterize: true,
-              gridSize: 64,
-              clusterDisableClickZoom: true
-          });
+        // Настройка контрола геолокации
+        allPropertiesMap.controls.get('geolocationControl').options.set({
+            position: { top: '15px', right: '15px' },
+            size: 'small',
+            float: 'none',
+            noPlacemark: false
+        });
 
-          // Настройка внешнего вида кластеров
-          objectManager.clusters.options.set({
-              preset: 'islands#invertedDarkBlueClusterIcons',
-              groupByCoordinates: false,
-              clusterDisableClickZoom: true,
-              clusterHideIconOnBalloonOpen: false,
-              geoObjectHideIconOnBalloonOpen: false
-          });
+        // Создаем коллекцию для хранения всех объектов
+        const objectManager = new ymaps.ObjectManager({
+            clusterize: true,
+            gridSize: 64,
+            clusterDisableClickZoom: true
+        });
 
-          // Настройка внешнего вида меток
-   // Настройка внешнего вида меток
-          objectManager.objects.options.set({
-              preset: 'islands#darkBlueHomeIcon',
-              balloonContentLayout: ymaps.templateLayoutFactory.createClass(
-                  `<div style="padding: 10px; max-width: 300px;">
-                      <img src="$[properties.image]" style="width: 100%; height: 150px; object-fit: cover; margin-bottom: 10px; border-radius: 8px;">
-                      <h3 style="margin: 0 0 10px 0; font-size: 18px; font-weight: bold;">$[properties.title]</h3>
+        // Настройка внешнего вида кластеров
+        objectManager.clusters.options.set({
+            preset: 'islands#invertedDarkBlueClusterIcons',
+            groupByCoordinates: false,
+            clusterDisableClickZoom: true,
+            clusterHideIconOnBalloonOpen: false,
+            geoObjectHideIconOnBalloonOpen: false
+        });
 
-                      <!-- Информационный блок -->
-                      <div style="background: #f8fafc; border-radius: 8px; padding: 12px; margin-bottom: 12px; border: 1px solid #e2e8f0;">
-                          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                              <!-- Город -->
-                              <div style="display: flex; align-items: center; gap: 6px;">
-                                  <div style="width: 20px; height: 20px; background: #dbeafe; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
-                                      <i class="bi bi-geo-alt" style="color: #2563eb; font-size: 12px;"></i>
-                                  </div>
-                                  <span style="font-size: 13px; color: #1e293b;">$[properties.location]</span>
-                              </div>
+        // Настройка внешнего вида меток
+        objectManager.objects.options.set({
+            preset: 'islands#darkBlueHomeIcon',
+            balloonContentLayout: ymaps.templateLayoutFactory.createClass(
+                `<div style="padding: 15px; max-width: 280px;">
+                    <!-- Изображение -->
+                    <img src="$[properties.image]" style="width: 100%; height: 160px; object-fit: cover; margin-bottom: 12px; border-radius: 8px;">
 
-                              <!-- Комнаты -->
-                              <div style="display: flex; align-items: center; gap: 6px;">
-                                  <div style="width: 20px; height: 20px; background: #f3e8ff; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
-                                      <i class="bi bi-door-open" style="color: #7e22ce; font-size: 12px;"></i>
-                                  </div>
-                                  <span style="font-size: 13px; color: #1e293b;">$[properties.rooms] комн.</span>
-                              </div>
+                    <h3 style="margin: 0 0 10px 0; font-size: 16px; font-weight: bold; color: #1e293b;">$[properties.title]</h3>
 
-                              <!-- Метро (если есть) -->
-                              $[properties.metroHTML]
+                    <!-- Основная информация -->
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i class="bi bi-house" style="color: #64748b; font-size: 14px;"></i>
+                            <span style="font-size: 14px; color: #374151;">$[properties.type]</span>
+                        </div>
 
-                              <!-- Метраж -->
-                              <div style="display: flex; align-items: center; gap: 6px;">
-                                  <div style="width: 20px; height: 20px; background: #dcfce7; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
-                                      <i class="bi bi-arrows-fullscreen" style="color: #16a34a; font-size: 12px;"></i>
-                                  </div>
-                                  <span style="font-size: 13px; color: #1e293b;">$[properties.area] м²</span>
-                              </div>
-                          </div>
-                      </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i class="bi bi-arrows-fullscreen" style="color: #64748b; font-size: 14px;"></i>
+                            <span style="font-size: 14px; color: #374151;">$[properties.area] м²</span>
+                        </div>
 
-                      <!-- Цена -->
-                      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                          <span style="font-size: 20px; font-weight: bold; color: #2563eb;">$[properties.price]</span>
-                          $[properties.favoriteHTML]
-                      </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i class="bi bi-building" style="color: #64748b; font-size: 14px;"></i>
+                            <span style="font-size: 14px; color: #374151;">$[properties.floor]</span>
+                        </div>
+                    </div>
 
-                      <!-- Кнопка -->
-                      <a href="$[properties.url]" style="display: block; text-align: center; padding: 8px; background: #2563eb; color: white; border-radius: 6px; font-weight: 500; text-decoration: none;">
-                          Подробнее
-                      </a>
-                  </div>`
-              ),
-              hideIconOnBalloonOpen: false,
-              openBalloonOnClick: true,
-              balloonAutoPan: false,
-              balloonCloseButton: false
-          });
+                    <!-- Кнопка -->
+                    <a href="$[properties.url]"
+                       style="display: block; text-align: center; padding: 8px 12px; background: #2563eb; color: white; border-radius: 6px; font-weight: 500; text-decoration: none; margin-top: 12px; font-size: 14px;">
+                        Подробнее
+                    </a>
+                </div>`
+            ),
+            hideIconOnBalloonOpen: false,
+            openBalloonOnClick: true,
+            balloonAutoPan: true,
+            balloonCloseButton: true
+        });
 
-          // Добавляем объекты в менеджер
-          const features = [];
-          {% for property in properties %}
-              {% if property.coordinates %}
-                  features.push({
-                      type: 'Feature',
-                      id: {{ property.id }},
-                      geometry: {
-                          type: 'Point',
-                          coordinates: [parseFloat('{{ property.coordinates.y|stringformat:"f" }}'.replace(',', '.')),
-                                     parseFloat('{{ property.coordinates.x|stringformat:"f" }}'.replace(',', '.'))]
-                      },
-                      properties: {
-                          title: '{{ property.title|escapejs }}',
-                          price: `{% if property.is_rental == 'monthly' and property.monthly_price %}
-                                      {{ property.monthly_price|space_format }} ₽/мес
-                                  {% elif property.is_rental == 'daily' and property.daily_price %}
-                                      {{ property.daily_price|space_format }} ₽/сут
-                                  {% else %}
-                                      {{ property.price|space_format }} ₽
-                                  {% endif %}`,
-                          image: '{{ property.main_image.url }}',
-                          url: '{% url 'properties:property-detail' property.id %}'
-                      }
-                  });
-              {% endif %}
-          {% endfor %}
+        // Добавляем объекты в менеджер
+        const features = [];
+        {% for property in properties %}
+            {% if property.coordinates %}
+                features.push({
+                    type: 'Feature',
+                    id: {{ property.id }},
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [parseFloat('{{ property.coordinates.y|stringformat:"f" }}'.replace(',', '.')),
+                                   parseFloat('{{ property.coordinates.x|stringformat:"f" }}'.replace(',', '.'))]
+                    },
+                    properties: {
+                        title: '{{ property.title|escapejs }}',
+                        type: '{% if property.property_type == "studio" %}Студия{% else %}{{ property.rooms }}-комнатная{% endif %}',
+                        area: '{{ property.total_area }}',
+                        floor: '{{ property.floor }}/{{ property.total_floors }} этаж',
+                        image: '{{ property.main_image.url }}',
+                        url: '{% url 'properties:property-detail' property.id %}'
+                    }
+                });
+            {% endif %}
+        {% endfor %}
 
-          objectManager.add(features);
-          allPropertiesMap.geoObjects.add(objectManager);
+        objectManager.add(features);
+        allPropertiesMap.geoObjects.add(objectManager);
 
-          // Автомасштабирование
-          if (features.length > 0) {
-              allPropertiesMap.setBounds(objectManager.getBounds(), {
-                  checkZoomRange: true,
-                  zoomMargin: 50
-              });
-          } else {
-              allPropertiesMap.setCenter([55.751574, 37.617635], 10);
-          }
+        // Автомасштабирование
+        if (features.length > 0) {
+            allPropertiesMap.setBounds(objectManager.getBounds(), {
+                checkZoomRange: true,
+                zoomMargin: 50
+            });
+        } else {
+            allPropertiesMap.setCenter([55.751574, 37.617635], 10);
+        }
 
-          // Переменные для управления состоянием
-          let currentMapCenter = allPropertiesMap.getCenter();
-          let isUserZooming = false;
-          let zoomTimeout;
-          let balloonsOpened = false;
-          let lastZoomLevel = allPropertiesMap.getZoom();
+        // Убираем автоматическое открытие балунов при изменении масштаба
+        allPropertiesMap.events.add('boundschange', function(e) {
+            const zoom = e.get('newZoom');
 
-          // Функция для безопасного открытия балунов
-          function safeOpenBalloon(objectManager, objectId) {
-              try {
-                  objectManager.objects.balloon.open(objectId, {
-                      autoPan: false,
-                      closeButton: false
-                  });
-              } catch (e) {
-                  console.error('Ошибка при открытии балуна:', e);
-              }
-          }
+            // Просто показываем/скрываем объекты в зависимости от масштаба
+            if (zoom < 12) {
+                objectManager.objects.options.set({ visible: false });
+                objectManager.clusters.options.set({ visible: true });
+            } else {
+                objectManager.objects.options.set({
+                    visible: true,
+                    preset: 'islands#darkBlueHomeIcon'
+                });
+                objectManager.clusters.options.set({ visible: false });
+            }
+        });
 
-          // Обработчик изменения масштаба
-          allPropertiesMap.events.add('boundschange', function(e) {
-              const zoom = e.get('newZoom');
-              const oldZoom = lastZoomLevel;
-              lastZoomLevel = zoom;
+        // Обработчик клика по объекту - открываем балун только по клику
+        objectManager.objects.events.add('click', function(e) {
+            const objectId = e.get('objectId');
 
-              // Сохраняем текущий центр карты
-              currentMapCenter = allPropertiesMap.getCenter();
+            // Закрываем все балуны перед открытием нового
+            objectManager.objects.balloon.close();
 
-              // Если пользователь изменяет масштаб
-              if (e.get('byUser')) {
-                  isUserZooming = true;
+            // Открываем балун для выбранного объекта
+            objectManager.objects.balloon.open(objectId, {
+                autoPan: true,
+                closeButton: true
+            });
+        });
 
-                  // Сбрасываем предыдущий таймер
-                  clearTimeout(zoomTimeout);
+        // Обработчик клика по кластеру - тоже не открываем автоматически
+        objectManager.clusters.events.add('click', function(e) {
+            // Просто зумируем на кластер, но не открываем балуны
+            const cluster = e.get('target');
+            allPropertiesMap.setCenter(cluster.geometry.getCoordinates(), allPropertiesMap.getZoom() + 2);
+        });
+    });
+}
 
-                  // Устанавливаем новый таймер
-                  zoomTimeout = setTimeout(() => {
-                      isUserZooming = false;
-                      // После завершения зума проверяем нужно ли открыть балуны
-                      if (zoom >= 15 && !balloonsOpened) {
-                          openAllBalloons(objectManager);
-                          balloonsOpened = true;
-                      }
-                  }, 1000);
-              }
+// Загружаем Яндекс.Карты динамически
+function loadYandexMaps() {
+    console.log("[DEBUG] Начало загрузки Yandex Maps API");
 
-              if (zoom < 12) {
-                  // При маленьком масштабе показываем только кластеры
-                  objectManager.objects.options.set({ visible: false });
-                  objectManager.clusters.options.set({ visible: true });
-                  if (balloonsOpened) {
-                      closeAllBalloons(objectManager);
-                      balloonsOpened = false;
-                  }
-              } else {
-                  // При среднем и большом масштабе показываем объекты
-                  objectManager.objects.options.set({
-                      visible: true,
-                      preset: 'islands#darkBlueHomeIcon'
-                  });
-                  objectManager.clusters.options.set({ visible: false });
+    const script = document.createElement('script');
+    script.src = `https://api-maps.yandex.ru/2.1/?apikey={{ YANDEX_MAPS_API_KEY }}&lang=ru_RU&onload=initMap`;
+    script.type = 'text/javascript';
 
-                  // Открываем балуны только если:
-                  // 1. Масштаб >= 15
-                  // 2. Пользователь не изменяет масштаб в данный момент
-                  // 3. Балуны еще не открыты
-                  if (zoom >= 15 && !isUserZooming && !balloonsOpened) {
-                      openAllBalloons(objectManager);
-                      balloonsOpened = true;
-                  } else if (zoom < 15 && balloonsOpened) {
-                      closeAllBalloons(objectManager);
-                      balloonsOpened = false;
-                  }
-              }
-          });
+    script.onload = function() {
+        console.log("[DEBUG] Скрипт Yandex Maps API успешно загружен");
+    };
 
-          // Обработчик клика по объекту
-          objectManager.objects.events.add('click', function(e) {
-              const objectId = e.get('objectId');
-              const centerBefore = allPropertiesMap.getCenter();
+    script.onerror = function() {
+        console.error("[DEBUG] Ошибка загрузки скрипта Yandex Maps API");
+    };
 
-              // Закрываем все балуны перед открытием нового
-              closeAllBalloons(objectManager);
-              balloonsOpened = false;
-
-              // Открываем балун для выбранного объекта
-              safeOpenBalloon(objectManager, objectId);
-          });
-
-          // Обработчик закрытия балуна
-          objectManager.objects.balloon.events.add('close', function() {
-              balloonsOpened = false;
-          });
-      });
-  }
-
-  // Функция для открытия всех балунов без перемещения карты
-  function openAllBalloons(objectManager) {
-      // Получаем все объекты
-      const objects = objectManager.objects.getAll();
-
-      // Сначала закрываем все балуны
-      objectManager.objects.balloon.close();
-
-      // Затем открываем их с задержкой
-      objects.forEach((object, index) => {
-          setTimeout(() => {
-              try {
-                  objectManager.objects.balloon.open(object.id, {
-                      autoPan: false,
-                      closeButton: false
-                  });
-              } catch (e) {
-                  console.error('Ошибка при открытии балуна:', e);
-              }
-          }, index * 200); // Увеличили задержку между открытием балунов
-      });
-  }
-
-  // Функция для закрытия всех балунов
-  function closeAllBalloons(objectManager) {
-      try {
-          objectManager.objects.balloon.close();
-      } catch (e) {
-          console.error('Ошибка при закрытии балунов:', e);
-      }
-  }
-
-  // Загружаем Яндекс.Карты динамически
-  function loadYandexMaps() {
-      console.log("[DEBUG] Начало загрузки Yandex Maps API");
-
-      const script = document.createElement('script');
-      script.src = `https://api-maps.yandex.ru/2.1/?apikey={{ YANDEX_MAPS_API_KEY }}&lang=ru_RU&onload=initMap`;
-      script.type = 'text/javascript';
-
-      script.onload = function() {
-          console.log("[DEBUG] Скрипт Yandex Maps API успешно загружен");
-      };
-
-      script.onerror = function() {
-          console.error("[DEBUG] Ошибка загрузки скрипта Yandex Maps API");
-      };
-
-      document.head.appendChild(script);
-  }
+    document.head.appendChild(script);
+}
 
   // Запускаем загрузку карт после полной загрузки страницы
   document.addEventListener('DOMContentLoaded', function() {
@@ -4352,6 +4242,7 @@ window.addEventListener('resize', function() {
         if (mobileFiltersBtn) mobileFiltersBtn.style.display = 'none';
     }
 });
+
 </script>
 
 
