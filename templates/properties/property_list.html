@@ -1682,24 +1682,15 @@ body.properties-page{
 {% block content %}
 <body class="properties-page">
 <div class="container mx-auto px-4 py-6">
-<div style="background: #ffebee; padding: 15px; margin: 20px 0; border-radius: 8px; border-left: 4px solid #f44336;">
-    <h4>🚨 ДИАГНОСТИКА ОТОБРАЖЕНИЯ</h4>
-    <p><strong>Всего объектов в контексте:</strong> {{ properties|length }}</p>
-    <p><strong>Объекты с отделкой в контексте:</strong>
-        {% with finishing_count=0 %}
-            {% for property in properties %}
-                {% if property.has_finishing %}
-                    {% with finishing_count=finishing_count|add:1 %}{% endwith %}
-                {% endif %}
-            {% endfor %}
-            {{ finishing_count }}
-        {% endwith %}
-    </p>
-    <p><strong>ID всех объектов:</strong>
+<div style="background: #fff3cd; padding: 10px; margin: 10px 0; border: 1px solid #ffeaa7; display: none;" id="debug-info">
+    <h4>🔍 Диагностика (этот блок скрыт для пользователей)</h4>
+    <p><strong>Пользователь:</strong> {{ user.username }} ({{ user.get_user_type_display }})</p>
+    <p><strong>Всего объектов:</strong> {{ properties|length }}</p>
+    <p><strong>Объекты с отделкой:</strong>
         {% for property in properties %}
-            {{ property.id }}{% if property.has_finishing %}✅{% endif %}{% if not forloop.last %}, {% endif %}
-        {% empty %}
-            НЕТ ОБЪЕКТОВ
+            {% if property.has_finishing %}
+                {{ property.id }}{% if not forloop.last %}, {% endif %}
+            {% endif %}
         {% endfor %}
     </p>
 </div>
