@@ -47,11 +47,13 @@ class PropertyListView(FilterView):
     paginate_by = 12
 
     def get_queryset(self):
-        # ВРЕМЕННО: показываем ВСЕ одобренные активные объекты для всех
-        queryset = Property.objects.filter(
-            is_approved=True,
-            status='active'
-        )
+        queryset = super().get_queryset()
+
+        # Для администраторов показываем все объекты
+        if self.request.user.is_authenticated and self.request.user.is_admin:
+            print(f"🔍 ADMIN: Showing ALL {queryset.count()} objects")
+            print(f"🔍 ADMIN: Objects with finishing: {queryset.filter(has_finishing=True).count()}")
+            return queryset
 
         # Аннотируем цену за квадратный метр
         queryset = queryset.annotate(
@@ -61,25 +63,78 @@ class PropertyListView(FilterView):
             )
         )
 
-        # Обработка поискового запроса
-        search_query = self.request.GET.get('search')
-        if search_query:
-            # Используем фильтр для универсального поиска
-            return PropertyFilter(data={'search': search_query}, queryset=queryset).qs
+        # Для неаутентифицированных пользователей показываем только одобренные объекты
+        if not self.request.user.is_authenticated:
+            initial_count = queryset.count()
+            queryset = queryset.filter(is_approved=True)
+            print(f"🔍 ANONYMOUS: {initial_count} -> {queryset.count()} objects after approval filter")
+            print(f"🔍 ANONYMOUS: Objects with finishing: {queryset.filter(has_finishing=True).count()}")
 
-        # Обработка геолокации
-        geo_coords = self.request.GET.get('radius_filter')
-        if geo_coords:
-            try:
-                lat, lon, radius = map(float, geo_coords.split(','))
-                center = Point(lon, lat, srid=4326)
+        # Для аутентифицированных пользователей
+        else:
+            # Если пользователь - брокер
+            if self.request.user.is_broker:
+                if hasattr(self.request.user, 'broker_profile'):
+                    initial_count = queryset.count()
+                    # Брокер видит только свои одобренные объекты
+                    queryset = queryset.filter(
+                        broker=self.request.user.broker_profile,
+                        is_approved=True
+                    )
+                    print(f"🔍 BROKER {self.request.user}: {initial_count} -> {queryset.count()} objects")
+                    print(f"🔍 BROKER: Objects with finishing: {queryset.filter(has_finishing=True).count()}")
+                    print(f"🔍 BROKER Profile: {self.request.user.broker_profile}")
+                    # Дополнительная диагностика для брокера
+                    if queryset.filter(has_finishing=True).count() == 0:
+                        print(f"🔍 BROKER DEBUG: All broker objects:")
+                        broker_objects = Property.objects.filter(broker=self.request.user.broker_profile)
+                        for obj in broker_objects:
+                            print(
+                                f"   ID: {obj.id}, Title: {obj.title}, Approved: {obj.is_approved}, Finishing: {obj.has_finishing}")
+                else:
+                    print(f"🔍 BROKER {self.request.user}: NO BROKER PROFILE")
+                    return Property.objects.none()
+
+            # Если пользователь - застройщик
+            elif self.request.user.is_developer:
+                initial_count = queryset.count()
+                # Застройщик видит свои объекты
                 queryset = queryset.filter(
-                    coordinates__distance_lte=(center, D(km=radius)))
-            except (ValueError, IndexError):
-                pass
+                    developer=self.request.user
+                )
+                print(f"🔍 DEVELOPER {self.request.user}: {initial_count} -> {queryset.count()} objects")
+                print(f"🔍 DEVELOPER: Objects with finishing: {queryset.filter(has_finishing=True).count()}")
 
-        # Применяем все остальные фильтры
-        return PropertyFilter(data=self.request.GET, queryset=queryset).qs
+            # Если пользователь - клиент
+            else:
+                initial_count = queryset.count()
+                # Клиент видит все одобренные объекты
+                queryset = queryset.filter(is_approved=True)
+                print(f"🔍 CLIENT {self.request.user}: {initial_count} -> {queryset.count()} objects")
+                print(f"🔍 CLIENT: Objects with finishing: {queryset.filter(has_finishing=True).count()}")
+
+        # Фильтрация по конкретному брокеру (если указан параметр ?broker=id)
+        broker_id = self.request.GET.get('broker')
+        if broker_id:
+            broker = get_object_or_404(BrokerProfile, id=broker_id)
+
+            # Если текущий пользователь - брокер и пытается смотреть чужие объекты
+            if self.request.user.is_authenticated and self.request.user.is_broker and self.request.user != broker.user:
+                print(f"🔍 BROKER trying to view other broker's objects - DENIED")
+                return Property.objects.none()
+
+            initial_count = queryset.count()
+            queryset = queryset.filter(
+                broker=broker,
+                is_approved=True
+            )
+            print(f"🔍 BROKER FILTER {broker_id}: {initial_count} -> {queryset.count()} objects")
+            print(f"🔍 BROKER FILTER: Objects with finishing: {queryset.filter(has_finishing=True).count()}")
+
+        print(f"🔍 FINAL: {queryset.count()} objects for user {self.request.user}")
+        print(f"🔍 FINAL: Objects with finishing: {queryset.filter(has_finishing=True).count()}")
+
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
