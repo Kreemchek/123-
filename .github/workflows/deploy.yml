@@ -29,12 +29,12 @@ jobs:
 
           # Всегда пересоздаем gunicorn config
           cat > gunicorn_config.py << 'EOF'
-bind = "0.0.0.0:3000"
-workers = 3
-loglevel = "info"
-errorlog = "-"
-accesslog = "-"
-EOF
+          bind = "0.0.0.0:3000"
+          workers = 3
+          loglevel = "info"
+          errorlog = "-"
+          accesslog = "-"
+          EOF
           echo "✅ Gunicorn config created/updated"
 
           # Создаем .env файл построчно
