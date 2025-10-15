@@ -1640,6 +1640,38 @@ body.properties-page{
         font-size: 0.9rem;
     }
 }
+/* Гарантированно скрываем ПК фильтры на мобильных устройствах */
+@media (max-width: 1023px) {
+    .filter-sidebar {
+        display: none !important;
+    }
+
+    .filter-toggle {
+        display: none !important;
+    }
+
+    /* Скрываем старую мобильную кнопку если она есть */
+    .properties-page .filter-toggle {
+        display: none !important;
+    }
+
+    /* Скрываем весь aside с ПК фильтрами */
+    aside.w-full.lg\\:w-80 {
+        display: none !important;
+    }
+}
+
+/* Убедимся, что на ПК мобильное меню скрыто */
+@media (min-width: 1024px) {
+    .mobile-filters-overlay,
+    .mobile-filters-sidebar {
+        display: none !important;
+    }
+
+    #mobile-filters-btn {
+        display: none !important;
+    }
+}
 </style>
 {% endblock %}
 
@@ -4296,6 +4328,29 @@ document.addEventListener('DOMContentLoaded', function() {
             chip.classList.toggle('active', checkbox.checked);
         }
     });
+});
+// Скрываем ПК фильтры на мобильных устройствах
+if (window.innerWidth < 1024) {
+    const pcFilters = document.querySelector('aside.w-full.lg\\:w-80');
+    if (pcFilters) {
+        pcFilters.style.display = 'none';
+    }
+}
+
+// Обработчик изменения размера окна
+window.addEventListener('resize', function() {
+    const pcFilters = document.querySelector('aside.w-full.lg\\:w-80');
+    const mobileFiltersBtn = document.getElementById('mobile-filters-btn');
+
+    if (window.innerWidth < 1024) {
+        // На мобильных - скрываем ПК фильтры, показываем мобильную кнопку
+        if (pcFilters) pcFilters.style.display = 'none';
+        if (mobileFiltersBtn) mobileFiltersBtn.style.display = 'block';
+    } else {
+        // На ПК - показываем ПК фильтры, скрываем мобильную кнопку
+        if (pcFilters) pcFilters.style.display = 'block';
+        if (mobileFiltersBtn) mobileFiltersBtn.style.display = 'none';
+    }
 });
 </script>
 
