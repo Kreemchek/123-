@@ -52,9 +52,57 @@
     .hero h1 { font-family: Manrope, Inter, system-ui, sans-serif; font-weight: 800; line-height: 1.1; font-size: clamp(28px, 3.6vw, 48px); margin: 0 0 12px; }
     .hero p { margin: 0 0 20px; color: var(--muted); font-size: clamp(14px, 1.4vw, 18px); }
 
-    .searchbar { display:flex; align-items:center; gap:10px; background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)); padding: 12px; border-radius: 16px; border:1px solid rgba(255,255,255,.08); box-shadow: var(--shadow-1); }
-    .searchbar input { flex:1; background: transparent; border: none; color: var(--text); padding: 14px 16px; font-size: 16px; outline: none; }
+    .searchbar {
+        display:flex;
+        align-items:center;
+        gap:10px;
+        background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+        padding: 12px;
+        border-radius: 16px;
+        border:1px solid rgba(255,255,255,.08);
+        box-shadow: var(--shadow-1);
+        position: relative;
+    }
+    .searchbar input {
+        flex:1;
+        background: transparent;
+        border: none;
+        color: var(--text);
+        padding: 14px 16px;
+        font-size: 16px;
+        outline: none;
+    }
     .searchbar input::placeholder { color: var(--muted); }
+
+    /* Мобильные стили для поисковой строки */
+    @media (max-width: 768px) {
+        .searchbar {
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .searchbar input {
+            padding: 12px 14px;
+            font-size: 14px;
+            order: 1;
+            width: 100%;
+        }
+
+        .searchbar svg {
+            order: 0;
+        }
+
+        .searchbar .btn-primary {
+            order: 2;
+            width: 100%;
+            margin-top: 8px;
+            padding: 14px;
+        }
+
+        #geolocation-btn {
+            display: none !important;
+        }
+    }
 
   /* Обновленные стили для карточек быстрого доступа */
     .quick {
@@ -171,9 +219,6 @@
     .card-spot .content { position: relative; padding: 20px; display:flex; gap:16px; align-items: center; justify-content: space-between; }
     .pill { font-size: 12px; font-weight: 800; letter-spacing: .4px; padding: 8px 10px; border-radius: 999px; border:1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.06); }
     .hot { background: linear-gradient(135deg, var(--accent), #ff3d81); color: #fff; border: none; box-shadow: 0 10px 30px rgba(255,82,63,.25); }
-
-/* УДАЛИТЕ старые стили для .listing-card .thumb */
-/* .listing-card .thumb { aspect-ratio: 16/10; background: linear-gradient(180deg, rgba(124,102,255,.35), rgba(48,208,255,.25)); display:grid; place-items:center; font-weight:800; color:#fff; } */
 
 /* Исправленные стили для карточек объектов */
 .listing-card {
@@ -354,7 +399,7 @@
         to { transform: translateX(0); opacity: 1; }
     }
 
-  
+
 
     .hot-property-card {
         border: 2px solid #ff4d4d;
@@ -760,8 +805,6 @@
                 <div class="thumb">
                     {% if media.thumbnail_url %}
                         <img src="{{ media.thumbnail_url }}" alt="{{ media.title }}">
-                    {% elif media.file_url %}
-                        <img src="{{ media.file_url }}" alt="{{ media.title }}">
                     {% else %}
                         <div style="background: linear-gradient(135deg, #ff6a3d, #ffba3b);">
                             📷 Фото
@@ -770,7 +813,9 @@
                 </div>
                 <div class="body">
                     <strong>{{ media.title }}</strong>
-                    <div class="meta"><span>Фотоотчёт</span></div>
+                    <div class="meta">
+                        <span>{{ media.photo_count|default:"1" }} фото</span>
+                    </div>
                 </div>
             </article>
         </a>
@@ -783,6 +828,7 @@
     {% endfor %}
 </div>
 
+<!-- Analytics -->
 <!-- Analytics -->
 <div class="grid" id="mgrid-3">
     {% for media in featured_media %}
@@ -802,8 +848,7 @@
                 <div class="body">
                     <strong>{{ media.title }}</strong>
                     <div class="meta">
-                        <span>Аналитика</span>
-                        <span>{{ media.reading_time|default:"5" }} мин чтения</span>
+                        <span>{{ media.read_time|default:"5 мин" }} чтения</span>
                     </div>
                 </div>
             </article>
@@ -824,440 +869,81 @@
     </div>
 </section>
 
-
-
-<!-- Модальное окно для фильтров -->
-<div id="filters-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-    <div class="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-auto">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold">Уточнить поиск</h3>
-            <button id="close-filters" class="text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-
-        <div class="space-y-4">
-            <div>
-                <label class="block text-sm font-medium mb-1">Тип недвижимости</label>
-                <select name="property_type" class="w-full p-2 border rounded">
-                    <option value="">Любой</option>
-                    <option value="new_flat">Новостройка</option>
-                    <option value="resale_flat">Вторичка</option>
-                    <option value="house">Дом</option>
-                    <option value="commercial">Коммерческая</option>
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium mb-1">Цена, млн ₽</label>
-                <div class="flex space-x-2">
-                    <input type="number" name="min_price" placeholder="От" class="w-1/2 p-2 border rounded">
-                    <input type="number" name="max_price" placeholder="До" class="w-1/2 p-2 border rounded">
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium mb-1">Площадь, м²</label>
-                <div class="flex space-x-2">
-                    <input type="number" name="min_area" placeholder="От" class="w-1/2 p-2 border rounded">
-                    <input type="number" name="max_area" placeholder="До" class="w-1/2 p-2 border rounded">
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium mb-1">Количество комнат</label>
-                <div class="flex space-x-2">
-                    <input type="number" name="rooms__gte" placeholder="От" class="w-1/2 p-2 border rounded">
-                    <input type="number" name="rooms__lte" placeholder="До" class="w-1/2 p-2 border rounded">
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium mb-1">Этаж</label>
-                <div class="flex space-x-2">
-                    <input type="number" name="min_floor" placeholder="От" class="w-1/2 p-2 border rounded">
-                    <input type="number" name="max_floor" placeholder="До" class="w-1/2 p-2 border rounded">
-                </div>
-            </div>
-
-            <button type="button" id="apply-filters" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">
-                Применить фильтры
-            </button>
-        </div>
-    </div>
-</div>
-
 <script>
-// JavaScript из оригинального home.html остается полностью без изменений
 document.addEventListener('DOMContentLoaded', function() {
-    const searchForm = document.getElementById('search-form');
     const searchInput = document.getElementById('location-search');
-    const suggestionsContainer = document.getElementById('search-suggestions');
+    const suggestionsDiv = document.getElementById('search-suggestions');
     const geolocationBtn = document.getElementById('geolocation-btn');
     const geoCoordsInput = document.getElementById('geo-coords');
-    const showFiltersBtn = document.getElementById('show-filters');
-    const filtersModal = document.getElementById('filters-modal');
-    const closeFiltersBtn = document.getElementById('close-filters');
-    const applyFiltersBtn = document.getElementById('apply-filters');
 
-    // Типы недвижимости для автодополнения
-    const propertyTypes = {
-        'квартира': ['new_flat', 'resale_flat'],
-        'студия': 'studio',
-        'дом': 'house',
-        'коммерческая': 'commercial',
-        'новостройка': 'new_flat',
-        'вторичка': 'resale_flat'
-    };
+    // Функция для показа подсказок
+    function showSuggestions(suggestions) {
+        suggestionsDiv.innerHTML = '';
+        suggestions.forEach(suggestion => {
+            const div = document.createElement('div');
+            div.textContent = suggestion;
+            div.addEventListener('click', () => {
+                searchInput.value = suggestion;
+                suggestionsDiv.classList.add('hidden');
+            });
+            suggestionsDiv.appendChild(div);
+        });
+        suggestionsDiv.classList.remove('hidden');
+    }
 
-    // Города для автодополнения
-    const cities = ['Москва', 'Санкт-Петербург', 'Новосибирск', 'Екатеринбург', 'Казань',
-                   'Нижний Новгород', 'Челябинск', 'Самара', 'Омск', 'Ростов-на-Дону', 'Магадан'];
-
-    // Типы сделок
-    const dealTypes = {
-        'аренда': ['monthly', 'daily'],
-        'снять': ['monthly', 'daily'],
-        'купить': 'no',
-        'продажа': 'no'
-    };
-
-    // Автодополнение
+    // Обработчик ввода в поиске
     searchInput.addEventListener('input', function() {
         const query = this.value.trim();
-
         if (query.length < 2) {
-            suggestionsContainer.classList.add('hidden');
+            suggestionsDiv.classList.add('hidden');
             return;
         }
 
-        // Формируем подсказки
-        let suggestions = '';
+        // Здесь будет запрос к API для получения подсказок
+        // Пока используем заглушку
+        const mockSuggestions = [
+            'Москва',
+            'Санкт-Петербург',
+            'Новосибирск',
+            'Екатеринбург'
+        ].filter(city => city.toLowerCase().includes(query.toLowerCase()));
 
-        // Подсказки по типам недвижимости
-        Object.keys(propertyTypes).forEach(type => {
-            if (type.toLowerCase().includes(query.toLowerCase())) {
-                suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
-                                data-type="${type}">${type}</div>`;
-            }
-        });
-
-        // Подсказки по городам
-        cities.forEach(city => {
-            if (city.toLowerCase().includes(query.toLowerCase())) {
-                suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
-                                data-city="${city}">${city}</div>`;
-            }
-        });
-
-        // Подсказки по типам сделок
-        Object.keys(dealTypes).forEach(deal => {
-            if (deal.toLowerCase().includes(query.toLowerCase())) {
-                suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
-                                data-deal="${deal}">${deal}</div>`;
-            }
-        });
-
-        // Подсказки по параметрам
-        if (/цена\s*\d*/i.test(query)) {
-            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
-                            data-query="цена 5-10 млн">цена 5-10 млн</div>`;
-            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
-                            data-query="цена до 5 млн">цена до 5 млн</div>`;
-            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
-                            data-query="цена от 10 млн">цена от 10 млн</div>`;
-        }
-
-        if (/площадь\s*\d*/i.test(query)) {
-            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
-                            data-query="площадь 50-70 м²">площадь 50-70 м²</div>`;
-            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
-                            data-query="площадь от 80 м²">площадь от 80 м²</div>`;
-        }
-
-        if (query.toLowerCase().includes('рядом') || query.toLowerCase().includes('недалеко')) {
-            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
-                            data-geo="true">рядом со мной</div>`;
-        }
-
-        if (query.toLowerCase().includes('комнат')) {
-            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
-                            data-query="1-комнатная">1-комнатная</div>`;
-            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
-                            data-query="2-комнатная">2-комнатная</div>`;
-            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
-                            data-query="3-комнатная">3-комнатная</div>`;
-            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
-                            data-query="4-комнатная">4-комнатная</div>`;
-            suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
-                            data-query="5-комнатная">5-комнатная</div>`;
-        }
-
-        // Комбинированные подсказки
-        if (query.toLowerCase().includes('квартира') || query.toLowerCase().includes('студия') || query.toLowerCase().includes('дом')) {
-            cities.forEach(city => {
-                const type = query.split(' ')[0].toLowerCase();
-                if (propertyTypes[type]) {
-                    suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
-                                    data-combined="${type} ${city}">${type} в ${city}</div>`;
-                }
-            });
-        }
-
-        // Подсказки для запросов типа "2-комнатная квартира в Москве"
-        const roomMatch = query.match(/(\d+)-комнатная/i);
-        if (roomMatch) {
-            cities.forEach(city => {
-                suggestions += `<div class="p-3 hover:bg-gray-100 cursor-pointer"
-                                data-combined="${roomMatch[1]} ${city}">${roomMatch[0]} квартира в ${city}</div>`;
-            });
-        }
-
-        if (suggestions) {
-            suggestionsContainer.innerHTML = suggestions;
-            suggestionsContainer.classList.remove('hidden');
-        } else {
-            suggestionsContainer.classList.add('hidden');
-        }
+        showSuggestions(mockSuggestions);
     });
 
-    // Обработка выбора подсказки
-    suggestionsContainer.addEventListener('click', function(e) {
-        if (e.target.dataset.type) {
-            searchInput.value = e.target.textContent;
-            addHiddenInput('property_type', propertyTypes[e.target.dataset.type]);
+    // Скрытие подсказок при клике вне
+    document.addEventListener('click', function(e) {
+        if (!searchInput.contains(e.target) && !suggestionsDiv.contains(e.target)) {
+            suggestionsDiv.classList.add('hidden');
         }
-        else if (e.target.dataset.city) {
-            searchInput.value = e.target.dataset.city;
-            addHiddenInput('location', e.target.dataset.city);
-        }
-        else if (e.target.dataset.deal) {
-            searchInput.value = e.target.textContent;
-            addHiddenInput('is_rental', dealTypes[e.target.dataset.deal]);
-        }
-        else if (e.target.dataset.query) {
-            searchInput.value = e.target.dataset.query;
-        }
-        else if (e.target.dataset.geo) {
-            searchInput.value = 'рядом со мной';
-            getGeolocation();
-        }
-        else if (e.target.dataset.combined) {
-            const parts = e.target.dataset.combined.split(' ');
-            if (parts.length === 2) {
-                const [type, city] = parts;
-                searchInput.value = `${type} в ${city}`;
-                if (propertyTypes[type]) {
-                    addHiddenInput('property_type', propertyTypes[type]);
-                }
-                addHiddenInput('location', city);
-            } else if (parts.length === 3) {
-                // Обработка "2-комнатная Москва"
-                const rooms = parts[0];
-                const city = parts[1];
-                searchInput.value = `${rooms}-комнатная квартира в ${city}`;
-                addHiddenInput('rooms', rooms);
-                addHiddenInput('location', city);
-                addHiddenInput('property_type', 'new_flat,resale_flat');
-            }
-        }
-
-        suggestionsContainer.classList.add('hidden');
     });
 
     // Геолокация
-    geolocationBtn.addEventListener('click', getGeolocation);
-
-    function getGeolocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                position => {
-                    const coords = `${position.coords.latitude},${position.coords.longitude},5`;
-                    geoCoordsInput.value = coords;
-                    searchInput.value = 'рядом со мной';
-                    showToast('Геолокация определена', 'success');
-                },
-                error => {
-                    showToast('Не удалось определить местоположение', 'error');
-                    console.error('Geolocation error:', error);
-                }
-            );
-        } else {
-            showToast('Ваш браузер не поддерживает геолокацию', 'error');
+    geolocationBtn.addEventListener('click', function() {
+        if (!navigator.geolocation) {
+            alert('Геолокация не поддерживается вашим браузером');
+            return;
         }
-    }
 
-    // Фильтры
-    showFiltersBtn.addEventListener('click', function() {
-        filtersModal.classList.remove('hidden');
+        geolocationBtn.disabled = true;
+        geolocationBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                geoCoordsInput.value = `${lat},${lng}`;
+                searchInput.value = 'Рядом со мной';
+                geolocationBtn.disabled = false;
+                geolocationBtn.innerHTML = '<i class="fas fa-location-arrow"></i>';
+            },
+            function(error) {
+                alert('Не удалось получить ваше местоположение');
+                geolocationBtn.disabled = false;
+                geolocationBtn.innerHTML = '<i class="fas fa-location-arrow"></i>';
+            }
+        );
     });
-
-    closeFiltersBtn.addEventListener('click', function() {
-        filtersModal.classList.add('hidden');
-    });
-
-    applyFiltersBtn.addEventListener('click', function() {
-        // Собираем все фильтры и добавляем их к форме
-        const filters = filtersModal.querySelectorAll('select, input[type="number"]');
-        filters.forEach(filter => {
-            if (filter.value) {
-                const existing = searchForm.querySelector(`[name="${filter.name}"]`);
-                if (existing) existing.remove();
-
-                const clone = filter.cloneNode();
-                clone.value = filter.value;
-                searchForm.appendChild(clone);
-            }
-        });
-
-        filtersModal.classList.add('hidden');
-        searchForm.submit();
-    });
-
-    // Обработка формы
-    searchForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const searchValue = searchInput.value.trim();
-
-        // Очищаем предыдущие скрытые поля
-        const hiddenInputs = searchForm.querySelectorAll('input[type="hidden"]');
-        hiddenInputs.forEach(input => {
-            if (!['radius_filter'].includes(input.name)) {
-                input.remove();
-            }
-        });
-
-        // Обработка запросов типа "2-комнатная квартира в Москве"
-        const roomsMatch = searchValue.match(/(\d+)\s*-?\s*комнатн(ая|ые|ую|ой)/i);
-        if (roomsMatch) {
-            addHiddenInput('rooms', roomsMatch[1]);
-        }
-
-        // Обработка типа недвижимости
-        const typeMatch = searchValue.match(/(квартир[ауеы]|студи[юя]|апартамент[ыа]|дом|коммерческ[аяой]|новостройк[аи]|вторичк[ау])/i);
-        if (typeMatch) {
-            const typeKey = typeMatch[1].toLowerCase();
-            if (typeKey.startsWith('квартир') || typeKey.startsWith('апартамент')) {
-                addHiddenInput('property_type', 'new_flat,resale_flat');
-            } else if (typeKey.startsWith('студи')) {
-                addHiddenInput('apartment_type', 'studio');
-            } else if (typeKey.startsWith('дом')) {
-                addHiddenInput('property_type', 'house');
-            } else if (typeKey.startsWith('коммерческ')) {
-                addHiddenInput('property_type', 'commercial');
-            } else if (typeKey.startsWith('новостройк')) {
-                addHiddenInput('property_type', 'new_flat');
-            } else if (typeKey.startsWith('вторичк')) {
-                addHiddenInput('property_type', 'resale_flat');
-            }
-        }
-
-        // Обработка города
-        const cityMatch = searchValue.match(/(в|на)\s+(москв[еу]|санкт\s*-?\s*петербург[е]|спб|екатеринбург[е]|новосибирск[е]|казан[и]|нижн[еий][йм]\s*новгород[е]|самар[е]|омск[е]|челябинск[е]|ростов[е]\s*-?\s*на\s*-?\s*дону|уф[е]|красноярск[е]|перм[и]|воронеж[е]|волгоград[е]|краснодар[е]|сочи|подольск|мытищ|балаших|люберц|химк|зеленоград|магадан[е])/i);
-        if (cityMatch) {
-            const cityKey = cityMatch[2].toLowerCase();
-            let city = '';
-
-            if (cityKey.startsWith('москв')) city = 'Москва';
-            else if (cityKey.startsWith('санкт-петербург') || cityKey.startsWith('спб')) city = 'Санкт-Петербург';
-            else if (cityKey.startsWith('екатеринбург')) city = 'Екатеринбург';
-            else if (cityKey.startsWith('новосибирск')) city = 'Новосибирск';
-            else if (cityKey.startsWith('казан')) city = 'Казань';
-            else if (cityKey.startsWith('нижн') && cityKey.includes('новгород')) city = 'Нижний Новгород';
-            else if (cityKey.startsWith('самар')) city = 'Самара';
-            else if (cityKey.startsWith('омск')) city = 'Омск';
-            else if (cityKey.startsWith('челябинск')) city = 'Челябинск';
-            else if (cityKey.startsWith('ростов') && cityKey.includes('дону')) city = 'Ростов-на-Дону';
-            else if (cityKey.startsWith('уф')) city = 'Уфа';
-            else if (cityKey.startsWith('красноярск')) city = 'Красноярск';
-            else if (cityKey.startsWith('перм')) city = 'Пермь';
-            else if (cityKey.startsWith('воронеж')) city = 'Воронеж';
-            else if (cityKey.startsWith('волгоград')) city = 'Волгоград';
-            else if (cityKey.startsWith('краснодар')) city = 'Краснодар';
-            else if (cityKey.startsWith('сочи')) city = 'Сочи';
-            else if (cityKey.startsWith('магадан')) city = 'Магадан';
-
-            if (city) {
-                addHiddenInput('location', city);
-            }
-        }
-
-        // Обработка типа сделки (аренда/покупка)
-        const rentMatch = searchValue.match(/(снять|аренд[ауеы]|посуточн[аяой]|помесячн[аяой])/i);
-        const buyMatch = searchValue.match(/(куп[иить]|приобрести|продаж[ае]|покупк[ае])/i);
-
-        if (rentMatch) {
-            addHiddenInput('is_rental', 'monthly,daily');
-        } else if (buyMatch) {
-            addHiddenInput('is_rental', 'no');
-        }
-
-        // Обработка цены
-        const priceMatch = searchValue.match(/(цена|стоимость)\s*(от|до)?\s*(\d+)\s*(млн|тыс|т\.?р|р\.?)/i);
-        if (priceMatch) {
-            let amount = parseFloat(priceMatch[3]);
-            const unit = priceMatch[4];
-
-            if (unit.includes('млн')) amount *= 1000000;
-            else if (unit.includes('тыс')) amount *= 1000;
-
-            if (priceMatch[2] === 'от') {
-                addHiddenInput('min_price', amount);
-            } else if (priceMatch[2] === 'до') {
-                addHiddenInput('max_price', amount);
-            } else {
-                // Примерный диапазон (+-20%)
-                addHiddenInput('min_price', amount * 0.8);
-                addHiddenInput('max_price', amount * 1.2);
-            }
-        }
-
-        // Обработка площади
-        const areaMatch = searchValue.match(/(площадь|площадью|метраж)\s*(\d+)\s*-?\s*(\d+)?\s*(м|м²|кв\.?\s*м)/i);
-        if (areaMatch) {
-            const minArea = parseFloat(areaMatch[2]);
-            const maxArea = areaMatch[3] ? parseFloat(areaMatch[3]) : minArea;
-            addHiddenInput('min_area', minArea);
-            addHiddenInput('max_area', maxArea);
-        }
-
-        // Если в запросе есть "рядом со мной" и есть геоданные, добавляем фильтр радиуса
-        if ((searchValue.toLowerCase().includes('рядом') ||
-             searchValue.toLowerCase().includes('недалеко'))) {
-            if (geoCoordsInput.value) {
-                // Фильтр радиуса уже добавлен через geoCoordsInput
-            } else {
-                getGeolocation();
-                return; // Ждем получения геоданных
-            }
-        }
-
-        this.submit();
-    });
-
-    function addHiddenInput(name, value) {
-        const existing = searchForm.querySelector(`input[name="${name}"]`);
-        if (existing) existing.remove();
-
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = name;
-        input.value = value;
-        searchForm.appendChild(input);
-    }
-
-    function showToast(message, type) {
-        const toast = document.createElement('div');
-        toast.className = `fixed bottom-4 right-4 px-4 py-2 rounded-lg text-white ${
-            type === 'success' ? 'bg-green-500' : 'bg-red-500'
-        }`;
-        toast.textContent = message;
-        document.body.appendChild(toast);
-
-        setTimeout(() => {
-            toast.remove();
-        }, 3000);
-    }
 });
 </script>
 {% endblock %}
