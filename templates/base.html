@@ -254,23 +254,139 @@
             box-shadow: 0 8px 35px rgba(99,72,255,0.2);
         }
         .topbar-btn-ghost i {
-    font-size: 18px;
-}
-footer {
-    background: linear-gradient(135deg, rgba(124, 102, 255, 0.1), rgba(48, 208, 255, 0.05));
-    backdrop-filter: blur(10px);
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    margin-top: 60px;
-    padding: 20px 0; /* Уменьшил padding */
-    color: var(--muted);
-    width: 100%; /* Добавил ширину 100% */
-}
+            font-size: 18px;
+        }
+        footer {
+            background: linear-gradient(135deg, rgba(124, 102, 255, 0.1), rgba(48, 208, 255, 0.05));
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            margin-top: 60px;
+            padding: 20px 0;
+            color: var(--muted);
+            width: 100%;
+        }
 
-footer .container {
-    max-width: 1024px; /* Ограничил ширину до 1024px */
-    margin: 0 auto;
-    padding: 0 1rem;
-}
+        footer .container {
+            max-width: 1024px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Обновленные стили для мобильных устройств */
+        @media (max-width: 768px) {
+            .topbar-container {
+                padding: 12px 16px;
+            }
+
+            .topbar-row {
+                gap: 12px;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .topbar-nav {
+                order: 1;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+                width: 100%;
+            }
+
+            .topbar-chip {
+                padding: 8px 10px;
+                font-size: 12px;
+                border-radius: 8px;
+                justify-content: center;
+                text-align: center;
+                min-height: 36px;
+            }
+
+            .topbar-row:last-child {
+                order: 2;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+            }
+
+            .topbar-balance {
+                padding: 8px 12px;
+                border-radius: 10px;
+                font-size: 12px;
+                gap: 6px;
+            }
+
+            .topbar-btn {
+                padding: 8px 12px;
+                font-size: 12px;
+                border-radius: 10px;
+                min-height: 36px;
+            }
+
+            .topbar-btn-ghost {
+                padding: 8px 10px;
+                min-width: auto;
+            }
+
+            .topbar-btn-ghost i {
+                font-size: 16px;
+            }
+
+            /* Скрываем текст "Пополнить" на очень маленьких экранах */
+            @media (max-width: 360px) {
+                .topbar-balance .topbar-btn-ghost span {
+                    display: none;
+                }
+
+                .topbar-balance .topbar-btn-ghost {
+                    padding: 8px;
+                }
+            }
+        }
+
+        /* Дополнительные стили для очень маленьких экранов */
+        @media (max-width: 480px) {
+            .topbar-brand {
+                gap: 8px;
+            }
+
+            .topbar-brand .logo {
+                width: 28px;
+                height: 28px;
+                border-radius: 8px;
+                font-size: 12px;
+            }
+
+            .topbar-brand strong {
+                font-size: 13px;
+            }
+
+            .topbar-brand div:first-child {
+                font-size: 12px;
+            }
+        }
+
+        /* Убедимся, что кнопки не переносятся на очень маленьких экранах */
+        .topbar-row:last-child {
+            flex-wrap: nowrap;
+        }
+
+        /* Дополнительные утилиты */
+        @media (max-width: 480px) {
+            .hidden-xs {
+                display: none;
+            }
+
+            .visible-xs {
+                display: inline;
+            }
+        }
+
+        @media (min-width: 481px) {
+            .visible-xs {
+                display: none;
+            }
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
@@ -301,6 +417,7 @@ footer .container {
                 <strong>Сервис выгодных сделок</strong>
             </div>
         </a>
+
         <nav class="topbar-nav" aria-label="Основная навигация">
             {% if user.is_authenticated %}
                 <a class="topbar-chip" href="{% url 'broker-list' %}">Брокеры</a>
@@ -314,11 +431,15 @@ footer .container {
                 <a class="topbar-chip" href="{% url 'register' %}">Медиа</a>
             {% endif %}
         </nav>
+
         <div class="topbar-row" style="gap:10px;">
             {% if user.is_authenticated %}
                 <div class="topbar-balance">
                     <span class="pill">{{ user.balance }} ₽</span>
-                    <a href="{% url 'payment_topup' %}" class="topbar-btn topbar-btn-ghost">Пополнить</a>
+                    <a href="{% url 'payment_topup' %}" class="topbar-btn topbar-btn-ghost">
+                        <span class="hidden-xs">Пополнить</span>
+                        <i class="fas fa-plus visible-xs"></i>
+                    </a>
                 </div>
                 <!-- Кнопка личного кабинета с иконкой Font Awesome -->
                 <a href="{% url 'dashboard' %}" class="topbar-btn topbar-btn-ghost" title="Личный кабинет" style="padding: 10px 14px;">
@@ -338,18 +459,18 @@ footer .container {
     </main>
 
 <footer class="mt-12">
-    <div class="container mx-auto px-4 max-w-6xl"> <!-- Увеличил max-w до 6xl -->
-        <div class="flex flex-col md:flex-row justify-between items-start py-4 border-t border-[rgba(255,255,255,0.08)]"> <!-- Уменьшил py -->
-            <div class="mb-4 md:mb-0"> <!-- Уменьшил mb -->
-                <h3 class="text-2xl font-bold mb-2 text-white">WinWinDeal</h3> <!-- Увеличил text-xl до text-2xl -->
-                <p class="text-[#b3b9c6] text-base">Сервис выгодных сделок с недвижимостью</p> <!-- Увеличил text-sm до text-base -->
+    <div class="container mx-auto px-4 max-w-6xl">
+        <div class="flex flex-col md:flex-row justify-between items-start py-4 border-t border-[rgba(255,255,255,0.08)]">
+            <div class="mb-4 md:mb-0">
+                <h3 class="text-2xl font-bold mb-2 text-white">WinWinDeal</h3>
+                <p class="text-[#b3b9c6] text-base">Сервис выгодных сделок с недвижимостью</p>
             </div>
 
-            <div class="grid grid-cols-2 gap-6"> <!-- Уменьшил gap с 8 до 6 -->
+            <div class="grid grid-cols-2 gap-6">
                 <div>
-                    <h4 class="text-white font-semibold mb-2 text-base border-b border-[rgba(255,255,255,0.2)] pb-1">Разделы</h4> <!-- Увеличил text-sm до text-base, уменьшил mb и pb -->
-                    <ul class="space-y-1"> <!-- Уменьшил space-y с 2 до 1 -->
-                        <li><a href="{% url 'home' %}" class="text-[#b3b9c6] hover:text-white text-base transition-colors font-medium">Главная</a></li> <!-- Увеличил text-sm до text-base -->
+                    <h4 class="text-white font-semibold mb-2 text-base border-b border-[rgba(255,255,255,0.2)] pb-1">Разделы</h4>
+                    <ul class="space-y-1">
+                        <li><a href="{% url 'home' %}" class="text-[#b3b9c6] hover:text-white text-base transition-colors font-medium">Главная</a></li>
                         {% if user.is_authenticated %}
                             <li><a href="{% url 'broker-list' %}" class="text-[#b3b9c6] hover:text-white text-base transition-colors font-medium">Брокеры</a></li>
                             <li><a href="{% url 'properties:property-list' %}" class="text-[#b3b9c6] hover:text-white text-base transition-colors font-medium">Объекты</a></li>
@@ -365,18 +486,18 @@ footer .container {
                 </div>
 
                 <div>
-                    <h4 class="text-white font-semibold mb-2 text-base border-b border-[rgba(255,255,255,0.2)] pb-1">Контакты</h4> <!-- Увеличил text-sm до text-base, уменьшил mb и pb -->
-                    <ul class="space-y-1"> <!-- Уменьшил space-y с 2 до 1 -->
-                        <li class="text-[#b3b9c6] text-base flex items-center"> <!-- Увеличил text-sm до text-base -->
+                    <h4 class="text-white font-semibold mb-2 text-base border-b border-[rgba(255,255,255,0.2)] pb-1">Контакты</h4>
+                    <ul class="space-y-1">
+                        <li class="text-[#b3b9c6] text-base flex items-center">
                             <i class="fas fa-envelope mr-2 w-4"></i>
                             winwindealrlty@gmail.com
                         </li>
-                        <li class="text-[#b3b9c6] text-base flex items-center"> <!-- Увеличил text-sm до text-base -->
+                        <li class="text-[#b3b9c6] text-base flex items-center">
                             <i class="fas fa-phone mr-2 w-4"></i>
                             +7 964 523-43-33
                         </li>
                         <li>
-                            <a href="https://t.me/winwindealrlty" target="_blank" class="text-[#b3b9c6] hover:text-white text-base transition-colors flex items-center"> <!-- Увеличил text-sm до text-base -->
+                            <a href="https://t.me/winwindealrlty" target="_blank" class="text-[#b3b9c6] hover:text-white text-base transition-colors flex items-center">
                                 <i class="fab fa-telegram mr-2 w-4"></i>
                                 Telegram
                             </a>
@@ -386,19 +507,19 @@ footer .container {
             </div>
         </div>
 
-        <div class="mt-3 pt-3 border-t border-[rgba(255,255,255,0.08)]"> <!-- Уменьшил mt и pt -->
-            <h4 class="text-[#b3b9c6] text-base font-semibold mb-1">Есть вопросы?</h4> <!-- Увеличил text-sm до text-base, уменьшил mb -->
+        <div class="mt-3 pt-3 border-t border-[rgba(255,255,255,0.08)]">
+            <h4 class="text-[#b3b9c6] text-base font-semibold mb-1">Есть вопросы?</h4>
             {% if user.is_authenticated %}
-                <a href="{% url 'contact_support' %}" class="text-[#7c66ff] hover:text-[#30d0ff] text-base transition-colors font-medium"> <!-- Увеличил text-sm до text-base -->
+                <a href="{% url 'contact_support' %}" class="text-[#7c66ff] hover:text-[#30d0ff] text-base transition-colors font-medium">
                     Написать в поддержку
                 </a>
             {% else %}
-                <span class="text-[#b3b9c6] text-base">Авторизуйтесь, чтобы написать в поддержку</span> <!-- Увеличил text-sm до text-base -->
+                <span class="text-[#b3b9c6] text-base">Авторизуйтесь, чтобы написать в поддержку</span>
             {% endif %}
         </div>
 
-        <div class="border-t border-[rgba(255,255,255,0.08)] mt-4 pt-4 text-center"> <!-- Уменьшил mt -->
-            <p class="text-[#b3b9c6] text-base">© 2025 WinWinDeal. Сделки, в которых выигрывают все.</p> <!-- Увеличил text-sm до text-base -->
+        <div class="border-t border-[rgba(255,255,255,0.08)] mt-4 pt-4 text-center">
+            <p class="text-[#b3b9c6] text-base">© 2025 WinWinDeal. Сделки, в которых выигрывают все.</p>
         </div>
     </div>
 </footer>
