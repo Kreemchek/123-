@@ -1682,18 +1682,7 @@ body.properties-page{
 {% block content %}
 <body class="properties-page">
 <div class="container mx-auto px-4 py-6">
-<div style="background: #fff3cd; padding: 10px; margin: 10px 0; border: 1px solid #ffeaa7; display: none;" id="debug-info">
-    <h4>🔍 Диагностика (этот блок скрыт для пользователей)</h4>
-    <p><strong>Пользователь:</strong> {{ user.username }} ({{ user.get_user_type_display }})</p>
-    <p><strong>Всего объектов:</strong> {{ properties|length }}</p>
-    <p><strong>Объекты с отделкой:</strong>
-        {% for property in properties %}
-            {% if property.has_finishing %}
-                {{ property.id }}{% if not forloop.last %}, {% endif %}
-            {% endif %}
-        {% endfor %}
-    </p>
-</div>
+
     <!-- Улучшенный контейнер для поиска -->
     <div class="mb-8">
         <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 shadow-lg border border-blue-100/50">
@@ -2958,7 +2947,7 @@ body.properties-page{
             </div>
         </div>
     </div>
-</div>
+</body>
 
 
 <script>
