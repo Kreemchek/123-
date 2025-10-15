@@ -111,16 +111,16 @@ class PropertyFilter(FilterSet):
     location = CharFilter(field_name='location', lookup_expr='icontains')
 
     # Дополнительные параметры
-    has_finishing = CharFilter(
-        method='filter_has_finishing',
+    # Дополнительные параметры
+    has_finishing = BooleanFilter(
+        field_name='has_finishing',
         label='Только с отделкой'
     )
 
-    is_delivered = CharFilter(
-        method='filter_is_delivered',
+    is_delivered = BooleanFilter(
+        field_name='is_delivered',
         label='Только сданные'
     )
-
     # Поиск по радиусу
     radius_filter = CharFilter(method='filter_by_radius')
 
@@ -355,16 +355,5 @@ class PropertyFilter(FilterSet):
 
         return queryset.filter(q_objects).distinct() if q_objects else queryset
 
-    def filter_has_finishing(self, queryset, name, value):
-        """Фильтр для чекбокса 'Только с отделкой'"""
-        if value == 'true':
-            return queryset.filter(has_finishing=True)
-        return queryset
-
-    def filter_is_delivered(self, queryset, name, value):
-        """Фильтр для чекбокса 'Только сданные'"""
-        if value == 'true':
-            return queryset.filter(is_delivered=True)
-        return queryset
 
 
