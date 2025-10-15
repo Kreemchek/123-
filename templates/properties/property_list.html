@@ -2328,14 +2328,17 @@ body.properties-page{
                     </div>
 
                     <div style="margin-top: 12px">
-                        <label class="checkbox-row" style="display: flex; align-items: center; margin-bottom: 8px">
-                            <input type="checkbox" id="has_finishing" name="has_finishing" style="margin-right: 8px" {% if filter.form.has_finishing.value %}checked{% endif %} />
-                            <span style="vertical-align: middle; color: #64748b">Только с отделкой</span>
-                        </label>
-                        <label class="checkbox-row" style="display: flex; align-items: center">
-                            <input type="checkbox" id="is_delivered" name="is_delivered" style="margin-right: 8px" {% if filter.form.is_delivered.value %}checked{% endif %} />
-                            <span style="vertical-align: middle; color: #64748b">Только сданные</span>
-                        </label>
+                    <!-- Замените существующие чекбоксы на: -->
+<label class="checkbox-row" style="display: flex; align-items: center; margin-bottom: 8px">
+    <input type="checkbox" id="has_finishing" name="has_finishing" value="true"
+           {% if filter.form.has_finishing.value %}checked{% endif %} />
+    <span style="vertical-align: middle; color: #64748b">Только с отделкой</span>
+</label>
+<label class="checkbox-row" style="display: flex; align-items: center">
+    <input type="checkbox" id="is_delivered" name="is_delivered" value="true"
+           {% if filter.form.is_delivered.value %}checked{% endif %} />
+    <span style="vertical-align: middle; color: #64748b">Только сданные</span>
+</label>
                     </div>
                 </div>
 
