@@ -7,7 +7,7 @@ import cloudinary.uploader
 import cloudinary.api
 
 import os
-DEBUG = True
+DEBUG = False
 
 load_dotenv()
 CLOUDINARY_STORAGE = {
