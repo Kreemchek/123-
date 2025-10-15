@@ -2,7 +2,7 @@ name: Deploy to Yandex Cloud VM
 
 on:
   push:
-    branches: [ master ]  # ← ИСПРАВЛЕНО
+    branches: [ master ]
 
 jobs:
   deploy:
@@ -22,10 +22,22 @@ jobs:
 
           # Принудительно обновляем до версии из GitHub
           git fetch --all
-          git reset --hard origin/master  # ← ИСПРАВЛЕНО
+          git reset --hard origin/master
           git clean -fd
 
           echo "✅ Repository updated to latest version from GitHub"
+
+          # Создаем gunicorn config если отсутствует
+          if [ ! -f "gunicorn_config.py" ]; then
+            cat > gunicorn_config.py << 'EOF'
+bind = "0.0.0.0:3000"
+workers = 3
+loglevel = "info"
+errorlog = "-"
+accesslog = "-"
+EOF
+            echo "✅ Gunicorn config created"
+          fi
 
           # Создаем .env файл построчно
           echo "DEBUG=False" > .env
