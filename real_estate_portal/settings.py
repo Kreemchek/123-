@@ -6,18 +6,23 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 
-import os
-DEBUG = False
-
 load_dotenv()
+
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+sys.path.append(str(BASE_DIR))
+
+SECRET_KEY = os.getenv('SECRET_KEY')
+
+# Cloudinary configuration
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'dqgwzhywm',
-    'API_KEY': '164662831511784',
-    'API_SECRET': 'aGZYpvwhUCuFiAaYAgXeOIr-FIk',
+    'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
     'SECURE': True,
     'STATIC_IMAGES': False,
     'MEDIA_TAG': 'media',
-
     'EXCLUDE_DELETE_ORPHANED_MEDIA_PATHS': (),
     'STATICFILES_MIMETYPES': {
         'txt': 'text/plain',
@@ -46,31 +51,16 @@ CLOUDINARY_STORAGE = {
 }
 
 cloudinary.config(
-    cloud_name= CLOUDINARY_STORAGE['CLOUD_NAME'],
-    api_key= CLOUDINARY_STORAGE['API_KEY'],
-    api_secret= CLOUDINARY_STORAGE['API_SECRET'],
+    cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.getenv('CLOUDINARY_API_KEY'),
+    api_secret=os.getenv('CLOUDINARY_API_SECRET'),
     secure=True
 )
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-sys.path.append(str(BASE_DIR))
-
-
-SECRET_KEY = 'xs-n-y_rwpn!5$25=lm@c4lyi%(fk4j@2t-fx6v1dfb$1i8%-3'
-
-
-
 handler500 = 'accounts.views.server_error'
-ALLOWED_HOSTS = [
-    '89.169.168.72',
-    'localhost',
-    '127.0.0.1',
-    '192.168.1.98',
-    'winwindeal.ru',
-    'www.winwindeal.ru',
-    'winwindeal.store',
-    'www.winwindeal.store',
-]
+
+# Allowed hosts from environment
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '89.169.168.72,localhost,127.0.0.1,192.168.1.98,winwindeal.ru,www.winwindeal.ru,winwindeal.store,www.winwindeal.store').split(',')
 
 CSRF_TRUSTED_ORIGINS = [
     'https://winwindeal.ru',
@@ -81,10 +71,6 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
-
-
-
-
 
 INSTALLED_APPS = [
     'cloudinary',
@@ -108,11 +94,6 @@ INSTALLED_APPS = [
     'channels',
     'corsheaders',
     'django.contrib.humanize',
-
-
-
-
-
 ]
 
 MIDDLEWARE = [
@@ -120,7 +101,6 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -128,11 +108,9 @@ MIDDLEWARE = [
     'accounts.middleware.ActivityLoggerMiddleware',
     'accounts.middleware.ProfileCompletionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-
 ]
 
 ROOT_URLCONF = 'real_estate_portal.urls'
-
 
 TEMPLATES = [
     {
@@ -151,6 +129,7 @@ TEMPLATES = [
         },
     },
 ]
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -193,18 +172,19 @@ LOGGING = {
 
 WSGI_APPLICATION = 'real_estate_portal.wsgi.application'
 
+# Database configuration from environment
 DATABASES = {
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'real_estate_db',
-        'USER': 'real_estate_user',
-        'PASSWORD': 'vladnext232',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': os.getenv('DB_ENGINE', 'django.contrib.gis.db.backends.postgis'),
+        'NAME': os.getenv('DB_NAME', 'real_estate_db'),
+        'USER': os.getenv('DB_USER', 'real_estate_user'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'vladnext232'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 
-# Валидация паролей
+# Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -227,67 +207,42 @@ USE_L10N = False
 USE_TZ = True
 DECIMAL_SEPARATOR = '.'
 
-
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 WHITENOISE_MAX_AGE = 86400
-#DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Настройки Whitenoise для статических файлов
+# Static files settings
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 AUTH_USER_MODEL = 'accounts.User'
 
-
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
 
-
-#AWS_S3_SIGNATURE_VERSION = 's3v4'
-#AWS_DEFAULT_ACL = 'public-read'
-#AWS_QUERYSTRING_AUTH = False
-#AWS_S3_OBJECT_PARAMETERS = {
-    #'CacheControl': 'max-age=86400',
-#}
-
-#if DEBUG:
-    #DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
-    # Убедитесь, что MEDIA_ROOT и MEDIA_URL настроены
-   # MEDIA_URL = '/media/'
-    #MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-#else:
-    #DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    # Настройки S3 (оставьте ваши текущие AWS-ключи и endpoint)
-    #AWS_ACCESS_KEY_ID = '95bf86962b9e4d1d94958be095e5d901'
-   # AWS_SECRET_ACCESS_KEY = 'fpwzZRsVN2jkAkUD9hvYQ5'
-    #AWS_STORAGE_BUCKET_NAME = 'money'
-   # AWS_S3_ENDPOINT_URL = 'https://hb.ru-1.storage.cloud.mail.ru'
-   # AWS_S3_REGION_NAME = 'ru-1'
-
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.yandex.ru'
-EMAIL_PORT = 465
-EMAIL_USE_SSL = True
-EMAIL_HOST_USER = 'goldinpav@yandex.ru'
-EMAIL_HOST_PASSWORD = 'mglkpkdkfapyubfa'
-DEFAULT_FROM_EMAIL = 'WinWinDeal <goldinpav@yandex.ru>'
-
+# Email configuration from environment
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.yandex.ru')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', 465))
+EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'True') == 'True'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'goldinpav@yandex.ru')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'mglkpkdkfapyubfa')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'WinWinDeal <goldinpav@yandex.ru>')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-YOOMONEY_ACCOUNT_ID = '1105130'
-YOOMONEY_SECRET_KEY = 'test_evMMyWGLIawYaOMUELuBxzSO5XJbnaDcrJeulp2lX8w'
+
+# Yoomoney from environment
+YOOMONEY_ACCOUNT_ID = os.getenv('YOOMONEY_ACCOUNT_ID', '1105130')
+YOOMONEY_SECRET_KEY = os.getenv('YOOMONEY_SECRET_KEY', 'test_evMMyWGLIawYaOMUELuBxzSO5XJbnaDcrJeulp2lX8w')
+
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 USE_X_FORWARDED_HOST = True
 USE_X_FORWARDED_PORT = True
-
 
 class OwnerAdminMixin:
     def get_queryset(self, request):
@@ -296,27 +251,27 @@ class OwnerAdminMixin:
             return qs
         return qs.filter(creator=request.user)
 
-if not DEBUG:
-    SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
+# Security settings from environment
+CSRF_COOKIE_SECURE = os.getenv('CSRF_COOKIE_SECURE', 'True') == 'True'
+SESSION_COOKIE_SECURE = os.getenv('SESSION_COOKIE_SECURE', 'True') == 'True'
+SECURE_SSL_REDIRECT = os.getenv('SECURE_SSL_REDIRECT', 'False') == 'True'
 
 if os.path.exists('package.json'):
     with open('package.json', 'w') as f:
         f.write('{"private": true, "scripts": {}}')
 
-# Проверка статических файлов
+# Static files finders
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
-# Добавьте в settings.py
-# Добавляем в settings.py
-YANDEX_MAPS_API_KEY = '3585e6f5-6323-4098-8a4d-b279da5b0c4f'  # Основной ключ для JavaScript API
-YANDEX_GEOCODER_API_KEY = '3585e6f5-6323-4098-8a4d-b279da5b0c4f'  # Для геокодирования
 
-YANDEX_GEO_SUGGEST_API_KEY = '7979f3d5-7f35-4fd8-893c-e5f1ecaeb3a4'  # Для геосаджеста
-# Для принудительного обслуживания статики через WhiteNoise
+# Yandex APIs from environment
+YANDEX_MAPS_API_KEY = os.getenv('YANDEX_MAPS_API_KEY', '3585e6f5-6323-4098-8a4d-b279da5b0c4f')
+YANDEX_GEOCODER_API_KEY = os.getenv('YANDEX_GEOCODER_API_KEY', '3585e6f5-6323-4098-8a4d-b279da5b0c4f')
+YANDEX_GEO_SUGGEST_API_KEY = os.getenv('YANDEX_GEO_SUGGEST_API_KEY', '7979f3d5-7f35-4fd8-893c-e5f1ecaeb3a4')
+
+# WhiteNoise settings
 WHITENOISE_USE_FINDERS = True
 WHITENOISE_MANIFEST_STRICT = False
 CORS_ALLOW_ALL_ORIGINS = True
