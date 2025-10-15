@@ -38,6 +38,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 logger = logging.getLogger(__name__)
 
 
+# properties/views.py
 class PropertyListView(FilterView):
     model = Property
     template_name = 'properties/property_list.html'
@@ -46,11 +47,11 @@ class PropertyListView(FilterView):
     paginate_by = 12
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-
-        # Для администраторов показываем все объекты
-        if self.request.user.is_authenticated and self.request.user.is_admin:
-            return queryset
+        # ВРЕМЕННО: показываем ВСЕ одобренные активные объекты для всех
+        queryset = Property.objects.filter(
+            is_approved=True,
+            status='active'
+        )
 
         # Аннотируем цену за квадратный метр
         queryset = queryset.annotate(
@@ -59,49 +60,6 @@ class PropertyListView(FilterView):
                 output_field=FloatField()
             )
         )
-
-        # Для неаутентифицированных пользователей показываем только одобренные объекты
-        if not self.request.user.is_authenticated:
-            queryset = queryset.filter(is_approved=True)
-
-        # Для аутентифицированных пользователей
-        else:
-            # Если пользователь - брокер
-            if self.request.user.is_broker:
-                if hasattr(self.request.user, 'broker_profile'):
-                    # Брокер видит только свои одобренные объекты
-                    queryset = queryset.filter(
-                        broker=self.request.user.broker_profile,
-                        is_approved=True
-                    )
-                else:
-                    return Property.objects.none()
-
-            # Если пользователь - застройщик
-            elif self.request.user.is_developer:
-                # Застройщик видит свои объекты
-                queryset = queryset.filter(
-                    developer=self.request.user
-                )
-
-            # Если пользователь - клиент
-            else:
-                # Клиент видит все одобренные объекты
-                queryset = queryset.filter(is_approved=True)
-
-        # Фильтрация по конкретному брокеру (если указан параметр ?broker=id)
-        broker_id = self.request.GET.get('broker')
-        if broker_id:
-            broker = get_object_or_404(BrokerProfile, id=broker_id)
-
-            # Если текущий пользователь - брокер и пытается смотреть чужие объекты
-            if self.request.user.is_authenticated and self.request.user.is_broker and self.request.user != broker.user:
-                return Property.objects.none()
-
-            queryset = queryset.filter(
-                broker=broker,
-                is_approved=True
-            )
 
         # Обработка поискового запроса
         search_query = self.request.GET.get('search')
