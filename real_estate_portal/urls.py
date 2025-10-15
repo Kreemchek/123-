@@ -1,3 +1,4 @@
+# real_estate_portal/urls.py
 from django.contrib import admin
 from django.urls import path, include
 from accounts.views import home_view
@@ -11,10 +12,10 @@ urlpatterns = [
 
     path('accounts/', include('accounts.urls')),
     path('brokers/', include('brokers.urls')),
-    path('payment/', include('payments.urls')),  # Оставляем другие платежные URLs
+    path('payment/', include('payments.urls')),
     path('developers/', include('developers.urls')),
     path('properties/', include('properties.urls')),
-    path('media/', include('media_content.urls')),
+    path('media-content/', include('media_content.urls')),  # ИЗМЕНИТЕ ЭТУ СТРОКУ
 
     path('password_reset/',
          auth_views.PasswordResetView.as_view(
@@ -38,9 +39,7 @@ urlpatterns = [
          name='password_reset_complete'),
 ]
 
-
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 else:
-    # Для продакшена на Railway нужно явно обслуживать медиафайлы
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
