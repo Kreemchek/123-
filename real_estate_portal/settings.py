@@ -8,7 +8,7 @@ import cloudinary.api
 
 load_dotenv()
 
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = True
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.append(str(BASE_DIR))
