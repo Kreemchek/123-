@@ -1,6 +1,75 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block footer %}
+<!-- Кастомный футер только для home.html -->
+<footer class="mt-auto w-full">
+    <div class="max-w-6xl mx-auto px-4">
+        <div class="flex flex-col md:flex-row justify-between items-start py-4 border-t border-[rgba(255,255,255,0.08)]">
+            <div class="mb-4 md:mb-0">
+                <h3 class="text-2xl font-bold mb-2 text-white">WinWinDeal</h3>
+                <p class="text-[#b3b9c6] text-base">Сервис выгодных сделок с недвижимостью</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-6">
+                <div>
+                    <h4 class="text-white font-semibold mb-2 text-base border-b border-[rgba(255,255,255,0.2)] pb-1">Разделы</h4>
+                    <ul class="space-y-1">
+                        <li><a href="{% url 'home' %}" class="text-[#b3b9c6] hover:text-white text-base transition-colors font-medium">Главная</a></li>
+                        {% if user.is_authenticated %}
+                            <li><a href="{% url 'broker-list' %}" class="text-[#b3b9c6] hover:text-white text-base transition-colors font-medium">Брокеры</a></li>
+                            <li><a href="{% url 'properties:property-list' %}" class="text-[#b3b9c6] hover:text-white text-base transition-colors font-medium">Объекты</a></li>
+                            <li><a href="{% url 'developer-list' %}" class="text-[#b3b9c6] hover:text-white text-base transition-colors font-medium">Застройщики</a></li>
+                            <li><a href="{% url 'media_content:list' %}" class="text-white font-bold text-base transition-colors border-b-2 border-[#7c66ff] pb-1">Медиа</a></li>
+                        {% else %}
+                            <li><a href="{% url 'register' %}" class="text-[#b3b9c6] hover:text-white text-base transition-colors font-medium">Брокеры</a></li>
+                            <li><a href="{% url 'register' %}" class="text-[#b3b9c6] hover:text-white text-base transition-colors font-medium">Объекты</a></li>
+                            <li><a href="{% url 'register' %}" class="text-[#b3b9c6] hover:text-white text-base transition-colors font-medium">Застройщики</a></li>
+                            <li><a href="{% url 'register' %}" class="text-white font-bold text-base transition-colors border-b-2 border-[#7c66ff] pb-1">Медиа</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-semibold mb-2 text-base border-b border-[rgba(255,255,255,0.2)] pb-1">Контакты</h4>
+                    <ul class="space-y-1">
+                        <li class="text-[#b3b9c6] text-base flex items-center">
+                            <i class="fas fa-envelope mr-2 w-4"></i>
+                            winwindealrlty@gmail.com
+                        </li>
+                        <li class="text-[#b3b9c6] text-base flex items-center">
+                            <i class="fas fa-phone mr-2 w-4"></i>
+                            +7 964 523-43-33
+                        </li>
+                        <li>
+                            <a href="https://t.me/winwindealrlty" target="_blank" class="text-[#b3b9c6] hover:text-white text-base transition-colors flex items-center">
+                                <i class="fab fa-telegram mr-2 w-4"></i>
+                                Telegram
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-3 pt-3 border-t border-[rgba(255,255,255,0.08)]">
+            <h4 class="text-[#b3b9c6] text-base font-semibold mb-1">Есть вопросы?</h4>
+            {% if user.is_authenticated %}
+                <a href="{% url 'contact_support' %}" class="text-[#7c66ff] hover:text-[#30d0ff] text-base transition-colors font-medium">
+                    Написать в поддержку
+                </a>
+            {% else %}
+                <span class="text-[#b3b9c6] text-base">Авторизуйтесь, чтобы написать в поддержку</span>
+            {% endif %}
+        </div>
+
+        <div class="border-t border-[rgba(255,255,255,0.08)] mt-4 pt-4 text-center">
+            <p class="text-[#b3b9c6] text-base">© 2025 WinWinDeal. Сделки, в которых выигрывают все.</p>
+        </div>
+    </div>
+</footer>
+{% endblock %}
+
 {% block content %}
 <style>
     /* Стили из variant_7.html */
@@ -32,16 +101,6 @@
             --glow: 0 0 0 1px rgba(124,102,255,.15), 0 0 60px rgba(92,76,255,.15);
         }
     }
-
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body {
-        margin: 0; background: radial-gradient(1200px 800px at 10% -10%, rgba(124,102,255,.18), transparent 60%), radial-gradient(1000px 600px at 90% 10%, rgba(48,208,255,.18), transparent 60%), var(--bg);
-        color: var(--text); font: 16px/1.6 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-        letter-spacing: .2px;
-    }
-
-    /* Topbar - удалено, так как используем из base.html */
 
     /* Hero */
     .hero .container {
@@ -323,8 +382,6 @@
 
     .media-card .body { padding: 14px 16px; }
 
-
-
     /* Utilities */
     .muted { color: var(--muted); }
     .hidden-sm { display: inline-flex; }
@@ -399,8 +456,6 @@
         to { transform: translateX(0); opacity: 1; }
     }
 
-
-
     .hot-property-card {
         border: 2px solid #ff4d4d;
         transition: all 0.3s ease;
@@ -409,111 +464,7 @@
     .hot-property-card:hover {
         box-shadow: 0 10px 20px rgba(255, 77, 77, 0.2);
     }
-    /* Исправление для футера в home.html */
-.home-page footer .container {
-    max-width: 600px !important;
-    margin: 0 auto !important;
-    padding: 0.1rem !important;
-    width: 100% !important;
-}
 
-.home-page footer {
-    justify-content: center !important;
-    text-align: center !important;
-}
-/* Добавьте эти стили в секцию стилей home.html */
-
-/* Увеличиваем отступы для hero секции */
-.hero .container {
-    padding-top: 40px;
-    padding-bottom: 40px;
-}
-
-/* Увеличиваем отступы между быстрыми карточками и табами */
-.quick {
-    margin-bottom: 40px;
-}
-
-/* Увеличиваем отступы для табов */
-.tabs {
-    margin-top: 50px;
-}
-
-/* Увеличиваем отступы между панелями контента */
-.panel {
-    margin-bottom: 40px;
-}
-
-/* Увеличиваем отступы для карточек внутри гридов */
-.grid {
-    gap: 24px; /* Увеличиваем стандартный gap */
-}
-
-/* Увеличиваем отступы для отдельных карточек */
-.card-spot {
-    margin-bottom: 30px;
-}
-
-/* Увеличиваем отступы для listing-card */
-.listing-card {
-    margin-bottom: 25px;
-}
-
-/* Увеличиваем отступы для медиа-секции */
-#panel-media {
-    margin-top: 40px;
-}
-
-.media-tabs {
-    margin-top: 30px;
-}
-
-.media-grid {
-    margin-top: 25px;
-}
-
-/* Увеличиваем отступы для кнопок и действий */
-.card-actions {
-    margin-top: 20px;
-}
-
-/* Увеличиваем внутренние отступы для контента */
-.card-spot .content,
-.listing-card .body,
-.media-card .body {
-    padding: 24px;
-}
-
-/* Увеличиваем отступы для поисковой строки */
-.searchbar {
-    margin-bottom: 35px;
-}
-
-/* Увеличиваем отступы для заголовков */
-.hero h1 {
-    margin-bottom: 20px;
-}
-
-.hero p {
-    margin-bottom: 30px;
-}
-
-/* Увеличиваем отступы для быстрых карточек */
-.quick .card {
-    padding: 24px;
-}
-
-/* Увеличиваем отступы для таб-лейблов */
-.tabs label {
-    padding: 14px 20px;
-    margin-bottom: 10px;
-}
-
-/* Увеличиваем отступы для медиа-табов */
-.media-tabs label {
-    padding: 12px 18px;
-    margin-bottom: 8px;
-}
   /* Обновленные стили для кнопок */
     .btn {
         cursor: pointer;
@@ -615,6 +566,22 @@
 
 .media-grid {
     margin-top: 16px;
+}
+
+/* Стили для кастомного футера home.html */
+.home-page footer {
+    background: linear-gradient(135deg, rgba(124, 102, 255, 0.1), rgba(48, 208, 255, 0.05));
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin-top: auto;
+    padding: 10px 0;
+    color: var(--muted);
+    width: 100%;
+}
+
+.home-page footer .mx-auto {
+    margin-left: auto;
+    margin-right: auto;
 }
 </style>
 
@@ -733,7 +700,6 @@
                 </div>
 
               <!-- Objects Panel -->
-<!-- Objects Panel -->
 <div class="panel" id="panel-objects">
     <div class="grid">
         <div class="col-12">
@@ -850,7 +816,6 @@
 
         <div class="media-grid">
         <!-- Videos -->
-<!-- Videos -->
 <div class="grid" id="mgrid-1">
     {% for media in featured_media %}
     {% if media.media_type == 'video' %}
@@ -888,7 +853,6 @@
 </div>
 
 <!-- Photos -->
-<!-- Photos -->
 <div class="grid" id="mgrid-2">
     {% for media in featured_media %}
     {% if media.media_type == 'photo' %}
@@ -921,7 +885,6 @@
     {% endfor %}
 </div>
 
-<!-- Analytics -->
 <!-- Analytics -->
 <div class="grid" id="mgrid-3">
     {% for media in featured_media %}
