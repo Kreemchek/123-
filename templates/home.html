@@ -33,16 +33,6 @@
         }
     }
 
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body {
-        margin: 0; background: radial-gradient(1200px 800px at 10% -10%, rgba(124,102,255,.18), transparent 60%), radial-gradient(1000px 600px at 90% 10%, rgba(48,208,255,.18), transparent 60%), var(--bg);
-        color: var(--text); font: 16px/1.6 Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-        letter-spacing: .2px;
-    }
-
-    /* Topbar - удалено, так как используем из base.html */
-
     /* Hero */
     .hero .container {
         max-width: 1240px;
@@ -323,8 +313,6 @@
 
     .media-card .body { padding: 14px 16px; }
 
-
-
     /* Utilities */
     .muted { color: var(--muted); }
     .hidden-sm { display: inline-flex; }
@@ -398,8 +386,6 @@
         from { transform: translateX(100%); opacity: 0; }
         to { transform: translateX(0); opacity: 1; }
     }
-
-
 
     .hot-property-card {
         border: 2px solid #ff4d4d;
@@ -629,7 +615,6 @@
                 </div>
 
               <!-- Objects Panel -->
-<!-- Objects Panel -->
 <div class="panel" id="panel-objects">
     <div class="grid">
         <div class="col-12">
@@ -746,7 +731,6 @@
 
         <div class="media-grid">
         <!-- Videos -->
-<!-- Videos -->
 <div class="grid" id="mgrid-1">
     {% for media in featured_media %}
     {% if media.media_type == 'video' %}
@@ -784,7 +768,6 @@
 </div>
 
 <!-- Photos -->
-<!-- Photos -->
 <div class="grid" id="mgrid-2">
     {% for media in featured_media %}
     {% if media.media_type == 'photo' %}
@@ -817,7 +800,6 @@
     {% endfor %}
 </div>
 
-<!-- Analytics -->
 <!-- Analytics -->
 <div class="grid" id="mgrid-3">
     {% for media in featured_media %}
