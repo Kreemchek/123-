@@ -295,20 +295,25 @@
         .topbar-btn-ghost i {
     font-size: 18px;
 }
-footer {
+
+/* В base.html - замените существующие стили футера */
+body footer {
     background: linear-gradient(135deg, rgba(124, 102, 255, 0.1), rgba(48, 208, 255, 0.05));
     backdrop-filter: blur(10px);
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     margin-top: 60px;
-    padding: 20px 0; /* Уменьшил padding */
+    padding: 20px 0;
     color: var(--muted);
-    width: 100%; /* Добавил ширину 100% */
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
 
-footer .container {
-    max-width: 1024px; /* Ограничил ширину до 1024px */
+body footer .container {
+    max-width: 1024px;
     margin: 0 auto;
     padding: 0 1rem;
+    width: 100%;
 }
     </style>
     {% block extra_css %}{% endblock %}
