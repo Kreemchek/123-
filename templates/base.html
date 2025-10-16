@@ -392,7 +392,8 @@
     <main class="container mx-auto px-4 py-8">
         {% block content %}{% endblock %}
     </main>
-
+{% block footer %}
+{% if not request.path == '/' %}
 <footer class="mt-auto">
     <div class="container">
         <div class="flex flex-col md:flex-row justify-between items-start py-4 border-t border-[rgba(255,255,255,0.08)]">
@@ -458,6 +459,8 @@
         </div>
     </div>
 </footer>
+{% endif %}
+{% endblock %}
 
     <script>
         // Базовые функции для работы с фильтрами - ТОЛЬКО ДЛЯ home.html и property_list.html
