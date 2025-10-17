@@ -62,6 +62,89 @@
         padding-bottom: 0.5rem;
         border-bottom: 2px solid #f3f4f6;
     }
+
+    .form-group {
+        margin-bottom: 2rem;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.75rem;
+    }
+
+    .experience-input {
+        width: 100%;
+        max-width: 200px;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 0.75rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .experience-input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        transform: translateY(-1px);
+    }
+
+    .experience-input:hover {
+        border-color: #9ca3af;
+    }
+
+    .about-textarea {
+        width: 100%;
+        min-height: 120px;
+        padding: 1rem 1.25rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 0.75rem;
+        font-size: 1rem;
+        font-family: inherit;
+        line-height: 1.5;
+        resize: vertical;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .about-textarea:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        transform: translateY(-1px);
+    }
+
+    .about-textarea:hover {
+        border-color: #9ca3af;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6b7280;
+        font-size: 1.25rem;
+    }
+
+    .experience-input.with-icon {
+        padding-left: 3rem;
+    }
+
+    .char-counter {
+        text-align: right;
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-top: 0.5rem;
+    }
 </style>
 
 <div class="registration-container">
@@ -82,9 +165,20 @@
         {% endif %}
 
         <!-- Опыт работы -->
-        <div>
-            <label class="block text-sm font-medium mb-2 text-gray-700">{{ form.experience.label }}</label>
-            {{ form.experience }}
+        <div class="form-group">
+            <label class="form-label">
+                <i class="bi bi-graph-up mr-2"></i>{{ form.experience.label }}
+            </label>
+            <div class="input-wrapper">
+                <i class="input-icon bi bi-briefcase"></i>
+                <input type="number"
+                       name="{{ form.experience.name }}"
+                       value="{{ form.experience.value|default:'' }}"
+                       class="experience-input with-icon"
+                       placeholder="Введите количество лет"
+                       min="0"
+                       max="50">
+            </div>
             {% if form.experience.errors %}
                 <div class="text-red-600 text-sm mt-1">
                     {% for error in form.experience.errors %}
@@ -95,9 +189,16 @@
         </div>
 
         <!-- О себе -->
-        <div>
-            <label class="block text-sm font-medium mb-2 text-gray-700">{{ form.about.label }}</label>
-            {{ form.about }}
+        <div class="form-group">
+            <label class="form-label">
+                <i class="bi bi-person-circle mr-2"></i>{{ form.about.label }}
+            </label>
+            <textarea name="{{ form.about.name }}"
+                      class="about-textarea"
+                      placeholder="Расскажите о себе, вашем опыте и профессиональных достижениях...">{{ form.about.value|default:'' }}</textarea>
+            <div class="char-counter">
+                <span id="charCount">0</span>/500 символов
+            </div>
             {% if form.about.errors %}
                 <div class="text-red-600 text-sm mt-1">
                     {% for error in form.about.errors %}
@@ -109,7 +210,7 @@
 
         <!-- Услуги -->
         {% if 'services' in form.fields %}
-        <div>
+        <div class="form-group">
             <h3 class="section-title">📋 {{ form.services.label }}</h3>
             <div class="checkbox-grid">
                 {% for checkbox in form.services %}
@@ -133,7 +234,7 @@
 
         <!-- Специализация -->
         {% if 'specializations' in form.fields %}
-        <div>
+        <div class="form-group">
             <h3 class="section-title">🎯 {{ form.specializations.label }}</h3>
             <div class="checkbox-grid">
                 {% for checkbox in form.specializations %}
@@ -169,6 +270,29 @@
         card.classList.toggle('selected', checkbox.checked);
     }
 
+    // Счетчик символов для текстового поля
+    const aboutTextarea = document.querySelector('.about-textarea');
+    const charCount = document.getElementById('charCount');
+
+    if (aboutTextarea && charCount) {
+        // Установить начальное значение
+        charCount.textContent = aboutTextarea.value.length;
+
+        // Обновлять при вводе
+        aboutTextarea.addEventListener('input', function() {
+            charCount.textContent = this.value.length;
+
+            // Изменение цвета при приближении к лимиту
+            if (this.value.length > 450) {
+                charCount.style.color = '#ef4444';
+            } else if (this.value.length > 400) {
+                charCount.style.color = '#f59e0b';
+            } else {
+                charCount.style.color = '#6b7280';
+            }
+        });
+    }
+
     // Initialize selected state on page load
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.checkbox-card').forEach(card => {
@@ -177,6 +301,12 @@
                 card.classList.add('selected');
             }
         });
+
+        // Установить правильное значение для поля опыта
+        const experienceInput = document.querySelector('.experience-input');
+        if (experienceInput && '{{ form.experience.value }}') {
+            experienceInput.value = '{{ form.experience.value }}';
+        }
     });
 </script>
 {% endblock %}
