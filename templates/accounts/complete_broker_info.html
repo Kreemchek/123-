@@ -3,12 +3,64 @@
 
 {% block content %}
 <style>
-    .debug-info {
-        background-color: #f3f4f6;
+    .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-top: 0.5rem;
+    }
+
+    .checkbox-card {
+        background: white;
+        border: 2px solid #e5e7eb;
+        border-radius: 0.75rem;
         padding: 1rem;
-        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .checkbox-card:hover {
+        border-color: #3b82f6;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    }
+
+    .checkbox-card.selected {
+        border-color: #3b82f6;
+        background-color: #eff6ff;
+    }
+
+    .checkbox-card input[type="checkbox"] {
+        width: 1.25rem;
+        height: 1.25rem;
+        border: 2px solid #d1d5db;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .checkbox-card input[type="checkbox"]:checked {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
+    }
+
+    .checkbox-label {
+        font-weight: 500;
+        color: #374151;
+        cursor: pointer;
+        flex: 1;
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1f2937;
         margin-bottom: 1rem;
-        font-family: monospace;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #f3f4f6;
     }
 </style>
 
@@ -17,23 +69,7 @@
         <i class="bi bi-person-badge mr-2"></i>Профессиональная информация
     </h1>
 
-    <!-- DEBUG INFORMATION -->
-    <div class="debug-info">
-        <h3>DEBUG INFO:</h3>
-        <p><strong>Form class name:</strong> {{ form.class.name }}</p>
-        <p><strong>Form fields:</strong> {{ form.fields.keys }}</p>
-        <p><strong>Form has services field:</strong> {% if 'services' in form.fields %}YES{% else %}NO{% endif %}</p>
-        <p><strong>Form has specializations field:</strong> {% if 'specializations' in form.fields %}YES{% else %}NO{% endif %}</p>
-        {% if 'services' in form.fields %}
-            <p><strong>Services choices:</strong> {{ form.fields.services.choices }}</p>
-        {% endif %}
-        {% if 'specializations' in form.fields %}
-            <p><strong>Specializations choices:</strong> {{ form.fields.specializations.choices }}</p>
-        {% endif %}
-        <p><strong>Form instance:</strong> {{ form.instance }}</p>
-    </div>
-
-    <form method="post" class="space-y-6">
+    <form method="post" class="space-y-8">
         {% csrf_token %}
 
         <!-- Вывод общих ошибок формы -->
@@ -47,7 +83,7 @@
 
         <!-- Опыт работы -->
         <div>
-            <label class="block text-sm font-medium mb-2">{{ form.experience.label }}</label>
+            <label class="block text-sm font-medium mb-2 text-gray-700">{{ form.experience.label }}</label>
             {{ form.experience }}
             {% if form.experience.errors %}
                 <div class="text-red-600 text-sm mt-1">
@@ -60,7 +96,7 @@
 
         <!-- О себе -->
         <div>
-            <label class="block text-sm font-medium mb-2">{{ form.about.label }}</label>
+            <label class="block text-sm font-medium mb-2 text-gray-700">{{ form.about.label }}</label>
             {{ form.about }}
             {% if form.about.errors %}
                 <div class="text-red-600 text-sm mt-1">
@@ -74,15 +110,15 @@
         <!-- Услуги -->
         {% if 'services' in form.fields %}
         <div>
-            <label class="block text-sm font-medium mb-2">{{ form.services.label }}</label>
-            <div class="checkbox-group">
+            <h3 class="section-title">📋 {{ form.services.label }}</h3>
+            <div class="checkbox-grid">
                 {% for checkbox in form.services %}
-                <label class="checkbox-item">
+                <div class="checkbox-card" onclick="toggleCheckbox(this)">
                     {{ checkbox.tag }}
-                    {{ checkbox.choice_label }}
-                </label>
+                    <span class="checkbox-label">{{ checkbox.choice_label }}</span>
+                </div>
                 {% empty %}
-                <p class="text-red-500">No services checkboxes available!</p>
+                <p class="text-red-500">Нет доступных услуг</p>
                 {% endfor %}
             </div>
             {% if form.services.errors %}
@@ -93,24 +129,20 @@
                 </div>
             {% endif %}
         </div>
-        {% else %}
-        <div class="bg-yellow-50 p-4 rounded-lg">
-            <p class="text-yellow-700">Поле 'services' отсутствует в форме!</p>
-        </div>
         {% endif %}
 
         <!-- Специализация -->
         {% if 'specializations' in form.fields %}
         <div>
-            <label class="block text-sm font-medium mb-2">{{ form.specializations.label }}</label>
-            <div class="checkbox-group">
+            <h3 class="section-title">🎯 {{ form.specializations.label }}</h3>
+            <div class="checkbox-grid">
                 {% for checkbox in form.specializations %}
-                <label class="checkbox-item">
+                <div class="checkbox-card" onclick="toggleCheckbox(this)">
                     {{ checkbox.tag }}
-                    {{ checkbox.choice_label }}
-                </label>
+                    <span class="checkbox-label">{{ checkbox.choice_label }}</span>
+                </div>
                 {% empty %}
-                <p class="text-red-500">No specializations checkboxes available!</p>
+                <p class="text-red-500">Нет доступных специализаций</p>
                 {% endfor %}
             </div>
             {% if form.specializations.errors %}
@@ -121,16 +153,30 @@
                 </div>
             {% endif %}
         </div>
-        {% else %}
-        <div class="bg-yellow-50 p-4 rounded-lg">
-            <p class="text-yellow-700">Поле 'specializations' отсутствует в форме!</p>
-        </div>
         {% endif %}
 
         <button type="submit"
-                class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300">
             Сохранить данные <i class="bi bi-check2 ml-2"></i>
         </button>
     </form>
 </div>
+
+<script>
+    function toggleCheckbox(card) {
+        const checkbox = card.querySelector('input[type="checkbox"]');
+        checkbox.checked = !checkbox.checked;
+        card.classList.toggle('selected', checkbox.checked);
+    }
+
+    // Initialize selected state on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.checkbox-card').forEach(card => {
+            const checkbox = card.querySelector('input[type="checkbox"]');
+            if (checkbox.checked) {
+                card.classList.add('selected');
+            }
+        });
+    });
+</script>
 {% endblock %}
