@@ -1672,6 +1672,43 @@ body.properties-page{
         display: none !important;
     }
 }
+/* Увеличиваем кнопку фильтров на мобильных устройствах */
+@media (max-width: 1023px) {
+    #mobile-filters-btn {
+        font-size: 18px !important;
+        padding: 16px 20px !important;
+        height: auto !important;
+        min-height: 60px !important;
+    }
+
+    #mobile-filters-btn svg {
+        width: 24px !important;
+        height: 24px !important;
+    }
+
+    /* Увеличиваем индикатор активных фильтров */
+    #mobile-filters-btn .bg-red-500 {
+        width: 28px !important;
+        height: 28px !important;
+        font-size: 14px !important;
+        margin-left: 8px !important;
+    }
+}
+
+/* Дополнительные улучшения для очень маленьких экранов */
+@media (max-width: 640px) {
+    #mobile-filters-btn {
+        font-size: 20px !important;
+        padding: 18px 22px !important;
+        min-height: 65px !important;
+    }
+
+    #mobile-filters-btn svg {
+        width: 26px !important;
+        height: 26px !important;
+        margin-right: 12px !important;
+    }
+}
 </style>
 {% endblock %}
 

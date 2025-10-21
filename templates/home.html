@@ -583,6 +583,107 @@
     margin-left: auto;
     margin-right: auto;
 }
+
+/* Новые стили для разделенного блока */
+.split-section {
+    margin-top: 40px;
+}
+
+.split-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--grid-gap);
+    align-items: start;
+}
+
+.split-section h2 {
+    grid-column: 1 / -1;
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 20px;
+    color: var(--text);
+}
+
+.hot-properties-side, .media-side {
+    background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow-1);
+}
+
+.section-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.section-header h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text);
+}
+
+.slider-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.slider-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.slider-btn:hover {
+    background: linear-gradient(135deg, var(--brand), var(--brand-2));
+    transform: translateY(-1px);
+}
+
+.slider-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.slider-track {
+    display: flex;
+    transition: transform 0.3s ease;
+}
+
+.slider-slide {
+    min-width: 100%;
+    flex-shrink: 0;
+}
+
+.media-slider .slider-slide {
+    padding: 0 4px;
+}
+
+.hot-properties-side .listing-card,
+.media-side .media-card {
+    margin-bottom: 16px;
+}
+
+.hot-properties-side .listing-card:last-child,
+.media-side .media-card:last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 980px) {
+    .split-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
 </style>
 
 <!-- Hero -->
@@ -709,42 +810,41 @@
                     <div>
                         <div class="pill hot">🔥 Горячие предложения</div>
                         <h3 style="margin:8px 0 6px">Подборка недели</h3>
-                        <div class="muted">Квартиры, студии и апартаменты</div>
+                        <div class="muted">Квартиры, дома, коммерция — проверенные объекты</div>
                     </div>
-                    <a href="{% if user.is_authenticated %}{% url 'properties:property-list' %}?is_hot=true{% else %}{% url 'register' %}?next={% url 'properties:property-list' %}?is_hot=true{% endif %}" class="link"><strong>Смотреть все →</strong></a>
+                    <a href="{% if user.is_authenticated %}{% url 'properties:property-list' %}{% else %}{% url 'register' %}?next={% url 'properties:property-list' %}{% endif %}" class="btn btn-primary">Смотреть все</a>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- 3 example listings -->
-        {% for property in hot_properties|slice:":3" %}
+    <div class="grid" style="margin-top: var(--grid-gap);">
+        {% for property in featured_properties %}
         <div class="col-4">
-            <div class="listing-card">
+            <div class="listing-card {% if property.is_hot %}hot-property-card{% endif %}">
+                {% if property.is_hot %}
+                <div class="hot-property-badge">🔥 Горячее</div>
+                {% endif %}
                 <div class="thumb">
-                    {% if property.images.all %}
+                    {% if property.images.first %}
                         <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}">
                     {% else %}
-                        <!-- Запасной вариант, если нет изображений -->
-                        <div>
-                            {{ property.location }}
-                        </div>
-                    {% endif %}
-
-                    <!-- Бейдж "Горячее предложение" -->
-                    {% if property.is_hot %}
-                        <div class="hot-property-badge">🔥 Горячее</div>
+                        <div>NO IMAGE</div>
                     {% endif %}
                 </div>
                 <div class="body">
-                    <strong>{{ property.title }}</strong>
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                        <strong>{{ property.title }}</strong>
+                        <span class="price">{{ property.price }} ₽</span>
+                    </div>
                     <div class="meta">
-                        <span>{{ property.rooms }} комн.</span>
-                        <span>{{ property.total_area|floatformat:"0" }} м²</span>
-                        <span class="price">{{ property.price|floatformat:"0" }} ₽</span>
+                        <span>{{ property.get_property_type_display }}</span>
+                        <span>{{ property.area }} м²</span>
+                        <span>{{ property.get_rooms_display }}</span>
                     </div>
                     <div class="card-actions">
-                        <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}{% endif %}" class="btn btn-primary">Подробнее</a>
-
+                        <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}{% endif %}" class="btn btn-ghost">Подробнее</a>
+                        <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}#contact{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}#contact{% endif %}" class="btn btn-primary">Связаться</a>
                     </div>
                 </div>
             </div>
@@ -761,11 +861,11 @@
                                 <div class="media"></div>
                                 <div class="content">
                                     <div>
-                                        <div class="pill">Новые ЖК</div>
-                                        <h3 style="margin:8px 0 6px">Предложения от застройщиков</h3>
-                                        <div class="muted">Ипотека, рассрочка, акции</div>
+                                        <div class="pill">Новостройки</div>
+                                        <h3 style="margin:8px 0 6px">Прямые предложения от застройщиков</h3>
+                                        <div class="muted">Без комиссий и переплат</div>
                                     </div>
-                                    <a href="{% if user.is_authenticated %}{% url 'developer-list' %}{% else %}{% url 'register' %}?next={% url 'developer-list' %}{% endif %}" class="btn btn-primary">Каталог</a>
+                                    <a href="{% if user.is_authenticated %}{% url 'developer-list' %}{% else %}{% url 'register' %}?next={% url 'developer-list' %}{% endif %}" class="btn btn-primary">Смотреть</a>
                                 </div>
                             </div>
                         </div>
@@ -774,12 +874,12 @@
                                 {% for developer in featured_developers|slice:":2" %}
                                 <div class="col-6">
                                     <div class="listing-card">
-                                        <div class="thumb">{{ developer.name }}</div>
+                                        <div class="thumb">DEV</div>
                                         <div class="body">
                                             <strong>{{ developer.name }}</strong>
-                                            <div class="meta"><span>Сдача: {{ developer.completion_date|date:"Y" }}</span><span class="price">от {{ developer.min_price|floatformat:"0" }} млн ₽</span></div>
+                                            <div class="meta"><span>{{ developer.completed_projects }}+ объектов</span></div>
                                             <div class="card-actions">
-                                                <a href="{% if user.is_authenticated %}{% url 'developer-detail' developer.id %}{% else %}{% url 'register' %}?next={% url 'developer-detail' developer.id %}{% endif %}" class="btn btn-ghost">Подробнее</a>
+                                                <a href="{% if user.is_authenticated %}{% url 'developer-detail' developer.id %}{% else %}{% url 'register' %}?next={% url 'developer-detail' developer.id %}{% endif %}" class="btn btn-ghost">Профиль</a>
                                                 <a href="{% if user.is_authenticated %}{% url 'developer-detail' developer.id %}#contact{% else %}{% url 'register' %}?next={% url 'developer-detail' developer.id %}#contact{% endif %}" class="btn btn-primary">Связаться</a>
                                             </div>
                                         </div>
@@ -791,215 +891,239 @@
                     </div>
                 </div>
 
-<!-- Media Panel -->
-<div class="panel" id="panel-media">
-    <div class="card-spot" style="margin-bottom: 16px">
-        <div class="media"></div>
-        <div class="content">
-            <div>
-                <div class="pill">Рекомендуемые материалы</div>
-                <h3 style="margin:8px 0 6px">Лучшие видеообзоры, фотоотчёты и аналитика</h3>
-                <div class="muted">Все медиаматериалы</div>
+                <!-- Media Panel -->
+                <div class="panel" id="panel-media">
+                    <div class="media-tabs">
+                        <input type="radio" name="media-tabs" id="mtab-1" checked>
+                        <label for="mtab-1">Новости</label>
+
+                        <input type="radio" name="media-tabs" id="mtab-2">
+                        <label for="mtab-2">Аналитика</label>
+
+                        <input type="radio" name="media-tabs" id="mtab-3">
+                        <label for="mtab-3">Советы</label>
+
+                        <div class="media-grid">
+                            <!-- News -->
+                            <div class="grid" id="mgrid-1">
+                                {% for item in media_content|slice:":4" %}
+                                <div class="col-3">
+                                    <a href="{% if user.is_authenticated %}{% url 'media_content:detail' item.id %}{% else %}{% url 'register' %}?next={% url 'media_content:detail' item.id %}{% endif %}" class="media-card link">
+                                        <div class="thumb">
+                                            {% if item.thumbnail %}
+                                                <img src="{{ item.thumbnail.url }}" alt="{{ item.title }}">
+                                            {% else %}
+                                                <div>NO IMAGE</div>
+                                            {% endif %}
+                                            <div class="thumb-overlay">{{ item.get_media_type_display }}</div>
+                                        </div>
+                                        <div class="body">
+                                            <strong>{{ item.title }}</strong>
+                                            <div class="meta">{{ item.created_at|date:"d.m.Y" }}</div>
+                                        </div>
+                                    </a>
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Analytics -->
+                            <div class="grid" id="mgrid-2">
+                                {% for item in media_content|slice:"4:8" %}
+                                <div class="col-3">
+                                    <a href="{% if user.is_authenticated %}{% url 'media_content:detail' item.id %}{% else %}{% url 'register' %}?next={% url 'media_content:detail' item.id %}{% endif %}" class="media-card link">
+                                        <div class="thumb">
+                                            {% if item.thumbnail %}
+                                                <img src="{{ item.thumbnail.url }}" alt="{{ item.title }}">
+                                            {% else %}
+                                                <div>NO IMAGE</div>
+                                            {% endif %}
+                                            <div class="thumb-overlay">{{ item.get_media_type_display }}</div>
+                                        </div>
+                                        <div class="body">
+                                            <strong>{{ item.title }}</strong>
+                                            <div class="meta">{{ item.created_at|date:"d.m.Y" }}</div>
+                                        </div>
+                                    </a>
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Tips -->
+                            <div class="grid" id="mgrid-3">
+                                {% for item in media_content|slice:"8:12" %}
+                                <div class="col-3">
+                                    <a href="{% if user.is_authenticated %}{% url 'media_content:detail' item.id %}{% else %}{% url 'register' %}?next={% url 'media_content:detail' item.id %}{% endif %}" class="media-card link">
+                                        <div class="thumb">
+                                            {% if item.thumbnail %}
+                                                <img src="{{ item.thumbnail.url }}" alt="{{ item.title }}">
+                                            {% else %}
+                                                <div>NO IMAGE</div>
+                                            {% endif %}
+                                            <div class="thumb-overlay">{{ item.get_media_type_display }}</div>
+                                        </div>
+                                        <div class="body">
+                                            <strong>{{ item.title }}</strong>
+                                            <div class="meta">{{ item.created_at|date:"d.m.Y" }}</div>
+                                        </div>
+                                    </a>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <a href="{% url 'media_content:list' %}" class="btn btn-primary">Смотреть все</a>
         </div>
     </div>
+</section>
 
-    <!-- Inner media tabs -->
-    <div class="media-tabs">
-        <input type="radio" id="mtab-1" name="mtabs" checked>
-        <label for="mtab-1">Видеообзоры</label>
-        <input type="radio" id="mtab-2" name="mtabs">
-        <label for="mtab-2">Фотоотчёты</label>
-        <input type="radio" id="mtab-3" name="mtabs">
-        <label for="mtab-3">Аналитика</label>
-
-        <div class="media-grid">
-        <!-- Videos -->
-<div class="grid" id="mgrid-1">
-    {% for media in featured_media %}
-    {% if media.media_type == 'video' %}
-    <div class="col-4">
-        <a href="{% url 'media_content:detail' media.id %}" class="link">
-            <article class="media-card">
-                <div class="thumb">
-                    {% if media.thumbnail_url %}
-                        <img src="{{ media.thumbnail_url }}" alt="{{ media.title }}">
-                    {% elif media.is_external_video %}
-                        <div style="background: linear-gradient(135deg, #7c66ff, #30d0ff);">
-                            📹 Видео
-                        </div>
-                    {% else %}
-                        <div style="background: linear-gradient(135deg, #7c66ff, #30d0ff);">
-                            {{ media.title }}
-                        </div>
-                    {% endif %}
+<!-- Новый разделенный блок -->
+<section class="split-section">
+    <h2>Горячие предложения и медиа</h2>
+    <div class="split-container">
+        <!-- Левая часть - Горячие предложения -->
+        <div class="hot-properties-side">
+            <div class="section-header">
+                <h3>🔥 Горячие предложения</h3>
+                <div class="slider-controls">
+                    <button class="slider-btn prev-hot">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="slider-btn next-hot">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
                 </div>
-                <div class="body">
-                    <strong>{{ media.title }}</strong>
-                    <div class="meta">
-                        <span>{{ media.duration|default:"" }}</span>
+            </div>
+            <div class="slider-container">
+                <div class="slider-track" id="hot-properties-track">
+                    {% for property in hot_properties %}
+                    <div class="slider-slide">
+                        <div class="listing-card hot-property-card">
+                            <div class="hot-property-badge">🔥 Горячее</div>
+                            <div class="thumb">
+                                {% if property.images.first %}
+                                    <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}">
+                                {% else %}
+                                    <div>NO IMAGE</div>
+                                {% endif %}
+                            </div>
+                            <div class="body">
+                                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                                    <strong>{{ property.title }}</strong>
+                                    <span class="price">{{ property.price }} ₽</span>
+                                </div>
+                                <div class="meta">
+                                    <span>{{ property.get_property_type_display }}</span>
+                                    <span>{{ property.area }} м²</span>
+                                    <span>{{ property.get_rooms_display }}</span>
+                                </div>
+                                <div class="card-actions">
+                                    <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}{% endif %}" class="btn btn-ghost">Подробнее</a>
+                                    <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}#contact{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}#contact{% endif %}" class="btn btn-primary">Связаться</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                    {% endfor %}
                 </div>
-            </article>
-        </a>
-    </div>
-    {% endif %}
-    {% empty %}
-    <div class="col-12">
-        <p class="muted" style="text-align: center; padding: 20px;">Видеообзоры пока отсутствуют</p>
-    </div>
-    {% endfor %}
-</div>
-
-<!-- Photos -->
-<div class="grid" id="mgrid-2">
-    {% for media in featured_media %}
-    {% if media.media_type == 'photo' %}
-    <div class="col-3">
-        <a href="{% url 'media_content:detail' media.id %}" class="link">
-            <article class="media-card">
-                <div class="thumb">
-                    {% if media.thumbnail_url %}
-                        <img src="{{ media.thumbnail_url }}" alt="{{ media.title }}">
-                    {% else %}
-                        <div style="background: linear-gradient(135deg, #ff6a3d, #ffba3b);">
-                            📷 Фото
-                        </div>
-                    {% endif %}
-                </div>
-                <div class="body">
-                    <strong>{{ media.title }}</strong>
-                    <div class="meta">
-                        <span>{{ media.photo_count|default:"1" }} фото</span>
-                    </div>
-                </div>
-            </article>
-        </a>
-    </div>
-    {% endif %}
-    {% empty %}
-    <div class="col-12">
-        <p class="muted" style="text-align: center; padding: 20px;">Фотоотчёты пока отсутствуют</p>
-    </div>
-    {% endfor %}
-</div>
-
-<!-- Analytics -->
-<div class="grid" id="mgrid-3">
-    {% for media in featured_media %}
-    {% if media.media_type == 'article' %}
-    <div class="col-6">
-        <a href="{% url 'media_content:detail' media.id %}" class="link">
-            <article class="media-card">
-                <div class="thumb">
-                    {% if media.thumbnail_url %}
-                        <img src="{{ media.thumbnail_url }}" alt="{{ media.title }}">
-                    {% else %}
-                        <div style="background: linear-gradient(135deg, #51d67b, #30d0ff);">
-                            📊 Аналитика
-                        </div>
-                    {% endif %}
-                </div>
-                <div class="body">
-                    <strong>{{ media.title }}</strong>
-                    <div class="meta">
-                        <span>{{ media.read_time|default:"5 мин" }} чтения</span>
-                    </div>
-                </div>
-            </article>
-        </a>
-    </div>
-    {% endif %}
-    {% empty %}
-    <div class="col-12">
-        <p class="muted" style="text-align: center; padding: 20px;">Аналитические материалы пока отсутствуют</p>
-    </div>
-    {% endfor %}
-</div>
+            </div>
         </div>
-    </div>
-</div>
+
+        <!-- Правая часть - Медиа -->
+        <div class="media-side">
+            <div class="section-header">
+                <h3>📰 Медиа</h3>
+                <div class="slider-controls">
+                    <button class="slider-btn prev-media">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="slider-btn next-media">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="slider-container">
+                <div class="slider-track media-slider" id="media-track">
+                    {% for item in media_content|slice:":6" %}
+                    <div class="slider-slide">
+                        <a href="{% if user.is_authenticated %}{% url 'media_content:detail' item.id %}{% else %}{% url 'register' %}?next={% url 'media_content:detail' item.id %}{% endif %}" class="media-card link">
+                            <div class="thumb">
+                                {% if item.thumbnail %}
+                                    <img src="{{ item.thumbnail.url }}" alt="{{ item.title }}">
+                                {% else %}
+                                    <div>NO IMAGE</div>
+                                {% endif %}
+                                <div class="thumb-overlay">{{ item.get_media_type_display }}</div>
+                            </div>
+                            <div class="body">
+                                <strong>{{ item.title }}</strong>
+                                <div class="meta">{{ item.created_at|date:"d.m.Y" }}</div>
+                            </div>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>
 </section>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('location-search');
-    const suggestionsDiv = document.getElementById('search-suggestions');
-    const geolocationBtn = document.getElementById('geolocation-btn');
-    const geoCoordsInput = document.getElementById('geo-coords');
+// Слайдер для горячих предложений
+const hotTrack = document.getElementById('hot-properties-track');
+const hotSlides = document.querySelectorAll('#hot-properties-track .slider-slide');
+const hotPrevBtn = document.querySelector('.prev-hot');
+const hotNextBtn = document.querySelector('.next-hot');
 
-    // Функция для показа подсказок
-    function showSuggestions(suggestions) {
-        suggestionsDiv.innerHTML = '';
-        suggestions.forEach(suggestion => {
-            const div = document.createElement('div');
-            div.textContent = suggestion;
-            div.addEventListener('click', () => {
-                searchInput.value = suggestion;
-                suggestionsDiv.classList.add('hidden');
-            });
-            suggestionsDiv.appendChild(div);
-        });
-        suggestionsDiv.classList.remove('hidden');
-    }
+let hotCurrentSlide = 0;
+const hotSlideCount = hotSlides.length;
 
-    // Обработчик ввода в поиске
-    searchInput.addEventListener('input', function() {
-        const query = this.value.trim();
-        if (query.length < 2) {
-            suggestionsDiv.classList.add('hidden');
-            return;
-        }
+function updateHotSlider() {
+    hotTrack.style.transform = `translateX(-${hotCurrentSlide * 100}%)`;
+}
 
-        // Здесь будет запрос к API для получения подсказок
-        // Пока используем заглушку
-        const mockSuggestions = [
-            'Москва',
-            'Санкт-Петербург',
-            'Новосибирск',
-            'Екатеринбург'
-        ].filter(city => city.toLowerCase().includes(query.toLowerCase()));
-
-        showSuggestions(mockSuggestions);
-    });
-
-    // Скрытие подсказок при клике вне
-    document.addEventListener('click', function(e) {
-        if (!searchInput.contains(e.target) && !suggestionsDiv.contains(e.target)) {
-            suggestionsDiv.classList.add('hidden');
-        }
-    });
-
-    // Геолокация
-    geolocationBtn.addEventListener('click', function() {
-        if (!navigator.geolocation) {
-            alert('Геолокация не поддерживается вашим браузером');
-            return;
-        }
-
-        geolocationBtn.disabled = true;
-        geolocationBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-
-        navigator.geolocation.getCurrentPosition(
-            function(position) {
-                const lat = position.coords.latitude;
-                const lng = position.coords.longitude;
-                geoCoordsInput.value = `${lat},${lng}`;
-                searchInput.value = 'Рядом со мной';
-                geolocationBtn.disabled = false;
-                geolocationBtn.innerHTML = '<i class="fas fa-location-arrow"></i>';
-            },
-            function(error) {
-                alert('Не удалось получить ваше местоположение');
-                geolocationBtn.disabled = false;
-                geolocationBtn.innerHTML = '<i class="fas fa-location-arrow"></i>';
-            }
-        );
-    });
+hotPrevBtn.addEventListener('click', () => {
+    hotCurrentSlide = (hotCurrentSlide - 1 + hotSlideCount) % hotSlideCount;
+    updateHotSlider();
 });
+
+hotNextBtn.addEventListener('click', () => {
+    hotCurrentSlide = (hotCurrentSlide + 1) % hotSlideCount;
+    updateHotSlider();
+});
+
+// Слайдер для медиа
+const mediaTrack = document.getElementById('media-track');
+const mediaSlides = document.querySelectorAll('#media-track .slider-slide');
+const mediaPrevBtn = document.querySelector('.prev-media');
+const mediaNextBtn = document.querySelector('.next-media');
+
+let mediaCurrentSlide = 0;
+const mediaSlideCount = mediaSlides.length;
+
+function updateMediaSlider() {
+    mediaTrack.style.transform = `translateX(-${mediaCurrentSlide * 100}%)`;
+}
+
+mediaPrevBtn.addEventListener('click', () => {
+    mediaCurrentSlide = (mediaCurrentSlide - 1 + mediaSlideCount) % mediaSlideCount;
+    updateMediaSlider();
+});
+
+mediaNextBtn.addEventListener('click', () => {
+    mediaCurrentSlide = (mediaCurrentSlide + 1) % mediaSlideCount;
+    updateMediaSlider();
+});
+
+// Автопереключение слайдеров (опционально)
+setInterval(() => {
+    hotCurrentSlide = (hotCurrentSlide + 1) % hotSlideCount;
+    updateHotSlider();
+}, 5000);
+
+setInterval(() => {
+    mediaCurrentSlide = (mediaCurrentSlide + 1) % mediaSlideCount;
+    updateMediaSlider();
+}, 6000);
 </script>
 {% endblock %}
