@@ -232,240 +232,229 @@
         }
     }
 
-    /* Tabs (CSS-only) */
-    .tabs { margin-top: 34px; }
-    .tabs .tab-head { display:flex; gap:10px; flex-wrap: wrap; }
-    .tabs input { position: absolute; opacity: 0; pointer-events: none; }
-    .tabs label {
-        padding: 12px 16px; border-radius: 14px; background: var(--card); border:1px solid rgba(255,255,255,.08);
-        font-weight: 700; cursor: pointer; user-select: none; transition: .25s ease; display:inline-flex; align-items:center; gap:10px;
-    }
-    .tabs label:hover { transform: translateY(-1px); box-shadow: var(--shadow-1); }
-    .tabs [type="radio"]:checked + label { background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: #fff; box-shadow: var(--glow); }
-
-    .tab-body { margin-top: 18px; }
-    .panel { display: none; animation: rise .5s ease; }
-    @keyframes rise { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: none; } }
-
-    /* Radio control */
-    #tab-brokers:checked ~ .tab-body #panel-brokers,
-    #tab-objects:checked ~ .tab-body #panel-objects,
-    #tab-developers:checked ~ .tab-body #panel-developers,
-    #tab-media:checked ~ .tab-body #panel-media { display: block; }
-
-    /* Cards Grid */
-    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: var(--grid-gap); }
-    .col-3 { grid-column: span 3; }
-    .col-4 { grid-column: span 4; }
-    .col-6 { grid-column: span 6; }
-    .col-12 { grid-column: span 12; }
-    @media (max-width: 1100px) {
-        .col-3 { grid-column: span 4; }
-        .col-4 { grid-column: span 6; }
-        .col-6 { grid-column: span 12; }
-    }
-    @media (max-width: 680px) {
-        .col-3, .col-4 { grid-column: span 12; }
+    /* Стили для разделенного блока */
+    .split-section {
+        margin-top: 60px;
     }
 
-    .card-spot {
-        border-radius: var(--radius); overflow: hidden; position: relative; min-height: 190px; background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.08); box-shadow: var(--shadow-1);
+    .split-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--grid-gap);
+        align-items: start;
     }
-    .card-spot .media { position: absolute; inset: 0; background:
-        radial-gradient(120px 120px at 80% -10%, rgba(48,208,255,.35), transparent 60%),
-        radial-gradient(160px 160px at -10% 110%, rgba(124,102,255,.35), transparent 60%);
-        opacity: .25; }
-    .card-spot .content { position: relative; padding: 20px; display:flex; gap:16px; align-items: center; justify-content: space-between; }
-    .pill { font-size: 12px; font-weight: 800; letter-spacing: .4px; padding: 8px 10px; border-radius: 999px; border:1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.06); }
-    .hot { background: linear-gradient(135deg, var(--accent), #ff3d81); color: #fff; border: none; box-shadow: 0 10px 30px rgba(255,82,63,.25); }
 
-/* Исправленные стили для карточек объектов */
-.listing-card {
-    position: relative;
-    border-radius: 18px;
-    border:1px solid rgba(255,255,255,.08);
-    overflow: hidden;
-    background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
-    box-shadow: var(--shadow-1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
+    .split-section h2 {
+        grid-column: 1 / -1;
+        font-size: 28px;
+        font-weight: 800;
+        margin-bottom: 24px;
+        color: var(--text);
+        text-align: center;
+    }
 
-.listing-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--glow);
-}
+    .hot-properties-side, .media-side {
+        background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+        border: 1px solid rgba(255,255,255,.08);
+        border-radius: var(--radius);
+        padding: 24px;
+        box-shadow: var(--shadow-1);
+    }
 
-.listing-card .thumb {
-    aspect-ratio: 16/10;
-    position: relative;
-    overflow: hidden;
-    width: 100%;
-}
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
 
-.listing-card .thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.3s ease;
-}
+    .section-header h3 {
+        font-size: 20px;
+        font-weight: 700;
+        margin: 0;
+        color: var(--text);
+    }
 
-.listing-card:hover .thumb img {
-    transform: scale(1.05);
-}
+    .slider-controls {
+        display: flex;
+        gap: 8px;
+    }
 
-.listing-card .thumb > div {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 800;
-    background: linear-gradient(135deg, rgba(124,102,255,.35), rgba(48,208,255,.25));
-}
+    .slider-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--card);
+        border: 1px solid rgba(255,255,255,.08);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        color: var(--text);
+    }
 
-/* Бейдж "Горячее" - исправленная версия */
-.hot-property-badge {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: linear-gradient(45deg, #ff4d4d, #f95700);
-    color: white;
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-weight: bold;
-    font-size: 12px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    z-index: 2;
-}
+    .slider-btn:hover {
+        background: linear-gradient(135deg, var(--brand), var(--brand-2));
+        transform: translateY(-1px);
+        color: white;
+    }
 
-.listing-card .body { padding: 16px; }
-.meta { display:flex; flex-wrap: wrap; gap: 10px; color: var(--muted); font-size: 13px; }
-.price { font-weight: 800; font-size: 18px; margin-left: auto; }
-.card-actions { display:flex; gap:8px; margin-top:12px; }
+    .slider-container {
+        position: relative;
+        overflow: hidden;
+        border-radius: var(--radius);
+    }
 
-    /* Media Section */
-    .media-tabs { margin-top: 10px; }
-    .media-tabs input { position: absolute; opacity:0; }
-    .media-tabs label { padding: 10px 14px; border-radius: 12px; background: var(--card); border:1px solid rgba(255,255,255,.08); font-weight: 700; cursor: pointer; }
-    .media-tabs [type="radio"]:checked + label { background: linear-gradient(135deg, var(--brand-2), var(--brand)); color:#fff; box-shadow: var(--glow); }
+    .slider-track {
+        display: flex;
+        transition: transform 0.3s ease;
+    }
 
-    #mtab-1:checked ~ .media-grid #mgrid-1,
-    #mtab-2:checked ~ .media-grid #mgrid-2,
-    #mtab-3:checked ~ .media-grid #mgrid-3 { display: grid; }
+    .slider-slide {
+        min-width: 100%;
+        flex-shrink: 0;
+        padding: 0 8px;
+    }
 
-    .media-grid > .grid { display: none; }
+    .hot-properties-side .listing-card,
+    .media-side .media-card {
+        margin-bottom: 16px;
+    }
+
+    .hot-properties-side .listing-card:last-child,
+    .media-side .media-card:last-child {
+        margin-bottom: 0;
+    }
+
+    @media (max-width: 980px) {
+        .split-container {
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+    }
+
+    /* Исправленные стили для карточек объектов */
+    .listing-card {
+        position: relative;
+        border-radius: 18px;
+        border:1px solid rgba(255,255,255,.08);
+        overflow: hidden;
+        background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+        box-shadow: var(--shadow-1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .listing-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--glow);
+    }
+
+    .listing-card .thumb {
+        aspect-ratio: 16/10;
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+    }
+
+    .listing-card .thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.3s ease;
+    }
+
+    .listing-card:hover .thumb img {
+        transform: scale(1.05);
+    }
+
+    .listing-card .thumb > div {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 800;
+        background: linear-gradient(135deg, rgba(124,102,255,.35), rgba(48,208,255,.25));
+    }
+
+    /* Бейдж "Горячее" - исправленная версия */
+    .hot-property-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: linear-gradient(45deg, #ff4d4d, #f95700);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 12px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        z-index: 2;
+    }
+
+    .listing-card .body { padding: 16px; }
+    .meta { display:flex; flex-wrap: wrap; gap: 10px; color: var(--muted); font-size: 13px; }
+    .price { font-weight: 800; font-size: 18px; margin-left: auto; }
+    .card-actions { display:flex; gap:8px; margin-top:12px; }
 
     /* Media Section - ИСПРАВЛЕННЫЕ СТИЛИ */
-.media-card {
-    border-radius: 16px;
-    overflow: hidden;
-    border:1px solid rgba(255,255,255,.08);
-    background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
-    box-shadow: var(--shadow-1);
-}
+    .media-card {
+        border-radius: 16px;
+        overflow: hidden;
+        border:1px solid rgba(255,255,255,.08);
+        background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+        box-shadow: var(--shadow-1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: block;
+        text-decoration: none;
+        color: inherit;
+    }
 
-.media-card .thumb {
-    aspect-ratio: 16/9;
-    position: relative;
-    overflow: hidden; /* Добавляем это */
-    width: 100%; /* Добавляем это */
-}
+    .media-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--glow);
+    }
 
-.media-card .thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block; /* Важно для устранения зазоров */
-}
+    .media-card .thumb {
+        aspect-ratio: 16/9;
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+    }
+
+    .media-card .thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.3s ease;
+    }
+
+    .media-card:hover .thumb img {
+        transform: scale(1.05);
+    }
 
     .media-card .body { padding: 14px 16px; }
 
+    .thumb-overlay {
+        position: absolute;
+        bottom: 12px;
+        right: 12px;
+        background: rgba(0,0,0,.6);
+        padding: 8px 12px;
+        border-radius: 999px;
+        font-size: 14px;
+        color: white;
+    }
+
     /* Utilities */
     .muted { color: var(--muted); }
-    .hidden-sm { display: inline-flex; }
-    @media (max-width:640px){ .hidden-sm { display:none; } }
-    .link { text-decoration: none; color: inherit; }
+    .link { text-decoration: none; color: inherit; display: block; }
 
-    /* Стили для автодополнения */
-    #search-suggestions {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        z-index: 1000;
-        border: 1px solid rgba(255,255,255,.08);
-        border-top: none;
-        background: var(--bg-soft);
-        border-radius: 0 0 16px 16px;
-        overflow: hidden;
-    }
-    #search-suggestions div {
-        padding: 10px 15px;
-        cursor: pointer;
-        border-bottom: 1px solid rgba(255,255,255,.06);
-        transition: background-color 0.2s ease;
-    }
-    #search-suggestions div:hover {
-        background: rgba(255,255,255,.05);
-    }
-
-    /* Стили для модального окна фильтров */
-    #filters-modal {
-        transition: opacity 0.3s ease;
-        background: rgba(0,0,0,0.7);
-    }
-    #filters-modal > div {
-        transition: transform 0.3s ease;
-        background: var(--bg-soft);
-        color: var(--text);
-        border: 1px solid rgba(255,255,255,.08);
-    }
-    #filters-modal:not(.hidden) {
-        display: flex;
-        opacity: 1;
-    }
-    #filters-modal:not(.hidden) > div {
-        transform: translateY(0);
-    }
-
-    #filters-modal select,
-    #filters-modal input {
-        background: var(--card);
-        color: var(--text);
-        border: 1px solid rgba(255,255,255,.08);
-    }
-
-    #filters-modal select:focus,
-    #filters-modal input:focus {
-        outline: none;
-        border-color: var(--brand);
-        box-shadow: 0 0 0 2px rgba(124,102,255,.2);
-    }
-
-    /* Стили для toast-уведомлений */
-    .toast {
-        animation: slideIn 0.3s ease forwards;
-        background: var(--bg-soft);
-        color: var(--text);
-        border: 1px solid rgba(255,255,255,.08);
-    }
-    @keyframes slideIn {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-    }
-
-    .hot-property-card {
-        border: 2px solid #ff4d4d;
-        transition: all 0.3s ease;
-    }
-
-    .hot-property-card:hover {
-        box-shadow: 0 10px 20px rgba(255, 77, 77, 0.2);
-    }
-
-  /* Обновленные стили для кнопок */
+    /* Стили для кнопок */
     .btn {
         cursor: pointer;
         border: none;
@@ -502,188 +491,16 @@
         box-shadow: var(--shadow-1);
     }
 
-    /* Стили для текстовых ссылок "Смотреть все →" */
-    .link strong {
-        font-weight: 700;
-        color: var(--text);
-        transition: color 0.25s ease;
+    /* Стили для кастомного футера home.html */
+    .home-page footer {
+        background: linear-gradient(135deg, rgba(124, 102, 255, 0.1), rgba(48, 208, 255, 0.05));
+        backdrop-filter: blur(10px);
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        margin-top: auto;
+        padding: 10px 0;
+        color: var(--muted);
+        width: 100%;
     }
-
-    .link:hover strong {
-        color: var(--brand);
-    }
-  /* Добавьте в секцию стилей */
-.thumb-overlay {
-    position: absolute;
-    bottom: 12px;
-    right: 12px;
-    background: rgba(0,0,0,.6);
-    padding: 8px 12px;
-    border-radius: 999px;
-    font-size: 14px;
-    color: white;
-}
-
-.media-card .thumb {
-    position: relative;
-    aspect-ratio: 16/9;
-    overflow: hidden;
-}
-
-.media-card .thumb img {
-    transition: transform 0.3s ease;
-}
-
-.media-card:hover .thumb img {
-    transform: scale(1.05);
-}
-.media-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    display: block;
-    text-decoration: none;
-    color: inherit;
-}
-
-.media-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--glow);
-}
-
-.link {
-    text-decoration: none;
-    color: inherit;
-    display: block;
-}
-/* Отступ для медиа-панели */
-#panel-media {
-    margin-top: 20px;
-}
-
-/* Или более конкретно для внутренних элементов медиа */
-.media-tabs {
-    margin-top: 20px;
-}
-
-.media-grid {
-    margin-top: 16px;
-}
-
-/* Стили для кастомного футера home.html */
-.home-page footer {
-    background: linear-gradient(135deg, rgba(124, 102, 255, 0.1), rgba(48, 208, 255, 0.05));
-    backdrop-filter: blur(10px);
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    margin-top: auto;
-    padding: 10px 0;
-    color: var(--muted);
-    width: 100%;
-}
-
-.home-page footer .mx-auto {
-    margin-left: auto;
-    margin-right: auto;
-}
-
-/* Новые стили для разделенного блока */
-.split-section {
-    margin-top: 40px;
-}
-
-.split-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--grid-gap);
-    align-items: start;
-}
-
-.split-section h2 {
-    grid-column: 1 / -1;
-    font-size: 24px;
-    font-weight: 800;
-    margin-bottom: 20px;
-    color: var(--text);
-}
-
-.hot-properties-side, .media-side {
-    background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
-    border: 1px solid rgba(255,255,255,.08);
-    border-radius: var(--radius);
-    padding: 20px;
-    box-shadow: var(--shadow-1);
-}
-
-.section-header {
-    display: flex;
-    justify-content: between;
-    align-items: center;
-    margin-bottom: 16px;
-}
-
-.section-header h3 {
-    font-size: 18px;
-    font-weight: 700;
-    margin: 0;
-    color: var(--text);
-}
-
-.slider-controls {
-    display: flex;
-    gap: 8px;
-}
-
-.slider-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: var(--card);
-    border: 1px solid rgba(255,255,255,.08);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.25s ease;
-}
-
-.slider-btn:hover {
-    background: linear-gradient(135deg, var(--brand), var(--brand-2));
-    transform: translateY(-1px);
-}
-
-.slider-container {
-    position: relative;
-    overflow: hidden;
-}
-
-.slider-track {
-    display: flex;
-    transition: transform 0.3s ease;
-}
-
-.slider-slide {
-    min-width: 100%;
-    flex-shrink: 0;
-}
-
-.media-slider .slider-slide {
-    padding: 0 4px;
-}
-
-.hot-properties-side .listing-card,
-.media-side .media-card {
-    margin-bottom: 16px;
-}
-
-.hot-properties-side .listing-card:last-child,
-.media-side .media-card:last-child {
-    margin-bottom: 0;
-}
-
-@media (max-width: 980px) {
-    .split-container {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-}
 </style>
 
 <!-- Hero -->
@@ -718,6 +535,7 @@
             </div>
         </form>
 
+        <!-- Большие карточки быстрого доступа -->
         <div class="quick">
             <!-- Брокеры -->
             <a href="{% if user.is_authenticated %}{% url 'broker-list' %}{% else %}{% url 'register' %}?next={% url 'broker-list' %}{% endif %}" class="card link">
@@ -743,243 +561,12 @@
                 <p>Свежие и редкие офферы</p>
             </a>
         </div>
-
-        <!-- Top tabs -->
-        <div class="tabs">
-            <input type="radio" name="tabs" id="tab-brokers" checked>
-            <label for="tab-brokers">Брокеры</label>
-
-            <input type="radio" name="tabs" id="tab-objects">
-            <label for="tab-objects">Объекты</label>
-
-            <input type="radio" name="tabs" id="tab-developers">
-            <label for="tab-developers">Застройщики</label>
-
-            <input type="radio" name="tabs" id="tab-media">
-            <label for="tab-media">Медиа</label>
-
-            <div class="tab-body">
-                <!-- Brokers Panel -->
-                <div class="panel" id="panel-brokers">
-                    <div class="grid">
-                        <div class="col-6">
-                            <div class="card-spot">
-                                <div class="media"></div>
-                                <div class="content">
-                                    <div>
-                                        <div class="pill">Проверенные эксперты</div>
-                                        <h3 style="margin:8px 0 6px">Лучшие брокеры города</h3>
-                                        <div class="muted">Рейтинг, отзывы, портфолио</div>
-                                    </div>
-                                    <a href="{% if user.is_authenticated %}{% url 'broker-list' %}{% else %}{% url 'register' %}?next={% url 'broker-list' %}{% endif %}" class="btn btn-primary">Смотреть</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="grid">
-                                {% for broker in featured_brokers|slice:":2" %}
-                                <div class="col-6">
-                                    <div class="listing-card">
-                                        <div class="thumb">BROKER</div>
-                                        <div class="body">
-                                            <div style="display:flex; align-items:center; gap:10px;">
-                                                <strong>{{ broker.user.get_full_name|default:broker.user.username }}</strong>
-                                                <span class="pill">TOP 1%</span>
-                                            </div>
-                                            <div class="meta"><span>Опыт {{ broker.experience_years }} лет</span><span>{{ broker.completed_deals }}+ сделок</span></div>
-                                            <div class="card-actions">
-                                                <a href="{% if user.is_authenticated %}{% url 'broker-detail' broker.id %}{% else %}{% url 'register' %}?next={% url 'broker-detail' broker.id %}{% endif %}" class="btn btn-ghost">Профиль</a>
-                                                <a href="{% if user.is_authenticated %}{% url 'broker-detail' broker.id %}#contact{% else %}{% url 'register' %}?next={% url 'broker-detail' broker.id %}#contact{% endif %}" class="btn btn-primary">Связаться</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-              <!-- Objects Panel -->
-<div class="panel" id="panel-objects">
-    <div class="grid">
-        <div class="col-12">
-            <div class="card-spot">
-                <div class="media"></div>
-                <div class="content">
-                    <div>
-                        <div class="pill hot">🔥 Горячие предложения</div>
-                        <h3 style="margin:8px 0 6px">Подборка недели</h3>
-                        <div class="muted">Квартиры, дома, коммерция — проверенные объекты</div>
-                    </div>
-                    <a href="{% if user.is_authenticated %}{% url 'properties:property-list' %}{% else %}{% url 'register' %}?next={% url 'properties:property-list' %}{% endif %}" class="btn btn-primary">Смотреть все</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="grid" style="margin-top: var(--grid-gap);">
-        {% for property in featured_properties %}
-        <div class="col-4">
-            <div class="listing-card {% if property.is_hot %}hot-property-card{% endif %}">
-                {% if property.is_hot %}
-                <div class="hot-property-badge">🔥 Горячее</div>
-                {% endif %}
-                <div class="thumb">
-                    {% if property.images.first %}
-                        <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}">
-                    {% else %}
-                        <div>NO IMAGE</div>
-                    {% endif %}
-                </div>
-                <div class="body">
-                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
-                        <strong>{{ property.title }}</strong>
-                        <span class="price">{{ property.price }} ₽</span>
-                    </div>
-                    <div class="meta">
-                        <span>{{ property.get_property_type_display }}</span>
-                        <span>{{ property.area }} м²</span>
-                        <span>{{ property.get_rooms_display }}</span>
-                    </div>
-                    <div class="card-actions">
-                        <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}{% endif %}" class="btn btn-ghost">Подробнее</a>
-                        <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}#contact{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}#contact{% endif %}" class="btn btn-primary">Связаться</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-</div>
-
-                <!-- Developers Panel -->
-                <div class="panel" id="panel-developers">
-                    <div class="grid">
-                        <div class="col-6">
-                            <div class="card-spot">
-                                <div class="media"></div>
-                                <div class="content">
-                                    <div>
-                                        <div class="pill">Новостройки</div>
-                                        <h3 style="margin:8px 0 6px">Прямые предложения от застройщиков</h3>
-                                        <div class="muted">Без комиссий и переплат</div>
-                                    </div>
-                                    <a href="{% if user.is_authenticated %}{% url 'developer-list' %}{% else %}{% url 'register' %}?next={% url 'developer-list' %}{% endif %}" class="btn btn-primary">Смотреть</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="grid">
-                                {% for developer in featured_developers|slice:":2" %}
-                                <div class="col-6">
-                                    <div class="listing-card">
-                                        <div class="thumb">DEV</div>
-                                        <div class="body">
-                                            <strong>{{ developer.name }}</strong>
-                                            <div class="meta"><span>{{ developer.completed_projects }}+ объектов</span></div>
-                                            <div class="card-actions">
-                                                <a href="{% if user.is_authenticated %}{% url 'developer-detail' developer.id %}{% else %}{% url 'register' %}?next={% url 'developer-detail' developer.id %}{% endif %}" class="btn btn-ghost">Профиль</a>
-                                                <a href="{% if user.is_authenticated %}{% url 'developer-detail' developer.id %}#contact{% else %}{% url 'register' %}?next={% url 'developer-detail' developer.id %}#contact{% endif %}" class="btn btn-primary">Связаться</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Media Panel -->
-                <div class="panel" id="panel-media">
-                    <div class="media-tabs">
-                        <input type="radio" name="media-tabs" id="mtab-1" checked>
-                        <label for="mtab-1">Новости</label>
-
-                        <input type="radio" name="media-tabs" id="mtab-2">
-                        <label for="mtab-2">Аналитика</label>
-
-                        <input type="radio" name="media-tabs" id="mtab-3">
-                        <label for="mtab-3">Советы</label>
-
-                        <div class="media-grid">
-                            <!-- News -->
-                            <div class="grid" id="mgrid-1">
-                                {% for item in media_content|slice:":4" %}
-                                <div class="col-3">
-                                    <a href="{% if user.is_authenticated %}{% url 'media_content:detail' item.id %}{% else %}{% url 'register' %}?next={% url 'media_content:detail' item.id %}{% endif %}" class="media-card link">
-                                        <div class="thumb">
-                                            {% if item.thumbnail %}
-                                                <img src="{{ item.thumbnail.url }}" alt="{{ item.title }}">
-                                            {% else %}
-                                                <div>NO IMAGE</div>
-                                            {% endif %}
-                                            <div class="thumb-overlay">{{ item.get_media_type_display }}</div>
-                                        </div>
-                                        <div class="body">
-                                            <strong>{{ item.title }}</strong>
-                                            <div class="meta">{{ item.created_at|date:"d.m.Y" }}</div>
-                                        </div>
-                                    </a>
-                                </div>
-                                {% endfor %}
-                            </div>
-
-                            <!-- Analytics -->
-                            <div class="grid" id="mgrid-2">
-                                {% for item in media_content|slice:"4:8" %}
-                                <div class="col-3">
-                                    <a href="{% if user.is_authenticated %}{% url 'media_content:detail' item.id %}{% else %}{% url 'register' %}?next={% url 'media_content:detail' item.id %}{% endif %}" class="media-card link">
-                                        <div class="thumb">
-                                            {% if item.thumbnail %}
-                                                <img src="{{ item.thumbnail.url }}" alt="{{ item.title }}">
-                                            {% else %}
-                                                <div>NO IMAGE</div>
-                                            {% endif %}
-                                            <div class="thumb-overlay">{{ item.get_media_type_display }}</div>
-                                        </div>
-                                        <div class="body">
-                                            <strong>{{ item.title }}</strong>
-                                            <div class="meta">{{ item.created_at|date:"d.m.Y" }}</div>
-                                        </div>
-                                    </a>
-                                </div>
-                                {% endfor %}
-                            </div>
-
-                            <!-- Tips -->
-                            <div class="grid" id="mgrid-3">
-                                {% for item in media_content|slice:"8:12" %}
-                                <div class="col-3">
-                                    <a href="{% if user.is_authenticated %}{% url 'media_content:detail' item.id %}{% else %}{% url 'register' %}?next={% url 'media_content:detail' item.id %}{% endif %}" class="media-card link">
-                                        <div class="thumb">
-                                            {% if item.thumbnail %}
-                                                <img src="{{ item.thumbnail.url }}" alt="{{ item.title }}">
-                                            {% else %}
-                                                <div>NO IMAGE</div>
-                                            {% endif %}
-                                            <div class="thumb-overlay">{{ item.get_media_type_display }}</div>
-                                        </div>
-                                        <div class="body">
-                                            <strong>{{ item.title }}</strong>
-                                            <div class="meta">{{ item.created_at|date:"d.m.Y" }}</div>
-                                        </div>
-                                    </a>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </section>
 
 <!-- Новый разделенный блок -->
 <section class="split-section">
-    <h2>Горячие предложения и медиа</h2>
+    <h2>Популярные предложения и медиа</h2>
     <div class="split-container">
         <!-- Левая часть - Горячие предложения -->
         <div class="hot-properties-side">
@@ -998,28 +585,28 @@
                 <div class="slider-track" id="hot-properties-track">
                     {% for property in hot_properties %}
                     <div class="slider-slide">
-                        <div class="listing-card hot-property-card">
+                        <div class="listing-card">
+                            {% if property.is_hot %}
                             <div class="hot-property-badge">🔥 Горячее</div>
+                            {% endif %}
                             <div class="thumb">
-                                {% if property.images.first %}
+                                {% if property.images.all %}
                                     <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}">
                                 {% else %}
-                                    <div>NO IMAGE</div>
+                                    <div>
+                                        {{ property.location }}
+                                    </div>
                                 {% endif %}
                             </div>
                             <div class="body">
-                                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
-                                    <strong>{{ property.title }}</strong>
-                                    <span class="price">{{ property.price }} ₽</span>
-                                </div>
+                                <strong>{{ property.title }}</strong>
                                 <div class="meta">
-                                    <span>{{ property.get_property_type_display }}</span>
-                                    <span>{{ property.area }} м²</span>
-                                    <span>{{ property.get_rooms_display }}</span>
+                                    <span>{{ property.rooms }} комн.</span>
+                                    <span>{{ property.total_area|floatformat:"0" }} м²</span>
+                                    <span class="price">{{ property.price|floatformat:"0" }} ₽</span>
                                 </div>
                                 <div class="card-actions">
-                                    <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}{% endif %}" class="btn btn-ghost">Подробнее</a>
-                                    <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}#contact{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}#contact{% endif %}" class="btn btn-primary">Связаться</a>
+                                    <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}{% endif %}" class="btn btn-primary">Подробнее</a>
                                 </div>
                             </div>
                         </div>
@@ -1043,22 +630,41 @@
                 </div>
             </div>
             <div class="slider-container">
-                <div class="slider-track media-slider" id="media-track">
-                    {% for item in media_content|slice:":6" %}
+                <div class="slider-track" id="media-track">
+                    {% for media in featured_media %}
                     <div class="slider-slide">
-                        <a href="{% if user.is_authenticated %}{% url 'media_content:detail' item.id %}{% else %}{% url 'register' %}?next={% url 'media_content:detail' item.id %}{% endif %}" class="media-card link">
-                            <div class="thumb">
-                                {% if item.thumbnail %}
-                                    <img src="{{ item.thumbnail.url }}" alt="{{ item.title }}">
-                                {% else %}
-                                    <div>NO IMAGE</div>
-                                {% endif %}
-                                <div class="thumb-overlay">{{ item.get_media_type_display }}</div>
-                            </div>
-                            <div class="body">
-                                <strong>{{ item.title }}</strong>
-                                <div class="meta">{{ item.created_at|date:"d.m.Y" }}</div>
-                            </div>
+                        <a href="{% url 'media_content:detail' media.id %}" class="link">
+                            <article class="media-card">
+                                <div class="thumb">
+                                    {% if media.thumbnail_url %}
+                                        <img src="{{ media.thumbnail_url }}" alt="{{ media.title }}">
+                                    {% elif media.media_type == 'video' %}
+                                        <div style="background: linear-gradient(135deg, #7c66ff, #30d0ff);">
+                                            📹 Видео
+                                        </div>
+                                    {% elif media.media_type == 'photo' %}
+                                        <div style="background: linear-gradient(135deg, #ff6a3d, #ffba3b);">
+                                            📷 Фото
+                                        </div>
+                                    {% else %}
+                                        <div style="background: linear-gradient(135deg, #51d67b, #30d0ff);">
+                                            📊 Аналитика
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="body">
+                                    <strong>{{ media.title }}</strong>
+                                    <div class="meta">
+                                        {% if media.media_type == 'video' %}
+                                            <span>{{ media.duration|default:"" }}</span>
+                                        {% elif media.media_type == 'photo' %}
+                                            <span>{{ media.photo_count|default:"1" }} фото</span>
+                                        {% else %}
+                                            <span>{{ media.read_time|default:"5 мин" }} чтения</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </article>
                         </a>
                     </div>
                     {% endfor %}
@@ -1069,61 +675,67 @@
 </section>
 
 <script>
-// Слайдер для горячих предложений
-const hotTrack = document.getElementById('hot-properties-track');
-const hotSlides = document.querySelectorAll('#hot-properties-track .slider-slide');
-const hotPrevBtn = document.querySelector('.prev-hot');
-const hotNextBtn = document.querySelector('.next-hot');
+document.addEventListener('DOMContentLoaded', function() {
+    // Слайдер для горячих предложений
+    const hotTrack = document.getElementById('hot-properties-track');
+    const hotSlides = document.querySelectorAll('#hot-properties-track .slider-slide');
+    const hotPrevBtn = document.querySelector('.prev-hot');
+    const hotNextBtn = document.querySelector('.next-hot');
 
-let hotCurrentSlide = 0;
-const hotSlideCount = hotSlides.length;
+    let hotCurrentSlide = 0;
+    const hotSlideCount = hotSlides.length;
 
-function updateHotSlider() {
-    hotTrack.style.transform = `translateX(-${hotCurrentSlide * 100}%)`;
-}
+    function updateHotSlider() {
+        hotTrack.style.transform = `translateX(-${hotCurrentSlide * 100}%)`;
+    }
 
-hotPrevBtn.addEventListener('click', () => {
-    hotCurrentSlide = (hotCurrentSlide - 1 + hotSlideCount) % hotSlideCount;
-    updateHotSlider();
+    hotPrevBtn.addEventListener('click', () => {
+        hotCurrentSlide = (hotCurrentSlide - 1 + hotSlideCount) % hotSlideCount;
+        updateHotSlider();
+    });
+
+    hotNextBtn.addEventListener('click', () => {
+        hotCurrentSlide = (hotCurrentSlide + 1) % hotSlideCount;
+        updateHotSlider();
+    });
+
+    // Слайдер для медиа
+    const mediaTrack = document.getElementById('media-track');
+    const mediaSlides = document.querySelectorAll('#media-track .slider-slide');
+    const mediaPrevBtn = document.querySelector('.prev-media');
+    const mediaNextBtn = document.querySelector('.next-media');
+
+    let mediaCurrentSlide = 0;
+    const mediaSlideCount = mediaSlides.length;
+
+    function updateMediaSlider() {
+        mediaTrack.style.transform = `translateX(-${mediaCurrentSlide * 100}%)`;
+    }
+
+    mediaPrevBtn.addEventListener('click', () => {
+        mediaCurrentSlide = (mediaCurrentSlide - 1 + mediaSlideCount) % mediaSlideCount;
+        updateMediaSlider();
+    });
+
+    mediaNextBtn.addEventListener('click', () => {
+        mediaCurrentSlide = (mediaCurrentSlide + 1) % mediaSlideCount;
+        updateMediaSlider();
+    });
+
+    // Автопереключение слайдеров
+    setInterval(() => {
+        if (hotSlideCount > 1) {
+            hotCurrentSlide = (hotCurrentSlide + 1) % hotSlideCount;
+            updateHotSlider();
+        }
+    }, 5000);
+
+    setInterval(() => {
+        if (mediaSlideCount > 1) {
+            mediaCurrentSlide = (mediaCurrentSlide + 1) % mediaSlideCount;
+            updateMediaSlider();
+        }
+    }, 6000);
 });
-
-hotNextBtn.addEventListener('click', () => {
-    hotCurrentSlide = (hotCurrentSlide + 1) % hotSlideCount;
-    updateHotSlider();
-});
-
-// Слайдер для медиа
-const mediaTrack = document.getElementById('media-track');
-const mediaSlides = document.querySelectorAll('#media-track .slider-slide');
-const mediaPrevBtn = document.querySelector('.prev-media');
-const mediaNextBtn = document.querySelector('.next-media');
-
-let mediaCurrentSlide = 0;
-const mediaSlideCount = mediaSlides.length;
-
-function updateMediaSlider() {
-    mediaTrack.style.transform = `translateX(-${mediaCurrentSlide * 100}%)`;
-}
-
-mediaPrevBtn.addEventListener('click', () => {
-    mediaCurrentSlide = (mediaCurrentSlide - 1 + mediaSlideCount) % mediaSlideCount;
-    updateMediaSlider();
-});
-
-mediaNextBtn.addEventListener('click', () => {
-    mediaCurrentSlide = (mediaCurrentSlide + 1) % mediaSlideCount;
-    updateMediaSlider();
-});
-
-// Автопереключение слайдеров (опционально)
-setInterval(() => {
-    hotCurrentSlide = (hotCurrentSlide + 1) % hotSlideCount;
-    updateHotSlider();
-}, 5000);
-
-setInterval(() => {
-    mediaCurrentSlide = (mediaCurrentSlide + 1) % mediaSlideCount;
-    updateMediaSlider();
-}, 6000);
 </script>
 {% endblock %}
