@@ -337,6 +337,42 @@
         font-size: 13px;
     }
 }
+        /* Уменьшение размера текста в футере на мобильных */
+@media (max-width: 640px) {
+    footer .container {
+        padding: 0 0.5rem;
+    }
+
+    footer .text-base {
+        font-size: 14px;
+    }
+
+    /* Уменьшаем контактную информацию */
+    footer .text-\[#b3b9c6\] {
+        font-size: 13px;
+    }
+
+    /* Уменьшаем заголовки в футере */
+    footer h3 {
+        font-size: 20px;
+    }
+
+    footer h4 {
+        font-size: 14px;
+    }
+
+    /* Уменьшаем отступы в футере */
+    footer .py-4 {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    /* Уменьшаем сетку контактов */
+    footer .grid-cols-2 {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
     </style>
     {% block extra_css %}{% endblock %}
 </head>
