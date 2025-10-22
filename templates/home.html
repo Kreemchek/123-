@@ -265,11 +265,11 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 16px;
+        margin-bottom: 20px;
     }
 
     .section-header h3 {
-        font-size: 18px;
+        font-size: 20px;
         font-weight: 700;
         margin: 0;
         color: var(--text);
@@ -281,8 +281,8 @@
     }
 
     .slider-btn {
-        width: 32px;
-        height: 32px;
+        width: 36px;
+        height: 36px;
         border-radius: 50%;
         background: var(--card);
         border: 1px solid rgba(255,255,255,.08);
@@ -292,7 +292,6 @@
         cursor: pointer;
         transition: all 0.25s ease;
         color: var(--text);
-        font-size: 12px;
     }
 
     .slider-btn:hover {
@@ -315,34 +314,37 @@
     .slider-slide {
         min-width: 100%;
         flex-shrink: 0;
-        padding: 0 4px;
+        padding: 0 8px;
     }
 
-    /* Уменьшенные стили для карточек объектов */
-    .listing-card-compact {
+    /* Стили карточек как в оригинальном файле - уменьшенные по ширине, увеличенные по высоте */
+    .listing-card-original {
         position: relative;
-        border-radius: 16px;
+        border-radius: 18px;
         border: 1px solid rgba(255,255,255,.08);
         overflow: hidden;
         background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
         box-shadow: var(--shadow-1);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
-        height: 100%;
+        height: 340px; /* Увеличиваем высоту */
+        display: flex;
+        flex-direction: column;
     }
 
-    .listing-card-compact:hover {
-        transform: translateY(-2px);
+    .listing-card-original:hover {
+        transform: translateY(-4px);
         box-shadow: var(--glow);
     }
 
-    .listing-card-compact .thumb {
-        aspect-ratio: 1/1; /* Квадратное фото */
+    .listing-card-original .thumb {
+        aspect-ratio: 16/10; /* Сохраняем пропорции как в оригинале */
         position: relative;
         overflow: hidden;
         width: 100%;
+        flex-shrink: 0;
     }
 
-    .listing-card-compact .thumb img {
+    .listing-card-original .thumb img {
         width: 100%;
         height: 100%;
         object-fit: cover;
@@ -350,11 +352,11 @@
         transition: transform 0.3s ease;
     }
 
-    .listing-card-compact:hover .thumb img {
+    .listing-card-original:hover .thumb img {
         transform: scale(1.05);
     }
 
-    .listing-card-compact .thumb > div {
+    .listing-card-original .thumb > div {
         width: 100%;
         height: 100%;
         display: flex;
@@ -363,79 +365,83 @@
         color: white;
         font-weight: 800;
         background: linear-gradient(135deg, rgba(124,102,255,.35), rgba(48,208,255,.25));
-        font-size: 14px;
-        text-align: center;
-        padding: 10px;
+        font-size: 16px;
     }
 
-    /* Бейдж "Горячее" - уменьшенный */
-    .hot-property-badge-compact {
+    /* Бейдж "Горячее" как в оригинале */
+    .hot-property-badge-original {
         position: absolute;
-        top: 8px;
-        right: 8px;
+        top: 12px;
+        right: 12px;
         background: linear-gradient(45deg, #ff4d4d, #f95700);
         color: white;
-        padding: 4px 8px;
-        border-radius: 12px;
+        padding: 6px 12px;
+        border-radius: 20px;
         font-weight: bold;
-        font-size: 10px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        font-size: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         z-index: 2;
     }
 
-    .listing-card-compact .body {
-        padding: 12px;
+    .listing-card-original .body {
+        padding: 16px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
     }
 
-    .listing-card-compact .body strong {
-        font-size: 14px;
+    .listing-card-original .body strong {
+        font-size: 16px;
         line-height: 1.3;
         display: block;
-        margin-bottom: 6px;
+        margin-bottom: 8px;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
+        flex-shrink: 0;
     }
 
-    .meta-compact {
+    .meta-original {
         display: flex;
         flex-wrap: wrap;
-        gap: 6px;
+        gap: 8px;
         color: var(--muted);
-        font-size: 11px;
-        margin-bottom: 8px;
+        font-size: 13px;
+        margin-bottom: 12px;
+        flex-shrink: 0;
     }
 
-    .price-compact {
+    .price-original {
         font-weight: 800;
-        font-size: 14px;
+        font-size: 18px;
         margin-left: auto;
         color: var(--text);
     }
 
-    .card-actions-compact {
+    .card-actions-original {
         display: flex;
-        gap: 6px;
-        margin-top: 8px;
+        gap: 8px;
+        margin-top: auto;
+        flex-shrink: 0;
     }
 
-    /* Уменьшенные кнопки */
-    .btn-compact {
+    /* Кнопки как в оригинале */
+    .btn-original {
         cursor: pointer;
         border: none;
-        padding: 8px 12px;
-        border-radius: 10px;
+        padding: 10px 16px;
+        border-radius: 12px;
         font-weight: 700;
         transition: .25s ease;
         text-decoration: none;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 12px;
+        font-size: 14px;
     }
 
-    .btn-primary-compact {
+    .btn-primary-original {
         background: linear-gradient(135deg, var(--brand), var(--brand-2));
         color: #fff;
         box-shadow: var(--glow);
@@ -443,14 +449,14 @@
         flex: 1;
     }
 
-    .btn-primary-compact:hover {
+    .btn-primary-original:hover {
         transform: translateY(-1px);
-        box-shadow: 0 0 0 1px rgba(124,102,255,.3), 0 0 60px rgba(92,76,255,.35);
+        box-shadow: 0 0 0 1px rgba(124,102,255,.3), 0 0 80px rgba(92,76,255,.3);
     }
 
-    /* Media Section - квадратные фото */
-    .media-card-compact {
-        border-radius: 14px;
+    /* Медиа карточки такого же размера */
+    .media-card-original {
+        border-radius: 18px;
         overflow: hidden;
         border: 1px solid rgba(255,255,255,.08);
         background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
@@ -459,22 +465,25 @@
         display: block;
         text-decoration: none;
         color: inherit;
-        height: 100%;
+        height: 340px; /* Такая же высота как у объектов */
+        display: flex;
+        flex-direction: column;
     }
 
-    .media-card-compact:hover {
-        transform: translateY(-2px);
+    .media-card-original:hover {
+        transform: translateY(-4px);
         box-shadow: var(--glow);
     }
 
-    .media-card-compact .thumb {
-        aspect-ratio: 1/1; /* Квадратное фото */
+    .media-card-original .thumb {
+        aspect-ratio: 16/10; /* Такие же пропорции как у объектов */
         position: relative;
         overflow: hidden;
         width: 100%;
+        flex-shrink: 0;
     }
 
-    .media-card-compact .thumb img {
+    .media-card-original .thumb img {
         width: 100%;
         height: 100%;
         object-fit: cover;
@@ -482,38 +491,44 @@
         transition: transform 0.3s ease;
     }
 
-    .media-card-compact:hover .thumb img {
+    .media-card-original:hover .thumb img {
         transform: scale(1.05);
     }
 
-    .media-card-compact .body {
-        padding: 12px;
+    .media-card-original .body {
+        padding: 16px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
     }
 
-    .media-card-compact .body strong {
-        font-size: 14px;
+    .media-card-original .body strong {
+        font-size: 16px;
         line-height: 1.3;
         display: block;
-        margin-bottom: 4px;
+        margin-bottom: 8px;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
+        flex-shrink: 0;
     }
 
-    .media-meta-compact {
+    .media-meta-original {
         color: var(--muted);
-        font-size: 11px;
+        font-size: 13px;
+        margin-top: auto;
+        flex-shrink: 0;
     }
 
-    .thumb-overlay-compact {
+    .thumb-overlay-original {
         position: absolute;
-        bottom: 8px;
-        right: 8px;
+        bottom: 12px;
+        right: 12px;
         background: rgba(0,0,0,.6);
-        padding: 4px 8px;
-        border-radius: 12px;
-        font-size: 10px;
+        padding: 6px 10px;
+        border-radius: 16px;
+        font-size: 12px;
         color: white;
     }
 
@@ -521,7 +536,7 @@
     @media (max-width: 980px) {
         .split-container {
             grid-template-columns: 1fr;
-            gap: 20px;
+            gap: 24px;
         }
 
         .hot-properties-side, .media-side {
@@ -529,12 +544,17 @@
         }
 
         .section-header h3 {
-            font-size: 16px;
+            font-size: 18px;
         }
 
         .slider-btn {
-            width: 28px;
-            height: 28px;
+            width: 32px;
+            height: 32px;
+        }
+
+        .listing-card-original,
+        .media-card-original {
+            height: 320px;
         }
     }
 
@@ -548,21 +568,27 @@
             margin-bottom: 20px;
         }
 
-        .listing-card-compact .body strong {
+        .listing-card-original .body strong,
+        .media-card-original .body strong {
+            font-size: 15px;
+        }
+
+        .meta-original {
+            font-size: 12px;
+        }
+
+        .price-original {
+            font-size: 16px;
+        }
+
+        .btn-original {
+            padding: 8px 14px;
             font-size: 13px;
         }
 
-        .meta-compact {
-            font-size: 10px;
-        }
-
-        .price-compact {
-            font-size: 13px;
-        }
-
-        .btn-compact {
-            padding: 6px 10px;
-            font-size: 11px;
+        .listing-card-original,
+        .media-card-original {
+            height: 300px;
         }
     }
 
@@ -572,11 +598,16 @@
         }
 
         .section-header {
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
 
         .slider-slide {
-            padding: 0 2px;
+            padding: 0 4px;
+        }
+
+        .listing-card-original,
+        .media-card-original {
+            height: 280px;
         }
     }
 
@@ -678,9 +709,9 @@
                 <div class="slider-track" id="hot-properties-track">
                     {% for property in hot_properties %}
                     <div class="slider-slide">
-                        <div class="listing-card-compact">
+                        <div class="listing-card-original">
                             {% if property.is_hot %}
-                            <div class="hot-property-badge-compact">🔥 Горячее</div>
+                            <div class="hot-property-badge-original">🔥 Горячее</div>
                             {% endif %}
                             <div class="thumb">
                                 {% if property.images.all %}
@@ -693,13 +724,13 @@
                             </div>
                             <div class="body">
                                 <strong>{{ property.title }}</strong>
-                                <div class="meta-compact">
+                                <div class="meta-original">
                                     <span>{{ property.rooms }} комн.</span>
                                     <span>{{ property.total_area|floatformat:"0" }} м²</span>
-                                    <span class="price-compact">{{ property.price|floatformat:"0" }} ₽</span>
+                                    <span class="price-original">{{ property.price|floatformat:"0" }} ₽</span>
                                 </div>
-                                <div class="card-actions-compact">
-                                    <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}{% endif %}" class="btn-compact btn-primary-compact">Подробнее</a>
+                                <div class="card-actions-original">
+                                    <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}{% endif %}" class="btn-original btn-primary-original">Подробнее</a>
                                 </div>
                             </div>
                         </div>
@@ -727,29 +758,29 @@
                     {% for media in featured_media %}
                     <div class="slider-slide">
                         <a href="{% url 'media_content:detail' media.id %}" class="link">
-                            <article class="media-card-compact">
+                            <article class="media-card-original">
                                 <div class="thumb">
                                     {% if media.thumbnail_url %}
                                         <img src="{{ media.thumbnail_url }}" alt="{{ media.title }}">
                                     {% elif media.media_type == 'video' %}
-                                        <div style="background: linear-gradient(135deg, #7c66ff, #30d0ff); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;">
+                                        <div style="background: linear-gradient(135deg, #7c66ff, #30d0ff); display: flex; align-items: center; justify-content: center; color: white; font-size: 16px;">
                                             📹 Видео
                                         </div>
                                     {% elif media.media_type == 'photo' %}
-                                        <div style="background: linear-gradient(135deg, #ff6a3d, #ffba3b); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;">
+                                        <div style="background: linear-gradient(135deg, #ff6a3d, #ffba3b); display: flex; align-items: center; justify-content: center; color: white; font-size: 16px;">
                                             📷 Фото
                                         </div>
                                     {% else %}
-                                        <div style="background: linear-gradient(135deg, #51d67b, #30d0ff); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;">
+                                        <div style="background: linear-gradient(135deg, #51d67b, #30d0ff); display: flex; align-items: center; justify-content: center; color: white; font-size: 16px;">
                                             📊 Аналитика
                                         </div>
                                     {% endif %}
                                 </div>
                                 <div class="body">
                                     <strong>{{ media.title }}</strong>
-                                    <div class="media-meta-compact">
+                                    <div class="media-meta-original">
                                         {% if media.media_type == 'video' %}
-                                            {{ media.duration|default:"Видео" }}
+                                            {{ media.duration|default:"Видеообзор" }}
                                         {% elif media.media_type == 'photo' %}
                                             {{ media.photo_count|default:"1" }} фото
                                         {% else %}
