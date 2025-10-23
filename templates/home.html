@@ -958,108 +958,79 @@
 </div>
 
 <script>
+document.addEventListener('DOMContentLoaded', function() {
     // Слайдер для горячих предложений
-    const hotSliderTrack = document.querySelector('.hot-properties-side .slider-track');
-    const hotSlides = document.querySelectorAll('.hot-properties-side .property-card');
+    const hotTrack = document.getElementById('hot-properties-track');
+    const hotSlides = document.querySelectorAll('#hot-properties-track .slider-slide');
     const hotPrevBtn = document.querySelector('.prev-hot');
     const hotNextBtn = document.querySelector('.next-hot');
 
-    let currentHotSlide = 0;
+    let hotCurrentSlide = 0;
+    const hotSlideCount = hotSlides.length;
 
-    if (hotSlides.length > 0) {
-        // Для мобильных устройств показываем слайдер
-        if (window.innerWidth <= 768) {
-            hotSlides.forEach(slide => {
-                slide.style.minWidth = '100%';
-                slide.style.flexShrink = '0';
-            });
-
-            hotSliderTrack.style.display = 'flex';
-            hotSliderTrack.style.transition = 'transform 0.3s ease';
-
-            function updateHotSlider() {
-                hotSliderTrack.style.transform = `translateX(-${currentHotSlide * 100}%)`;
-            }
-
-            hotNextBtn.addEventListener('click', () => {
-                if (currentHotSlide < hotSlides.length - 1) {
-                    currentHotSlide++;
-                    updateHotSlider();
-                }
-            });
-
-            hotPrevBtn.addEventListener('click', () => {
-                if (currentHotSlide > 0) {
-                    currentHotSlide--;
-                    updateHotSlider();
-                }
-            });
-        } else {
-            // На десктопе скрываем элементы управления слайдером
-            hotPrevBtn.style.display = 'none';
-            hotNextBtn.style.display = 'none';
+    function updateHotSlider() {
+        if (hotTrack) {
+            hotTrack.style.transform = `translateX(-${hotCurrentSlide * 100}%)`;
         }
+    }
+
+    if (hotPrevBtn) {
+        hotPrevBtn.addEventListener('click', () => {
+            hotCurrentSlide = (hotCurrentSlide - 1 + hotSlideCount) % hotSlideCount;
+            updateHotSlider();
+        });
+    }
+
+    if (hotNextBtn) {
+        hotNextBtn.addEventListener('click', () => {
+            hotCurrentSlide = (hotCurrentSlide + 1) % hotSlideCount;
+            updateHotSlider();
+        });
     }
 
     // Слайдер для медиа
-    const mediaSliderTrack = document.getElementById('media-slider');
-    const mediaSlides = document.querySelectorAll('#media-slider .slider-slide');
+    const mediaTrack = document.getElementById('media-track');
+    const mediaSlides = document.querySelectorAll('#media-track .slider-slide');
     const mediaPrevBtn = document.querySelector('.prev-media');
     const mediaNextBtn = document.querySelector('.next-media');
 
-    let currentMediaSlide = 0;
+    let mediaCurrentSlide = 0;
+    const mediaSlideCount = mediaSlides.length;
 
-    if (mediaSlides.length > 0) {
-        mediaSlides.forEach(slide => {
-            slide.style.minWidth = '100%';
-            slide.style.flexShrink = '0';
-        });
-
-        function updateMediaSlider() {
-            mediaSliderTrack.style.transform = `translateX(-${currentMediaSlide * 100}%)`;
+    function updateMediaSlider() {
+        if (mediaTrack) {
+            mediaTrack.style.transform = `translateX(-${mediaCurrentSlide * 100}%)`;
         }
+    }
 
-        mediaNextBtn.addEventListener('click', () => {
-            if (currentMediaSlide < mediaSlides.length - 1) {
-                currentMediaSlide++;
-                updateMediaSlider();
-            }
-        });
-
+    if (mediaPrevBtn) {
         mediaPrevBtn.addEventListener('click', () => {
-            if (currentMediaSlide > 0) {
-                currentMediaSlide--;
-                updateMediaSlider();
-            }
+            mediaCurrentSlide = (mediaCurrentSlide - 1 + mediaSlideCount) % mediaSlideCount;
+            updateMediaSlider();
         });
     }
 
-    // Адаптация при изменении размера окна
-    window.addEventListener('resize', () => {
-        if (window.innerWidth <= 768) {
-            // Включить слайдер для горячих предложений на мобильных
-            if (hotSlides.length > 0) {
-                hotSlides.forEach(slide => {
-                    slide.style.minWidth = '100%';
-                    slide.style.flexShrink = '0';
-                });
-                hotSliderTrack.style.display = 'flex';
-                hotPrevBtn.style.display = 'flex';
-                hotNextBtn.style.display = 'flex';
-            }
-        } else {
-            // Отключить слайдер для горячих предложений на десктопе
-            if (hotSlides.length > 0) {
-                hotSlides.forEach(slide => {
-                    slide.style.minWidth = '';
-                    slide.style.flexShrink = '';
-                });
-                hotSliderTrack.style.display = '';
-                hotSliderTrack.style.transform = '';
-                hotPrevBtn.style.display = 'none';
-                hotNextBtn.style.display = 'none';
-            }
-        }
-    });
+    if (mediaNextBtn) {
+        mediaNextBtn.addEventListener('click', () => {
+            mediaCurrentSlide = (mediaCurrentSlide + 1) % mediaSlideCount;
+            updateMediaSlider();
+        });
+    }
+
+    // Автопереключение слайдеров только если есть больше одного слайда
+    if (hotSlideCount > 1) {
+        setInterval(() => {
+            hotCurrentSlide = (hotCurrentSlide + 1) % hotSlideCount;
+            updateHotSlider();
+        }, 5000);
+    }
+
+    if (mediaSlideCount > 1) {
+        setInterval(() => {
+            mediaCurrentSlide = (mediaCurrentSlide + 1) % mediaSlideCount;
+            updateMediaSlider();
+        }, 6000);
+    }
+});
 </script>
 {% endblock %}
