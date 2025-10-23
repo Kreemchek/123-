@@ -232,16 +232,17 @@
         }
     }
 
-    /* Стили для разделенного блока */
+    /* Стили для разделенного блока - КОМПАКТНЫЕ */
     .split-section {
         margin-top: 60px;
     }
 
     .split-container {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr 1fr; /* Две равные колонки */
         gap: var(--grid-gap);
         align-items: start;
+        min-height: 320px; /* Минимальная высота для баланса */
     }
 
     .split-section h2 {
@@ -253,23 +254,28 @@
         text-align: center;
     }
 
+    /* Компактные контейнеры для обеих половин */
     .hot-properties-side, .media-side {
         background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
         border: 1px solid rgba(255,255,255,.08);
         border-radius: var(--radius);
-        padding: 20px;
+        padding: 16px;
         box-shadow: var(--shadow-1);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
     }
 
     .section-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 16px;
+        margin-bottom: 12px;
+        flex-shrink: 0; /* Запрещаем сжатие */
     }
 
     .section-header h3 {
-        font-size: 18px;
+        font-size: 16px;
         font-weight: 700;
         margin: 0;
         color: var(--text);
@@ -277,12 +283,12 @@
 
     .slider-controls {
         display: flex;
-        gap: 8px;
+        gap: 6px;
     }
 
     .slider-btn {
-        width: 32px;
-        height: 32px;
+        width: 28px;
+        height: 28px;
         border-radius: 50%;
         background: var(--card);
         border: 1px solid rgba(255,255,255,.08);
@@ -292,7 +298,7 @@
         cursor: pointer;
         transition: all 0.25s ease;
         color: var(--text);
-        font-size: 12px;
+        font-size: 10px;
     }
 
     .slider-btn:hover {
@@ -305,7 +311,8 @@
         position: relative;
         overflow: hidden;
         border-radius: var(--radius);
-        height: 240px;
+        height: 220px;
+        flex: 1; /* Занимает оставшееся пространство */
     }
 
     .slider-track {
@@ -321,7 +328,7 @@
         height: 100%;
     }
 
-    /* СУПЕР-КОМПАКТНЫЕ стили карточек для слайдера с УМЕНЬШЕННОЙ ШИРИНОЙ */
+    /* СУПЕР-КОМПАКТНЫЕ стили карточек для слайдера */
     .listing-card-compact {
         border-radius: 10px;
         background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
@@ -334,8 +341,8 @@
         display: flex;
         flex-direction: column;
         max-height: 200px;
-        max-width: 280px; /* Ограничиваем максимальную ширину */
-        margin: 0 auto; /* Центрируем карточку */
+        max-width: 280px;
+        margin: 0 auto;
     }
 
     .listing-card-compact:hover {
@@ -544,8 +551,8 @@
         color: inherit;
         height: 100%;
         max-height: 200px;
-        max-width: 280px; /* Тоже ограничиваем ширину */
-        margin: 0 auto; /* Центрируем */
+        max-width: 280px;
+        margin: 0 auto;
     }
 
     .media-card-compact:hover {
@@ -609,28 +616,29 @@
         .split-container {
             grid-template-columns: 1fr;
             gap: 20px;
+            min-height: auto;
         }
 
         .hot-properties-side, .media-side {
-            padding: 16px;
+            padding: 14px;
         }
 
         .section-header h3 {
-            font-size: 16px;
+            font-size: 15px;
         }
 
         .slider-btn {
-            width: 28px;
-            height: 28px;
+            width: 26px;
+            height: 26px;
         }
 
         .slider-container {
-            height: 220px;
+            height: 200px;
         }
 
         .listing-card-compact,
         .media-card-compact {
-            max-width: 320px; /* На мобильных можно чуть шире */
+            max-width: 300px;
         }
     }
 
@@ -644,9 +652,25 @@
             margin-bottom: 20px;
         }
 
+        .hot-properties-side, .media-side {
+            padding: 12px;
+        }
+
+        .section-header {
+            margin-bottom: 10px;
+        }
+
+        .section-header h3 {
+            font-size: 14px;
+        }
+
+        .slider-container {
+            height: 180px;
+        }
+
         .listing-card-compact {
             max-height: 180px;
-            max-width: 280px;
+            max-width: 260px;
         }
 
         .listing-card-compact .thumb {
@@ -683,13 +707,9 @@
             padding: 3px 6px;
         }
 
-        .slider-container {
-            height: 200px;
-        }
-
         .media-card-compact {
             max-height: 180px;
-            max-width: 280px;
+            max-width: 260px;
         }
 
         .media-card-compact .thumb {
@@ -699,20 +719,28 @@
 
     @media (max-width: 480px) {
         .hot-properties-side, .media-side {
-            padding: 12px;
+            padding: 10px;
         }
 
         .section-header {
-            margin-bottom: 12px;
+            margin-bottom: 8px;
+        }
+
+        .section-header h3 {
+            font-size: 13px;
         }
 
         .slider-slide {
             padding: 0 6px;
         }
 
+        .slider-container {
+            height: 160px;
+        }
+
         .listing-card-compact {
             max-height: 160px;
-            max-width: 240px;
+            max-width: 220px;
         }
 
         .listing-card-compact .thumb {
@@ -731,13 +759,9 @@
             font-size: 9px;
         }
 
-        .slider-container {
-            height: 180px;
-        }
-
         .media-card-compact {
             max-height: 160px;
-            max-width: 240px;
+            max-width: 220px;
         }
 
         .media-card-compact .thumb {
