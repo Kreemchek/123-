@@ -305,7 +305,7 @@
         position: relative;
         overflow: hidden;
         border-radius: var(--radius);
-        height: 240px; /* Уменьшаем высоту контейнера */
+        height: 240px;
     }
 
     .slider-track {
@@ -321,7 +321,7 @@
         height: 100%;
     }
 
-    /* СУПЕР-КОМПАКТНЫЕ стили карточек для слайдера */
+    /* СУПЕР-КОМПАКТНЫЕ стили карточек для слайдера с УМЕНЬШЕННОЙ ШИРИНОЙ */
     .listing-card-compact {
         border-radius: 10px;
         background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
@@ -333,7 +333,9 @@
         height: 100%;
         display: flex;
         flex-direction: column;
-        max-height: 200px; /* Сильно уменьшаем высоту */
+        max-height: 200px;
+        max-width: 280px; /* Ограничиваем максимальную ширину */
+        margin: 0 auto; /* Центрируем карточку */
     }
 
     .listing-card-compact:hover {
@@ -374,7 +376,7 @@
     /* Изображение */
     .listing-card-compact .thumb {
         position: relative;
-        height: 80px; /* Еще уменьшаем высоту изображения */
+        height: 80px;
         overflow: hidden;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
@@ -542,6 +544,8 @@
         color: inherit;
         height: 100%;
         max-height: 200px;
+        max-width: 280px; /* Тоже ограничиваем ширину */
+        margin: 0 auto; /* Центрируем */
     }
 
     .media-card-compact:hover {
@@ -623,6 +627,11 @@
         .slider-container {
             height: 220px;
         }
+
+        .listing-card-compact,
+        .media-card-compact {
+            max-width: 320px; /* На мобильных можно чуть шире */
+        }
     }
 
     @media (max-width: 768px) {
@@ -637,6 +646,7 @@
 
         .listing-card-compact {
             max-height: 180px;
+            max-width: 280px;
         }
 
         .listing-card-compact .thumb {
@@ -677,6 +687,11 @@
             height: 200px;
         }
 
+        .media-card-compact {
+            max-height: 180px;
+            max-width: 280px;
+        }
+
         .media-card-compact .thumb {
             height: 100px;
         }
@@ -697,6 +712,7 @@
 
         .listing-card-compact {
             max-height: 160px;
+            max-width: 240px;
         }
 
         .listing-card-compact .thumb {
@@ -717,6 +733,11 @@
 
         .slider-container {
             height: 180px;
+        }
+
+        .media-card-compact {
+            max-height: 160px;
+            max-width: 240px;
         }
 
         .media-card-compact .thumb {
