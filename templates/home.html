@@ -318,65 +318,51 @@
         padding: 0 4px;
     }
 
-    /* Новые стили карточек как в property_list.html */
+    /* Компактные стили карточек для слайдера */
     .listing-card-compact {
-        border-radius: 20px;
+        border-radius: 16px;
         background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
         border: 1px solid rgba(255, 255, 255, 0.8);
-        box-shadow:
-            0 4px 20px rgba(0, 0, 0, 0.08),
-            0 1px 0 rgba(255, 255, 255, 0.8) inset,
-            0 -1px 0 rgba(0, 0, 0, 0.02) inset;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         overflow: hidden;
         position: relative;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
         height: 100%;
         display: flex;
         flex-direction: column;
     }
 
     .listing-card-compact:hover {
-        transform: translateY(-8px) scale(1.02);
-        box-shadow:
-            0 25px 50px rgba(0, 0, 0, 0.15),
-            0 1px 0 rgba(255, 255, 255, 0.8) inset,
-            0 -1px 0 rgba(0, 0, 0, 0.02) inset;
+        transform: translateY(-4px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
     }
 
     /* Градиентный акцент */
-    .card-accent {
+    .listing-card-compact::before {
+        content: '';
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, #7b61ff 0%, #36d1dc 50%, #7b61ff 100%);
-        background-size: 200% 100%;
-        animation: shimmer 3s ease-in-out infinite;
+        height: 3px;
+        background: linear-gradient(90deg, #7b61ff 0%, #36d1dc 100%);
         z-index: 2;
-    }
-
-    @keyframes shimmer {
-        0% { background-position: -200% 0; }
-        100% { background-position: 200% 0; }
     }
 
     /* Бейдж статуса */
     .hot-property-badge-compact {
         position: absolute;
-        top: 16px;
-        right: 16px;
+        top: 12px;
+        right: 12px;
         z-index: 10;
-        padding: 6px 12px;
+        padding: 4px 8px;
         background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(10px);
-        border-radius: 12px;
-        font-size: 11px;
+        border-radius: 8px;
+        font-size: 10px;
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         border: 1px solid rgba(255, 255, 255, 0.6);
         color: #7b61ff;
     }
@@ -384,7 +370,7 @@
     /* Изображение */
     .listing-card-compact .thumb {
         position: relative;
-        height: 180px;
+        height: 140px;
         overflow: hidden;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
@@ -394,11 +380,11 @@
         height: 100%;
         object-fit: cover;
         display: block;
-        transition: transform 0.6s ease;
+        transition: transform 0.3s ease;
     }
 
     .listing-card-compact:hover .thumb img {
-        transform: scale(1.1);
+        transform: scale(1.05);
     }
 
     .listing-card-compact .thumb > div {
@@ -408,32 +394,16 @@
         align-items: center;
         justify-content: center;
         color: white;
-        font-weight: 800;
+        font-weight: 600;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        font-size: 14px;
+        font-size: 12px;
         text-align: center;
-        padding: 10px;
-    }
-
-    /* Градиентный оверлей для изображения */
-    .listing-card-compact .thumb::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(
-            to bottom,
-            rgba(0, 0, 0, 0.1) 0%,
-            transparent 30%,
-            rgba(0, 0, 0, 0.15) 100%
-        );
+        padding: 8px;
     }
 
     /* Контент карточки */
     .listing-card-compact .body {
-        padding: 20px;
+        padding: 16px;
         flex: 1;
         display: flex;
         flex-direction: column;
@@ -441,20 +411,20 @@
 
     /* Заголовок и тип */
     .listing-card-compact .property-header {
-        margin-bottom: 16px;
+        margin-bottom: 12px;
     }
 
     .listing-card-compact .property-type {
-        font-size: 12px;
+        font-size: 10px;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.5px;
         color: #7b61ff;
-        margin-bottom: 6px;
+        margin-bottom: 4px;
     }
 
     .listing-card-compact .body strong {
-        font-size: 18px;
+        font-size: 14px;
         font-weight: 700;
         line-height: 1.3;
         color: #1e293b;
@@ -467,26 +437,26 @@
 
     /* Основная информация */
     .listing-card-compact .property-info {
-        margin-bottom: 20px;
+        margin-bottom: 16px;
         flex: 1;
     }
 
     .listing-card-compact .info-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
+        gap: 8px;
     }
 
     .listing-card-compact .info-item {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
     }
 
     .listing-card-compact .info-icon {
-        width: 28px;
-        height: 28px;
-        border-radius: 8px;
+        width: 20px;
+        height: 20px;
+        border-radius: 6px;
         background: rgba(123, 97, 255, 0.1);
         display: flex;
         align-items: center;
@@ -496,17 +466,17 @@
 
     .listing-card-compact .info-icon i {
         color: #7b61ff;
-        font-size: 12px;
+        font-size: 10px;
     }
 
     .listing-card-compact .info-value {
-        font-size: 14px;
+        font-size: 12px;
         font-weight: 700;
         color: #1e293b;
     }
 
     .listing-card-compact .info-label {
-        font-size: 11px;
+        font-size: 10px;
         color: #64748b;
     }
 
@@ -515,43 +485,43 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding-top: 16px;
+        padding-top: 12px;
         border-top: 1px solid rgba(0, 0, 0, 0.05);
     }
 
     .listing-card-compact .price-section .price {
-        font-size: 20px;
+        font-size: 16px;
         font-weight: 800;
         color: #7b61ff;
         line-height: 1.2;
     }
 
     .listing-card-compact .price-per-sqm {
-        font-size: 11px;
+        font-size: 10px;
         color: #64748b;
     }
 
     /* Кнопка подробнее */
     .btn-primary-compact {
-        padding: 10px 16px;
+        padding: 8px 12px;
         background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%);
         color: white;
-        border-radius: 12px;
+        border-radius: 8px;
         font-weight: 600;
         text-decoration: none;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(123, 97, 255, 0.3);
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 8px rgba(123, 97, 255, 0.3);
         display: flex;
         align-items: center;
-        gap: 6px;
-        font-size: 13px;
+        gap: 4px;
+        font-size: 11px;
         border: none;
         cursor: pointer;
     }
 
     .btn-primary-compact:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(123, 97, 255, 0.4);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(123, 97, 255, 0.4);
         color: white;
     }
 
@@ -656,43 +626,37 @@
         }
 
         .listing-card-compact .thumb {
-            height: 160px;
+            height: 120px;
         }
 
         .listing-card-compact .body {
-            padding: 16px;
+            padding: 12px;
         }
 
         .listing-card-compact .body strong {
-            font-size: 16px;
+            font-size: 13px;
         }
 
         .listing-card-compact .price {
-            font-size: 18px;
+            font-size: 14px;
         }
 
         .listing-card-compact .info-grid {
             grid-template-columns: 1fr;
-            gap: 8px;
+            gap: 6px;
         }
 
         .listing-card-compact .property-footer {
             flex-direction: column;
-            gap: 12px;
+            gap: 8px;
             align-items: flex-start;
         }
 
         .btn-primary-compact {
             width: 100%;
             justify-content: center;
-        }
-
-        .hot-properties-side, .media-side {
-            padding: 16px;
-        }
-
-        .section-header h3 {
-            font-size: 16px;
+            font-size: 10px;
+            padding: 6px 10px;
         }
     }
 
@@ -710,19 +674,19 @@
         }
 
         .listing-card-compact .thumb {
-            height: 140px;
+            height: 100px;
         }
 
         .listing-card-compact .body {
-            padding: 12px;
+            padding: 10px;
         }
 
         .listing-card-compact .body strong {
-            font-size: 14px;
+            font-size: 12px;
         }
 
         .listing-card-compact .price {
-            font-size: 16px;
+            font-size: 13px;
         }
     }
 
