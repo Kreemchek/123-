@@ -340,311 +340,195 @@
         padding: 0 4px;
     }
 
-    /* ОБНОВЛЕННЫЕ СТИЛИ КАРТОЧЕК - как в property_list.html */
+    /* ТОЧНО ТАКИЕ ЖЕ СТИЛИ КАРТОЧЕК КАК В PROPERTY_LIST.HTML */
     .property-card-home {
-        border-radius: 20px;
-        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-        border: 1px solid rgba(255, 255, 255, 0.8);
-        box-shadow:
-            0 4px 20px rgba(0, 0, 0, 0.08),
-            0 1px 0 rgba(255, 255, 255, 0.8) inset,
-            0 -1px 0 rgba(0, 0, 0, 0.02) inset;
-        overflow: hidden;
-        position: relative;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        backdrop-filter: blur(10px);
-        height: 100%;
+        border-radius: 14px !important;
+        padding: 12px !important;
+        background: white !important;
+        border: 1px solid rgba(0,0,0,0.08) !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important;
+        display: flex !important;
+        gap: 12px !important;
+        align-items: flex-start !important;
+        transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+        text-decoration: none !important;
+        color: inherit !important;
+        height: auto !important;
+        width: 100% !important;
     }
 
     .property-card-home:hover {
-        transform: translateY(-8px) scale(1.02);
-        box-shadow:
-            0 25px 50px rgba(0, 0, 0, 0.15),
-            0 1px 0 rgba(255, 255, 255, 0.8) inset,
-            0 -1px 0 rgba(0, 0, 0, 0.02) inset;
+        transform: translateY(-4px) !important;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.12) !important;
+        text-decoration: none !important;
+        color: inherit !important;
     }
 
-    /* Градиентный акцент */
-    .property-card-home .card-accent {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, #7b61ff 0%, #36d1dc 50%, #7b61ff 100%);
-        background-size: 200% 100%;
-        animation: shimmer 3s ease-in-out infinite;
+    .property-card-home .thumb {
+        width: 150px !important;
+        height: 110px !important;
+        border-radius: 10px !important;
+        flex-shrink: 0 !important;
+        background-size: cover !important;
+        background-position: center !important;
+        border: 1px solid rgba(0,0,0,0.06) !important;
     }
 
-    /* Бейдж статуса */
-    .property-card-home .status-badge {
-        position: absolute;
-        top: 16px;
-        right: 16px;
-        z-index: 10;
-        padding: 6px 12px;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        border-radius: 12px;
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.6);
+    .property-card-home .meta {
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 6px !important;
     }
 
-    /* Изображение с градиентным оверлеем */
-    .property-card-home .image-container {
-        position: relative;
-        height: 200px;
-        overflow: hidden;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    .property-card-home .meta .type {
+        font-size: 12px !important;
+        color: #64748b !important;
+        margin: 0 !important;
     }
 
-    .property-card-home .property-image {
-        width: 100%;
-        height: 100%;
-        background-size: cover;
-        background-position: center;
-        transition: transform 0.6s ease;
+    .property-card-home .meta h3 {
+        margin: 0 !important;
+        font-size: 16px !important;
+        color: #1e293b !important;
     }
 
-    .property-card-home:hover .property-image {
-        transform: scale(1.1);
+    .property-card-home .meta .meta-row {
+        display: flex !important;
+        gap: 10px !important;
+        align-items: center !important;
+        color: #64748b !important;
+        font-size: 13px !important;
+        margin: 0 !important;
     }
 
-    /* Градиентный оверлей */
-    .property-card-home .image-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(
-            to bottom,
-            rgba(0, 0, 0, 0.1) 0%,
-            transparent 30%,
-            rgba(0, 0, 0, 0.15) 100%
-        );
+    .property-card-home .price {
+        font-weight: 800 !important;
+        font-size: 16px !important;
+        color: #7b61ff !important;
     }
 
-    /* Контент карточки */
-    .property-card-home .card-content {
-        padding: 24px;
-    }
-
-    /* Заголовок и тип */
-    .property-card-home .property-header {
-        margin-bottom: 16px;
-    }
-
-    .property-card-home .property-type {
-        font-size: 12px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: #7b61ff;
-        margin-bottom: 6px;
-    }
-
-    .property-card-home .property-title {
-        margin: 0;
-        font-size: 18px;
-        font-weight: 700;
-        line-height: 1.3;
-        color: #1e293b;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
-    /* Основная информация */
-    .property-card-home .property-info {
-        margin-bottom: 20px;
-    }
-
-    .property-card-home .info-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-    }
-
-    .property-card-home .info-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .property-card-home .info-icon {
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        background: rgba(123, 97, 255, 0.1);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-
-    .property-card-home .info-value {
-        font-size: 14px;
-        font-weight: 700;
-        color: #1e293b;
-    }
-
-    .property-card-home .info-label {
-        font-size: 11px;
-        color: #64748b;
-    }
-
-    /* Цена и кнопка */
-    .property-card-home .property-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-top: 16px;
-        border-top: 1px solid rgba(0, 0, 0, 0.05);
-    }
-
-    .property-card-home .price-section .price {
-        font-size: 20px;
-        font-weight: 800;
-        color: #7b61ff;
-        line-height: 1.2;
-    }
-
-    .property-card-home .price-per-sqm {
-        font-size: 11px;
-        color: #64748b;
-    }
-
-    .property-card-home .details-btn {
-        padding: 10px 16px;
-        background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%);
-        color: white;
-        border-radius: 12px;
-        font-weight: 600;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(123, 97, 255, 0.3);
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 13px;
-    }
-
-    .property-card-home .details-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(123, 97, 255, 0.4);
-    }
-
-    /* Медиа карточки */
+    /* Стили для медиа карточек */
     .media-card-home {
-        border-radius: 20px;
-        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-        border: 1px solid rgba(255, 255, 255, 0.8);
-        box-shadow:
-            0 4px 20px rgba(0, 0, 0, 0.08),
-            0 1px 0 rgba(255, 255, 255, 0.8) inset,
-            0 -1px 0 rgba(0, 0, 0, 0.02) inset;
-        overflow: hidden;
-        position: relative;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        backdrop-filter: blur(10px);
-        display: block;
-        text-decoration: none;
-        color: inherit;
-        height: 100%;
+        border-radius: 14px !important;
+        padding: 12px !important;
+        background: white !important;
+        border: 1px solid rgba(0,0,0,0.08) !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important;
+        display: flex !important;
+        gap: 12px !important;
+        align-items: flex-start !important;
+        transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+        text-decoration: none !important;
+        color: inherit !important;
+        height: auto !important;
+        width: 100% !important;
     }
 
     .media-card-home:hover {
-        transform: translateY(-8px) scale(1.02);
-        box-shadow:
-            0 25px 50px rgba(0, 0, 0, 0.15),
-            0 1px 0 rgba(255, 255, 255, 0.8) inset,
-            0 -1px 0 rgba(0, 0, 0, 0.02) inset;
+        transform: translateY(-4px) !important;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.12) !important;
+        text-decoration: none !important;
+        color: inherit !important;
     }
 
-    .media-card-home .image-container {
-        position: relative;
-        height: 180px;
-        overflow: hidden;
+    .media-card-home .thumb {
+        width: 150px !important;
+        height: 110px !important;
+        border-radius: 10px !important;
+        flex-shrink: 0 !important;
+        background-size: cover !important;
+        background-position: center !important;
+        border: 1px solid rgba(0,0,0,0.06) !important;
     }
 
-    .media-card-home .property-image {
-        width: 100%;
-        height: 100%;
-        background-size: cover;
-        background-position: center;
-        transition: transform 0.6s ease;
+    .media-card-home .meta {
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 6px !important;
     }
 
-    .media-card-home:hover .property-image {
-        transform: scale(1.1);
+    .media-card-home .meta .type {
+        font-size: 12px !important;
+        color: #64748b !important;
+        margin: 0 !important;
     }
 
-    .media-card-home .image-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(
-            to bottom,
-            rgba(0, 0, 0, 0.1) 0%,
-            transparent 50%,
-            rgba(0, 0, 0, 0.3) 100%
-        );
+    .media-card-home .meta h3 {
+        margin: 0 !important;
+        font-size: 16px !important;
+        color: #1e293b !important;
     }
 
-    .media-card-home .media-type-badge {
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        z-index: 10;
-        padding: 6px 10px;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        border-radius: 10px;
+    .media-card-home .meta .meta-row {
+        display: flex !important;
+        gap: 10px !important;
+        align-items: center !important;
+        color: #64748b !important;
+        font-size: 13px !important;
+        margin: 0 !important;
+    }
+
+    /* Бейдж "Горячее" */
+    .hot-badge {
+        background: #ef4444;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 6px;
         font-size: 10px;
         font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.6);
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        z-index: 2;
     }
 
-    .media-card-home .card-content {
-        padding: 20px;
-    }
-
-    .media-card-home .property-title {
-        margin: 0;
-        font-size: 16px;
+    /* Бейдж типа медиа */
+    .media-badge {
+        background: #7b61ff;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 10px;
         font-weight: 700;
-        line-height: 1.3;
-        color: #1e293b;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        margin-bottom: 8px;
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        z-index: 2;
     }
 
-    .media-card-home .media-meta {
-        color: #64748b;
-        font-size: 12px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
+    /* Кнопка */
+    .btn-home {
+        background: white !important;
+        border: 1px solid rgba(0,0,0,0.08) !important;
+        padding: 8px 12px !important;
+        border-radius: 8px !important;
+        color: #64748b !important;
+        font-weight: 600 !important;
+        cursor: pointer !important;
+        font-size: 12px !important;
+        transition: all 0.2s ease !important;
+        text-decoration: none !important;
+        display: inline-block !important;
     }
 
-    /* Анимации */
-    @keyframes shimmer {
-        0% { background-position: -200% 0; }
-        100% { background-position: 200% 0; }
+    .btn-home:hover {
+        background: rgba(0,0,0,0.02) !important;
+    }
+
+    /* Адаптивность для карточек */
+    @media (max-width: 768px) {
+        .property-card-home,
+        .media-card-home {
+            flex-direction: column !important;
+        }
+
+        .property-card-home .thumb,
+        .media-card-home .thumb {
+            width: 100% !important;
+            height: 200px !important;
+        }
     }
 
     /* Мобильная оптимизация */
@@ -666,18 +550,6 @@
             width: 28px;
             height: 28px;
         }
-
-        .property-card-home .property-title {
-            font-size: 16px;
-        }
-
-        .property-card-home .info-value {
-            font-size: 13px;
-        }
-
-        .property-card-home .price {
-            font-size: 18px;
-        }
     }
 
     @media (max-width: 768px) {
@@ -688,26 +560,6 @@
         .split-section h2 {
             font-size: 24px;
             margin-bottom: 20px;
-        }
-
-        .property-card-home .card-content {
-            padding: 16px;
-        }
-
-        .property-card-home .info-grid {
-            grid-template-columns: 1fr;
-            gap: 8px;
-        }
-
-        .property-card-home .property-footer {
-            flex-direction: column;
-            gap: 12px;
-            align-items: flex-start;
-        }
-
-        .property-card-home .details-btn {
-            width: 100%;
-            justify-content: center;
         }
     }
 
@@ -823,79 +675,22 @@
                 <div class="slider-track" id="hot-properties-track">
                     {% for property in hot_properties %}
                     <div class="slider-slide">
-                        <article class="property-card-home">
-                            <!-- Градиентный акцент -->
-                            <div class="card-accent"></div>
-
-                            <!-- Бейдж статуса -->
-                            {% if property.is_hot %}
-                            <div class="status-badge" style="color: #ef4444;">
-                                🔥 Горячее
-                            </div>
-                            {% endif %}
-
-                            <!-- Изображение с градиентным оверлеем -->
-                            <div class="image-container">
-                                <div class="property-image" style="background-image: url('{% if property.images.all %}{{ property.images.first.image.url }}{% else %}{% static 'images/placeholder.jpg' %}{% endif %}')"></div>
-                                <div class="image-overlay"></div>
-                            </div>
-
-                            <!-- Контент карточки -->
-                            <div class="card-content">
-                                <!-- Заголовок и тип -->
-                                <div class="property-header">
-                                    <div class="property-type">
-                                        {{ property.get_property_type_display }}
-                                    </div>
-                                    <h3 class="property-title">
-                                        {{ property.title }}
-                                    </h3>
-                                </div>
-
-                                <!-- Основная информация -->
-                                <div class="property-info">
-                                    <div class="info-grid">
-                                        <!-- Комнаты -->
-                                        <div class="info-item">
-                                            <div class="info-icon">
-                                                <i class="bi bi-door-open" style="color: #7b61ff; font-size: 14px;"></i>
-                                            </div>
-                                            <div>
-                                                <div class="info-value">{{ property.rooms }} комн.</div>
-                                                <div class="info-label">Комнаты</div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Площадь -->
-                                        <div class="info-item">
-                                            <div class="info-icon">
-                                                <i class="bi bi-arrows-fullscreen" style="color: #36d1dc; font-size: 14px;"></i>
-                                            </div>
-                                            <div>
-                                                <div class="info-value">{{ property.total_area|floatformat:"0" }} м²</div>
-                                                <div class="info-label">Площадь</div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Метро -->
+                        <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}{% endif %}" class="link">
+                            <article class="property-card-home">
+                                {% if property.is_hot %}
+                                <div class="hot-badge">🔥 Горячее</div>
+                                {% endif %}
+                                <div class="thumb" style="background-image: url('{% if property.images.all %}{{ property.images.first.image.url }}{% else %}{% static 'images/placeholder.jpg' %}{% endif %}')"></div>
+                                <div class="meta">
+                                    <div class="type">{{ property.get_property_type_display }}</div>
+                                    <h3>{{ property.title }}</h3>
+                                    <div class="meta-row">
+                                        <span>{{ property.rooms }} комн.</span>
+                                        <span>{{ property.total_area|floatformat:"0" }} м²</span>
                                         {% if property.metro_station and property.metro_station != "Не указано" %}
-                                        <div class="info-item" style="grid-column: 1 / -1;">
-                                            <div class="info-icon">
-                                                <i class="bi bi-train-front" style="color: #ef4444; font-size: 14px;"></i>
-                                            </div>
-                                            <div>
-                                                <div class="info-value">{{ property.metro_station }}</div>
-                                                <div class="info-label">Метро</div>
-                                            </div>
-                                        </div>
+                                        <span>🚇 {{ property.metro_station }}</span>
                                         {% endif %}
-                                    </div>
-                                </div>
-
-                                <!-- Цена и кнопка -->
-                                <div class="property-footer">
-                                    <div class="price-section">
-                                        <div class="price">
+                                        <span class="price">
                                             {% if property.is_rental == 'monthly' and property.monthly_price %}
                                                 {{ property.monthly_price|floatformat:"0" }} ₽/мес
                                             {% elif property.is_rental == 'daily' and property.daily_price %}
@@ -903,20 +698,11 @@
                                             {% else %}
                                                 {{ property.price|floatformat:"0" }} ₽
                                             {% endif %}
-                                        </div>
-                                        {% if property.price_per_sqm %}
-                                        <div class="price-per-sqm">{{ property.price_per_sqm|floatformat:"0" }} ₽/м²</div>
-                                        {% endif %}
+                                        </span>
                                     </div>
-
-                                    <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}{% endif %}"
-                                       class="details-btn">
-                                        <span>Подробнее</span>
-                                        <i class="bi bi-arrow-right-short" style="font-size: 16px;"></i>
-                                    </a>
                                 </div>
-                            </div>
-                        </article>
+                            </article>
+                        </a>
                     </div>
                     {% endfor %}
                 </div>
@@ -942,11 +728,7 @@
                     <div class="slider-slide">
                         <a href="{% url 'media_content:detail' media.id %}" class="link">
                             <article class="media-card-home">
-                                <!-- Градиентный акцент -->
-                                <div class="card-accent"></div>
-
-                                <!-- Бейдж типа медиа -->
-                                <div class="media-type-badge">
+                                <div class="media-badge">
                                     {% if media.media_type == 'video' %}
                                         📹 Видео
                                     {% elif media.media_type == 'photo' %}
@@ -955,26 +737,16 @@
                                         📊 Аналитика
                                     {% endif %}
                                 </div>
-
-                                <!-- Изображение -->
-                                <div class="image-container">
-                                    <div class="property-image" style="background-image: url('{% if media.thumbnail_url %}{{ media.thumbnail_url }}{% else %}{% static 'images/media-placeholder.jpg' %}{% endif %}')"></div>
-                                    <div class="image-overlay"></div>
-                                </div>
-
-                                <!-- Контент карточки -->
-                                <div class="card-content">
-                                    <h3 class="property-title">{{ media.title }}</h3>
-                                    <div class="media-meta">
+                                <div class="thumb" style="background-image: url('{% if media.thumbnail_url %}{{ media.thumbnail_url }}{% else %}{% static 'images/media-placeholder.jpg' %}{% endif %}')"></div>
+                                <div class="meta">
+                                    <h3>{{ media.title }}</h3>
+                                    <div class="meta-row">
                                         {% if media.media_type == 'video' %}
-                                            <i class="bi bi-play-circle"></i>
-                                            {{ media.duration|default:"Видео" }}
+                                            <span>🎬 {{ media.duration|default:"Видео" }}</span>
                                         {% elif media.media_type == 'photo' %}
-                                            <i class="bi bi-image"></i>
-                                            {{ media.photo_count|default:"1" }} фото
+                                            <span>🖼️ {{ media.photo_count|default:"1" }} фото</span>
                                         {% else %}
-                                            <i class="bi bi-clock"></i>
-                                            {{ media.read_time|default:"5 мин" }} чтения
+                                            <span>📖 {{ media.read_time|default:"5 мин" }} чтения</span>
                                         {% endif %}
                                     </div>
                                 </div>
