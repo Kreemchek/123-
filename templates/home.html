@@ -305,7 +305,7 @@
         position: relative;
         overflow: hidden;
         border-radius: var(--radius);
-        height: 320px; /* Фиксируем высоту контейнера */
+        height: 240px; /* Уменьшаем высоту контейнера */
     }
 
     .slider-track {
@@ -317,28 +317,28 @@
     .slider-slide {
         min-width: 100%;
         flex-shrink: 0;
-        padding: 0 8px; /* Добавляем отступы между карточками */
+        padding: 0 8px;
         height: 100%;
     }
 
-    /* Компактные стили карточек для слайдера - ИСПРАВЛЕННЫЕ */
+    /* СУПЕР-КОМПАКТНЫЕ стили карточек для слайдера */
     .listing-card-compact {
-        border-radius: 12px;
+        border-radius: 10px;
         background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
         border: 1px solid rgba(255, 255, 255, 0.8);
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         overflow: hidden;
         position: relative;
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
         height: 100%;
         display: flex;
         flex-direction: column;
-        max-height: 280px; /* Ограничиваем высоту */
+        max-height: 200px; /* Сильно уменьшаем высоту */
     }
 
     .listing-card-compact:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
     /* Градиентный акцент */
@@ -356,17 +356,17 @@
     /* Бейдж статуса */
     .hot-property-badge-compact {
         position: absolute;
-        top: 8px;
-        right: 8px;
+        top: 6px;
+        right: 6px;
         z-index: 10;
-        padding: 3px 6px;
+        padding: 2px 5px;
         background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(10px);
-        border-radius: 6px;
-        font-size: 9px;
+        border-radius: 4px;
+        font-size: 8px;
         font-weight: 700;
         text-transform: uppercase;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         border: 1px solid rgba(255, 255, 255, 0.6);
         color: #7b61ff;
     }
@@ -374,7 +374,7 @@
     /* Изображение */
     .listing-card-compact .thumb {
         position: relative;
-        height: 100px; /* Уменьшаем высоту изображения */
+        height: 80px; /* Еще уменьшаем высоту изображения */
         overflow: hidden;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
@@ -400,14 +400,14 @@
         color: white;
         font-weight: 600;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        font-size: 10px;
+        font-size: 9px;
         text-align: center;
-        padding: 6px;
+        padding: 4px;
     }
 
     /* Контент карточки */
     .listing-card-compact .body {
-        padding: 12px;
+        padding: 8px;
         flex: 1;
         display: flex;
         flex-direction: column;
@@ -415,20 +415,20 @@
 
     /* Заголовок и тип */
     .listing-card-compact .property-header {
-        margin-bottom: 8px;
+        margin-bottom: 6px;
     }
 
     .listing-card-compact .property-type {
-        font-size: 9px;
+        font-size: 8px;
         font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 0.3px;
+        letter-spacing: 0.2px;
         color: #7b61ff;
-        margin-bottom: 3px;
+        margin-bottom: 2px;
     }
 
     .listing-card-compact .body strong {
-        font-size: 12px;
+        font-size: 10px;
         font-weight: 700;
         line-height: 1.2;
         color: #1e293b;
@@ -441,26 +441,26 @@
 
     /* Основная информация */
     .listing-card-compact .property-info {
-        margin-bottom: 12px;
+        margin-bottom: 8px;
         flex: 1;
     }
 
     .listing-card-compact .info-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 6px;
+        gap: 4px;
     }
 
     .listing-card-compact .info-item {
         display: flex;
         align-items: center;
-        gap: 4px;
+        gap: 3px;
     }
 
     .listing-card-compact .info-icon {
-        width: 16px;
-        height: 16px;
-        border-radius: 4px;
+        width: 14px;
+        height: 14px;
+        border-radius: 3px;
         background: rgba(123, 97, 255, 0.1);
         display: flex;
         align-items: center;
@@ -470,17 +470,17 @@
 
     .listing-card-compact .info-icon i {
         color: #7b61ff;
-        font-size: 8px;
+        font-size: 7px;
     }
 
     .listing-card-compact .info-value {
-        font-size: 10px;
+        font-size: 9px;
         font-weight: 700;
         color: #1e293b;
     }
 
     .listing-card-compact .info-label {
-        font-size: 8px;
+        font-size: 7px;
         color: #64748b;
     }
 
@@ -489,49 +489,49 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding-top: 8px;
+        padding-top: 6px;
         border-top: 1px solid rgba(0, 0, 0, 0.05);
     }
 
     .listing-card-compact .price-section .price {
-        font-size: 13px;
+        font-size: 11px;
         font-weight: 800;
         color: #7b61ff;
-        line-height: 1.2;
+        line-height: 1.1;
     }
 
     .listing-card-compact .price-per-sqm {
-        font-size: 8px;
+        font-size: 7px;
         color: #64748b;
     }
 
     /* Кнопка подробнее */
     .btn-primary-compact {
-        padding: 6px 10px;
+        padding: 4px 8px;
         background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%);
         color: white;
-        border-radius: 6px;
+        border-radius: 4px;
         font-weight: 600;
         text-decoration: none;
         transition: all 0.2s ease;
-        box-shadow: 0 1px 4px rgba(123, 97, 255, 0.3);
+        box-shadow: 0 1px 3px rgba(123, 97, 255, 0.3);
         display: flex;
         align-items: center;
-        gap: 3px;
-        font-size: 9px;
+        gap: 2px;
+        font-size: 8px;
         border: none;
         cursor: pointer;
     }
 
     .btn-primary-compact:hover {
         transform: translateY(-1px);
-        box-shadow: 0 2px 6px rgba(123, 97, 255, 0.4);
+        box-shadow: 0 2px 4px rgba(123, 97, 255, 0.4);
         color: white;
     }
 
     /* Media Section - квадратные фото */
     .media-card-compact {
-        border-radius: 14px;
+        border-radius: 10px;
         overflow: hidden;
         border: 1px solid rgba(255,255,255,.08);
         background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
@@ -541,7 +541,7 @@
         text-decoration: none;
         color: inherit;
         height: 100%;
-        max-height: 280px;
+        max-height: 200px;
     }
 
     .media-card-compact:hover {
@@ -554,7 +554,7 @@
         position: relative;
         overflow: hidden;
         width: 100%;
-        height: 140px;
+        height: 120px;
     }
 
     .media-card-compact .thumb img {
@@ -570,14 +570,14 @@
     }
 
     .media-card-compact .body {
-        padding: 12px;
+        padding: 8px;
     }
 
     .media-card-compact .body strong {
-        font-size: 14px;
-        line-height: 1.3;
+        font-size: 11px;
+        line-height: 1.2;
         display: block;
-        margin-bottom: 4px;
+        margin-bottom: 3px;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
@@ -586,17 +586,17 @@
 
     .media-meta-compact {
         color: var(--muted);
-        font-size: 11px;
+        font-size: 9px;
     }
 
     .thumb-overlay-compact {
         position: absolute;
-        bottom: 8px;
-        right: 8px;
+        bottom: 6px;
+        right: 6px;
         background: rgba(0,0,0,.6);
-        padding: 4px 8px;
-        border-radius: 12px;
-        font-size: 10px;
+        padding: 2px 6px;
+        border-radius: 8px;
+        font-size: 8px;
         color: white;
     }
 
@@ -621,7 +621,7 @@
         }
 
         .slider-container {
-            height: 300px;
+            height: 220px;
         }
     }
 
@@ -636,57 +636,49 @@
         }
 
         .listing-card-compact {
-            max-height: 260px;
+            max-height: 180px;
         }
 
         .listing-card-compact .thumb {
-            height: 90px;
+            height: 70px;
         }
 
         .listing-card-compact .body {
-            padding: 10px;
+            padding: 6px;
         }
 
         .listing-card-compact .body strong {
-            font-size: 11px;
+            font-size: 9px;
         }
 
         .listing-card-compact .price {
-            font-size: 12px;
+            font-size: 10px;
         }
 
         .listing-card-compact .info-grid {
             grid-template-columns: 1fr;
-            gap: 6px;
+            gap: 3px;
         }
 
         .listing-card-compact .property-footer {
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
             align-items: flex-start;
         }
 
         .btn-primary-compact {
             width: 100%;
             justify-content: center;
-            font-size: 10px;
-            padding: 6px 10px;
-        }
-
-        .hot-properties-side, .media-side {
-            padding: 16px;
-        }
-
-        .section-header h3 {
-            font-size: 16px;
+            font-size: 7px;
+            padding: 3px 6px;
         }
 
         .slider-container {
-            height: 280px;
+            height: 200px;
         }
 
         .media-card-compact .thumb {
-            height: 120px;
+            height: 100px;
         }
     }
 
@@ -704,31 +696,31 @@
         }
 
         .listing-card-compact {
-            max-height: 240px;
+            max-height: 160px;
         }
 
         .listing-card-compact .thumb {
-            height: 80px;
+            height: 60px;
         }
 
         .listing-card-compact .body {
-            padding: 8px;
+            padding: 5px;
         }
 
         .listing-card-compact .body strong {
-            font-size: 10px;
+            font-size: 8px;
         }
 
         .listing-card-compact .price {
-            font-size: 11px;
+            font-size: 9px;
         }
 
         .slider-container {
-            height: 260px;
+            height: 180px;
         }
 
         .media-card-compact .thumb {
-            height: 100px;
+            height: 80px;
         }
     }
 
@@ -747,7 +739,6 @@
         width: 100%;
     }
 </style>
-
 <!-- Hero -->
 <section class="hero">
     <div class="container">
