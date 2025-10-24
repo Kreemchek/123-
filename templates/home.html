@@ -133,6 +133,29 @@
     }
     .searchbar input::placeholder { color: var(--muted); }
 
+    /* Обновленная кнопка "Найти" - как в property_list */
+    .searchbar .btn-primary {
+        padding: 12px 20px;
+        background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%);
+        color: white;
+        border-radius: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(123, 97, 255, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        border: none;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .searchbar .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(123, 97, 255, 0.4);
+    }
+
     /* Мобильные стили для поисковой строки */
     @media (max-width: 768px) {
         .searchbar {
@@ -163,7 +186,7 @@
         }
     }
 
-    /* Обновленные стили для карточек быстрого доступа */
+  /* Обновленные стили для карточек быстрого доступа */
     .quick {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -190,10 +213,10 @@
     }
 
     .quick .card h3 {
-        margin: 0 0 8px;
+        margin: 0 0 8px; /* Увеличиваем отступ снизу */
         font-size: 18px;
         font-weight: 700;
-        order: 1;
+        order: 1; /* Заголовок идет первым */
     }
 
     .quick .card p {
@@ -201,7 +224,7 @@
         color: var(--muted);
         font-size: 14px;
         line-height: 1.4;
-        order: 2;
+        order: 2; /* Описание идет вторым */
     }
 
     .quick .card::after {
@@ -232,17 +255,16 @@
         }
     }
 
-    /* Стили для разделенного блока - КОМПАКТНЫЕ */
+    /* Стили для разделенного блока */
     .split-section {
         margin-top: 60px;
     }
 
     .split-container {
         display: grid;
-        grid-template-columns: 1fr 1fr; /* Две равные колонки */
+        grid-template-columns: 1fr 1fr;
         gap: var(--grid-gap);
         align-items: start;
-        min-height: 320px; /* Минимальная высота для баланса */
     }
 
     .split-section h2 {
@@ -254,34 +276,23 @@
         text-align: center;
     }
 
-    /* Компактные контейнеры для обеих половин */
     .hot-properties-side, .media-side {
         background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
         border: 1px solid rgba(255,255,255,.08);
         border-radius: var(--radius);
-        padding: 16px;
+        padding: 20px;
         box-shadow: var(--shadow-1);
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-    }
-
-    /* Уменьшаем размер контейнера горячих предложений */
-    .hot-properties-side {
-        max-width: 100%; /* Занимает ровно половину контейнера */
-        width: 100%;
     }
 
     .section-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 12px;
-        flex-shrink: 0; /* Запрещаем сжатие */
+        margin-bottom: 16px;
     }
 
     .section-header h3 {
-        font-size: 16px;
+        font-size: 18px;
         font-weight: 700;
         margin: 0;
         color: var(--text);
@@ -289,12 +300,12 @@
 
     .slider-controls {
         display: flex;
-        gap: 6px;
+        gap: 8px;
     }
 
     .slider-btn {
-        width: 28px;
-        height: 28px;
+        width: 32px;
+        height: 32px;
         border-radius: 50%;
         background: var(--card);
         border: 1px solid rgba(255,255,255,.08);
@@ -304,7 +315,7 @@
         cursor: pointer;
         transition: all 0.25s ease;
         color: var(--text);
-        font-size: 10px;
+        font-size: 12px;
     }
 
     .slider-btn:hover {
@@ -317,86 +328,49 @@
         position: relative;
         overflow: hidden;
         border-radius: var(--radius);
-        height: 220px;
-        flex: 1; /* Занимает оставшееся пространство */
-        width: 100%; /* Обеспечиваем полную ширину внутри контейнера */
     }
 
     .slider-track {
         display: flex;
         transition: transform 0.3s ease;
-        height: 100%;
-        width: 100%;
     }
 
     .slider-slide {
         min-width: 100%;
         flex-shrink: 0;
-        padding: 0 8px;
-        height: 100%;
-        display: flex;
-        justify-content: center; /* Центрируем карточку */
-        align-items: center;
+        padding: 0 4px;
     }
 
-    /* СУПЕР-КОМПАКТНЫЕ стили карточек для слайдера (без изменений) */
+    /* Уменьшенные стили для карточек объектов - как в property_list */
     .listing-card-compact {
-        border-radius: 10px;
+        position: relative;
+        border-radius: 20px;
         background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
         border: 1px solid rgba(255, 255, 255, 0.8);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        box-shadow:
+            0 4px 20px rgba(0, 0, 0, 0.08),
+            0 1px 0 rgba(255, 255, 255, 0.8) inset,
+            0 -1px 0 rgba(0, 0, 0, 0.02) inset;
         overflow: hidden;
         position: relative;
-        transition: all 0.2s ease;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        backdrop-filter: blur(10px);
         height: 100%;
-        display: flex;
-        flex-direction: column;
-        max-height: 200px;
-        max-width: 280px;
-        margin: 0 auto;
     }
 
     .listing-card-compact:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-8px) scale(1.02);
+        box-shadow:
+            0 25px 50px rgba(0, 0, 0, 0.15),
+            0 1px 0 rgba(255, 255, 255, 0.8) inset,
+            0 -1px 0 rgba(0, 0, 0, 0.02) inset;
     }
 
-    /* Градиентный акцент */
-    .listing-card-compact::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 2px;
-        background: linear-gradient(90deg, #7b61ff 0%, #36d1dc 100%);
-        z-index: 2;
-    }
-
-    /* Бейдж статуса */
-    .hot-property-badge-compact {
-        position: absolute;
-        top: 6px;
-        right: 6px;
-        z-index: 10;
-        padding: 2px 5px;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        border-radius: 4px;
-        font-size: 8px;
-        font-weight: 700;
-        text-transform: uppercase;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.6);
-        color: #7b61ff;
-    }
-
-    /* Изображение */
     .listing-card-compact .thumb {
+        aspect-ratio: 1/1; /* Квадратное фото */
         position: relative;
-        height: 80px;
         overflow: hidden;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        width: 100%;
     }
 
     .listing-card-compact .thumb img {
@@ -418,165 +392,125 @@
         align-items: center;
         justify-content: center;
         color: white;
-        font-weight: 600;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        font-size: 9px;
+        font-weight: 800;
+        background: linear-gradient(135deg, rgba(124,102,255,.35), rgba(48,208,255,.25));
+        font-size: 14px;
         text-align: center;
-        padding: 4px;
+        padding: 10px;
     }
 
-    /* Контент карточки */
+    /* Бейдж "Горячее" - уменьшенный */
+    .hot-property-badge-compact {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: linear-gradient(45deg, #ff4d4d, #f95700);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-weight: bold;
+        font-size: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        z-index: 2;
+    }
+
     .listing-card-compact .body {
-        padding: 8px;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-    }
-
-    /* Заголовок и тип */
-    .listing-card-compact .property-header {
-        margin-bottom: 6px;
-    }
-
-    .listing-card-compact .property-type {
-        font-size: 8px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.2px;
-        color: #7b61ff;
-        margin-bottom: 2px;
+        padding: 12px;
     }
 
     .listing-card-compact .body strong {
-        font-size: 10px;
-        font-weight: 700;
-        line-height: 1.2;
-        color: #1e293b;
+        font-size: 14px;
+        line-height: 1.3;
+        display: block;
+        margin-bottom: 6px;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
-        margin: 0;
     }
 
-    /* Основная информация */
-    .listing-card-compact .property-info {
+    .meta-compact {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        color: var(--muted);
+        font-size: 11px;
         margin-bottom: 8px;
-        flex: 1;
     }
 
-    .listing-card-compact .info-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 4px;
+    .price-compact {
+        font-weight: 800;
+        font-size: 14px;
+        margin-left: auto;
+        color: var(--text);
     }
 
-    .listing-card-compact .info-item {
+    .card-actions-compact {
         display: flex;
-        align-items: center;
-        gap: 3px;
+        gap: 6px;
+        margin-top: 8px;
     }
 
-    .listing-card-compact .info-icon {
-        width: 14px;
-        height: 14px;
-        border-radius: 3px;
-        background: rgba(123, 97, 255, 0.1);
-        display: flex;
+    /* Уменьшенные кнопки */
+    .btn-compact {
+        cursor: pointer;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 10px;
+        font-weight: 700;
+        transition: .25s ease;
+        text-decoration: none;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
-        flex-shrink: 0;
+        font-size: 12px;
     }
 
-    .listing-card-compact .info-icon i {
-        color: #7b61ff;
-        font-size: 7px;
-    }
-
-    .listing-card-compact .info-value {
-        font-size: 9px;
-        font-weight: 700;
-        color: #1e293b;
-    }
-
-    .listing-card-compact .info-label {
-        font-size: 7px;
-        color: #64748b;
-    }
-
-    /* Цена и кнопка */
-    .listing-card-compact .property-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-top: 6px;
-        border-top: 1px solid rgba(0, 0, 0, 0.05);
-    }
-
-    .listing-card-compact .price-section .price {
-        font-size: 11px;
-        font-weight: 800;
-        color: #7b61ff;
-        line-height: 1.1;
-    }
-
-    .listing-card-compact .price-per-sqm {
-        font-size: 7px;
-        color: #64748b;
-    }
-
-    /* Кнопка подробнее */
     .btn-primary-compact {
-        padding: 4px 8px;
-        background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%);
-        color: white;
-        border-radius: 4px;
-        font-weight: 600;
-        text-decoration: none;
-        transition: all 0.2s ease;
-        box-shadow: 0 1px 3px rgba(123, 97, 255, 0.3);
-        display: flex;
-        align-items: center;
-        gap: 2px;
-        font-size: 8px;
+        background: linear-gradient(135deg, var(--brand), var(--brand-2));
+        color: #fff;
+        box-shadow: var(--glow);
         border: none;
-        cursor: pointer;
+        flex: 1;
     }
 
     .btn-primary-compact:hover {
         transform: translateY(-1px);
-        box-shadow: 0 2px 4px rgba(123, 97, 255, 0.4);
-        color: white;
+        box-shadow: 0 0 0 1px rgba(124,102,255,.3), 0 0 60px rgba(92,76,255,.35);
     }
 
     /* Media Section - квадратные фото */
     .media-card-compact {
-        border-radius: 10px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        box-shadow:
+            0 4px 20px rgba(0, 0, 0, 0.08),
+            0 1px 0 rgba(255, 255, 255, 0.8) inset,
+            0 -1px 0 rgba(0, 0, 0, 0.02) inset;
         overflow: hidden;
-        border: 1px solid rgba(255,255,255,.08);
-        background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
-        box-shadow: var(--shadow-1);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        backdrop-filter: blur(10px);
         display: block;
         text-decoration: none;
         color: inherit;
         height: 100%;
-        max-height: 200px;
-        max-width: 280px;
-        margin: 0 auto;
     }
 
     .media-card-compact:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--glow);
+        transform: translateY(-8px) scale(1.02);
+        box-shadow:
+            0 25px 50px rgba(0, 0, 0, 0.15),
+            0 1px 0 rgba(255, 255, 255, 0.8) inset,
+            0 -1px 0 rgba(0, 0, 0, 0.02) inset;
     }
 
     .media-card-compact .thumb {
-        aspect-ratio: 1/1;
+        aspect-ratio: 1/1; /* Квадратное фото */
         position: relative;
         overflow: hidden;
         width: 100%;
-        height: 120px;
     }
 
     .media-card-compact .thumb img {
@@ -592,14 +526,14 @@
     }
 
     .media-card-compact .body {
-        padding: 8px;
+        padding: 12px;
     }
 
     .media-card-compact .body strong {
-        font-size: 11px;
-        line-height: 1.2;
+        font-size: 14px;
+        line-height: 1.3;
         display: block;
-        margin-bottom: 3px;
+        margin-bottom: 4px;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
@@ -608,17 +542,17 @@
 
     .media-meta-compact {
         color: var(--muted);
-        font-size: 9px;
+        font-size: 11px;
     }
 
     .thumb-overlay-compact {
         position: absolute;
-        bottom: 6px;
-        right: 6px;
+        bottom: 8px;
+        right: 8px;
         background: rgba(0,0,0,.6);
-        padding: 2px 6px;
-        border-radius: 8px;
-        font-size: 8px;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 10px;
         color: white;
     }
 
@@ -627,30 +561,19 @@
         .split-container {
             grid-template-columns: 1fr;
             gap: 20px;
-            min-height: auto;
         }
 
         .hot-properties-side, .media-side {
-            padding: 14px;
-            max-width: 100%; /* На мобильных занимает всю ширину */
+            padding: 16px;
         }
 
         .section-header h3 {
-            font-size: 15px;
+            font-size: 16px;
         }
 
         .slider-btn {
-            width: 26px;
-            height: 26px;
-        }
-
-        .slider-container {
-            height: 200px;
-        }
-
-        .listing-card-compact,
-        .media-card-compact {
-            max-width: 300px;
+            width: 28px;
+            height: 28px;
         }
     }
 
@@ -664,120 +587,35 @@
             margin-bottom: 20px;
         }
 
-        .hot-properties-side, .media-side {
-            padding: 12px;
-        }
-
-        .section-header {
-            margin-bottom: 10px;
-        }
-
-        .section-header h3 {
-            font-size: 14px;
-        }
-
-        .slider-container {
-            height: 180px;
-        }
-
-        .listing-card-compact {
-            max-height: 180px;
-            max-width: 260px;
-        }
-
-        .listing-card-compact .thumb {
-            height: 70px;
-        }
-
-        .listing-card-compact .body {
-            padding: 6px;
-        }
-
         .listing-card-compact .body strong {
-            font-size: 9px;
+            font-size: 13px;
         }
 
-        .listing-card-compact .price {
+        .meta-compact {
             font-size: 10px;
         }
 
-        .listing-card-compact .info-grid {
-            grid-template-columns: 1fr;
-            gap: 3px;
+        .price-compact {
+            font-size: 13px;
         }
 
-        .listing-card-compact .property-footer {
-            flex-direction: column;
-            gap: 6px;
-            align-items: flex-start;
-        }
-
-        .btn-primary-compact {
-            width: 100%;
-            justify-content: center;
-            font-size: 7px;
-            padding: 3px 6px;
-        }
-
-        .media-card-compact {
-            max-height: 180px;
-            max-width: 260px;
-        }
-
-        .media-card-compact .thumb {
-            height: 100px;
+        .btn-compact {
+            padding: 6px 10px;
+            font-size: 11px;
         }
     }
 
     @media (max-width: 480px) {
         .hot-properties-side, .media-side {
-            padding: 10px;
+            padding: 12px;
         }
 
         .section-header {
-            margin-bottom: 8px;
-        }
-
-        .section-header h3 {
-            font-size: 13px;
+            margin-bottom: 12px;
         }
 
         .slider-slide {
-            padding: 0 6px;
-        }
-
-        .slider-container {
-            height: 160px;
-        }
-
-        .listing-card-compact {
-            max-height: 160px;
-            max-width: 220px;
-        }
-
-        .listing-card-compact .thumb {
-            height: 60px;
-        }
-
-        .listing-card-compact .body {
-            padding: 5px;
-        }
-
-        .listing-card-compact .body strong {
-            font-size: 8px;
-        }
-
-        .listing-card-compact .price {
-            font-size: 9px;
-        }
-
-        .media-card-compact {
-            max-height: 160px;
-            max-width: 220px;
-        }
-
-        .media-card-compact .thumb {
-            height: 80px;
+            padding: 0 2px;
         }
     }
 
@@ -796,6 +634,7 @@
         width: 100%;
     }
 </style>
+
 <!-- Hero -->
 <section class="hero">
     <div class="container">
@@ -818,7 +657,7 @@
                 <i class="fas fa-location-arrow text-lg"></i>
             </button>
 
-            <button type="submit" class="btn btn-primary">Найти</button>
+            <button type="submit" class="btn-primary">Найти</button>
 
             <!-- Скрытый инпут для геолокации -->
             <input type="hidden" id="geo-coords" name="radius_filter">
@@ -876,66 +715,35 @@
             </div>
             <div class="slider-container">
                 <div class="slider-track" id="hot-properties-track">
-{% for property in hot_properties %}
-<div class="slider-slide">
-    <div class="listing-card-compact">
-        {% if property.is_hot %}
-        <div class="hot-property-badge-compact">🔥 Горячее</div>
-        {% endif %}
-
-        <div class="thumb">
-            {% if property.images.all %}
-                <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}">
-            {% else %}
-                <div>Фото отсутствует</div>
-            {% endif %}
-        </div>
-
-        <div class="body">
-            <div class="property-header">
-                <div class="property-type">{{ property.get_property_type_display }}</div>
-                <strong>{{ property.title|truncatechars:40 }}</strong>
-            </div>
-
-            <div class="property-info">
-                <div class="info-grid">
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fas fa-door-open"></i></div>
-                        <div>
-                            <div class="info-value">{{ property.rooms }} комн.</div>
-                            <div class="info-label">Комнаты</div>
+                    {% for property in hot_properties %}
+                    <div class="slider-slide">
+                        <div class="listing-card-compact">
+                            {% if property.is_hot %}
+                            <div class="hot-property-badge-compact">🔥 Горячее</div>
+                            {% endif %}
+                            <div class="thumb">
+                                {% if property.images.all %}
+                                    <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}">
+                                {% else %}
+                                    <div>
+                                        {{ property.title|truncatechars:30 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="body">
+                                <strong>{{ property.title }}</strong>
+                                <div class="meta-compact">
+                                    <span>{{ property.rooms }} комн.</span>
+                                    <span>{{ property.total_area|floatformat:"0" }} м²</span>
+                                    <span class="price-compact">{{ property.price|floatformat:"0" }} ₽</span>
+                                </div>
+                                <div class="card-actions-compact">
+                                    <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}{% endif %}" class="btn-compact btn-primary-compact">Подробнее</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fas fa-arrows-alt"></i></div>
-                        <div>
-                            <div class="info-value">{{ property.total_area|floatformat:"0" }} м²</div>
-                            <div class="info-label">Площадь</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="property-footer">
-                <div class="price-section">
-                    <div class="price">
-                        {% if property.price %}
-                            {{ property.price|floatformat:"0" }} ₽
-                        {% else %}
-                            Цена не указана
-                        {% endif %}
-                    </div>
-                </div>
-                <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}{% endif %}"
-                   class="btn-primary-compact">
-                    <span>Подробнее</span>
-                    <i class="fas fa-arrow-right"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-{% endfor %}
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -962,21 +770,30 @@
                                 <div class="thumb">
                                     {% if media.thumbnail_url %}
                                         <img src="{{ media.thumbnail_url }}" alt="{{ media.title }}">
-                                    {% elif media.thumbnail %}
-                                        <img src="{{ media.thumbnail.url }}" alt="{{ media.title }}">
+                                    {% elif media.media_type == 'video' %}
+                                        <div style="background: linear-gradient(135deg, #7c66ff, #30d0ff); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;">
+                                            📹 Видео
+                                        </div>
+                                    {% elif media.media_type == 'photo' %}
+                                        <div style="background: linear-gradient(135deg, #ff6a3d, #ffba3b); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;">
+                                            📷 Фото
+                                        </div>
                                     {% else %}
-                                        <div class="flex items-center justify-center h-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 text-white text-xs font-medium">
-                                            WinWinDeal
+                                        <div style="background: linear-gradient(135deg, #51d67b, #30d0ff); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;">
+                                            📊 Аналитика
                                         </div>
                                     {% endif %}
-                                    <div class="thumb-overlay-compact">
-                                        <i class="fas fa-play mr-1"></i>{{ media.get_type_display }}
-                                    </div>
                                 </div>
                                 <div class="body">
-                                    <strong>{{ media.title|truncatechars:60 }}</strong>
+                                    <strong>{{ media.title }}</strong>
                                     <div class="media-meta-compact">
-                                        <time datetime="{{ media.created_at|date:'Y-m-d' }}">{{ media.created_at|date:"d.m.Y" }}</time>
+                                        {% if media.media_type == 'video' %}
+                                            {{ media.duration|default:"Видео" }}
+                                        {% elif media.media_type == 'photo' %}
+                                            {{ media.photo_count|default:"1" }} фото
+                                        {% else %}
+                                            {{ media.read_time|default:"5 мин" }} чтения
+                                        {% endif %}
                                     </div>
                                 </div>
                             </article>
@@ -990,32 +807,35 @@
 </section>
 
 <script>
+document.addEventListener('DOMContentLoaded', function() {
     // Слайдер для горячих предложений
     const hotTrack = document.getElementById('hot-properties-track');
     const hotSlides = document.querySelectorAll('#hot-properties-track .slider-slide');
     const hotPrevBtn = document.querySelector('.prev-hot');
     const hotNextBtn = document.querySelector('.next-hot');
 
-    let hotCurrentIndex = 0;
+    let hotCurrentSlide = 0;
+    const hotSlideCount = hotSlides.length;
 
     function updateHotSlider() {
-        const slideWidth = hotSlides[0].offsetWidth;
-        hotTrack.style.transform = `translateX(-${hotCurrentIndex * slideWidth}px)`;
+        if (hotTrack) {
+            hotTrack.style.transform = `translateX(-${hotCurrentSlide * 100}%)`;
+        }
     }
 
-    hotNextBtn.addEventListener('click', () => {
-        if (hotCurrentIndex < hotSlides.length - 1) {
-            hotCurrentIndex++;
+    if (hotPrevBtn) {
+        hotPrevBtn.addEventListener('click', () => {
+            hotCurrentSlide = (hotCurrentSlide - 1 + hotSlideCount) % hotSlideCount;
             updateHotSlider();
-        }
-    });
+        });
+    }
 
-    hotPrevBtn.addEventListener('click', () => {
-        if (hotCurrentIndex > 0) {
-            hotCurrentIndex--;
+    if (hotNextBtn) {
+        hotNextBtn.addEventListener('click', () => {
+            hotCurrentSlide = (hotCurrentSlide + 1) % hotSlideCount;
             updateHotSlider();
-        }
-    });
+        });
+    }
 
     // Слайдер для медиа
     const mediaTrack = document.getElementById('media-track');
@@ -1023,37 +843,43 @@
     const mediaPrevBtn = document.querySelector('.prev-media');
     const mediaNextBtn = document.querySelector('.next-media');
 
-    let mediaCurrentIndex = 0;
+    let mediaCurrentSlide = 0;
+    const mediaSlideCount = mediaSlides.length;
 
     function updateMediaSlider() {
-        const slideWidth = mediaSlides[0].offsetWidth;
-        mediaTrack.style.transform = `translateX(-${mediaCurrentIndex * slideWidth}px)`;
+        if (mediaTrack) {
+            mediaTrack.style.transform = `translateX(-${mediaCurrentSlide * 100}%)`;
+        }
     }
 
-    mediaNextBtn.addEventListener('click', () => {
-        if (mediaCurrentIndex < mediaSlides.length - 1) {
-            mediaCurrentIndex++;
+    if (mediaPrevBtn) {
+        mediaPrevBtn.addEventListener('click', () => {
+            mediaCurrentSlide = (mediaCurrentSlide - 1 + mediaSlideCount) % mediaSlideCount;
             updateMediaSlider();
-        }
-    });
+        });
+    }
 
-    mediaPrevBtn.addEventListener('click', () => {
-        if (mediaCurrentIndex > 0) {
-            mediaCurrentIndex--;
+    if (mediaNextBtn) {
+        mediaNextBtn.addEventListener('click', () => {
+            mediaCurrentSlide = (mediaCurrentSlide + 1) % mediaSlideCount;
             updateMediaSlider();
-        }
-    });
+        });
+    }
 
-    // Обновление слайдеров при изменении размера окна
-    window.addEventListener('resize', () => {
-        updateHotSlider();
-        updateMediaSlider();
-    });
+    // Автопереключение слайдеров только если есть больше одного слайда
+    if (hotSlideCount > 1) {
+        setInterval(() => {
+            hotCurrentSlide = (hotCurrentSlide + 1) % hotSlideCount;
+            updateHotSlider();
+        }, 5000);
+    }
 
-    // Инициализация слайдеров
-    document.addEventListener('DOMContentLoaded', () => {
-        updateHotSlider();
-        updateMediaSlider();
-    });
+    if (mediaSlideCount > 1) {
+        setInterval(() => {
+            mediaCurrentSlide = (mediaCurrentSlide + 1) % mediaSlideCount;
+            updateMediaSlider();
+        }, 6000);
+    }
+});
 </script>
 {% endblock %}

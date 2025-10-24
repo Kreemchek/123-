@@ -317,7 +317,6 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['YANDEX_MAPS_API_KEY'] = settings.YANDEX_MAPS_API_KEY
-
         context['YANDEX_GEO_SUGGEST_API_KEY'] = settings.YANDEX_GEO_SUGGEST_API_KEY
         context['max_images'] = 10
         context['property_type'] = get_object_or_404(PropertyType, name=self.kwargs['property_type'])
@@ -326,8 +325,52 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
         context['step'] = 1
         return context
 
+    def validate_image_dimensions(self, image):
+        """Проверка размеров изображения на сервере"""
+        from PIL import Image
+        from io import BytesIO
+
+        try:
+            # Проверка размера файла
+            if image.size > 5 * 1024 * 1024:  # 5MB
+                return False, "Размер файла превышает 5MB"
+
+            # Проверка размеров изображения
+            img = Image.open(image)
+            width, height = img.size
+            if width > 1280 or height > 720:
+                return False, f"Размер изображения ({width}x{height}) превышает 1280x720 пикселей"
+
+            return True, None
+        except Exception as e:
+            return False, f"Ошибка при обработке изображения: {str(e)}"
+
     def form_valid(self, form):
         with transaction.atomic():
+            # Валидация основного изображения
+            main_image = self.request.FILES.get('main_image')
+            if main_image:
+                is_valid, error_message = self.validate_image_dimensions(main_image)
+                if not is_valid:
+                    form.add_error('main_image', error_message)
+                    return self.form_invalid(form)
+            else:
+                form.add_error('main_image', 'Главное изображение обязательно')
+                return self.form_invalid(form)
+
+            # Валидация дополнительных изображений
+            additional_images = self.request.FILES.getlist('images')
+            if len(additional_images) > 10:
+                form.add_error(None, "Максимальное количество изображений - 10")
+                return self.form_invalid(form)
+
+            for idx, image in enumerate(additional_images):
+                is_valid, error_message = self.validate_image_dimensions(image)
+                if not is_valid:
+                    form.add_error('images', f"Изображение {idx + 1}: {error_message}")
+                    return self.form_invalid(form)
+
+            # Остальной код создания объекта...
             listing_type_id = self.request.session.get('selected_listing_type')
             if not listing_type_id:
                 form.add_error(None, "Тип размещения не выбран")
@@ -369,10 +412,6 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
                 form.add_error(None, "Профиль брокера не найден. Заполните данные в разделе профиля.")
                 return self.form_invalid(form)
 
-            if 'main_image' not in self.request.FILES:
-                form.add_error('main_image', 'Главное изображение обязательно')
-                return self.form_invalid(form)
-
             # Установка временных значений для location и address
             self.object.location = "Не указано"
             self.object.address = "Адрес будет указан позже"
@@ -381,9 +420,6 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
 
             # Обработка изображений
             images = self.request.FILES.getlist('images')
-            if len(images) > 10:
-                form.add_error(None, "Максимальное количество изображений - 10")
-                return self.form_invalid(form)
 
             main_image = self.request.FILES['main_image']
             PropertyImage.objects.create(
