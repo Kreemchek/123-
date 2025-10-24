@@ -3051,6 +3051,8 @@ function initMobileFilters() {
 function loadMetroStationsForCity(city) {
     if (!city) return;
 
+    console.log(`Загрузка станций метро для города: ${city}`);
+
     // Показываем индикатор загрузки
     const metroInput = document.getElementById('metro-input');
     if (metroInput) {
@@ -3060,19 +3062,28 @@ function loadMetroStationsForCity(city) {
 
     // Загружаем станции метро через AJAX
     fetch(`/properties/api/metro-stations/?city=${encodeURIComponent(city)}`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
+            console.log('Получены станции метро:', data);
             updateMetroDropdown(data.metro_stations);
 
             // Восстанавливаем кнопку
             if (metroInput) {
                 metroInput.disabled = false;
+                updateSelectedStationsText(); // Обновляем текст выбранных станций
                 const selectedMetroText = document.getElementById('selected-metro-text');
                 if (selectedMetroText) {
                     metroInput.innerHTML = selectedMetroText.outerHTML +
                         '<i class="bi bi-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>';
                 }
             }
+
+            showNotification(`Станции метро для ${city} загружены`, 'success');
         })
         .catch(error => {
             console.error('Ошибка загрузки станций метро:', error);
@@ -3081,6 +3092,7 @@ function loadMetroStationsForCity(city) {
                 metroInput.innerHTML = '<span>Ошибка загрузки метро</span>' +
                     '<i class="bi bi-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>';
             }
+            showNotification('Ошибка загрузки станций метро', 'error');
         });
 }
 
@@ -3154,6 +3166,8 @@ function updateMetroDropdown(metroStations) {
 function loadMobileMetroStationsForCity(city) {
     if (!city) return;
 
+    console.log(`Загрузка станций метро для мобильной версии: ${city}`);
+
     const metroInput = document.getElementById('mobile-metro-input');
     if (metroInput) {
         metroInput.innerHTML = '<span class="text-gray-500">Загрузка станций метро...</span>';
@@ -3161,26 +3175,36 @@ function loadMobileMetroStationsForCity(city) {
     }
 
     fetch(`/properties/api/metro-stations/?city=${encodeURIComponent(city)}`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
+            console.log('Получены станции метро для мобильной версии:', data);
             updateMobileMetroDropdown(data.metro_stations);
 
             if (metroInput) {
                 metroInput.disabled = false;
+                updateMobileSelectedStationsText(); // Обновляем текст выбранных станций
                 const selectedMetroText = document.getElementById('mobile-selected-metro-text');
                 if (selectedMetroText) {
                     metroInput.innerHTML = selectedMetroText.outerHTML +
                         '<i class="bi bi-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>';
                 }
             }
+
+            showNotification(`Станции метро для ${city} загружены`, 'success');
         })
         .catch(error => {
-            console.error('Ошибка загрузки станций метро:', error);
+            console.error('Ошибка загрузки станций метро для мобильной версии:', error);
             if (metroInput) {
                 metroInput.disabled = false;
                 metroInput.innerHTML = '<span>Ошибка загрузки метро</span>' +
                     '<i class="bi bi-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>';
             }
+            showNotification('Ошибка загрузки станций метро', 'error');
         });
 }
 
@@ -3267,6 +3291,31 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
+// Функция для проверки и загрузки станций метро при открытии модального окна
+function ensureMetroStationsLoaded() {
+    const selectedCity = document.getElementById('city-hidden-input')?.value;
+    if (selectedCity) {
+        // Проверяем, загружены ли уже станции метро
+        const metroContent = document.querySelector('#metro-dropdown .metro-lines-container');
+        if (!metroContent || metroContent.innerHTML.includes('Для выбранного города нет данных') || metroContent.children.length === 0) {
+            console.log('Станции метро не загружены, загружаем...');
+            loadMetroStationsForCity(selectedCity);
+        }
+    }
+}
+
+// Функция для мобильной версии
+function ensureMobileMetroStationsLoaded() {
+    const selectedCity = document.getElementById('mobile-city-hidden-input')?.value;
+    if (selectedCity) {
+        const metroContent = document.querySelector('#mobile-metro-dropdown .metro-lines-container');
+        if (!metroContent || metroContent.innerHTML.includes('Для выбранного города нет данных') || metroContent.children.length === 0) {
+            console.log('Станции метро для мобильной версии не загружены, загружаем...');
+            loadMobileMetroStationsForCity(selectedCity);
+        }
+    }
+}
+
 // Мобильные модальные окна для города и метро
 function initMobileModals() {
     // Обновленные функции для управления модальными окнами
@@ -3345,11 +3394,10 @@ function initMobileModals() {
             if (selectedCityText) selectedCityText.textContent = city;
             if (cityHiddenInput) cityHiddenInput.value = city;
 
-            // Загружаем станции метро для выбранного города
+            // Загружаем станции метро для выбранного города СРАЗУ
             loadMobileMetroStationsForCity(city);
 
             closeAllMobileModals();
-            showNotification(`Загружаем станции метро для ${city}`, 'info');
         });
     });
 
@@ -3387,11 +3435,10 @@ function initMobileModals() {
                 if (selectedCityText) selectedCityText.textContent = mobileCustomCity;
                 if (cityHiddenInput) cityHiddenInput.value = mobileCustomCity;
 
-                // Загружаем станции метро для выбранного города
+                // Загружаем станции метро для выбранного города СРАЗУ
                 loadMobileMetroStationsForCity(mobileCustomCity);
 
                 closeAllMobileModals();
-                showNotification(`Загружаем станции метро для ${mobileCustomCity}`, 'info');
             }
         });
     }
@@ -3422,6 +3469,9 @@ function initMobileModals() {
                 showNotification('Сначала выберите город', 'warning');
                 return;
             }
+
+            // Убеждаемся, что станции метро загружены
+            ensureMobileMetroStationsLoaded();
 
             if (typeof closeMobileFilters === 'function') {
                 closeMobileFilters();
@@ -3898,39 +3948,40 @@ function loadYandexMaps() {
           });
       });
 
-      // Обновляем обработчик выбора города (ПК версия)
+      // Обработчик для выбора города (ПК версия) - ИЗМЕНЕН
       document.querySelectorAll('.city-option').forEach(option => {
           option.addEventListener('click', function() {
               const city = this.getAttribute('data-city');
+
+              console.log(`Выбран город: ${city}`);
 
               // Обновляем интерфейс
               document.getElementById('selected-city-text').textContent = city;
               document.getElementById('city-hidden-input').value = city;
 
-              // Загружаем станции метро для выбранного города
+              // Загружаем станции метро для выбранного города СРАЗУ
               loadMetroStationsForCity(city);
 
               // Закрываем модальное окно
               document.getElementById('city-dropdown').classList.add('hidden');
-
-              // Показываем уведомление
-              showNotification(`Загружаем станции метро для ${city}`, 'info');
           });
       });
 
-      // Обработчик для ручного ввода города
+      // Обработчик для ручного ввода города - ИЗМЕНЕН
       document.getElementById('use-custom-city')?.addEventListener('click', function() {
           const cityInput = document.getElementById('city-search');
           if (cityInput && cityInput.value.trim()) {
               const city = cityInput.value.trim();
 
+              console.log(`Выбран город через ручной ввод: ${city}`);
+
               document.getElementById('selected-city-text').textContent = city;
               document.getElementById('city-hidden-input').value = city;
 
+              // Загружаем станции метро для выбранного города СРАЗУ
               loadMetroStationsForCity(city);
-              document.getElementById('city-dropdown').classList.add('hidden');
 
-              showNotification(`Загружаем станции метро для ${city}`, 'info');
+              document.getElementById('city-dropdown').classList.add('hidden');
           }
       });
 
@@ -4041,8 +4092,11 @@ function loadYandexMaps() {
               return;
           }
 
+          // Убеждаемся, что станции метро загружены
+          ensureMetroStationsLoaded();
+
           metroDropdown.classList.remove('hidden');
-          metroSearch.focus();
+          // metroSearch.focus();
           updateSelectedStationsInModal();
       });
 
@@ -4177,11 +4231,13 @@ function loadYandexMaps() {
       // Загружаем станции метро при загрузке страницы, если город уже выбран
       const selectedCity = document.getElementById('city-hidden-input')?.value;
       if (selectedCity) {
+          console.log('Город уже выбран при загрузке страницы, загружаем станции метро:', selectedCity);
           loadMetroStationsForCity(selectedCity);
       }
 
       const mobileSelectedCity = document.getElementById('mobile-city-hidden-input')?.value;
       if (mobileSelectedCity) {
+          console.log('Город уже выбран в мобильной версии при загрузке страницы, загружаем станции метро:', mobileSelectedCity);
           loadMobileMetroStationsForCity(mobileSelectedCity);
       }
   });
