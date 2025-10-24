@@ -22,6 +22,12 @@
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
+    .custom-input:focus {
+        border-color: #7b61ff !important;
+        box-shadow: 0 0 0 3px rgba(123, 97, 255, 0.1);
+        outline: none;
+    }
+
     .password-container {
         position: relative;
     }
@@ -36,13 +42,19 @@
     }
 
     .btn-primary {
-        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        background: linear-gradient(135deg, #7b61ff, #36d1dc);
         color: white;
         border: none;
         border-radius: 0.75rem;
         padding: 1rem;
         font-weight: 500;
         transition: all 0.2s ease;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #6a50e6, #2bb7c2);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(123, 97, 255, 0.3);
     }
 
     @keyframes shake {
@@ -68,7 +80,7 @@
 
 <div class="registration-container">
     <h1 class="text-2xl font-semibold text-center mb-8 text-gray-900">
-        <svg class="w-8 h-8 inline-block mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-8 h-8 inline-block mr-2" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
         </svg>
         Создать аккаунт
@@ -131,11 +143,12 @@
        <div class="flex items-center space-x-2 text-sm">
     <input type="checkbox"
            id="terms"
-           class="w-4 h-4 border-gray-300 rounded focus:ring-blue-500"
+           class="w-4 h-4 border-gray-300 rounded focus:ring-2 focus:ring-purple-500"
            required>
     <label for="terms" class="text-gray-600">
         Принимаю <a href="{{ agreement.url }}"
-                   class="text-blue-600 hover:underline"
+                   class="hover:underline"
+                   style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"
                    target="_blank">условия использования</a>
     </label>
 </div>
@@ -155,7 +168,7 @@
         </div>
 
         <div class="text-center">
-            <a href="{% url 'login' %}" class="text-blue-600 hover:underline text-sm">
+            <a href="{% url 'login' %}" class="hover:underline text-sm" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
                 Войти в систему
             </a>
         </div>
@@ -166,7 +179,18 @@
     function togglePassword(icon) {
         const input = icon.previousElementSibling;
         input.type = input.type === 'password' ? 'text' : 'password';
-        icon.querySelector('svg').classList.toggle('text-blue-600');
+
+        // Изменяем цвет иконки на градиентный
+        if (input.type === 'text') {
+            icon.querySelector('svg').style.background = 'linear-gradient(135deg, #7b61ff, #36d1dc)';
+            icon.querySelector('svg').style.webkitBackgroundClip = 'text';
+            icon.querySelector('svg').style.webkitTextFillColor = 'transparent';
+        } else {
+            icon.querySelector('svg').style.background = 'none';
+            icon.querySelector('svg').style.webkitBackgroundClip = 'border-box';
+            icon.querySelector('svg').style.webkitTextFillColor = 'currentColor';
+            icon.querySelector('svg').style.color = '#64748b';
+        }
     }
 </script>
 {% endblock %}
