@@ -3186,30 +3186,31 @@ function initMobileModals() {
         });
     }
 
-    // Функция для обновления мобильного списка метро
-    function updateMobileMetroStations(city) {
-        const mobileSelectedMetroText = document.getElementById('mobile-selected-metro-text');
 
-        if (mobileSelectedMetroText) {
-            mobileSelectedMetroText.innerHTML = '<span class="text-gray-500">Загрузка станций...</span>';
-        }
+// Функция для обновления мобильного списка метро
+function updateMobileMetroStations(city) {
+    const mobileSelectedMetroText = document.getElementById('mobile-selected-metro-text');
 
-        fetch(`/api/metro-stations/?city=${encodeURIComponent(city)}`)
-            .then(response => response.json())
-            .then(data => {
-                updateMobileMetroDropdown(data.metro_lines);
-
-                if (mobileSelectedMetroText) {
-                    mobileSelectedMetroText.innerHTML = 'Выберите станции метро';
-                }
-            })
-            .catch(error => {
-                console.error('Error loading metro stations:', error);
-                if (mobileSelectedMetroText) {
-                    mobileSelectedMetroText.innerHTML = 'Ошибка загрузки';
-                }
-            });
+    if (mobileSelectedMetroText) {
+        mobileSelectedMetroText.innerHTML = '<span class="text-gray-500">Загрузка станций...</span>';
     }
+
+    fetch(`/api/metro-stations/?city=${encodeURIComponent(city)}`)
+        .then(response => response.json())
+        .then(data => {
+            updateMobileMetroDropdown(data.metro_lines || data.metro_stations); // Поддержка обоих форматов
+
+            if (mobileSelectedMetroText) {
+                mobileSelectedMetroText.innerHTML = 'Выберите станции метро';
+            }
+        })
+        .catch(error => {
+            console.error('Error loading metro stations:', error);
+            if (mobileSelectedMetroText) {
+                mobileSelectedMetroText.innerHTML = 'Ошибка загрузки';
+            }
+        });
+}
 
     // Функция для обновления мобильного модального окна метро
     function updateMobileMetroDropdown(metroLines) {
@@ -4024,7 +4025,7 @@ function updateMetroStations(city) {
         .then(response => response.json())
         .then(data => {
             // Обновляем модальное окно метро
-            updateMetroDropdown(data.metro_lines);
+            updateMetroDropdown(data.metro_lines || data.metro_stations); // Поддержка обоих форматов
 
             // Обновляем скрытое поле и текст
             if (metroInput) {
