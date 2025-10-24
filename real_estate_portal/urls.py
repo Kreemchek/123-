@@ -5,7 +5,6 @@ from accounts.views import home_view
 from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
-from properties.views import MetroStationsView  # Добавьте этот импорт
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -15,11 +14,8 @@ urlpatterns = [
     path('brokers/', include('brokers.urls')),
     path('payment/', include('payments.urls')),
     path('developers/', include('developers.urls')),
-    path('properties/', include('properties.urls')),  # Убедитесь, что это есть
-    path('media-content/', include('media_content.urls')),
-
-    # Добавьте прямой путь для API метро
-    path('api/metro-stations/', MetroStationsView.as_view(), name='metro-stations'),
+    path('properties/', include('properties.urls')),
+    path('media-content/', include('media_content.urls')),  # ИЗМЕНИТЕ ЭТУ СТРОКУ
 
     path('password_reset/',
          auth_views.PasswordResetView.as_view(
