@@ -14,8 +14,11 @@ urlpatterns = [
     path('brokers/', include('brokers.urls')),
     path('payment/', include('payments.urls')),
     path('developers/', include('developers.urls')),
-    path('properties/', include('properties.urls')),
-    path('media-content/', include('media_content.urls')),  # ИЗМЕНИТЕ ЭТУ СТРОКУ
+    path('properties/', include('properties.urls')),  # Убедитесь, что это есть
+    path('media-content/', include('media_content.urls')),
+
+    # API endpoints - добавьте их здесь
+    path('api/metro-stations/', include('properties.urls')),  # ИЛИ этот вариант
 
     path('password_reset/',
          auth_views.PasswordResetView.as_view(

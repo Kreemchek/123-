@@ -3196,9 +3196,15 @@ function updateMobileMetroStations(city) {
     }
 
     fetch(`/api/metro-stations/?city=${encodeURIComponent(city)}`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
-            updateMobileMetroDropdown(data.metro_lines || data.metro_stations); // Поддержка обоих форматов
+            console.log('Mobile metro stations data:', data); // Для отладки
+            updateMobileMetroDropdown(data.metro_lines);
 
             if (mobileSelectedMetroText) {
                 mobileSelectedMetroText.innerHTML = 'Выберите станции метро';
@@ -4020,12 +4026,19 @@ function updateMetroStations(city) {
         selectedMetroText.innerHTML = '<span class="text-gray-500">Загрузка станций метро...</span>';
     }
 
-    // Отправляем AJAX запрос для получения станций метро
+    // Используем правильный путь
     fetch(`/api/metro-stations/?city=${encodeURIComponent(city)}`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
+            console.log('Metro stations data:', data); // Для отладки
+
             // Обновляем модальное окно метро
-            updateMetroDropdown(data.metro_lines || data.metro_stations); // Поддержка обоих форматов
+            updateMetroDropdown(data.metro_lines);
 
             // Обновляем скрытое поле и текст
             if (metroInput) {
