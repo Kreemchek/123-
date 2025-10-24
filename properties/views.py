@@ -882,9 +882,46 @@ class MetroStationsView(View):
     def get(self, request):
         city = request.GET.get('city', '')
         if not city:
-            return JsonResponse({'metro_stations': []})
+            return JsonResponse({'metro_stations': [], 'metro_lines': []})
 
+        # Получаем станции для города
         stations = MetroStation.objects.filter(city__iexact=city).order_by('line', 'name')
+
+        # Группируем по линиям для удобства отображения
+        metro_lines = []
+        if city:
+            lines = stations.exclude(line__isnull=True).exclude(line='').values_list('line', flat=True).distinct()
+            for line in lines:
+                line_stations = stations.filter(line=line).order_by('name')
+                if line_stations.exists():
+                    first_station = line_stations.first()
+                    metro_lines.append({
+                        'line': line,
+                        'line_color': first_station.line_color if first_station.line_color else '#cccccc',
+                        'stations': [
+                            {
+                                'name': station.name,
+                                'line_color': station.line_color if station.line_color else '#cccccc'
+                            }
+                            for station in line_stations
+                        ]
+                    })
+
+            # Добавляем станции без линии в отдельную группу
+            no_line_stations = stations.filter(Q(line__isnull=True) | Q(line=''))
+            if no_line_stations.exists():
+                metro_lines.append({
+                    'line': None,
+                    'line_color': '#cccccc',
+                    'stations': [
+                        {
+                            'name': station.name,
+                            'line_color': '#cccccc'
+                        }
+                        for station in no_line_stations
+                    ]
+                })
+
         data = {
             'metro_stations': [
                 {
@@ -894,10 +931,10 @@ class MetroStationsView(View):
                     'line_color': station.line_color if station.line_color else '#cccccc'
                 }
                 for station in stations
-            ]
+            ],
+            'metro_lines': metro_lines
         }
         return JsonResponse(data)
-
 
 def home_view(request):
     featured_properties = Property.objects.filter(is_premium=True, is_approved=True)[:6]
