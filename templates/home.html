@@ -341,33 +341,34 @@
         padding: 0 4px;
     }
 
-    /* Уменьшенные стили для карточек объектов - как в property_list */
+    /* Уменьшенные стили для карточек объектов - УМЕНЬШЕНА ШИРИНА */
     .listing-card-compact {
         position: relative;
-        border-radius: 20px;
+        border-radius: 16px;
         background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
         border: 1px solid rgba(255, 255, 255, 0.8);
         box-shadow:
-            0 4px 20px rgba(0, 0, 0, 0.08),
+            0 4px 15px rgba(0, 0, 0, 0.08),
             0 1px 0 rgba(255, 255, 255, 0.8) inset,
             0 -1px 0 rgba(0, 0, 0, 0.02) inset;
         overflow: hidden;
-        position: relative;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         backdrop-filter: blur(10px);
         height: 100%;
+        max-width: 280px; /* Ограничиваем максимальную ширину */
+        margin: 0 auto; /* Центрируем карточку */
     }
 
     .listing-card-compact:hover {
-        transform: translateY(-8px) scale(1.02);
+        transform: translateY(-6px) scale(1.02);
         box-shadow:
-            0 25px 50px rgba(0, 0, 0, 0.15),
+            0 15px 30px rgba(0, 0, 0, 0.12),
             0 1px 0 rgba(255, 255, 255, 0.8) inset,
             0 -1px 0 rgba(0, 0, 0, 0.02) inset;
     }
 
     .listing-card-compact .thumb {
-        aspect-ratio: 1/1; /* Квадратное фото */
+        aspect-ratio: 1/1;
         position: relative;
         overflow: hidden;
         width: 100%;
@@ -394,35 +395,35 @@
         color: white;
         font-weight: 800;
         background: linear-gradient(135deg, rgba(124,102,255,.35), rgba(48,208,255,.25));
-        font-size: 14px;
+        font-size: 12px;
         text-align: center;
-        padding: 10px;
+        padding: 8px;
     }
 
     /* Бейдж "Горячее" - уменьшенный */
     .hot-property-badge-compact {
         position: absolute;
-        top: 8px;
-        right: 8px;
+        top: 6px;
+        right: 6px;
         background: linear-gradient(45deg, #ff4d4d, #f95700);
         color: white;
-        padding: 4px 8px;
-        border-radius: 12px;
+        padding: 3px 6px;
+        border-radius: 10px;
         font-weight: bold;
-        font-size: 10px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        font-size: 9px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         z-index: 2;
     }
 
     .listing-card-compact .body {
-        padding: 12px;
+        padding: 10px;
     }
 
     .listing-card-compact .body strong {
-        font-size: 14px;
+        font-size: 13px;
         line-height: 1.3;
         display: block;
-        margin-bottom: 6px;
+        margin-bottom: 5px;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
@@ -432,38 +433,38 @@
     .meta-compact {
         display: flex;
         flex-wrap: wrap;
-        gap: 6px;
+        gap: 5px;
         color: var(--muted);
-        font-size: 11px;
-        margin-bottom: 8px;
+        font-size: 10px;
+        margin-bottom: 6px;
     }
 
     .price-compact {
         font-weight: 800;
-        font-size: 14px;
+        font-size: 13px;
         margin-left: auto;
         color: var(--text);
     }
 
     .card-actions-compact {
         display: flex;
-        gap: 6px;
-        margin-top: 8px;
+        gap: 5px;
+        margin-top: 6px;
     }
 
     /* Уменьшенные кнопки */
     .btn-compact {
         cursor: pointer;
         border: none;
-        padding: 8px 12px;
-        border-radius: 10px;
+        padding: 6px 10px;
+        border-radius: 8px;
         font-weight: 700;
         transition: .25s ease;
         text-decoration: none;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 12px;
+        font-size: 11px;
     }
 
     .btn-primary-compact {
@@ -476,38 +477,39 @@
 
     .btn-primary-compact:hover {
         transform: translateY(-1px);
-        box-shadow: 0 0 0 1px rgba(124,102,255,.3), 0 0 60px rgba(92,76,255,.35);
+        box-shadow: 0 0 0 1px rgba(124,102,255,.3), 0 0 40px rgba(92,76,255,.25);
     }
 
     /* Media Section - квадратные фото */
     .media-card-compact {
-        border-radius: 20px;
+        border-radius: 16px;
         background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
         border: 1px solid rgba(255, 255, 255, 0.8);
         box-shadow:
-            0 4px 20px rgba(0, 0, 0, 0.08),
+            0 4px 15px rgba(0, 0, 0, 0.08),
             0 1px 0 rgba(255, 255, 255, 0.8) inset,
             0 -1px 0 rgba(0, 0, 0, 0.02) inset;
         overflow: hidden;
-        position: relative;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         backdrop-filter: blur(10px);
         display: block;
         text-decoration: none;
         color: inherit;
         height: 100%;
+        max-width: 280px; /* Ограничиваем максимальную ширину */
+        margin: 0 auto; /* Центрируем карточку */
     }
 
     .media-card-compact:hover {
-        transform: translateY(-8px) scale(1.02);
+        transform: translateY(-6px) scale(1.02);
         box-shadow:
-            0 25px 50px rgba(0, 0, 0, 0.15),
+            0 15px 30px rgba(0, 0, 0, 0.12),
             0 1px 0 rgba(255, 255, 255, 0.8) inset,
             0 -1px 0 rgba(0, 0, 0, 0.02) inset;
     }
 
     .media-card-compact .thumb {
-        aspect-ratio: 1/1; /* Квадратное фото */
+        aspect-ratio: 1/1;
         position: relative;
         overflow: hidden;
         width: 100%;
@@ -526,11 +528,11 @@
     }
 
     .media-card-compact .body {
-        padding: 12px;
+        padding: 10px;
     }
 
     .media-card-compact .body strong {
-        font-size: 14px;
+        font-size: 13px;
         line-height: 1.3;
         display: block;
         margin-bottom: 4px;
@@ -542,17 +544,17 @@
 
     .media-meta-compact {
         color: var(--muted);
-        font-size: 11px;
+        font-size: 10px;
     }
 
     .thumb-overlay-compact {
         position: absolute;
-        bottom: 8px;
-        right: 8px;
+        bottom: 6px;
+        right: 6px;
         background: rgba(0,0,0,.6);
-        padding: 4px 8px;
-        border-radius: 12px;
-        font-size: 10px;
+        padding: 3px 6px;
+        border-radius: 10px;
+        font-size: 9px;
         color: white;
     }
 
@@ -575,6 +577,11 @@
             width: 28px;
             height: 28px;
         }
+
+        .listing-card-compact,
+        .media-card-compact {
+            max-width: 260px; /* Немного уменьшаем на планшетах */
+        }
     }
 
     @media (max-width: 768px) {
@@ -587,21 +594,26 @@
             margin-bottom: 20px;
         }
 
+        .listing-card-compact,
+        .media-card-compact {
+            max-width: 240px; /* Еще уменьшаем на мобильных */
+        }
+
         .listing-card-compact .body strong {
-            font-size: 13px;
+            font-size: 12px;
         }
 
         .meta-compact {
-            font-size: 10px;
+            font-size: 9px;
         }
 
         .price-compact {
-            font-size: 13px;
+            font-size: 12px;
         }
 
         .btn-compact {
-            padding: 6px 10px;
-            font-size: 11px;
+            padding: 5px 8px;
+            font-size: 10px;
         }
     }
 
@@ -616,6 +628,11 @@
 
         .slider-slide {
             padding: 0 2px;
+        }
+
+        .listing-card-compact,
+        .media-card-compact {
+            max-width: 220px; /* Минимальная ширина для мобильных */
         }
     }
 
@@ -771,15 +788,15 @@
                                     {% if media.thumbnail_url %}
                                         <img src="{{ media.thumbnail_url }}" alt="{{ media.title }}">
                                     {% elif media.media_type == 'video' %}
-                                        <div style="background: linear-gradient(135deg, #7c66ff, #30d0ff); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;">
+                                        <div style="background: linear-gradient(135deg, #7c66ff, #30d0ff); display: flex; align-items: center; justify-content: center; color: white; font-size: 12px;">
                                             📹 Видео
                                         </div>
                                     {% elif media.media_type == 'photo' %}
-                                        <div style="background: linear-gradient(135deg, #ff6a3d, #ffba3b); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;">
+                                        <div style="background: linear-gradient(135deg, #ff6a3d, #ffba3b); display: flex; align-items: center; justify-content: center; color: white; font-size: 12px;">
                                             📷 Фото
                                         </div>
                                     {% else %}
-                                        <div style="background: linear-gradient(135deg, #51d67b, #30d0ff); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;">
+                                        <div style="background: linear-gradient(135deg, #51d67b, #30d0ff); display: flex; align-items: center; justify-content: center; color: white; font-size: 12px;">
                                             📊 Аналитика
                                         </div>
                                     {% endif %}
@@ -866,20 +883,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Автопереключение слайдеров только если есть больше одного слайда
-    if (hotSlideCount > 1) {
-        setInterval(() => {
+    // Автопереключение слайдов каждые 5 секунд
+    setInterval(() => {
+        if (hotSlideCount > 0) {
             hotCurrentSlide = (hotCurrentSlide + 1) % hotSlideCount;
             updateHotSlider();
-        }, 5000);
-    }
-
-    if (mediaSlideCount > 1) {
-        setInterval(() => {
+        }
+        if (mediaSlideCount > 0) {
             mediaCurrentSlide = (mediaCurrentSlide + 1) % mediaSlideCount;
             updateMediaSlider();
-        }, 6000);
-    }
+        }
+    }, 5000);
 });
 </script>
 {% endblock %}
