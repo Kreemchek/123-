@@ -143,7 +143,7 @@
                     </h3>
                     {% if not request.user.is_broker or request.user == broker.user or is_admin %}
                         <a href="{% url 'properties:property-list' %}?broker={{ broker.id }}{% if request.user.is_authenticated and request.user.is_broker and request.user == broker.user %}&my_properties=true{% endif %}"
-                           class="bg-white text-[#7b61ff] hover:bg-[#7b61ff] hover:bg-opacity-10 px-4 py-2 rounded-lg border-2 border-[#7b61ff] transition-colors">
+                           class="bg-white text-[#7b61ff] hover:bg-gradient-to-r hover:from-[#7b61ff] hover:to-[#36d1dc] hover:text-white px-4 py-2 rounded-lg border-2 border-[#7b61ff] transition-all">
                             Все объекты →
                         </a>
                     {% endif %}
@@ -177,7 +177,7 @@
                                             {% if property.floor %}
                                                 <span>•</span>
                                                 <span class="flex items-center gap-1">
-                                                    <i class="fas fa-layer-group text-sm"></i>
+                                                    <i class="fas fa-layer-group text-sm text-[#7b61ff]"></i>
                                                     {{ property.floor }}/{{ property.total_floors|default:"?" }}
                                                 </span>
                                             {% endif %}
@@ -215,8 +215,8 @@
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
                     <h3 class="text-xl font-bold text-gray-800">Отзывы ({{ reviews.count }})</h3>
                     <div class="rating flex items-center gap-2">
-                        <span class="text-lg font-medium">{{ broker.rating|default:"-" }}/5</span>
-                        <div class="stars flex text-yellow-400">
+                        <span class="text-lg font-medium text-[#7b61ff]">{{ broker.rating|default:"-" }}/5</span>
+                        <div class="stars flex text-[#7b61ff]">
                             {% for i in "12345" %}
                                 <i class="bi bi-star{% if i|add:0 <= broker.rating|default:0 %}-fill{% endif %} text-xl"></i>
                             {% endfor %}
@@ -226,13 +226,13 @@
 
                 <div class="reviews-list space-y-6">
                     {% for review in reviews|slice:":3" %}
-                        <div class="review-item bg-gray-50 rounded-xl p-4 border-2 border-gray-100">
+                        <div class="review-item bg-gradient-to-r from-[#7b61ff] to-[#36d1dc] bg-opacity-5 rounded-xl p-4 border-2 border-gray-100">
                             <div class="review-header flex justify-between items-start mb-3">
                                 <div>
                                     <h4 class="font-semibold text-gray-800">{{ review.client.first_name }}</h4>
                                     <p class="text-sm text-gray-500">{{ review.created_at|date:"d.m.Y" }}</p>
                                 </div>
-                                <div class="flex items-center gap-2 text-yellow-400">
+                                <div class="flex items-center gap-2 text-[#7b61ff]">
                                     <div class="stars flex">
                                         {% for i in "12345" %}
                                             <i class="fas fa-star{% if forloop.counter > review.rating %}-half-alt{% endif %}"></i>
