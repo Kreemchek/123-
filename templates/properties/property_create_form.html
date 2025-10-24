@@ -80,6 +80,17 @@
         box-shadow: 0 4px 6px rgba(59, 130, 246, 0.1);
     }
 
+    /* Стили для ошибок изображений */
+    .image-error {
+        color: #dc2626;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    .border-red-500 {
+        border-color: #dc2626 !important;
+    }
+
     /* Мобильная адаптация */
     @media (max-width: 768px) {
         .creation-stepper {
@@ -316,7 +327,7 @@
                 Далее →
             </button>
             <button type="submit" class="submit-btn px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 hidden">
-                Далее →
+                Опубликовать
             </button>
         </div>
     </form>
@@ -450,6 +461,7 @@
             const inputs = steps[step].querySelectorAll('input, select, textarea');
             const isRentalType = document.querySelector('.rental-type:checked')?.value;
 
+            // Валидация обычных полей
             inputs.forEach(input => {
                 if ((input.name === 'price' && isRentalType !== 'no') ||
                     (input.name === 'monthly_price' && isRentalType !== 'monthly') ||
@@ -465,28 +477,40 @@
                 }
             });
 
+            // Валидация изображений для шага 2
             if (step === 1) {
                 const mainImageInput = document.querySelector('input[name="main_image"]');
                 const additionalImagesInput = document.querySelector('input[name="images"]');
 
+                // Проверка основного изображения
                 if (mainImageInput.files.length > 0) {
                     const mainImage = mainImageInput.files[0];
                     const isMainImageValid = await checkImageDimensions(mainImage);
-                    if (!isMainImageValid) isValid = false;
+                    if (!isMainImageValid) {
+                        isValid = false;
+                        // Показываем ошибку рядом с полем
+                        showImageError(mainImageInput, 'Основное изображение не соответствует требованиям');
+                    } else {
+                        hideImageError(mainImageInput);
+                    }
                 } else {
-                    alert('Пожалуйста, загрузите основное изображение');
+                    showImageError(mainImageInput, 'Пожалуйста, загрузите основное изображение');
                     isValid = false;
                 }
 
+                // Проверка дополнительных изображений
                 if (additionalImagesInput && additionalImagesInput.files.length > 0) {
                     if (additionalImagesInput.files.length > 10) {
-                        alert('Можно загрузить не более 10 дополнительных изображений');
+                        showImageError(additionalImagesInput, 'Можно загрузить не более 10 дополнительных изображений');
                         isValid = false;
                     } else {
+                        hideImageError(additionalImagesInput);
+
                         for (let i = 0; i < additionalImagesInput.files.length; i++) {
                             const image = additionalImagesInput.files[i];
                             const isImageValid = await checkImageDimensions(image);
                             if (!isImageValid) {
+                                showImageError(additionalImagesInput, `Изображение ${i + 1} не соответствует требованиям`);
                                 isValid = false;
                                 break;
                             }
@@ -496,6 +520,34 @@
             }
 
             return isValid;
+        }
+
+        // Функции для показа/скрытия ошибок изображений
+        function showImageError(inputElement, message) {
+            // Удаляем старую ошибку
+            hideImageError(inputElement);
+
+            // Создаем элемент ошибки
+            const errorElement = document.createElement('div');
+            errorElement.className = 'image-error text-red-600 text-sm mt-1';
+            errorElement.textContent = message;
+
+            // Добавляем после поля ввода
+            inputElement.parentNode.appendChild(errorElement);
+
+            // Добавляем красную рамку к полю
+            inputElement.classList.add('border-red-500');
+        }
+
+        function hideImageError(inputElement) {
+            // Удаляем элемент ошибки
+            const existingError = inputElement.parentNode.querySelector('.image-error');
+            if (existingError) {
+                existingError.remove();
+            }
+
+            // Убираем красную рамку
+            inputElement.classList.remove('border-red-500');
         }
 
         function checkImageDimensions(file) {
