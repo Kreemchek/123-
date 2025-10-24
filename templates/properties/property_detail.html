@@ -159,7 +159,7 @@
 
     .btn-primary {
         border-radius: 9999px;
-        background: #0060f4;
+        background: linear-gradient(135deg, #7b61ff, #36d1dc);
         color: #ffffff;
         border: 2px solid transparent;
         padding: 0.6rem 1.5rem;
@@ -168,6 +168,12 @@
         align-items: center;
         justify-content: center;
         gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #6a52e0, #2bb7c5);
+        box-shadow: 0 4px 12px rgba(123, 97, 255, 0.3);
     }
 
     .btn-outline {
@@ -446,7 +452,42 @@
     }
 
     .toast.info {
-        background-color: #3b82f6;
+        background: linear-gradient(135deg, #7b61ff, #36d1dc);
+    }
+
+    /* Цвет цены */
+    .text-blue-600 {
+        color: #7b61ff !important;
+    }
+
+    /* Кнопки карты */
+    .map-controls button {
+        background: linear-gradient(135deg, #7b61ff, #36d1dc);
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .map-controls button:hover {
+        background: linear-gradient(135deg, #6a52e0, #2bb7c5);
+    }
+
+    /* Кнопка сохранения адреса */
+    #save-address-btn {
+        background: linear-gradient(135deg, #7b61ff, #36d1dc);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    #save-address-btn:hover {
+        background: linear-gradient(135deg, #6a52e0, #2bb7c5);
+        box-shadow: 0 4px 12px rgba(123, 97, 255, 0.3);
     }
 </style>
 
@@ -586,7 +627,6 @@
 </div>
 {% endif %}
 
-
                     <!-- Отделка (только для квартир) -->
                     {% if property.property_type.name == 'new_flat' or property.property_type.name == 'resale_flat' %}
                     <div class="bg-gray-50 p-4 rounded-lg">
@@ -627,7 +667,7 @@
         <div id="map-container">
             <div id="map"></div>
             <div class="map-controls">
-                <button type="button" id="locate-me" class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">
+                <button type="button" id="locate-me" class="px-2 py-1 rounded text-sm">
                     <i class="bi bi-geo-alt"></i> Мое местоположение
                 </button>
             </div>
@@ -648,7 +688,7 @@
         </div>
 
         <div class="mt-4 flex justify-end">
-            <button id="save-address-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            <button id="save-address-btn" class="px-4 py-2 rounded-lg">
                 Опубликовать объект
             </button>
         </div>
@@ -702,8 +742,8 @@
                             <img src="{{ property.broker.user.avatar.url }}"
                                  class="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover">
                         {% else %}
-                            <div class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-blue-100 flex items-center justify-center">
-                                <i class="bi bi-person text-xl md:text-2xl text-blue-600"></i>
+                            <div class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r from-purple-100 to-cyan-100 flex items-center justify-center">
+                                <i class="bi bi-person text-xl md:text-2xl" style="color: #7b61ff;"></i>
                             </div>
                         {% endif %}
                         <div>
@@ -723,12 +763,12 @@
                     <div class="mt-6 md:mt-8 flex flex-col gap-4">
                         {% if user.is_authenticated and user.user_type == 'client' %}
                            <a href="{% url 'properties:contact_broker' broker_id=property.broker.id property_id=property.id %}"
-   class="btn-primary hover:bg-blue-700 transition-colors">
+   class="btn-primary transition-colors">
    <i class="bi bi-chat-left-text mr-2"></i> Написать (1 руб.)
 </a>
                         {% elif not user.is_authenticated %}
                             <a href="{% url 'login' %}?next={{ request.path }}"
-                               class="btn-primary hover:bg-blue-700 transition-colors">
+                               class="btn-primary transition-colors">
                                <i class="bi bi-chat-left-text mr-2"></i> Войдите, чтобы написать
                             </a>
                         {% else %}

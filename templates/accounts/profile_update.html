@@ -16,7 +16,8 @@
         font-size: 1.8rem;
         font-weight: 700;
         color: #2c3e50;
-        border-bottom: 3px solid #3b82f6;
+        border-bottom: 3px solid;
+        border-image: linear-gradient(135deg, #7b61ff, #36d1dc) 1;
         padding-bottom: 1rem;
         margin-bottom: 2rem;
     }
@@ -31,24 +32,27 @@
     }
 
     .custom-input:focus {
-        border-color: #3b82f6;
+        border-color: #7b61ff;
         outline: none;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        box-shadow: 0 0 0 3px rgba(123, 97, 255, 0.1);
     }
 
     .submit-btn {
-        background: #3b82f6;
+        background: linear-gradient(135deg, #7b61ff, #36d1dc);
         color: white;
         padding: 0.75rem 2rem;
         border-radius: 0.5rem;
         font-weight: 600;
         transition: all 0.2s ease;
         width: 100%;
+        border: none;
+        cursor: pointer;
     }
 
     .submit-btn:hover {
-        background: #2563eb;
+        background: linear-gradient(135deg, #6a50e6, #2bc4d0);
         transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(123, 97, 255, 0.3);
     }
 
     .file-input-wrapper {
@@ -91,6 +95,10 @@
         margin-top: 0.5rem;
         font-size: 0.875rem;
         color: #6b7280;
+    }
+
+    .hidden {
+        display: none;
     }
 </style>
 

@@ -22,7 +22,7 @@
     }
 
     .step-active {
-        background: #3b82f6;
+        background: linear-gradient(135deg, #7b61ff, #36d1dc);
         color: white;
     }
 
@@ -45,7 +45,7 @@
     .type-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
-        border-color: #3b82f6;
+        border-color: #7b61ff;
     }
 
     .type-card::after {
@@ -55,7 +55,7 @@
         left: 0;
         width: 100%;
         height: 4px;
-        background: #3b82f6;
+        background: linear-gradient(135deg, #7b61ff, #36d1dc);
         opacity: 0;
         transition: opacity 0.3s ease;
     }
@@ -79,7 +79,7 @@
 
     .type-icon {
         font-size: 2.5rem;
-        color: #3b82f6;
+        color: #7b61ff;
         margin-bottom: 1rem;
     }
 
@@ -114,7 +114,7 @@
         display: block;
         width: 60px;
         height: 3px;
-        background: #3b82f6;
+        background: linear-gradient(135deg, #7b61ff, #36d1dc);
         position: absolute;
         left: 50%;
         bottom: 0;
@@ -124,7 +124,7 @@
     .price-tag {
         font-size: 1.5rem;
         font-weight: bold;
-        color: #3b82f6;
+        color: #7b61ff;
     }
 
     .type-card.premium .price-tag {
@@ -166,14 +166,14 @@
     }
 
     .btn-primary {
-        background-color: #3b82f6;
-        border-color: #3b82f6;
+        background: linear-gradient(135deg, #7b61ff, #36d1dc);
+        border: none;
         color: white;
     }
 
     .btn-primary:hover {
-        background-color: #2563eb;
-        border-color: #2563eb;
+        background: linear-gradient(135deg, #6a52e0, #2bb7c5);
+        box-shadow: 0 4px 12px rgba(123, 97, 255, 0.3);
     }
 
     .btn-outline-secondary {
@@ -191,6 +191,11 @@
         display: flex;
         gap: 1rem;
         margin-top: 2rem;
+    }
+
+    /* Цвет текста для активного шага */
+    .text-blue-600 {
+        color: #7b61ff !important;
     }
 
     @media (max-width: 768px) {

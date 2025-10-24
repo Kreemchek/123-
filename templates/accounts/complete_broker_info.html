@@ -23,14 +23,14 @@
     }
 
     .checkbox-card:hover {
-        border-color: #3b82f6;
+        border-color: #7b61ff;
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        box-shadow: 0 4px 12px rgba(123, 97, 255, 0.15);
     }
 
     .checkbox-card.selected {
-        border-color: #3b82f6;
-        background-color: #eff6ff;
+        border-color: #7b61ff;
+        background: linear-gradient(135deg, rgba(123, 97, 255, 0.05), rgba(54, 209, 220, 0.05));
     }
 
     .checkbox-card input[type="checkbox"] {
@@ -43,8 +43,8 @@
     }
 
     .checkbox-card input[type="checkbox"]:checked {
-        background-color: #3b82f6;
-        border-color: #3b82f6;
+        background-color: #7b61ff;
+        border-color: #7b61ff;
     }
 
     .checkbox-label {
@@ -88,8 +88,8 @@
 
     .experience-input:focus {
         outline: none;
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        border-color: #7b61ff;
+        box-shadow: 0 0 0 3px rgba(123, 97, 255, 0.1);
         transform: translateY(-1px);
     }
 
@@ -113,8 +113,8 @@
 
     .about-textarea:focus {
         outline: none;
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        border-color: #7b61ff;
+        box-shadow: 0 0 0 3px rgba(123, 97, 255, 0.1);
         transform: translateY(-1px);
     }
 
@@ -159,7 +159,7 @@
 
 <div class="registration-container">
     <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">
-        <i class="bi bi-person-badge mr-2"></i>Профессиональная информация
+        <i class="bi bi-person-badge mr-2" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>Профессиональная информация
     </h1>
 
     <form method="post" class="space-y-8">
@@ -177,10 +177,10 @@
         <!-- Опыт работы -->
         <div class="form-group">
             <label class="form-label">
-                <i class="bi bi-graph-up mr-2"></i>{{ form.experience.label }}
+                <i class="bi bi-graph-up mr-2" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>{{ form.experience.label }}
             </label>
             <div class="input-wrapper">
-                <i class="input-icon bi bi-briefcase"></i>
+                <i class="input-icon bi bi-briefcase" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
                 <input type="number"
                        name="{{ form.experience.name }}"
                        value="{{ form.experience.value|default:'' }}"
@@ -201,7 +201,7 @@
         <!-- О себе -->
         <div class="form-group">
             <label class="form-label">
-                <i class="bi bi-person-circle mr-2"></i>{{ form.about.label }}
+                <i class="bi bi-person-circle mr-2" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>{{ form.about.label }}
             </label>
             <textarea name="{{ form.about.name }}"
                       class="about-textarea"
@@ -268,7 +268,7 @@
         {% endif %}
 
         <button type="submit"
-                class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300">
+                class="w-full bg-gradient-to-r from-purple-600 to-teal-500 text-white py-3 rounded-lg hover:from-purple-700 hover:to-teal-600 transition-colors font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300">
             Сохранить данные <i class="bi bi-check2 ml-2"></i>
         </button>
     </form>

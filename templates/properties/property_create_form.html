@@ -32,7 +32,7 @@
     }
 
     .step-active {
-        background: #3b82f6;
+        background: linear-gradient(135deg, #7b61ff, #36d1dc);
         color: white;
     }
 
@@ -76,8 +76,26 @@
     }
 
     .form-card:hover {
-        border-color: #3b82f6;
-        box-shadow: 0 4px 6px rgba(59, 130, 246, 0.1);
+        border-color: #7b61ff;
+        box-shadow: 0 4px 6px rgba(123, 97, 255, 0.1);
+    }
+
+    /* Стили для кнопок */
+    .next-step, .submit-btn {
+        background: linear-gradient(135deg, #7b61ff, #36d1dc);
+        color: white;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .next-step:hover, .submit-btn:hover {
+        background: linear-gradient(135deg, #6a52e0, #2bb7c5);
+        box-shadow: 0 4px 12px rgba(123, 97, 255, 0.3);
+    }
+
+    /* Цвет текста для активного шага */
+    .text-blue-600 {
+        color: #7b61ff !important;
     }
 
     /* Стили для ошибок изображений */
@@ -323,11 +341,11 @@
             <button type="button" class="prev-step px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-50">
                 ← Назад
             </button>
-            <button type="button" class="next-step px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            <button type="button" class="next-step px-6 py-2 rounded-lg">
                 Далее →
             </button>
-            <button type="submit" class="submit-btn px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 hidden">
-         Далее →
+            <button type="submit" class="submit-btn px-6 py-2 rounded-lg hidden">
+                Далее →
             </button>
         </div>
     </form>

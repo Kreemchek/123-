@@ -22,9 +22,9 @@
     }
 
     .role-card.selected {
-        border-color: #3b82f6;
-        background-color: #f0f9ff;
-        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+        border-color: #7b61ff;
+        background: linear-gradient(135deg, rgba(123, 97, 255, 0.05), rgba(54, 209, 220, 0.05));
+        box-shadow: 0 2px 8px rgba(123, 97, 255, 0.1);
     }
 
     .custom-input {
@@ -37,9 +37,9 @@
     }
 
     .custom-input:focus {
-        border-color: #3b82f6;
+        border-color: #7b61ff;
         outline: none;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        box-shadow: 0 0 0 3px rgba(123, 97, 255, 0.1);
     }
 
     .error-message {
@@ -51,7 +51,7 @@
 
 <div class="registration-container">
     <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">
-        <i class="bi bi-person-badge mr-2"></i>Завершение регистрации
+        <i class="bi bi-person-badge mr-2" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>Завершение регистрации
     </h1>
 
     <form method="post" enctype="multipart/form-data" class="space-y-6">
@@ -73,7 +73,7 @@
             <label class="role-card">
                 <input type="radio" name="role" value="client" class="hidden" required>
                 <div class="text-center">
-                    <i class="bi bi-person text-4xl text-blue-600 mb-3"></i>
+                    <i class="bi bi-person text-4xl mb-3" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
                     <h3 class="text-xl font-semibold">Клиент</h3>
                     <p class="text-gray-600 mt-2">Пользователь платформы</p>
                 </div>
@@ -82,7 +82,7 @@
             <label class="role-card">
                 <input type="radio" name="role" value="broker" class="hidden">
                 <div class="text-center">
-                    <i class="bi bi-briefcase text-4xl text-blue-600 mb-3"></i>
+                    <i class="bi bi-briefcase text-4xl mb-3" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
                     <h3 class="text-xl font-semibold">Брокер</h3>
                     <p class="text-gray-600 mt-2">Профессиональное управление недвижимостью</p>
                 </div>
@@ -91,7 +91,7 @@
             <label class="role-card">
                 <input type="radio" name="role" value="developer" class="hidden">
                 <div class="text-center">
-                    <i class="bi bi-building text-4xl text-blue-600 mb-3"></i>
+                    <i class="bi bi-building text-4xl mb-3" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
                     <h3 class="text-xl font-semibold">Застройщик</h3>
                     <p class="text-gray-600 mt-2">Управление строительными проектами</p>
                 </div>
@@ -129,8 +129,6 @@
            value="{{ form.phone.value|default:'' }}">
 </div>
 
-
-
             <div>
     <label class="block text-sm font-medium mb-2">Фотография профиля</label>
     <input type="file"
@@ -144,9 +142,8 @@
 </div>
         </div>
 
-
         <button type="submit"
-                class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                class="w-full bg-gradient-to-r from-purple-600 to-teal-500 text-white py-3 rounded-lg hover:from-purple-700 hover:to-teal-600 transition-colors font-medium">
             Завершить регистрацию <i class="bi bi-check2 ml-2"></i>
         </button>
     </form>
@@ -163,16 +160,6 @@
         input.value = formatted;
     }
 
-    // Форматирование паспорта
-    function formatPassport(input) {
-        let numbers = input.value.replace(/\D/g, '');
-        if (numbers.length > 4) {
-            input.value = `${numbers.slice(0,4)} ${numbers.slice(4,10)}`;
-        } else {
-            input.value = numbers;
-        }
-    }
-
     // Выделение выбранной роли
     document.querySelectorAll('input[name="role"]').forEach(radio => {
         radio.addEventListener('change', function() {
@@ -182,6 +169,7 @@
             this.closest('.role-card').classList.add('selected');
         });
     });
+
     function toggleBrokerFields() {
     const isBroker = document.querySelector('input[name="role"]:checked')?.value === 'broker';
     document.querySelectorAll('[data-broker-field]').forEach(el => {
