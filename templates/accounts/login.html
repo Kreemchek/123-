@@ -34,13 +34,13 @@
     }
 
     .custom-input:focus {
-        border-color: #60a5fa !important; /* Голубая обводка */
-        box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+        border-color: #7b61ff !important; /* Фиолетовая обводка */
+        box-shadow: 0 0 0 3px rgba(123, 97, 255, 0.2);
         outline: none;
     }
 
     .btn-primary {
-        background: #3b82f6;
+        background: linear-gradient(135deg, #7b61ff, #36d1dc);
         color: white;
         border: none;
         border-radius: 50rem;
@@ -51,15 +51,15 @@
     }
 
     .btn-primary:hover {
-        background: #2563eb;
+        background: linear-gradient(135deg, #6a50e6, #2bb7c2);
         transform: translateY(-2px);
-        box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+        box-shadow: 0 4px 6px rgba(123, 97, 255, 0.3);
     }
 </style>
 
 <div class="registration-container">
     <h1 class="text-2xl font-semibold text-center mb-8 text-gray-900">
-        <svg class="w-8 h-8 inline-block mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-8 h-8 inline-block mr-2" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
         </svg>
         Вход в систему
@@ -97,10 +97,10 @@
             <div class="flex items-center space-x-2">
                 <input type="checkbox"
                        id="rememberMe"
-                       class="w-4 h-4 border-gray-300 rounded focus:ring-blue-500">
+                       class="w-4 h-4 border-gray-300 rounded focus:ring-2 focus:ring-purple-500">
                 <label for="rememberMe" class="text-gray-600">Запомнить меня</label>
             </div>
-            <a href="{% url 'password_reset' %}" class="text-blue-600 hover:underline">
+            <a href="{% url 'password_reset' %}" class="hover:underline" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
                 Восстановить пароль
             </a>
         </div>
@@ -121,7 +121,7 @@
         </div>
 
         <div class="text-center">
-            <a href="{% url 'register' %}" class="text-blue-600 hover:underline text-sm">
+            <a href="{% url 'register' %}" class="hover:underline text-sm" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
                 Создать аккаунт
             </a>
         </div>
@@ -132,7 +132,18 @@
     function togglePassword(icon) {
         const input = icon.previousElementSibling;
         input.type = input.type === 'password' ? 'text' : 'password';
-        icon.querySelector('svg').classList.toggle('text-blue-600');
+
+        // Изменяем цвет иконки на градиентный
+        if (input.type === 'text') {
+            icon.querySelector('svg').style.background = 'linear-gradient(135deg, #7b61ff, #36d1dc)';
+            icon.querySelector('svg').style.webkitBackgroundClip = 'text';
+            icon.querySelector('svg').style.webkitTextFillColor = 'transparent';
+        } else {
+            icon.querySelector('svg').style.background = 'none';
+            icon.querySelector('svg').style.webkitBackgroundClip = 'border-box';
+            icon.querySelector('svg').style.webkitTextFillColor = 'currentColor';
+            icon.querySelector('svg').style.color = '#64748b';
+        }
     }
 </script>
 {% endblock %}
