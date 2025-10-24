@@ -882,21 +882,34 @@ class MetroStationsView(View):
     def get(self, request):
         city = request.GET.get('city', '')
         if not city:
-            return JsonResponse({'metro_stations': []})
+            return JsonResponse({'metro_lines': []})
 
         stations = MetroStation.objects.filter(city__iexact=city).order_by('line', 'name')
-        data = {
-            'metro_stations': [
-                {
-                    'name': station.name,
-                    'city': station.city,
-                    'line': station.line if station.line else 'Другая линия',
-                    'line_color': station.line_color if station.line_color else '#cccccc'
+
+        # Группируем станции по линиям
+        lines_dict = {}
+        for station in stations:
+            line_name = station.line if station.line else "Другие станции"
+            line_color = station.line_color if station.line_color else "#cccccc"
+
+            if line_name not in lines_dict:
+                lines_dict[line_name] = {
+                    'line': line_name,
+                    'line_color': line_color,
+                    'stations': []
                 }
-                for station in stations
-            ]
-        }
-        return JsonResponse(data)
+
+            lines_dict[line_name]['stations'].append({
+                'name': station.name,
+                'line_color': station.line_color if station.line_color else "#cccccc"
+            })
+
+        metro_lines = list(lines_dict.values())
+
+        return JsonResponse({
+            'city': city,
+            'metro_lines': metro_lines
+        })
 
 
 def home_view(request):

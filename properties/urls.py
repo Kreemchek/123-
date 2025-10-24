@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 from .views import (
     PropertyDeleteView, CityAutocompleteView, AddressAutocompleteView,
-    MetroAutocompleteView
+    MetroAutocompleteView, MetroStationsView  # Добавьте MetroStationsView
 )
 
 app_name = 'properties'
@@ -25,7 +25,5 @@ urlpatterns = [
     path('api/addresses/', AddressAutocompleteView.as_view(), name='address-autocomplete'),
     path('api/metro/', MetroAutocompleteView.as_view(), name='metro-autocomplete'),
     path('update-address/', views.update_property_address, name='update_property_address'),
-    path('api/metro-stations/', views.MetroStationsView.as_view(), name='metro-stations'),
-
-
+    path('api/metro-stations/', MetroStationsView.as_view(), name='metro-stations'),  # Этот endpoint
 ]
