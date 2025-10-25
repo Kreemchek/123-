@@ -3629,26 +3629,9 @@ function initMobileFilters() {
     initMobileModals();
 }
 
-// Обновленные функции для мобильных модальных окон
+// Обновленные функции для мобильных модальных окон с разрешенной прокруткой
 function initMobileModals() {
-    // Функции для управления состоянием прокрутки
-    function enableBodyScroll() {
-        document.body.classList.remove('mobile-modal-open');
-        document.body.style.overflow = '';
-        document.body.style.position = '';
-        document.body.style.width = '';
-        document.body.style.height = '';
-    }
-
-    function disableBodyScroll() {
-        document.body.classList.add('mobile-modal-open');
-        document.body.style.overflow = 'hidden';
-        document.body.style.position = 'fixed';
-        document.body.style.width = '100%';
-        document.body.style.height = '100%';
-    }
-
-    // Обновленные функции для управления модальными окнами
+    // Обновленные функции для управления модальными окнами БЕЗ блокировки прокрутки
     function openMobileModal(modal) {
         // Сначала закрываем все другие модальные окна
         closeAllMobileModals();
@@ -3657,8 +3640,7 @@ function initMobileModals() {
         modal.style.zIndex = '9999';
         modal.classList.remove('hidden');
 
-        // Блокируем прокрутку body
-        disableBodyScroll();
+        // НЕ блокируем прокрутку body - позволяем скроллить модальное окно
 
         // Фокусируемся на поле поиска если оно есть
         setTimeout(() => {
@@ -3674,22 +3656,7 @@ function initMobileModals() {
             modal.classList.add('hidden');
             modal.style.zIndex = '';
         });
-
-        // Восстанавливаем прокрутку
-        enableBodyScroll();
     }
-
-    // Предотвращаем прокрутку фона при скролле модального окна
-    document.querySelectorAll('#mobile-city-dropdown, #mobile-metro-dropdown').forEach(modal => {
-        modal.addEventListener('touchmove', function(e) {
-            // Разрешаем прокрутку только внутри модального окна
-            const content = modal.querySelector('.p-4');
-            if (content && content.contains(e.target)) {
-                return; // Разрешаем прокрутку контента
-            }
-            e.preventDefault(); // Блокируем прокрутку фона
-        }, { passive: false });
-    });
 
     // Обработчики для закрытия по клику вне контента
     document.querySelectorAll('#mobile-city-dropdown, #mobile-metro-dropdown').forEach(modal => {
@@ -3826,68 +3793,68 @@ function initMobileModals() {
         });
     }
 
-// Поиск станций метро
-if (mobileMetroSearch) {
-    mobileMetroSearch.addEventListener('input', function() {
-        const searchTerm = this.value.toLowerCase();
+    // Поиск станций метро
+    if (mobileMetroSearch) {
+        mobileMetroSearch.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
 
-        document.querySelectorAll('#mobile-metro-dropdown .metro-line-section').forEach(section => {
-            let hasVisibleStations = false;
+            document.querySelectorAll('#mobile-metro-dropdown .metro-line-section').forEach(section => {
+                let hasVisibleStations = false;
 
-            section.querySelectorAll('.metro-station-option').forEach(option => {
-                const stationName = option.querySelector('.metro-station-name').textContent.toLowerCase();
-                if (stationName.includes(searchTerm)) {
-                    option.classList.remove('hidden');
-                    hasVisibleStations = true;
+                section.querySelectorAll('.metro-station-option').forEach(option => {
+                    const stationName = option.querySelector('.metro-station-name').textContent.toLowerCase();
+                    if (stationName.includes(searchTerm)) {
+                        option.classList.remove('hidden');
+                        hasVisibleStations = true;
 
-                    // Автоматически раскрываем родительскую линию
-                    const header = section.querySelector('.metro-line-header');
-                    const stationsContainer = section.querySelector('.metro-stations-container');
-                    if (header && stationsContainer && !header.classList.contains('expanded')) {
-                        stationsContainer.style.maxHeight = '300px';
-                        stationsContainer.classList.add('expanded');
-                        header.classList.add('expanded');
-                        header.querySelector('.bi-chevron-down').classList.add('rotate-180');
+                        // Автоматически раскрываем родительскую линию
+                        const header = section.querySelector('.metro-line-header');
+                        const stationsContainer = section.querySelector('.metro-stations-container');
+                        if (header && stationsContainer && !header.classList.contains('expanded')) {
+                            stationsContainer.style.maxHeight = '300px';
+                            stationsContainer.classList.add('expanded');
+                            header.classList.add('expanded');
+                            header.querySelector('.bi-chevron-down').classList.add('rotate-180');
+                        }
+                    } else {
+                        option.classList.add('hidden');
+                    }
+                });
+
+                if (searchTerm.length > 0) {
+                    if (hasVisibleStations) {
+                        section.classList.remove('hidden');
+                    } else {
+                        section.classList.add('hidden');
                     }
                 } else {
-                    option.classList.add('hidden');
+                    section.classList.remove('hidden');
+                    // Закрываем все линии при очистке поиска
+                    const header = section.querySelector('.metro-line-header');
+                    const stationsContainer = section.querySelector('.metro-stations-container');
+                    if (header && stationsContainer) {
+                        stationsContainer.style.maxHeight = '0';
+                        stationsContainer.classList.remove('expanded');
+                        header.classList.remove('expanded');
+                        header.querySelector('.bi-chevron-down').classList.remove('rotate-180');
+                    }
                 }
             });
 
+            // Прокручиваем к первому найденному результату
             if (searchTerm.length > 0) {
-                if (hasVisibleStations) {
-                    section.classList.remove('hidden');
-                } else {
-                    section.classList.add('hidden');
-                }
-            } else {
-                section.classList.remove('hidden');
-                // Закрываем все линии при очистке поиска
-                const header = section.querySelector('.metro-line-header');
-                const stationsContainer = section.querySelector('.metro-stations-container');
-                if (header && stationsContainer) {
-                    stationsContainer.style.maxHeight = '0';
-                    stationsContainer.classList.remove('expanded');
-                    header.classList.remove('expanded');
-                    header.querySelector('.bi-chevron-down').classList.remove('rotate-180');
+                const firstVisibleSection = document.querySelector('#mobile-metro-dropdown .metro-line-section:not(.hidden)');
+                if (firstVisibleSection) {
+                    setTimeout(() => {
+                        firstVisibleSection.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }, 200);
                 }
             }
         });
-
-        // Прокручиваем к первому найденному результату
-        if (searchTerm.length > 0) {
-            const firstVisibleSection = document.querySelector('#mobile-metro-dropdown .metro-line-section:not(.hidden)');
-            if (firstVisibleSection) {
-                setTimeout(() => {
-                    firstVisibleSection.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }, 200);
-            }
-        }
-    });
-}
+    }
 
     // Выбор/отмена выбора станции
     document.addEventListener('click', function(e) {
@@ -3962,59 +3929,70 @@ if (mobileMetroSearch) {
         selectedMetroText.innerHTML = html;
     }
 
-// Переключение линий метро в мобильной версии с улучшенной прокруткой
-window.toggleMobileMetroLine = function(header) {
-    const lineSection = header.closest('.metro-line-section');
-    const stationsContainer = lineSection.querySelector('.metro-stations-container');
-    const chevron = header.querySelector('.bi-chevron-down');
+    // Улучшенная функция переключения линий метро с разрешенной прокруткой
+    window.toggleMobileMetroLine = function(header) {
+        const lineSection = header.closest('.metro-line-section');
+        const stationsContainer = lineSection.querySelector('.metro-stations-container');
+        const chevron = header.querySelector('.bi-chevron-down');
 
-    const isExpanded = header.classList.contains('expanded');
+        const isExpanded = header.classList.contains('expanded');
 
-    if (isExpanded) {
-        // Закрываем
-        stationsContainer.style.maxHeight = '0';
-        stationsContainer.classList.remove('expanded');
-        header.classList.remove('expanded');
-        chevron.classList.remove('rotate-180');
-    } else {
-        // Открываем
-        // Сначала закрываем все другие открытые линии
-        document.querySelectorAll('#mobile-metro-dropdown .metro-line-section').forEach(section => {
-            if (section !== lineSection) {
-                const otherStationsContainer = section.querySelector('.metro-stations-container');
-                const otherHeader = section.querySelector('.metro-line-header');
-                const otherChevron = section.querySelector('.bi-chevron-down');
+        if (isExpanded) {
+            // Закрываем
+            stationsContainer.style.maxHeight = '0';
+            stationsContainer.classList.remove('expanded');
+            header.classList.remove('expanded');
+            chevron.classList.remove('rotate-180');
+        } else {
+            // Открываем
+            // Сначала закрываем все другие открытые линии
+            document.querySelectorAll('#mobile-metro-dropdown .metro-line-section').forEach(section => {
+                if (section !== lineSection) {
+                    const otherStationsContainer = section.querySelector('.metro-stations-container');
+                    const otherHeader = section.querySelector('.metro-line-header');
+                    const otherChevron = section.querySelector('.bi-chevron-down');
 
-                otherStationsContainer.style.maxHeight = '0';
-                otherStationsContainer.classList.remove('expanded');
-                otherHeader.classList.remove('expanded');
-                otherChevron.classList.remove('rotate-180');
-            }
-        });
+                    otherStationsContainer.style.maxHeight = '0';
+                    otherStationsContainer.classList.remove('expanded');
+                    otherHeader.classList.remove('expanded');
+                    otherChevron.classList.remove('rotate-180');
+                }
+            });
 
-        // Открываем текущую линию
-        stationsContainer.style.maxHeight = '300px';
-        stationsContainer.classList.add('expanded');
-        header.classList.add('expanded');
-        chevron.classList.add('rotate-180');
+            // Открываем текущую линию
+            stationsContainer.style.maxHeight = '300px';
+            stationsContainer.classList.add('expanded');
+            header.classList.add('expanded');
+            chevron.classList.add('rotate-180');
 
-        // Прокручиваем к открытой линии если она не видна полностью
-        setTimeout(() => {
-            const containerRect = lineSection.getBoundingClientRect();
-            const modalContent = document.querySelector('#mobile-metro-dropdown .p-4');
+            // Прокручиваем к открытой линии если она не видна полностью
+            setTimeout(() => {
+                const modalContent = document.querySelector('#mobile-metro-dropdown .p-4');
+                const lineRect = lineSection.getBoundingClientRect();
+                const modalRect = modalContent.getBoundingClientRect();
 
-            if (containerRect.bottom > window.innerHeight - 150) {
-                lineSection.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
-        }, 100);
-    }
-};
+                // Если линия выходит за нижнюю границу видимой области
+                if (lineRect.bottom > modalRect.bottom - 50) {
+                    lineSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            }, 100);
+        }
+    };
 
     // Инициализация при загрузке
     updateMobileSelectedStationsText();
+
+    // Добавляем плавную прокрутку для модального окна метро
+    const metroModal = document.getElementById('mobile-metro-dropdown');
+    if (metroModal) {
+        const content = metroModal.querySelector('.p-4');
+        if (content) {
+            content.style.scrollBehavior = 'smooth';
+        }
+    }
 }
 
 // Переключение секций фильтров
