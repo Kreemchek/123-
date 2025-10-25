@@ -258,6 +258,7 @@
     /* Стили для вертикального расположения блоков */
     .vertical-section {
         margin-top: 60px;
+        background: transparent;
     }
 
     .vertical-section h2 {
@@ -276,7 +277,7 @@
         padding: 24px;
         box-shadow: var(--shadow-1);
         margin-bottom: 40px;
-        overflow: hidden; /* ФИКС: скрываем все что выходит за границы */
+        overflow: hidden;
     }
 
     .section-header {
@@ -322,7 +323,7 @@
     /* ФИКС: КОНТЕЙНЕР СЛАЙДЕРА */
     .slider-container {
         position: relative;
-        overflow: hidden; /* ФИКС: скрываем выходящее за границы */
+        overflow: hidden;
         border-radius: var(--radius);
         width: 100%;
     }
@@ -341,10 +342,10 @@
 
     /* ФИКС: СЛАЙДЫ - 3 КАРТОЧКИ В РЯД */
     .slider-slide {
-        min-width: 33.333%; /* 3 карточки в ряд */
+        min-width: 33.333%;
         flex-shrink: 0;
-        padding: 0 8px; /* отступ между карточками */
-        box-sizing: border-box; /* ФИКС: padding включается в ширину */
+        padding: 0 8px;
+        box-sizing: border-box;
     }
 
     /* ФИКС: КАРТОЧКИ ОБЪЕКТОВ */
@@ -357,9 +358,9 @@
         overflow: hidden;
         transition: all 0.3s ease;
         height: 100%;
-        width: 100%; /* ФИКС: занимает всю ширину слайда */
-        max-width: 100%; /* ФИКС: не больше ширины слайда */
-        box-sizing: border-box; /* ФИКС: правильный расчет размеров */
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
         display: flex;
         flex-direction: column;
     }
@@ -533,9 +534,9 @@
         text-decoration: none;
         color: inherit;
         height: 100%;
-        width: 100%; /* ФИКС: занимает всю ширину слайда */
-        max-width: 100%; /* ФИКС: не больше ширины слайда */
-        box-sizing: border-box; /* ФИКС: правильный расчет размеров */
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
     }
 
     .media-card-compact:hover {
@@ -612,7 +613,7 @@
     /* АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ */
     @media (max-width: 1200px) {
         .slider-slide {
-            min-width: 50%; /* 2 карточки в ряд */
+            min-width: 50%;
         }
     }
 
@@ -641,7 +642,7 @@
         }
 
         .slider-slide {
-            min-width: 100%; /* 1 карточка в ряд */
+            min-width: 100%;
             padding: 0 4px;
         }
 
@@ -701,17 +702,6 @@
     /* Utilities */
     .muted { color: var(--muted); }
     .link { text-decoration: none; color: inherit; display: block; }
-
-    /* Стили для кастомного футера home.html */
-    .home-page footer {
-        background: linear-gradient(135deg, rgba(124, 102, 255, 0.1), rgba(48, 208, 255, 0.05));
-        backdrop-filter: blur(10px);
-        border-top: 1px solid rgba(255, 255, 255, 0.08);
-        margin-top: auto;
-        padding: 10px 0;
-        color: var(--muted);
-        width: 100%;
-    }
 </style>
 
 <!-- Hero -->
@@ -730,8 +720,6 @@
                    class="flex-grow px-6 py-4 text-gray-800 border-0 focus:ring-4 focus:ring-blue-200/50 focus:outline-none placeholder-gray-500 text-lg"
                    id="location-search"
                    autocomplete="off">
-
-
 
             <button type="submit" class="btn-primary">Найти</button>
 
@@ -762,112 +750,106 @@
                 <h3>Застройщики</h3>
                 <p>Предложения от застройщиков</p>
             </a>
-
-
         </div>
     </div>
 </section>
 
 <!-- Вертикальное расположение блоков -->
 <section class="vertical-section">
-
-
-<!-- Блок горячих предложений -->
-<div class="section-block">
-    <div class="section-header">
-        <h3>🔥 Горячие предложения</h3>
-        <div class="slider-controls">
-
+    <!-- Блок горячих предложений -->
+    <div class="section-block">
+        <div class="section-header">
+            <h3>🔥 Горячие предложения</h3>
+            <div class="slider-controls">
+            </div>
         </div>
-    </div>
 
-    <!-- Элементы управления автопрокруткой (скрыты) -->
-    <div class="auto-scroll-controls">
-        <div class="auto-scroll-toggle" id="hot-auto-toggle">
-            <div class="toggle-switch"></div>
-            <span>Автопрокрутка</span>
+        <!-- Элементы управления автопрокруткой (скрыты) -->
+        <div class="auto-scroll-controls">
+            <div class="auto-scroll-toggle" id="hot-auto-toggle">
+                <div class="toggle-switch"></div>
+                <span>Автопрокрутка</span>
+            </div>
+            <div class="scroll-speed-control">
+                <span>Скорость:</span>
+                <select id="hot-speed-select">
+                    <option value="40">Медленно</option>
+                    <option value="30" selected>Средне</option>
+                    <option value="20">Быстро</option>
+                </select>
+            </div>
         </div>
-        <div class="scroll-speed-control">
-            <span>Скорость:</span>
-            <select id="hot-speed-select">
-                <option value="40">Медленно</option>
-                <option value="30" selected>Средне</option>
-                <option value="20">Быстро</option>
-            </select>
-        </div>
-    </div>
 
-    <div class="slider-container">
-        <div class="auto-scroll-track continuous" id="hot-properties-track">
-            {% for property in hot_properties %}
-            <div class="slider-slide">
-                <div class="listing-card-compact">
-                    {% if property.is_hot %}
-                    <div class="hot-property-badge-compact">🔥 Горячее</div>
-                    {% endif %}
-                    <div class="thumb">
-                        {% if property.images.all %}
-                            <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}">
-                        {% else %}
-                            <div>
-                                {{ property.title|truncatechars:30 }}
-                            </div>
+        <div class="slider-container">
+            <div class="auto-scroll-track continuous" id="hot-properties-track">
+                {% for property in hot_properties %}
+                <div class="slider-slide">
+                    <div class="listing-card-compact">
+                        {% if property.is_hot %}
+                        <div class="hot-property-badge-compact">🔥 Горячее</div>
                         {% endif %}
-                    </div>
-                    <div class="body">
-                        <strong>{{ property.title }}</strong>
-                        <div class="meta-compact">
-                            <div class="property-type">
-                                {% if property.property_type == 'apartment' %}
-                                    Квартира
-                                {% elif property.property_type == 'house' %}
-                                    Дом
-                                {% elif property.property_type == 'commercial' %}
-                                    Коммерческая
-                                {% else %}
-                                    Недвижимость
-                                {% endif %}
-                            </div>
-                            <div class="property-details">
-                                <span class="detail-item">{{ property.total_area|floatformat:"0" }} м²</span>
-                                {% if property.floor and property.total_floors %}
-                                <span class="detail-item">{{ property.floor }}/{{ property.total_floors }} эт.</span>
-                                {% endif %}
-                                {% if property.rooms %}
-                                <span class="detail-item">{{ property.rooms }} комн.</span>
-                                {% endif %}
-                            </div>
-                            <div class="price-section">
-                                <div class="price-compact">
-                                    {% if property.is_rental == 'monthly' and property.monthly_price %}
-                                        {{ property.monthly_price|floatformat:"0" }} ₽/мес
-                                    {% elif property.is_rental == 'daily' and property.daily_price %}
-                                        {{ property.daily_price|floatformat:"0" }} ₽/сут
-                                    {% elif property.price %}
-                                        {{ property.price|floatformat:"0" }} ₽
+                        <div class="thumb">
+                            {% if property.images.all %}
+                                <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}">
+                            {% else %}
+                                <div>
+                                    {{ property.title|truncatechars:30 }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="body">
+                            <strong>{{ property.title }}</strong>
+                            <div class="meta-compact">
+                                <div class="property-type">
+                                    {% if property.property_type == 'apartment' %}
+                                        Квартира
+                                    {% elif property.property_type == 'house' %}
+                                        Дом
+                                    {% elif property.property_type == 'commercial' %}
+                                        Коммерческая
                                     {% else %}
-                                        Цена не указана
+                                        Недвижимость
                                     {% endif %}
                                 </div>
+                                <div class="property-details">
+                                    <span class="detail-item">{{ property.total_area|floatformat:"0" }} м²</span>
+                                    {% if property.floor and property.total_floors %}
+                                    <span class="detail-item">{{ property.floor }}/{{ property.total_floors }} эт.</span>
+                                    {% endif %}
+                                    {% if property.rooms %}
+                                    <span class="detail-item">{{ property.rooms }} комн.</span>
+                                    {% endif %}
+                                </div>
+                                <div class="price-section">
+                                    <div class="price-compact">
+                                        {% if property.is_rental == 'monthly' and property.monthly_price %}
+                                            {{ property.monthly_price|floatformat:"0" }} ₽/мес
+                                        {% elif property.is_rental == 'daily' and property.daily_price %}
+                                            {{ property.daily_price|floatformat:"0" }} ₽/сут
+                                        {% elif property.price %}
+                                            {{ property.price|floatformat:"0" }} ₽
+                                        {% else %}
+                                            Цена не указана
+                                        {% endif %}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="card-actions-compact">
-                            <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}{% endif %}" class="btn-compact btn-primary-compact">Подробнее</a>
+                            <div class="card-actions-compact">
+                                <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}{% endif %}" class="btn-compact btn-primary-compact">Подробнее</a>
+                            </div>
                         </div>
                     </div>
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
     </div>
-</div>
 
-      <!-- Блок медиа -->
+    <!-- Блок медиа -->
     <div class="section-block">
         <div class="section-header">
             <h3>📰 Медиа</h3>
             <div class="slider-controls">
-
             </div>
         </div>
 
@@ -942,9 +924,9 @@
 
             if (!track || slides.length === 0) return;
 
-            const slideWidth = slides[0].offsetWidth + 16; // ширина слайда + отступ
+            const slideWidth = slides[0].offsetWidth + 16;
             let currentPosition = 0;
-            const maxPosition = -(slideWidth * (slides.length - 3)); // 3 слайда видно
+            const maxPosition = -(slideWidth * (slides.length - 3));
 
             // Клонируем слайды для бесконечной прокрутки
             const cloneSlides = Array.from(slides).map(slide => slide.cloneNode(true));
@@ -957,7 +939,7 @@
                 track.style.animationPlayState = 'paused';
                 setTimeout(() => {
                     track.style.animationPlayState = 'running';
-                }, 5000); // возобновить через 5 секунд
+                }, 5000);
             }
 
             // Перемотка вперед
@@ -1002,7 +984,7 @@
                         function(position) {
                             const lat = position.coords.latitude;
                             const lng = position.coords.longitude;
-                            geoCoords.value = `${lat},${lng},5`; // 5km radius
+                            geoCoords.value = `${lat},${lng},5`;
                             locationSearch.value = 'рядом со мной';
                             locationSearch.focus();
                         },

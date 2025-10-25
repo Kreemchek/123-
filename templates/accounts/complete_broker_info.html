@@ -3,15 +3,6 @@
 
 {% block content %}
 <style>
-    .registration-container {
-        max-width: 1000px;
-        margin: 2rem auto;
-        padding: 2rem;
-        background: white;
-        border-radius: 1.25rem;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
-    }
-
     .checkbox-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -32,14 +23,14 @@
     }
 
     .checkbox-card:hover {
-        border-color: #7b61ff;
+        border-color: #3b82f6;
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(123, 97, 255, 0.15);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
     }
 
     .checkbox-card.selected {
-        border-color: #7b61ff;
-        background: linear-gradient(135deg, rgba(123, 97, 255, 0.05), rgba(54, 209, 220, 0.05));
+        border-color: #3b82f6;
+        background-color: #eff6ff;
     }
 
     .checkbox-card input[type="checkbox"] {
@@ -52,8 +43,8 @@
     }
 
     .checkbox-card input[type="checkbox"]:checked {
-        background-color: #7b61ff;
-        border-color: #7b61ff;
+        background-color: #3b82f6;
+        border-color: #3b82f6;
     }
 
     .checkbox-label {
@@ -84,28 +75,26 @@
         margin-bottom: 0.75rem;
     }
 
-    .custom-input {
+    .experience-input {
         width: 100%;
+        max-width: 200px;
         padding: 0.75rem 1rem;
         border: 2px solid #e5e7eb;
-        border-radius: 50rem;
-        font-size: 16px;
-        transition: all 0.2s ease;
+        border-radius: 0.75rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
         background: white;
     }
 
-    .custom-input:focus {
-        border-color: #7b61ff !important;
-        box-shadow: 0 0 0 3px rgba(123, 97, 255, 0.2);
+    .experience-input:focus {
         outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        transform: translateY(-1px);
     }
 
-    .custom-input:hover {
+    .experience-input:hover {
         border-color: #9ca3af;
-    }
-
-    .experience-input {
-        max-width: 200px;
     }
 
     .about-textarea {
@@ -113,7 +102,7 @@
         min-height: 120px;
         padding: 1rem 1.25rem;
         border: 2px solid #e5e7eb;
-        border-radius: 1rem;
+        border-radius: 0.75rem;
         font-size: 1rem;
         font-family: inherit;
         line-height: 1.5;
@@ -123,9 +112,10 @@
     }
 
     .about-textarea:focus {
-        border-color: #7b61ff !important;
-        box-shadow: 0 0 0 3px rgba(123, 97, 255, 0.2);
         outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        transform: translateY(-1px);
     }
 
     .about-textarea:hover {
@@ -165,35 +155,13 @@
         color: #ef4444;
         font-weight: 600;
     }
-
-    .btn-primary {
-        background: linear-gradient(135deg, #7b61ff, #36d1dc);
-        color: white;
-        border: none;
-        border-radius: 50rem;
-        padding: 1rem 2rem;
-        font-weight: 500;
-        font-size: 16px;
-        transition: all 0.2s ease;
-        width: 100%;
-    }
-
-    .btn-primary:hover {
-        background: linear-gradient(135deg, #6a50e6, #2bb7c2);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 6px rgba(123, 97, 255, 0.3);
-    }
 </style>
 
 <div class="registration-container">
-<h1 class="text-2xl font-semibold text-center mb-8 text-gray-900">
-    <svg class="w-8 h-8 inline-block mr-2" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"
-         fill="none" stroke="currentColor" viewBox="0 0 24 24"
-         width="32" height="32"> <!-- Добавьте явные размеры -->
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
-    </svg>
-    Профессиональная информация
-</h1>
+    <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">
+        <i class="bi bi-person-badge mr-2"></i>Профессиональная информация
+    </h1>
+
     <form method="post" class="space-y-8">
         {% csrf_token %}
 
@@ -209,19 +177,14 @@
         <!-- Опыт работы -->
         <div class="form-group">
             <label class="form-label">
-                <svg class="w-5 h-5 inline-block mr-2" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                </svg>
-                {{ form.experience.label }}
+                <i class="bi bi-graph-up mr-2"></i>{{ form.experience.label }}
             </label>
             <div class="input-wrapper">
-                <svg class="input-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                </svg>
+                <i class="input-icon bi bi-briefcase"></i>
                 <input type="number"
                        name="{{ form.experience.name }}"
                        value="{{ form.experience.value|default:'' }}"
-                       class="custom-input experience-input with-icon"
+                       class="experience-input with-icon"
                        placeholder="Введите количество лет"
                        min="0"
                        max="50">
@@ -238,10 +201,7 @@
         <!-- О себе -->
         <div class="form-group">
             <label class="form-label">
-                <svg class="w-5 h-5 inline-block mr-2" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                </svg>
-                {{ form.about.label }}
+                <i class="bi bi-person-circle mr-2"></i>{{ form.about.label }}
             </label>
             <textarea name="{{ form.about.name }}"
                       class="about-textarea"
@@ -262,12 +222,7 @@
         <!-- Услуги -->
         {% if 'services' in form.fields %}
         <div class="form-group">
-            <h3 class="section-title">
-                <svg class="w-5 h-5 inline-block mr-2" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                </svg>
-                {{ form.services.label }}
-            </h3>
+            <h3 class="section-title">📋 {{ form.services.label }}</h3>
             <div class="checkbox-grid">
                 {% for checkbox in form.services %}
                 <div class="checkbox-card" onclick="toggleCheckbox(this)">
@@ -291,12 +246,7 @@
         <!-- Специализация -->
         {% if 'specializations' in form.fields %}
         <div class="form-group">
-            <h3 class="section-title">
-                <svg class="w-5 h-5 inline-block mr-2" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                </svg>
-                {{ form.specializations.label }}
-            </h3>
+            <h3 class="section-title">🎯 {{ form.specializations.label }}</h3>
             <div class="checkbox-grid">
                 {% for checkbox in form.specializations %}
                 <div class="checkbox-card" onclick="toggleCheckbox(this)">
@@ -317,11 +267,9 @@
         </div>
         {% endif %}
 
-        <button type="submit" class="btn-primary">
-            Сохранить данные
-            <svg class="w-5 h-5 inline-block ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-            </svg>
+        <button type="submit"
+                class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300">
+            Сохранить данные <i class="bi bi-check2 ml-2"></i>
         </button>
     </form>
 </div>
