@@ -2347,27 +2347,6 @@ body.mobile-modal-open {
         display: none !important;
     }
 }
-/* Градиентные кнопки */
-.btn-gradient {
-    background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%);
-    color: white;
-    border: none;
-    border-radius: 0.75rem;
-    padding: 0.75rem 1.5rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(123, 97, 255, 0.2);
-}
-
-.btn-gradient:hover {
-    background: linear-gradient(135deg, #6a50e6 0%, #2bb7c2 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(123, 97, 255, 0.3);
-}
-
-.btn-gradient:active {
-    transform: translateY(0);
-}
 </style>
 {% endblock %}
 
@@ -3051,10 +3030,9 @@ body.mobile-modal-open {
         <button type="button" onclick="resetMobileFilters()" class="flex-1 bg-gray-100 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors font-medium">
             Сбросить
         </button>
-<button type="button" onclick="applyMobileFilters()"
-        class="flex-1 bg-gradient-to-r from-[#7b61ff] to-[#36d1dc] hover:from-[#6a50e6] hover:to-[#2bb7c2] text-white py-3 px-4 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
-    Применить
-</button>
+        <button type="button" onclick="applyMobileFilters()" class="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-colors font-medium">
+            Применить
+        </button>
     </div>
 </div>
             </form>
