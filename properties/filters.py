@@ -171,21 +171,34 @@ class PropertyFilter(FilterSet):
 
             for city in locations:
                 city_center = CityCenter.objects.filter(city__iexact=city).first()
-                if city_center:
-                    if name == 'min_distance_to_center':
-                        q_objects |= Q(
-                            location=city,
-                            coordinates__distance_gte=(city_center.coordinates, D(km=value))
-                        )
-                    elif name == 'max_distance_to_center':
-                        q_objects |= Q(
-                            location=city,
-                            coordinates__distance_lte=(city_center.coordinates, D(km=value))
-                        )
+                if not city_center:
+                    continue  # Пропускаем города без центра
 
-            return queryset.filter(q_objects).annotate(
-                distance=Distance('coordinates', city_center.coordinates)
-            )
+                if name == 'min_distance_to_center':
+                    q_objects |= Q(
+                        location=city,
+                        coordinates__distance_gte=(city_center.coordinates, D(km=value))
+                    )
+                elif name == 'max_distance_to_center':
+                    q_objects |= Q(
+                        location=city,
+                        coordinates__distance_lte=(city_center.coordinates, D(km=value))
+                    )
+
+            # Если нашли подходящие города, применяем фильтр и аннотацию
+            if q_objects:
+                # Берем первый попавшийся city_center для аннотации (в данном контексте это не критично)
+                sample_city_center = CityCenter.objects.filter(
+                    city__in=locations
+                ).first()
+
+                if sample_city_center:
+                    return queryset.filter(q_objects).annotate(
+                        distance=Distance('coordinates', sample_city_center.coordinates)
+                    )
+
+            # Если не нашли подходящих городов или центров, возвращаем пустой queryset
+            return queryset.none()
 
         except (ValueError, TypeError):
             return queryset
