@@ -5,80 +5,126 @@
 
 {% block content %}
 <style>
-    /* Стили для сообщений поверх хедера */
+    /* Стили для сообщений в правом нижнем углу */
     .messages-overlay {
         position: fixed;
-        top: 80px;
-        left: 50%;
-        transform: translateX(-50%);
+        bottom: 20px;
+        right: 20px;
         z-index: 9999;
-        width: auto;
-        max-width: 90%;
-        animation: slideDown 0.3s ease-out;
-    }
-
-    @keyframes slideDown {
-        from {
-            opacity: 0;
-            transform: translateX(-50%) translateY(-20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-width: 400px;
     }
 
     .message-alert {
-        padding: 12px 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        padding: 16px 20px;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         font-weight: 500;
         display: flex;
         align-items: center;
-        gap: 8px;
-        margin-bottom: 8px;
+        gap: 12px;
         min-width: 300px;
-        text-align: center;
+        max-width: 400px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        animation: slideInRight 0.3s ease-out;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .message-alert:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes slideOutRight {
+        from {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateX(100%);
+        }
     }
 
     .message-success {
         background: linear-gradient(135deg, #10b981, #059669);
         color: white;
-        border: none;
     }
 
     .message-error {
         background: linear-gradient(135deg, #ef4444, #dc2626);
         color: white;
-        border: none;
     }
 
     .message-warning {
         background: linear-gradient(135deg, #f59e0b, #d97706);
         color: white;
-        border: none;
     }
 
     .message-info {
         background: linear-gradient(135deg, #7b61ff, #36d1dc);
         color: white;
+    }
+
+    .message-icon {
+        font-size: 1.2em;
+        flex-shrink: 0;
+    }
+
+    .message-content {
+        flex: 1;
+        line-height: 1.4;
+    }
+
+    .message-close {
+        background: none;
         border: none;
+        color: white;
+        opacity: 0.7;
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 4px;
+        transition: opacity 0.2s;
+        flex-shrink: 0;
+    }
+
+    .message-close:hover {
+        opacity: 1;
+        background: rgba(255, 255, 255, 0.2);
     }
 
     /* Адаптивность для мобильных устройств */
     @media (max-width: 768px) {
         .messages-overlay {
-            top: 70px;
-            max-width: 95%;
+            bottom: 10px;
+            right: 10px;
+            left: 10px;
+            max-width: none;
         }
 
         .message-alert {
-            padding: 10px 16px;
-            font-size: 14px;
-            min-width: 250px;
+            min-width: auto;
+            max-width: none;
+            padding: 14px 16px;
         }
     }
 
+    /* Остальные существующие стили остаются без изменений */
     .creation-stepper {
         max-width: 800px;
         margin: 2rem auto;
@@ -233,25 +279,33 @@
     }
 </style>
 
-<!-- Контейнер для сообщений поверх хедера -->
+<!-- Контейнер для сообщений в правом нижнем углу -->
 <div class="messages-overlay">
     {% for message in messages %}
         <div class="message-alert message-{{ message.tags|default:'info' }}">
-            {% if message.tags == 'success' %}
-                <i class="bi bi-check-circle-fill"></i>
-            {% elif message.tags == 'error' %}
-                <i class="bi bi-exclamation-circle-fill"></i>
-            {% elif message.tags == 'warning' %}
-                <i class="bi bi-exclamation-triangle-fill"></i>
-            {% else %}
-                <i class="bi bi-info-circle-fill"></i>
-            {% endif %}
-            {{ message }}
+            <div class="message-icon">
+                {% if message.tags == 'success' %}
+                    <i class="bi bi-check-circle-fill"></i>
+                {% elif message.tags == 'error' %}
+                    <i class="bi bi-exclamation-circle-fill"></i>
+                {% elif message.tags == 'warning' %}
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                {% else %}
+                    <i class="bi bi-info-circle-fill"></i>
+                {% endif %}
+            </div>
+            <div class="message-content">
+                {{ message }}
+            </div>
+            <button class="message-close" onclick="this.parentElement.remove()">
+                <i class="bi bi-x-lg"></i>
+            </button>
         </div>
     {% endfor %}
 </div>
 
 <div class="creation-stepper">
+    <!-- ... остальной код формы без изменений ... -->
     <div class="step-indicator">
         <div class="step-badge step-active">1</div>
         <span class="text-blue-600 font-semibold">Основные данные</span>
@@ -450,25 +504,27 @@
 
         messageAlerts.forEach(alert => {
             setTimeout(() => {
-                alert.style.opacity = '0';
-                alert.style.transform = 'translateX(-50%) translateY(-20px)';
+                alert.style.animation = 'slideOutRight 0.3s ease-in forwards';
                 setTimeout(() => {
                     alert.remove();
                 }, 300);
             }, 5000);
         });
 
-        // Также добавляем возможность закрыть сообщение кликом
+        // Закрытие сообщений при клике на крестик или на само сообщение
         messageAlerts.forEach(alert => {
-            alert.addEventListener('click', function() {
-                this.style.opacity = '0';
-                this.style.transform = 'translateX(-50%) translateY(-20px)';
+            alert.addEventListener('click', function(e) {
+                if (e.target.classList.contains('message-close') || e.target.closest('.message-close')) {
+                    return; // Клик на крестик обрабатывается отдельно
+                }
+                this.style.animation = 'slideOutRight 0.3s ease-in forwards';
                 setTimeout(() => {
                     this.remove();
                 }, 300);
             });
         });
 
+        // Остальной JavaScript код формы остается без изменений
         const steps = document.querySelectorAll('.form-step');
         const prevBtn = document.querySelector('.prev-step');
         const nextBtn = document.querySelector('.next-step');
