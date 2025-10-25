@@ -330,13 +330,15 @@
         border-radius: var(--radius);
     }
 
+    /* ОБНОВЛЕНО: слайдер-трек теперь показывает 2 элемента */
     .slider-track {
         display: flex;
         transition: transform 0.3s ease;
     }
 
+    /* ОБНОВЛЕНО: слайд теперь занимает 50% ширины для показа 2 элементов */
     .slider-slide {
-        min-width: 100%;
+        min-width: 50%;
         flex-shrink: 0;
         padding: 0 4px;
     }
@@ -581,6 +583,11 @@
         .listing-card-compact,
         .media-card-compact {
             max-width: 260px; /* Немного уменьшаем на планшетах */
+        }
+
+        /* На мобильных возвращаем показ по 1 элементу */
+        .slider-slide {
+            min-width: 100%;
         }
     }
 
@@ -833,23 +840,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let hotCurrentSlide = 0;
     const hotSlideCount = hotSlides.length;
+    const hotSlidesPerView = window.innerWidth <= 980 ? 1 : 2; // На мобильных показываем 1, на десктопе 2
 
     function updateHotSlider() {
         if (hotTrack) {
-            hotTrack.style.transform = `translateX(-${hotCurrentSlide * 100}%)`;
+            const slideWidth = hotSlidesPerView === 2 ? 50 : 100; // 50% для 2 слайдов, 100% для 1
+            hotTrack.style.transform = `translateX(-${hotCurrentSlide * slideWidth}%)`;
         }
     }
 
     if (hotPrevBtn) {
         hotPrevBtn.addEventListener('click', () => {
-            hotCurrentSlide = (hotCurrentSlide - 1 + hotSlideCount) % hotSlideCount;
+            hotCurrentSlide = Math.max(hotCurrentSlide - 1, 0);
             updateHotSlider();
         });
     }
 
     if (hotNextBtn) {
         hotNextBtn.addEventListener('click', () => {
-            hotCurrentSlide = (hotCurrentSlide + 1) % hotSlideCount;
+            const maxSlide = Math.ceil(hotSlideCount / hotSlidesPerView) - 1;
+            hotCurrentSlide = Math.min(hotCurrentSlide + 1, maxSlide);
             updateHotSlider();
         });
     }
@@ -862,38 +872,50 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let mediaCurrentSlide = 0;
     const mediaSlideCount = mediaSlides.length;
+    const mediaSlidesPerView = window.innerWidth <= 980 ? 1 : 2; // На мобильных показываем 1, на десктопе 2
 
     function updateMediaSlider() {
         if (mediaTrack) {
-            mediaTrack.style.transform = `translateX(-${mediaCurrentSlide * 100}%)`;
+            const slideWidth = mediaSlidesPerView === 2 ? 50 : 100; // 50% для 2 слайдов, 100% для 1
+            mediaTrack.style.transform = `translateX(-${mediaCurrentSlide * slideWidth}%)`;
         }
     }
 
     if (mediaPrevBtn) {
         mediaPrevBtn.addEventListener('click', () => {
-            mediaCurrentSlide = (mediaCurrentSlide - 1 + mediaSlideCount) % mediaSlideCount;
+            mediaCurrentSlide = Math.max(mediaCurrentSlide - 1, 0);
             updateMediaSlider();
         });
     }
 
     if (mediaNextBtn) {
         mediaNextBtn.addEventListener('click', () => {
-            mediaCurrentSlide = (mediaCurrentSlide + 1) % mediaSlideCount;
+            const maxSlide = Math.ceil(mediaSlideCount / mediaSlidesPerView) - 1;
+            mediaCurrentSlide = Math.min(mediaCurrentSlide + 1, maxSlide);
             updateMediaSlider();
         });
     }
 
-    // Автопереключение слайдов каждые 5 секунд
-    setInterval(() => {
-        if (hotSlideCount > 0) {
-            hotCurrentSlide = (hotCurrentSlide + 1) % hotSlideCount;
+    // Обработчик изменения размера окна
+    window.addEventListener('resize', function() {
+        // Пересчитываем количество слайдов для горячих предложений
+        const newHotSlidesPerView = window.innerWidth <= 980 ? 1 : 2;
+        if (newHotSlidesPerView !== hotSlidesPerView) {
+            hotCurrentSlide = 0;
             updateHotSlider();
         }
-        if (mediaSlideCount > 0) {
-            mediaCurrentSlide = (mediaCurrentSlide + 1) % mediaSlideCount;
+
+        // Пересчитываем количество слайдов для медиа
+        const newMediaSlidesPerView = window.innerWidth <= 980 ? 1 : 2;
+        if (newMediaSlidesPerView !== mediaSlidesPerView) {
+            mediaCurrentSlide = 0;
             updateMediaSlider();
         }
-    }, 5000);
+    });
+
+    // Инициализация слайдеров при загрузке
+    updateHotSlider();
+    updateMediaSlider();
 });
 </script>
 {% endblock %}
