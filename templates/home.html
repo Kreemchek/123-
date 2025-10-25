@@ -186,7 +186,7 @@
         }
     }
 
-  /* Обновленные стили для карточек быстрого доступа */
+    /* Обновленные стили для карточек быстрого доступа */
     .quick {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -213,10 +213,10 @@
     }
 
     .quick .card h3 {
-        margin: 0 0 8px; /* Увеличиваем отступ снизу */
+        margin: 0 0 8px;
         font-size: 18px;
         font-weight: 700;
-        order: 1; /* Заголовок идет первым */
+        order: 1;
     }
 
     .quick .card p {
@@ -224,7 +224,7 @@
         color: var(--muted);
         font-size: 14px;
         line-height: 1.4;
-        order: 2; /* Описание идет вторым */
+        order: 2;
     }
 
     .quick .card::after {
@@ -268,22 +268,22 @@
         text-align: center;
     }
 
-    /* ОКОНЧАТЕЛЬНОЕ ИСПРАВЛЕНИЕ: Увеличиваем отступы для section-block */
+    /* ОСНОВНОЙ КОНТЕЙНЕР БЛОКА */
     .section-block {
         background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
         border: 1px solid rgba(255,255,255,.08);
         border-radius: var(--radius);
-        padding: 30px; /* УВЕЛИЧИВАЕМ отступы */
+        padding: 24px;
         box-shadow: var(--shadow-1);
         margin-bottom: 40px;
-        overflow: visible; /* Разрешаем видимость за пределами */
+        overflow: hidden; /* ФИКС: скрываем все что выходит за границы */
     }
 
     .section-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 20px; /* Увеличиваем отступ */
+        margin-bottom: 16px;
     }
 
     .section-header h3 {
@@ -319,94 +319,19 @@
         color: white;
     }
 
-    .auto-scroll-controls {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-top: 10px;
-    }
-
-    .auto-scroll-toggle {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        cursor: pointer;
-        color: var(--muted);
-        font-size: 14px;
-        transition: color 0.25s ease;
-    }
-
-    .auto-scroll-toggle:hover {
-        color: var(--text);
-    }
-
-    .auto-scroll-toggle.active {
-        color: var(--brand);
-    }
-
-    .toggle-switch {
-        width: 36px;
-        height: 20px;
-        background: var(--card);
-        border-radius: 10px;
-        position: relative;
-        transition: background 0.25s ease;
-    }
-
-    .toggle-switch::after {
-        content: '';
-        position: absolute;
-        width: 16px;
-        height: 16px;
-        background: var(--muted);
-        border-radius: 50%;
-        top: 2px;
-        left: 2px;
-        transition: all 0.25s ease;
-    }
-
-    .auto-scroll-toggle.active .toggle-switch {
-        background: rgba(124, 102, 255, 0.3);
-    }
-
-    .auto-scroll-toggle.active .toggle-switch::after {
-        background: var(--brand);
-        transform: translateX(16px);
-    }
-
-    .scroll-speed-control {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        color: var(--muted);
-        font-size: 12px;
-    }
-
-    .scroll-speed-control select {
-        background: var(--card);
-        border: 1px solid rgba(255,255,255,.08);
-        border-radius: 6px;
-        color: var(--text);
-        padding: 4px 8px;
-        font-size: 12px;
-        outline: none;
-    }
-
-    /* ОКОНЧАТЕЛЬНОЕ ИСПРАВЛЕНИЕ: Создаем безопасную зону для слайдера */
+    /* ФИКС: КОНТЕЙНЕР СЛАЙДЕРА */
     .slider-container {
         position: relative;
-        overflow: visible; /* Разрешаем видимость */
+        overflow: hidden; /* ФИКС: скрываем выходящее за границы */
         border-radius: var(--radius);
-        /* Создаем безопасную зону вокруг слайдера */
-        padding: 20px 0;
-        margin: -20px 0;
+        width: 100%;
     }
 
-    /* Плавная анимация для автоматической прокрутки */
+    /* ТРЕК СЛАЙДЕРА */
     .auto-scroll-track {
         display: flex;
         transition: transform 1.2s cubic-bezier(0.25, 0.1, 0.25, 1);
-        overflow: visible; /* Разрешаем видимость */
+        width: 100%;
     }
 
     .auto-scroll-track.continuous {
@@ -414,50 +339,32 @@
         animation: smoothScroll 40s linear infinite;
     }
 
-    /* ОКОНЧАТЕЛЬНОЕ ИСПРАВЛЕНИЕ: Уменьшаем ширину слайдов для безопасных отступов */
+    /* ФИКС: СЛАЙДЫ - 3 КАРТОЧКИ В РЯД */
     .slider-slide {
-        min-width: calc(33.333% - 24px); /* Увеличиваем вычитаемые отступы */
+        min-width: 33.333%; /* 3 карточки в ряд */
         flex-shrink: 0;
-        padding: 0 12px;
-        margin: 0;
+        padding: 0 8px; /* отступ между карточками */
+        box-sizing: border-box; /* ФИКС: padding включается в ширину */
     }
 
-    /* Плавная анимация скролла */
-    @keyframes smoothScroll {
-        0% {
-            transform: translateX(0);
-        }
-        100% {
-            transform: translateX(-100%);
-        }
-    }
-
-    /* УВЕЛИЧЕННЫЕ стили для карточек объектов */
+    /* ФИКС: КАРТОЧКИ ОБЪЕКТОВ */
     .listing-card-compact {
         position: relative;
-        border-radius: 20px;
+        border-radius: 16px;
         background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
         border: 1px solid rgba(255, 255, 255, 0.8);
-        box-shadow:
-            0 8px 25px rgba(0, 0, 0, 0.12),
-            0 1px 0 rgba(255, 255, 255, 0.8) inset,
-            0 -1px 0 rgba(0, 0, 0, 0.02) inset;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
         overflow: hidden;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
         height: 100%;
-        max-width: 340px; /* Уменьшаем для безопасных отступов */
-        margin: 0 auto;
-        transform-origin: center;
+        width: 100%; /* ФИКС: занимает всю ширину слайда */
+        max-width: 100%; /* ФИКС: не больше ширины слайда */
+        box-sizing: border-box; /* ФИКС: правильный расчет размеров */
     }
 
     .listing-card-compact:hover {
-        transform: translateY(-8px) scale(1.03);
-        box-shadow:
-            0 20px 40px rgba(0, 0, 0, 0.15),
-            0 1px 0 rgba(255, 255, 255, 0.8) inset,
-            0 -1px 0 rgba(0, 0, 0, 0.02) inset;
-        z-index: 10;
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
     }
 
     .listing-card-compact .thumb {
@@ -476,7 +383,7 @@
     }
 
     .listing-card-compact:hover .thumb img {
-        transform: scale(1.08);
+        transform: scale(1.05);
     }
 
     .listing-card-compact .thumb > div {
@@ -493,7 +400,6 @@
         padding: 16px;
     }
 
-    /* Увеличенный бейдж "Горячее" */
     .hot-property-badge-compact {
         position: absolute;
         top: 12px;
@@ -509,33 +415,33 @@
     }
 
     .listing-card-compact .body {
-        padding: 20px;
+        padding: 16px;
     }
 
     .listing-card-compact .body strong {
-        font-size: 18px;
+        font-size: 16px;
         line-height: 1.4;
         display: block;
-        margin-bottom: 12px;
+        margin-bottom: 8px;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
-        min-height: 50px;
+        min-height: 44px;
     }
 
     .meta-compact {
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
+        gap: 6px;
         color: var(--muted);
-        font-size: 14px;
-        margin-bottom: 12px;
+        font-size: 13px;
+        margin-bottom: 10px;
     }
 
     .price-compact {
-        font-weight: 800;
-        font-size: 18px;
+        font-weight: 700;
+        font-size: 16px;
         margin-left: auto;
         color: var(--text);
     }
@@ -546,19 +452,18 @@
         margin-top: 12px;
     }
 
-    /* Увеличенные кнопки */
     .btn-compact {
         cursor: pointer;
         border: none;
-        padding: 12px 16px;
-        border-radius: 12px;
-        font-weight: 700;
+        padding: 10px 14px;
+        border-radius: 10px;
+        font-weight: 600;
         transition: .3s ease;
         text-decoration: none;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 14px;
+        font-size: 13px;
     }
 
     .btn-primary-compact {
@@ -574,34 +479,26 @@
         box-shadow: 0 0 0 1px rgba(124,102,255,.3), 0 0 40px rgba(92,76,255,.25);
     }
 
-    /* УВЕЛИЧЕННЫЕ стили для Media Section */
+    /* ФИКС: КАРТОЧКИ МЕДИА */
     .media-card-compact {
-        border-radius: 20px;
+        border-radius: 16px;
         background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
         border: 1px solid rgba(255, 255, 255, 0.8);
-        box-shadow:
-            0 8px 25px rgba(0, 0, 0, 0.12),
-            0 1px 0 rgba(255, 255, 255, 0.8) inset,
-            0 -1px 0 rgba(0, 0, 0, 0.02) inset;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
         overflow: hidden;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
         display: block;
         text-decoration: none;
         color: inherit;
         height: 100%;
-        max-width: 340px; /* Уменьшаем для безопасных отступов */
-        margin: 0 auto;
-        transform-origin: center;
+        width: 100%; /* ФИКС: занимает всю ширину слайда */
+        max-width: 100%; /* ФИКС: не больше ширины слайда */
+        box-sizing: border-box; /* ФИКС: правильный расчет размеров */
     }
 
     .media-card-compact:hover {
-        transform: translateY(-8px) scale(1.03);
-        box-shadow:
-            0 20px 40px rgba(0, 0, 0, 0.15),
-            0 1px 0 rgba(255, 255, 255, 0.8) inset,
-            0 -1px 0 rgba(0, 0, 0, 0.02) inset;
-        z-index: 10;
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
     }
 
     .media-card-compact .thumb {
@@ -620,15 +517,15 @@
     }
 
     .media-card-compact:hover .thumb img {
-        transform: scale(1.08);
+        transform: scale(1.05);
     }
 
     .media-card-compact .body {
-        padding: 20px;
+        padding: 16px;
     }
 
     .media-card-compact .body strong {
-        font-size: 18px;
+        font-size: 16px;
         line-height: 1.4;
         display: block;
         margin-bottom: 8px;
@@ -636,12 +533,12 @@
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
-        min-height: 50px;
+        min-height: 44px;
     }
 
     .media-meta-compact {
         color: var(--muted);
-        font-size: 14px;
+        font-size: 13px;
     }
 
     .thumb-overlay-compact {
@@ -655,24 +552,29 @@
         color: white;
     }
 
-    /* Скрываем элементы управления автопрокруткой */
+    /* АНИМАЦИЯ АВТОПРОКРУТКИ */
+    @keyframes smoothScroll {
+        0% {
+            transform: translateX(0);
+        }
+        100% {
+            transform: translateX(-100%);
+        }
+    }
+
+    /* СКРЫВАЕМ ЭЛЕМЕНТЫ УПРАВЛЕНИЯ АВТОПРОКРУТКОЙ */
     .auto-scroll-controls {
         display: none !important;
     }
 
-    /* Адаптация для планшетов */
+    /* АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ */
     @media (max-width: 1200px) {
         .slider-slide {
-            min-width: calc(50% - 24px); /* Увеличиваем вычитаемые отступы */
-        }
-
-        .listing-card-compact,
-        .media-card-compact {
-            max-width: 320px;
+            min-width: 50%; /* 2 карточки в ряд */
         }
     }
 
-    /* Адаптация для мобильных */
+    /* АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ */
     @media (max-width: 768px) {
         .vertical-section {
             margin-top: 40px;
@@ -684,7 +586,7 @@
         }
 
         .section-block {
-            padding: 24px; /* Сохраняем достаточные отступы */
+            padding: 20px;
         }
 
         .section-header h3 {
@@ -697,56 +599,46 @@
         }
 
         .slider-slide {
-            min-width: calc(100% - 24px); /* Увеличиваем вычитаемые отступы */
+            min-width: 100%; /* 1 карточка в ряд */
+            padding: 0 4px;
         }
 
-        .listing-card-compact,
-        .media-card-compact {
-            max-width: 300px;
+        .listing-card-compact .body,
+        .media-card-compact .body {
+            padding: 12px;
         }
 
         .listing-card-compact .body strong,
         .media-card-compact .body strong {
-            font-size: 16px;
-            min-height: 44px;
+            font-size: 15px;
+            min-height: 42px;
         }
 
         .meta-compact {
-            font-size: 13px;
+            font-size: 12px;
         }
 
         .price-compact {
-            font-size: 16px;
+            font-size: 15px;
         }
 
         .btn-compact {
-            padding: 10px 14px;
-            font-size: 13px;
-        }
-
-        .slider-container {
-            padding: 16px 0;
-            margin: -16px 0;
+            padding: 8px 12px;
+            font-size: 12px;
         }
     }
 
     @media (max-width: 480px) {
         .section-block {
-            padding: 20px;
+            padding: 16px;
         }
 
         .section-header {
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
 
         .slider-slide {
-            padding: 0 8px;
-            min-width: calc(100% - 16px);
-        }
-
-        .listing-card-compact,
-        .media-card-compact {
-            max-width: 280px;
+            padding: 0 2px;
         }
     }
 
