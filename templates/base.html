@@ -88,23 +88,65 @@
             background: color-mix(in oklab, var(--bg-soft) 80%, transparent);
             border-bottom: 1px solid rgba(255,255,255,.06);
         }
-        .topbar-container { max-width: 1240px; margin: 0 auto; padding: 18px clamp(16px, 4vw, 28px); }
-        .topbar-row { display: flex; align-items: center; gap: 18px; justify-content: space-between; flex-wrap: wrap; }
-        .topbar-brand { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: .5px; }
+        .topbar-container {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 18px clamp(16px, 4vw, 28px);
+        }
+        .topbar-row {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .topbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+            letter-spacing: .5px;
+            flex-shrink: 0;
+        }
         .topbar-brand .logo {
             width: 34px; height: 34px; border-radius: 12px; background: linear-gradient(135deg, var(--brand), var(--brand-2));
             box-shadow: var(--glow);
             display: grid; place-items: center; color: white; font-weight: 800;
         }
-        .topbar-nav { display: flex; gap: 8px; flex-wrap: wrap; }
+        .topbar-nav {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            flex: 1;
+            justify-content: center;
+            margin: 0 20px;
+        }
         .topbar-chip {
             display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 999px;
             background: var(--card); color: var(--text); border: 1px solid rgba(255,255,255,.08);
             transition: .25s ease; text-decoration: none; font-weight: 600;
+            white-space: nowrap;
         }
         .topbar-chip:hover { transform: translateY(-1px); box-shadow: var(--shadow-1); }
-        .topbar-balance { display:flex; align-items:center; gap:10px; background:linear-gradient(180deg, rgba(124,102,255,.18), rgba(124,102,255,.05)); padding:10px 14px; border-radius:14px; border:1px solid rgba(124,102,255,.25); }
-        .topbar-btn { cursor:pointer; border:none; padding:12px 16px; border-radius:14px; font-weight:700; }
+        .topbar-balance {
+            display:flex;
+            align-items:center;
+            gap:10px;
+            background:linear-gradient(180deg, rgba(124,102,255,.18), rgba(124,102,255,.05));
+            padding:10px 14px;
+            border-radius:14px;
+            border:1px solid rgba(124,102,255,.25);
+            flex-shrink: 0;
+        }
+        .topbar-btn {
+            cursor:pointer;
+            border:none;
+            padding:12px 16px;
+            border-radius:14px;
+            font-weight:700;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
         .topbar-btn-primary { background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: #fff; box-shadow: var(--glow); }
         .topbar-btn-ghost { background: var(--card); color: var(--text); border: 1px solid rgba(255,255,255,.08); }
 
@@ -120,6 +162,7 @@
             border-radius: 12px;
             color: var(--text);
             cursor: pointer;
+            flex-shrink: 0;
         }
 
         .mobile-menu {
@@ -147,9 +190,21 @@
         }
 
         /* Уменьшение кнопок на мобильных устройствах */
-        @media (max-width: 640px) {
-            .hidden-sm { display:none; }
-            .topbar-nav { display: none; }
+        @media (max-width: 1024px) {
+            .topbar-nav {
+                margin: 0 15px;
+            }
+
+            .topbar-chip {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .topbar-nav {
+                display: none;
+            }
 
             /* Показываем кнопку меню на мобильных */
             .mobile-menu-btn {
@@ -158,29 +213,70 @@
                 justify-content: center;
             }
 
+            .topbar-row {
+                gap: 12px;
+                justify-content: space-between;
+            }
+
             /* Уменьшаем кнопки баланса и пополнения */
             .topbar-balance {
-                padding: 8px 10px;
-                gap: 6px;
+                padding: 8px 12px;
+                gap: 8px;
+                font-size: 14px;
             }
 
             .topbar-btn {
-                padding: 8px 12px;
+                padding: 10px 14px;
                 font-size: 14px;
             }
 
             /* Уменьшаем кнопку личного кабинета */
             .topbar-btn-ghost {
-                padding: 8px 10px;
+                padding: 10px 12px;
             }
 
             /* Уменьшаем отступы в хедере */
             .topbar-container {
                 padding: 12px 16px;
             }
+        }
+
+        @media (max-width: 640px) {
+            .hidden-sm { display:none; }
+
+            .topbar-balance {
+                padding: 6px 10px;
+                gap: 6px;
+                font-size: 13px;
+            }
+
+            .topbar-btn {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+
+            .topbar-btn-ghost {
+                padding: 8px 10px;
+            }
+
+            .topbar-container {
+                padding: 10px 12px;
+            }
 
             .topbar-row {
-                gap: 12px;
+                gap: 8px;
+            }
+
+            /* Скрываем текст "Пополнить" на очень маленьких экранах */
+            @media (max-width: 480px) {
+                .topbar-balance .topbar-btn {
+                    padding: 6px 8px;
+                    font-size: 12px;
+                }
+
+                .topbar-balance span {
+                    font-size: 12px;
+                }
             }
         }
 
@@ -450,12 +546,7 @@
             {% endif %}
         </nav>
 
-        <!-- Кнопка меню для мобильных -->
-        <button class="mobile-menu-btn" id="mobileMenuBtn">
-            <i class="fas fa-bars"></i>
-        </button>
-
-        <div class="topbar-row" style="gap:10px;">
+        <div class="topbar-row" style="gap:10px; flex-shrink: 0;">
             {% if user.is_authenticated %}
                 <div class="topbar-balance">
                     <span class="pill">{{ user.balance }} ₽</span>
@@ -470,6 +561,11 @@
                 <a href="{% url 'login' %}" class="topbar-btn topbar-btn-ghost">Войти</a>
                 <a href="{% url 'register' %}" class="topbar-btn topbar-btn-primary">Регистрация</a>
             {% endif %}
+
+            <!-- Кнопка меню для мобильных -->
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
         </div>
     </div>
 
