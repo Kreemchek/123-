@@ -2310,6 +2310,43 @@ body.mobile-modal-open {
         transform: translateX(-50%) translateY(0);
     }
 }
+/* Скрываем ПК фильтры на мобильных устройствах */
+@media (max-width: 1023px) {
+    .filter-sidebar {
+        display: none !important;
+    }
+
+    .filter-toggle {
+        display: none !important;
+    }
+
+    /* Скрываем весь aside с ПК фильтрами */
+    aside.w-full.lg\\:w-80 {
+        display: none !important;
+    }
+
+    /* Скрываем контейнер с ПК фильтрами */
+    .filter-container {
+        display: block !important;
+    }
+
+    /* Скрываем старую мобильную кнопку если она есть */
+    .properties-page .filter-toggle {
+        display: none !important;
+    }
+}
+
+/* Убедимся, что на ПК мобильное меню скрыто */
+@media (min-width: 1024px) {
+    .mobile-filters-overlay,
+    .mobile-filters-sidebar {
+        display: none !important;
+    }
+
+    #mobile-filters-btn {
+        display: none !important;
+    }
+}
 </style>
 {% endblock %}
 
@@ -2774,9 +2811,9 @@ body.mobile-modal-open {
 
 
      <div class="flex flex-col lg:flex-row gap-8">
-<aside class="w-full lg:w-80 flex-shrink-0 order-first">
+<aside class="w-full lg:w-80 flex-shrink-0 order-first hidden lg:block">
     <div class="bg-white rounded-lg shadow p-6 sticky-column">
-        <button class="filter-toggle btn-primary mb-4 lg:hidden">
+<button class="filter-toggle btn-primary mb-4 hidden lg:block">
             <i class="bi bi-funnel"></i> Фильтры
         </button>
         <div class="filter-sidebar lg:block" id="filter-sidebar">
@@ -4841,6 +4878,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
         selectedMetroText.innerHTML = html;
     }
+});
+// Скрываем ПК фильтры на мобильных устройствах при загрузке
+document.addEventListener('DOMContentLoaded', function() {
+    function hidePcFiltersOnMobile() {
+        if (window.innerWidth < 1024) {
+            // Скрываем ПК фильтры
+            const pcFilters = document.querySelector('.filter-sidebar');
+            const pcFiltersAside = document.querySelector('aside.w-full.lg\\\\:w-80');
+            const pcFilterToggle = document.querySelector('.filter-toggle');
+
+            if (pcFilters) pcFilters.style.display = 'none';
+            if (pcFiltersAside) pcFiltersAside.style.display = 'none';
+            if (pcFilterToggle) pcFilterToggle.style.display = 'none';
+        }
+    }
+
+    hidePcFiltersOnMobile();
+
+    // Также скрываем при изменении размера окна
+    window.addEventListener('resize', hidePcFiltersOnMobile);
 });
 </script>
 
