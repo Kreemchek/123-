@@ -396,55 +396,28 @@
         border-radius: var(--radius);
     }
 
-    /* Стили для автоматического скроллера с эффектом рулетки */
-    .auto-scroll-track {
-        display: flex;
-        transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
-
-    .auto-scroll-track.continuous {
-        display: flex;
-        animation: scrollLoop 30s linear infinite;
-    }
-
-    .slider-slide {
-        min-width: 50%;
-        flex-shrink: 0;
-        padding: 0 8px;
-    }
-
-    /* Анимация для непрерывного скролла */
-    @keyframes scrollLoop {
-        0% {
-            transform: translateX(0);
-        }
-        100% {
-            transform: translateX(-100%);
-        }
-    }
-
     /* УВЕЛИЧЕННЫЕ стили для карточек объектов */
     .listing-card-compact {
         position: relative;
-        border-radius: 16px;
+        border-radius: 20px;
         background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
         border: 1px solid rgba(255, 255, 255, 0.8);
         box-shadow:
-            0 4px 15px rgba(0, 0, 0, 0.08),
+            0 8px 25px rgba(0, 0, 0, 0.12),
             0 1px 0 rgba(255, 255, 255, 0.8) inset,
             0 -1px 0 rgba(0, 0, 0, 0.02) inset;
         overflow: hidden;
-        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         backdrop-filter: blur(10px);
         height: 100%;
-        max-width: 320px;
+        max-width: 380px;
         margin: 0 auto;
     }
 
     .listing-card-compact:hover {
-        transform: translateY(-6px) scale(1.02);
+        transform: translateY(-8px) scale(1.03);
         box-shadow:
-            0 15px 30px rgba(0, 0, 0, 0.12),
+            0 20px 40px rgba(0, 0, 0, 0.15),
             0 1px 0 rgba(255, 255, 255, 0.8) inset,
             0 -1px 0 rgba(0, 0, 0, 0.02) inset;
     }
@@ -461,11 +434,11 @@
         height: 100%;
         object-fit: cover;
         display: block;
-        transition: transform 0.3s ease;
+        transition: transform 0.4s ease;
     }
 
     .listing-card-compact:hover .thumb img {
-        transform: scale(1.05);
+        transform: scale(1.08);
     }
 
     .listing-card-compact .thumb > div {
@@ -477,76 +450,77 @@
         color: white;
         font-weight: 800;
         background: linear-gradient(135deg, rgba(124,102,255,.35), rgba(48,208,255,.25));
-        font-size: 14px;
+        font-size: 16px;
         text-align: center;
-        padding: 12px;
+        padding: 16px;
     }
 
-    /* Бейдж "Горячее" - увеличенный */
+    /* Увеличенный бейдж "Горячее" */
     .hot-property-badge-compact {
         position: absolute;
-        top: 8px;
-        right: 8px;
+        top: 12px;
+        right: 12px;
         background: linear-gradient(45deg, #ff4d4d, #f95700);
         color: white;
-        padding: 4px 8px;
-        border-radius: 12px;
+        padding: 6px 12px;
+        border-radius: 16px;
         font-weight: bold;
-        font-size: 10px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        font-size: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         z-index: 2;
     }
 
     .listing-card-compact .body {
-        padding: 14px;
+        padding: 20px;
     }
 
     .listing-card-compact .body strong {
-        font-size: 15px;
+        font-size: 18px;
         line-height: 1.4;
         display: block;
-        margin-bottom: 8px;
+        margin-bottom: 12px;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
+        min-height: 50px;
     }
 
     .meta-compact {
         display: flex;
         flex-wrap: wrap;
-        gap: 6px;
+        gap: 8px;
         color: var(--muted);
-        font-size: 11px;
-        margin-bottom: 8px;
+        font-size: 14px;
+        margin-bottom: 12px;
     }
 
     .price-compact {
         font-weight: 800;
-        font-size: 15px;
+        font-size: 18px;
         margin-left: auto;
         color: var(--text);
     }
 
     .card-actions-compact {
         display: flex;
-        gap: 6px;
-        margin-top: 8px;
+        gap: 8px;
+        margin-top: 12px;
     }
 
     /* Увеличенные кнопки */
     .btn-compact {
         cursor: pointer;
         border: none;
-        padding: 8px 12px;
-        border-radius: 10px;
+        padding: 12px 16px;
+        border-radius: 12px;
         font-weight: 700;
-        transition: .25s ease;
+        transition: .3s ease;
         text-decoration: none;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 12px;
+        font-size: 14px;
     }
 
     .btn-primary-compact {
@@ -558,34 +532,34 @@
     }
 
     .btn-primary-compact:hover {
-        transform: translateY(-1px);
+        transform: translateY(-2px);
         box-shadow: 0 0 0 1px rgba(124,102,255,.3), 0 0 40px rgba(92,76,255,.25);
     }
 
     /* УВЕЛИЧЕННЫЕ стили для Media Section */
     .media-card-compact {
-        border-radius: 16px;
+        border-radius: 20px;
         background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
         border: 1px solid rgba(255, 255, 255, 0.8);
         box-shadow:
-            0 4px 15px rgba(0, 0, 0, 0.08),
+            0 8px 25px rgba(0, 0, 0, 0.12),
             0 1px 0 rgba(255, 255, 255, 0.8) inset,
             0 -1px 0 rgba(0, 0, 0, 0.02) inset;
         overflow: hidden;
-        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         backdrop-filter: blur(10px);
         display: block;
         text-decoration: none;
         color: inherit;
         height: 100%;
-        max-width: 320px;
+        max-width: 380px;
         margin: 0 auto;
     }
 
     .media-card-compact:hover {
-        transform: translateY(-6px) scale(1.02);
+        transform: translateY(-8px) scale(1.03);
         box-shadow:
-            0 15px 30px rgba(0, 0, 0, 0.12),
+            0 20px 40px rgba(0, 0, 0, 0.15),
             0 1px 0 rgba(255, 255, 255, 0.8) inset,
             0 -1px 0 rgba(0, 0, 0, 0.02) inset;
     }
@@ -602,48 +576,99 @@
         height: 100%;
         object-fit: cover;
         display: block;
-        transition: transform 0.3s ease;
+        transition: transform 0.4s ease;
     }
 
     .media-card-compact:hover .thumb img {
-        transform: scale(1.05);
+        transform: scale(1.08);
     }
 
     .media-card-compact .body {
-        padding: 14px;
+        padding: 20px;
     }
 
     .media-card-compact .body strong {
-        font-size: 15px;
+        font-size: 18px;
         line-height: 1.4;
         display: block;
-        margin-bottom: 6px;
+        margin-bottom: 8px;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
+        min-height: 50px;
     }
 
     .media-meta-compact {
         color: var(--muted);
-        font-size: 11px;
+        font-size: 14px;
     }
 
     .thumb-overlay-compact {
         position: absolute;
-        bottom: 8px;
-        right: 8px;
-        background: rgba(0,0,0,.6);
-        padding: 4px 8px;
-        border-radius: 12px;
-        font-size: 10px;
+        bottom: 12px;
+        right: 12px;
+        background: rgba(0,0,0,.7);
+        padding: 6px 12px;
+        border-radius: 16px;
+        font-size: 12px;
         color: white;
     }
 
-    /* Мобильная оптимизация */
-    @media (max-width: 980px) {
+    /* Обновленные стили для слайдеров - 3 карточки на десктопе */
+    .slider-slide {
+        min-width: 33.333%; /* 3 карточки в ряд */
+        flex-shrink: 0;
+        padding: 0 12px;
+    }
+
+    /* Плавная анимация для автоматической прокрутки */
+    .auto-scroll-track {
+        display: flex;
+        transition: transform 1.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+    }
+
+    .auto-scroll-track.continuous {
+        display: flex;
+        animation: smoothScroll 40s linear infinite;
+    }
+
+    /* Плавная анимация скролла */
+    @keyframes smoothScroll {
+        0% {
+            transform: translateX(0);
+        }
+        100% {
+            transform: translateX(-100%);
+        }
+    }
+
+    /* Скрываем элементы управления автопрокруткой */
+    .auto-scroll-controls {
+        display: none !important;
+    }
+
+    /* Адаптация для планшетов */
+    @media (max-width: 1200px) {
+        .slider-slide {
+            min-width: 50%; /* 2 карточки в ряд */
+        }
+
+        .listing-card-compact,
+        .media-card-compact {
+            max-width: 340px;
+        }
+    }
+
+    /* Адаптация для мобильных */
+    @media (max-width: 768px) {
         .vertical-section {
             margin-top: 40px;
+        }
+
+        .vertical-section h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
         }
 
         .section-block {
@@ -659,53 +684,32 @@
             height: 28px;
         }
 
-        .listing-card-compact,
-        .media-card-compact {
-            max-width: 300px;
-        }
-
-        /* На мобильных возвращаем показ по 1 элементу */
         .slider-slide {
-            min-width: 100%;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .vertical-section {
-            margin-top: 40px;
-        }
-
-        .vertical-section h2 {
-            font-size: 24px;
-            margin-bottom: 20px;
+            min-width: 100%; /* 1 карточка в ряд */
         }
 
         .listing-card-compact,
         .media-card-compact {
-            max-width: 280px;
+            max-width: 320px;
         }
 
-        .listing-card-compact .body strong {
-            font-size: 14px;
+        .listing-card-compact .body strong,
+        .media-card-compact .body strong {
+            font-size: 16px;
+            min-height: 44px;
         }
 
         .meta-compact {
-            font-size: 10px;
+            font-size: 13px;
         }
 
         .price-compact {
-            font-size: 14px;
+            font-size: 16px;
         }
 
         .btn-compact {
-            padding: 7px 10px;
-            font-size: 11px;
-        }
-
-        .auto-scroll-controls {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
         }
     }
 
@@ -719,12 +723,12 @@
         }
 
         .slider-slide {
-            padding: 0 4px;
+            padding: 0 8px;
         }
 
         .listing-card-compact,
         .media-card-compact {
-            max-width: 260px;
+            max-width: 300px;
         }
     }
 
@@ -823,7 +827,7 @@
             </div>
         </div>
 
-        <!-- Элементы управления автопрокруткой -->
+        <!-- Элементы управления автопрокруткой (скрыты) -->
         <div class="auto-scroll-controls">
             <div class="auto-scroll-toggle" id="hot-auto-toggle">
                 <div class="toggle-switch"></div>
@@ -840,7 +844,7 @@
         </div>
 
         <div class="slider-container">
-            <div class="auto-scroll-track" id="hot-properties-track">
+            <div class="auto-scroll-track continuous" id="hot-properties-track">
                 {% for property in hot_properties %}
                 <div class="slider-slide">
                     <div class="listing-card-compact">
@@ -888,7 +892,7 @@
             </div>
         </div>
 
-        <!-- Элементы управления автопрокруткой -->
+        <!-- Элементы управления автопрокруткой (скрыты) -->
         <div class="auto-scroll-controls">
             <div class="auto-scroll-toggle" id="media-auto-toggle">
                 <div class="toggle-switch"></div>
@@ -905,7 +909,7 @@
         </div>
 
         <div class="slider-container">
-            <div class="auto-scroll-track" id="media-track">
+            <div class="auto-scroll-track continuous" id="media-track">
                 {% for media in featured_media %}
                 <div class="slider-slide">
                     <a href="{% url 'media_content:detail' media.id %}" class="link">
@@ -947,113 +951,67 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Инициализация скроллеров
-    initAutoScroller('hot-properties-track', 'hot-auto-toggle', 'hot-speed-select', '.prev-hot', '.next-hot');
-    initAutoScroller('media-track', 'media-auto-toggle', 'media-speed-select', '.prev-media', '.next-media');
+    // Автоматическая плавная прокрутка для горячих предложений
+    initSmoothAutoScroll('hot-properties-track');
+    // Автоматическая плавная прокрутка для медиа
+    initSmoothAutoScroll('media-track');
 
-    function initAutoScroller(trackId, toggleId, speedSelectId, prevBtnSelector, nextBtnSelector) {
+    function initSmoothAutoScroll(trackId) {
         const track = document.getElementById(trackId);
-        const toggle = document.getElementById(toggleId);
-        const speedSelect = document.getElementById(speedSelectId);
-        const prevBtn = document.querySelector(prevBtnSelector);
-        const nextBtn = document.querySelector(nextBtnSelector);
-
-        if (!track || !toggle) return;
+        if (!track) return;
 
         const slides = track.querySelectorAll('.slider-slide');
         if (slides.length === 0) return;
 
-        let currentIndex = 0;
-        let autoScrollInterval = null;
-        let isAutoScrollEnabled = false;
-        let scrollSpeed = parseInt(speedSelect.value);
-
-        // Функция для обновления позиции
-        function updatePosition() {
-            const slideWidth = slides[0].offsetWidth + 16; // + gap
-            track.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
-        }
-
-        // Функция для следующего слайда
-        function nextSlide() {
-            currentIndex = (currentIndex + 1) % slides.length;
-            updatePosition();
-        }
-
-        // Функция для предыдущего слайда
-        function prevSlide() {
-            currentIndex = (currentIndex - 1 + slides.length) % slides.length;
-            updatePosition();
-        }
-
-        // Запуск автопрокрутки
-        function startAutoScroll() {
-            if (autoScrollInterval) clearInterval(autoScrollInterval);
-            autoScrollInterval = setInterval(nextSlide, scrollSpeed * 100);
-        }
-
-        // Остановка автопрокрутки
-        function stopAutoScroll() {
-            if (autoScrollInterval) {
-                clearInterval(autoScrollInterval);
-                autoScrollInterval = null;
-            }
-        }
-
-        // Переключение автопрокрутки
-        toggle.addEventListener('click', function() {
-            isAutoScrollEnabled = !isAutoScrollEnabled;
-            toggle.classList.toggle('active', isAutoScrollEnabled);
-
-            if (isAutoScrollEnabled) {
-                startAutoScroll();
-            } else {
-                stopAutoScroll();
-            }
-        });
-
-        // Изменение скорости
-        speedSelect.addEventListener('change', function() {
-            scrollSpeed = parseInt(this.value);
-            if (isAutoScrollEnabled) {
-                startAutoScroll();
-            }
-        });
-
-        // Кнопки навигации
-        prevBtn.addEventListener('click', function() {
-            stopAutoScroll();
-            toggle.classList.remove('active');
-            isAutoScrollEnabled = false;
-            prevSlide();
-        });
-
-        nextBtn.addEventListener('click', function() {
-            stopAutoScroll();
-            toggle.classList.remove('active');
-            isAutoScrollEnabled = false;
-            nextSlide();
-        });
+        // Добавляем класс для непрерывной анимации
+        track.classList.add('continuous');
 
         // Пауза при наведении
         track.addEventListener('mouseenter', function() {
-            if (isAutoScrollEnabled) {
-                stopAutoScroll();
-            }
+            track.style.animationPlayState = 'paused';
         });
 
         track.addEventListener('mouseleave', function() {
-            if (isAutoScrollEnabled) {
-                startAutoScroll();
-            }
+            track.style.animationPlayState = 'running';
         });
 
-        // Адаптация при изменении размера окна
-        window.addEventListener('resize', updatePosition);
-
-        // Инициализация
-        updatePosition();
+        // Перезапуск анимации при клике (на случай если она остановится)
+        track.addEventListener('click', function() {
+            track.style.animation = 'none';
+            setTimeout(() => {
+                track.style.animation = 'smoothScroll 40s linear infinite';
+            }, 10);
+        });
     }
+
+    // Инициализация при загрузке
+    setTimeout(() => {
+        const tracks = document.querySelectorAll('.auto-scroll-track');
+        tracks.forEach(track => {
+            track.style.animation = 'smoothScroll 40s linear infinite';
+        });
+    }, 100);
+
+    // Обработчики для кнопок навигации (оставлены на случай ручного управления)
+    document.querySelector('.prev-hot')?.addEventListener('click', function() {
+        const track = document.getElementById('hot-properties-track');
+        track.style.animationPlayState = 'paused';
+    });
+
+    document.querySelector('.next-hot')?.addEventListener('click', function() {
+        const track = document.getElementById('hot-properties-track');
+        track.style.animationPlayState = 'paused';
+    });
+
+    document.querySelector('.prev-media')?.addEventListener('click', function() {
+        const track = document.getElementById('media-track');
+        track.style.animationPlayState = 'paused';
+    });
+
+    document.querySelector('.next-media')?.addEventListener('click', function() {
+        const track = document.getElementById('media-track');
+        track.style.animationPlayState = 'paused';
+    });
 });
 </script>
 {% endblock %}
