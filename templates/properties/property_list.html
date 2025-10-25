@@ -3025,17 +3025,10 @@ body.mobile-modal-open {
                     </div>
                 </div>
 
-              <!-- Кнопки действий -->
-<div class="sticky bottom-0 bg-white pt-4 pb-6 border-t border-gray-200 mt-6">
-    <div class="flex gap-3">
-        <button type="button" onclick="resetMobileFilters()" class="flex-1 bg-gray-100 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors font-medium">
-            Сбросить
-        </button>
-        <button type="button" onclick="applyMobileFilters()" class="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-colors font-medium">
-            Применить
-        </button>
-    </div>
-</div>
+ <div class="filters-footer" style="display: flex; gap: 8px; position: sticky; bottom: 18px; padding-top: 8px; background: linear-gradient(180deg, transparent, rgba(255,255,255,0.9));">
+                    <a href="?" class="btn" style="background: white; border: 1px solid #e5e7eb; padding: 10px 14px; border-radius: 10px; color: #64748b; font-weight: 600; cursor: pointer; font-size: 14px; transition: all 0.2s ease;">Сбросить</a>
+                    <button type="submit" class="btn btn-accent" style="background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%); border: 0; color: white; padding: 10px 16px; border-radius: 12px; font-weight: 700; box-shadow: 0 6px 30px rgba(99, 72, 255, 0.15);">Применить</button>
+                </div>
             </form>
         </div>
     </div>
