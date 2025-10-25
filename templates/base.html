@@ -37,7 +37,7 @@
         /* Основной контент должен растягиваться */
         main {
             flex: 1 0 auto;
-            background-color: var(--bg);
+            width: 100%; /* Важно: ширина 100% */
         }
 
         /* Специфичные стили для home-page */
@@ -48,12 +48,12 @@
             color: var(--text);
         }
 
-        /* Фон для main на home-page */
-        body.home-page main {
+        /* Фон для main на home-page - УБИРАЕМ ЭТОТ СТИЛЬ */
+        /* body.home-page main {
             background: radial-gradient(1200px 800px at 10% -10%, rgba(124,102,255,.18), transparent 60%),
                         radial-gradient(1000px 600px at 90% 10%, rgba(48,208,255,.18), transparent 60%),
                         var(--bg);
-        }
+        } */
 
         /* Стили для сообщений */
         .fixed.top-4.right-4 {
