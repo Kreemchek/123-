@@ -277,7 +277,7 @@
         box-shadow: var(--shadow-1);
         margin-bottom: 40px; /* Увеличиваем отступ между блоками */
         /* Гарантируем что контент не обрезается */
-        overflow: visible;
+        overflow: hidden;
     }
 
     .section-header {
@@ -393,22 +393,23 @@
         outline: none;
     }
 
-    /* Исправленные стили для слайдеров */
+    /* ИСПРАВЛЕННЫЕ стили для слайдеров */
     .slider-container {
         position: relative;
-        /* УБИРАЕМ overflow: hidden чтобы не обрезало карточки */
-        overflow: visible;
+        /* ВОЗВРАЩАЕМ overflow: hidden но настраиваем правильные отступы */
+        overflow: hidden;
         border-radius: var(--radius);
+        /* Добавляем внутренние отступы чтобы карточки не обрезались */
+        padding: 16px 0;
+        margin: -16px 0;
     }
 
     /* Плавная анимация для автоматической прокрутки */
     .auto-scroll-track {
         display: flex;
         transition: transform 1.2s cubic-bezier(0.25, 0.1, 0.25, 1);
-        /* Убираем overflow чтобы не обрезало */
+        /* Оставляем overflow: visible для трека */
         overflow: visible;
-        /* Добавляем отступы чтобы карточки не выходили за границы */
-        padding: 8px 0;
     }
 
     .auto-scroll-track.continuous {
@@ -416,13 +417,13 @@
         animation: smoothScroll 40s linear infinite;
     }
 
-    /* Обновленные стили для слайдеров - 3 карточки на десктопе */
+    /* ОБНОВЛЕННЫЕ стили для слайдеров - 3 карточки на десктопе */
     .slider-slide {
-        min-width: 33.333%; /* 3 карточки в ряд */
+        min-width: calc(33.333% - 16px); /* 3 карточки в ряд с учетом отступов */
         flex-shrink: 0;
-        padding: 0 12px;
-        /* Добавляем отступы сверху и снизу чтобы карточки не обрезались */
-        margin: 8px 0;
+        padding: 0 8px;
+        /* Убираем внешние отступы, используем только padding */
+        margin: 0;
     }
 
     /* Плавная анимация скролла */
@@ -445,13 +446,13 @@
             0 8px 25px rgba(0, 0, 0, 0.12),
             0 1px 0 rgba(255, 255, 255, 0.8) inset,
             0 -1px 0 rgba(0, 0, 0, 0.02) inset;
-        overflow: hidden; /* Оставляем только для самой карточки */
+        overflow: hidden;
         transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         backdrop-filter: blur(10px);
         height: 100%;
-        max-width: 380px;
+        /* Уменьшаем максимальную ширину чтобы влезало в контейнер */
+        max-width: 350px;
         margin: 0 auto;
-        /* Гарантируем что вся карточка видна */
         transform-origin: center;
     }
 
@@ -461,7 +462,6 @@
             0 20px 40px rgba(0, 0, 0, 0.15),
             0 1px 0 rgba(255, 255, 255, 0.8) inset,
             0 -1px 0 rgba(0, 0, 0, 0.02) inset;
-        /* При hover поднимаем выше других элементов */
         z-index: 10;
     }
 
@@ -588,16 +588,16 @@
             0 8px 25px rgba(0, 0, 0, 0.12),
             0 1px 0 rgba(255, 255, 255, 0.8) inset,
             0 -1px 0 rgba(0, 0, 0, 0.02) inset;
-        overflow: hidden; /* Оставляем только для самой карточки */
+        overflow: hidden;
         transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         backdrop-filter: blur(10px);
         display: block;
         text-decoration: none;
         color: inherit;
         height: 100%;
-        max-width: 380px;
+        /* Уменьшаем максимальную ширину чтобы влезало в контейнер */
+        max-width: 350px;
         margin: 0 auto;
-        /* Гарантируем что вся карточка видна */
         transform-origin: center;
     }
 
@@ -607,7 +607,6 @@
             0 20px 40px rgba(0, 0, 0, 0.15),
             0 1px 0 rgba(255, 255, 255, 0.8) inset,
             0 -1px 0 rgba(0, 0, 0, 0.02) inset;
-        /* При hover поднимаем выше других элементов */
         z-index: 10;
     }
 
@@ -670,12 +669,12 @@
     /* Адаптация для планшетов */
     @media (max-width: 1200px) {
         .slider-slide {
-            min-width: 50%; /* 2 карточки в ряд */
+            min-width: calc(50% - 16px); /* 2 карточки в ряд с учетом отступов */
         }
 
         .listing-card-compact,
         .media-card-compact {
-            max-width: 340px;
+            max-width: 320px;
         }
     }
 
@@ -691,7 +690,7 @@
         }
 
         .section-block {
-            padding: 20px; /* Немного уменьшаем отступы на мобильных */
+            padding: 20px;
         }
 
         .section-header h3 {
@@ -704,12 +703,12 @@
         }
 
         .slider-slide {
-            min-width: 100%; /* 1 карточка в ряд */
+            min-width: calc(100% - 16px); /* 1 карточка в ряд с учетом отступов */
         }
 
         .listing-card-compact,
         .media-card-compact {
-            max-width: 320px;
+            max-width: 300px;
         }
 
         .listing-card-compact .body strong,
@@ -730,6 +729,11 @@
             padding: 10px 14px;
             font-size: 13px;
         }
+
+        .slider-container {
+            padding: 12px 0;
+            margin: -12px 0;
+        }
     }
 
     @media (max-width: 480px) {
@@ -742,12 +746,13 @@
         }
 
         .slider-slide {
-            padding: 0 8px;
+            padding: 0 6px;
+            min-width: calc(100% - 12px);
         }
 
         .listing-card-compact,
         .media-card-compact {
-            max-width: 300px;
+            max-width: 280px;
         }
     }
 
