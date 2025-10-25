@@ -2347,6 +2347,77 @@ body.mobile-modal-open {
         display: none !important;
     }
 }
+/* Улучшенные стили для мобильной кнопки фильтров */
+@media (max-width: 1023px) {
+    #mobile-filters-btn {
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding: 16px 20px !important;
+        font-size: 18px !important;
+        min-height: 60px !important;
+        border-radius: 12px !important;
+    }
+
+    #mobile-filters-btn svg {
+        width: 24px !important;
+        height: 24px !important;
+        margin-right: 12px !important;
+    }
+
+    #mobile-filters-btn .bg-red-500 {
+        width: 28px !important;
+        height: 28px !important;
+        font-size: 14px !important;
+        margin-left: 12px !important;
+    }
+}
+
+/* Дополнительные улучшения для очень маленьких экранов */
+@media (max-width: 640px) {
+    #mobile-filters-btn {
+        padding: 18px 16px !important;
+        min-height: 65px !important;
+        font-size: 20px !important;
+    }
+
+    #mobile-filters-btn svg {
+        width: 26px !important;
+        height: 26px !important;
+        margin-right: 14px !important;
+    }
+
+    #mobile-filters-btn span {
+        font-size: 18px !important;
+    }
+}
+
+/* Гарантируем, что кнопка занимает всю ширину контейнера */
+.lg\\:hidden.mb-4 {
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* Убираем возможные отступы у родительских контейнеров */
+.container.mx-auto.px-4.py-6 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+/* На очень маленьких экранах уменьшаем отступы */
+@media (max-width: 480px) {
+    .container.mx-auto.px-4.py-6 {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    #mobile-filters-btn {
+        margin-left: 0.5rem;
+        margin-right: 0.5rem;
+        width: calc(100% - 1rem) !important;
+    }
+}
 </style>
 {% endblock %}
 
@@ -2423,14 +2494,14 @@ body.mobile-modal-open {
 
 <!-- Мобильная кнопка открытия фильтров -->
 <!-- Мобильная кнопка открытия фильтров -->
-<div class="lg:hidden mb-4">
-    <button class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 font-medium flex items-center justify-center shadow-lg" id="mobile-filters-btn">
-        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<div class="lg:hidden mb-4 w-full">
+    <button class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-4 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 font-medium flex items-center justify-center shadow-lg" id="mobile-filters-btn">
+        <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
         </svg>
-        Фильтры
+        <span class="text-lg font-semibold">Фильтры</span>
         {% if request.GET.search or request.GET.property_type or request.GET.rental_type or request.GET.location or request.GET.min_price or request.GET.max_price %}
-        <span class="ml-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">!</span>
+        <span class="ml-3 bg-red-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">!</span>
         {% endif %}
     </button>
 </div>
