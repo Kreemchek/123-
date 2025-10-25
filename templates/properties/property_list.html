@@ -2284,6 +2284,32 @@ body.mobile-modal-open {
         max-height: 250px !important;
     }
 }
+/* Стили для мобильных уведомлений */
+.mobile-notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #10b981;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    z-index: 10000;
+    font-weight: 600;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
 </style>
 {% endblock %}
 
@@ -2961,10 +2987,17 @@ body.mobile-modal-open {
                     </div>
                 </div>
 
-                <div class="filters-footer" style="display: flex; gap: 8px; position: sticky; bottom: 18px; padding-top: 8px; background: linear-gradient(180deg, transparent, rgba(255,255,255,0.9));">
-                    <a href="?" class="btn" style="background: white; border: 1px solid #e5e7eb; padding: 10px 14px; border-radius: 10px; color: #64748b; font-weight: 600; cursor: pointer; font-size: 14px; transition: all 0.2s ease;">Сбросить</a>
-                    <button type="submit" class="btn btn-accent" style="background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%); border: 0; color: white; padding: 10px 16px; border-radius: 12px; font-weight: 700; box-shadow: 0 6px 30px rgba(99, 72, 255, 0.15);">Применить</button>
-                </div>
+              <!-- Кнопки действий -->
+<div class="sticky bottom-0 bg-white pt-4 pb-6 border-t border-gray-200 mt-6">
+    <div class="flex gap-3">
+        <button type="button" onclick="resetMobileFilters()" class="flex-1 bg-gray-100 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors font-medium">
+            Сбросить
+        </button>
+        <button type="button" onclick="applyMobileFilters()" class="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-colors font-medium">
+            Применить
+        </button>
+    </div>
+</div>
             </form>
         </div>
     </div>
@@ -3629,26 +3662,13 @@ function initMobileFilters() {
     initMobileModals();
 }
 
-// Обновленные функции для мобильных модальных окон с разрешенной прокруткой
+// Обновленные функции для мобильных модальных окон
 function initMobileModals() {
-    // Обновленные функции для управления модальными окнами БЕЗ блокировки прокрутки
+    // Функции для управления модальными окнами
     function openMobileModal(modal) {
-        // Сначала закрываем все другие модальные окна
         closeAllMobileModals();
-
-        // Устанавливаем высокий z-index
         modal.style.zIndex = '9999';
         modal.classList.remove('hidden');
-
-        // НЕ блокируем прокрутку body - позволяем скроллить модальное окно
-
-        // Фокусируемся на поле поиска если оно есть
-        setTimeout(() => {
-            const searchInput = modal.querySelector('input[type="text"]');
-            if (searchInput) {
-                searchInput.focus();
-            }
-        }, 100);
     }
 
     function closeAllMobileModals() {
@@ -3658,7 +3678,7 @@ function initMobileModals() {
         });
     }
 
-    // Обработчики для закрытия по клику вне контента
+  // Обработчики для закрытия по клику вне контента
     document.querySelectorAll('#mobile-city-dropdown, #mobile-metro-dropdown').forEach(modal => {
         modal.addEventListener('click', function(e) {
             if (e.target === modal) {
@@ -3673,8 +3693,7 @@ function initMobileModals() {
             closeAllMobileModals();
         }
     });
-
-    // Обработчики для кнопок закрытия
+// Обработчики для кнопок закрытия
     const mobileCloseCityModal = document.getElementById('mobile-close-city-modal');
     const mobileCloseMetroModal = document.getElementById('mobile-close-metro-modal');
 
@@ -3698,9 +3717,6 @@ function initMobileModals() {
     if (mobileCityInput) {
         mobileCityInput.addEventListener('click', function(e) {
             e.preventDefault();
-            if (typeof closeMobileFilters === 'function') {
-                closeMobileFilters();
-            }
             if (mobileCityDropdown) {
                 openMobileModal(mobileCityDropdown);
                 setTimeout(() => {
@@ -3710,7 +3726,7 @@ function initMobileModals() {
         });
     }
 
-    // Обработка выбора города из списка
+     // Обработка выбора города из списка
     document.querySelectorAll('#mobile-city-dropdown .city-option').forEach(option => {
         option.addEventListener('click', function() {
             const city = this.getAttribute('data-city');
@@ -3719,7 +3735,12 @@ function initMobileModals() {
 
             if (selectedCityText) selectedCityText.textContent = city;
             if (cityHiddenInput) cityHiddenInput.value = city;
+
+            // НЕ закрываем меню фильтров, только модальное окно
             closeAllMobileModals();
+
+            // Обновляем отображение, но не применяем фильтры сразу
+            updateMobileFilterIndicator();
         });
     });
 
@@ -3756,7 +3777,9 @@ function initMobileModals() {
 
                 if (selectedCityText) selectedCityText.textContent = mobileCustomCity;
                 if (cityHiddenInput) cityHiddenInput.value = mobileCustomCity;
+
                 closeAllMobileModals();
+                updateMobileFilterIndicator();
             }
         });
     }
@@ -3780,9 +3803,6 @@ function initMobileModals() {
     if (mobileMetroInput) {
         mobileMetroInput.addEventListener('click', function(e) {
             e.preventDefault();
-            if (typeof closeMobileFilters === 'function') {
-                closeMobileFilters();
-            }
             if (mobileMetroDropdown) {
                 openMobileModal(mobileMetroDropdown);
                 setTimeout(() => {
@@ -3840,19 +3860,6 @@ function initMobileModals() {
                     }
                 }
             });
-
-            // Прокручиваем к первому найденному результату
-            if (searchTerm.length > 0) {
-                const firstVisibleSection = document.querySelector('#mobile-metro-dropdown .metro-line-section:not(.hidden)');
-                if (firstVisibleSection) {
-                    setTimeout(() => {
-                        firstVisibleSection.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }, 200);
-                }
-            }
         });
     }
 
@@ -3873,6 +3880,8 @@ function initMobileModals() {
                     alert('Можно выбрать не более 5 станций');
                 }
             }
+
+            updateMobileFilterIndicator();
         }
     });
 
@@ -3881,6 +3890,7 @@ function initMobileModals() {
         mobileClearMetroBtn.addEventListener('click', function() {
             mobileSelectedStations = [];
             updateMobileSelectedStationsInModal();
+            updateMobileFilterIndicator();
         });
     }
 
@@ -3892,6 +3902,7 @@ function initMobileModals() {
                 updateMobileSelectedStationsText();
             }
             closeAllMobileModals();
+            updateMobileFilterIndicator();
         });
     }
 
@@ -3928,6 +3939,289 @@ function initMobileModals() {
 
         selectedMetroText.innerHTML = html;
     }
+
+    // Улучшенная функция переключения линий метро
+    window.toggleMobileMetroLine = function(header) {
+        const lineSection = header.closest('.metro-line-section');
+        const stationsContainer = lineSection.querySelector('.metro-stations-container');
+        const chevron = header.querySelector('.bi-chevron-down');
+
+        const isExpanded = header.classList.contains('expanded');
+
+        if (isExpanded) {
+            // Закрываем
+            stationsContainer.style.maxHeight = '0';
+            stationsContainer.classList.remove('expanded');
+            header.classList.remove('expanded');
+            chevron.classList.remove('rotate-180');
+        } else {
+            // Открываем
+            // Сначала закрываем все другие открытые линии
+            document.querySelectorAll('#mobile-metro-dropdown .metro-line-section').forEach(section => {
+                if (section !== lineSection) {
+                    const otherStationsContainer = section.querySelector('.metro-stations-container');
+                    const otherHeader = section.querySelector('.metro-line-header');
+                    const otherChevron = section.querySelector('.bi-chevron-down');
+
+                    otherStationsContainer.style.maxHeight = '0';
+                    otherStationsContainer.classList.remove('expanded');
+                    otherHeader.classList.remove('expanded');
+                    otherChevron.classList.remove('rotate-180');
+                }
+            });
+
+            // Открываем текущую линию
+            stationsContainer.style.maxHeight = '300px';
+            stationsContainer.classList.add('expanded');
+            header.classList.add('expanded');
+            chevron.classList.add('rotate-180');
+        }
+    };
+
+    // Инициализация при загрузке
+    updateMobileSelectedStationsText();
+}
+
+// Функция обновления индикатора активных фильтров
+function updateMobileFilterIndicator() {
+    const mobileFiltersBtn = document.getElementById('mobile-filters-btn');
+    if (!mobileFiltersBtn) return;
+
+    let hasActiveFilters = false;
+
+    // Проверяем активные фильтры
+    const cityValue = document.getElementById('mobile-city-hidden-input')?.value;
+    const metroValue = document.getElementById('mobile-metro-hidden-input')?.value;
+    const searchValue = document.querySelector('#mobile-filter-form input[name="search"]')?.value;
+    const minPrice = document.querySelector('#mobile-filter-form input[name="min_price"]')?.value;
+    const maxPrice = document.querySelector('#mobile-filter-form input[name="max_price"]')?.value;
+
+    if (cityValue || metroValue || searchValue || minPrice || maxPrice) {
+        hasActiveFilters = true;
+    }
+
+    // Обновляем индикатор
+    let indicator = mobileFiltersBtn.querySelector('.bg-red-500');
+    if (hasActiveFilters && !indicator) {
+        indicator = document.createElement('span');
+        indicator.className = 'ml-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs';
+        indicator.textContent = '!';
+        mobileFiltersBtn.appendChild(indicator);
+    } else if (!hasActiveFilters && indicator) {
+        indicator.remove();
+    }
+}
+
+// Переключение секций фильтров
+function toggleMobileFilterSection(header) {
+    const section = header.parentElement;
+    const content = section.querySelector('.mobile-filter-content');
+    const icon = header.querySelector('svg');
+
+    // Закрываем другие секции
+    document.querySelectorAll('.mobile-filter-section').forEach(otherSection => {
+        if (otherSection !== section) {
+            const otherContent = otherSection.querySelector('.mobile-filter-content');
+            const otherIcon = otherSection.querySelector('svg');
+            otherContent.classList.add('hidden');
+            otherIcon.classList.remove('rotate-180');
+        }
+    });
+
+    // Переключаем текущую секцию
+    content.classList.toggle('hidden');
+    icon.classList.toggle('rotate-180');
+}
+
+// Сброс фильтров - ОБНОВЛЕННАЯ ФУНКЦИЯ
+function resetMobileFilters() {
+    // Сбрасываем все поля формы
+    const form = document.getElementById('mobile-filter-form');
+    if (!form) return;
+
+    // Сбрасываем стандартные поля
+    form.reset();
+
+    // Сбрасываем кастомные поля (город, метро)
+    const cityHiddenInput = document.getElementById('mobile-city-hidden-input');
+    const selectedCityText = document.getElementById('mobile-selected-city-text');
+    if (cityHiddenInput) cityHiddenInput.value = '';
+    if (selectedCityText) selectedCityText.textContent = 'Выберите город';
+
+    const metroHiddenInput = document.getElementById('mobile-metro-hidden-input');
+    const selectedMetroText = document.getElementById('mobile-selected-metro-text');
+    if (metroHiddenInput) metroHiddenInput.value = '';
+    if (selectedMetroText) selectedMetroText.innerHTML = 'Выберите станции метро';
+
+    // Сбрасываем выбранные станции метро
+    if (typeof mobileSelectedStations !== 'undefined') {
+        mobileSelectedStations = [];
+        if (typeof updateMobileSelectedStationsInModal === 'function') {
+            updateMobileSelectedStationsInModal();
+        }
+        if (typeof updateMobileSelectedStationsText === 'function') {
+            updateMobileSelectedStationsText();
+        }
+    }
+
+    // Обновляем индикатор
+    updateMobileFilterIndicator();
+
+    // Показываем сообщение о сбросе
+    showMobileNotification('Фильтры сброшены');
+
+    // НЕ закрываем меню фильтров после сброса
+    // closeMobileFilters(); // ЗАКОММЕНТИРОВАНО
+
+    // НЕ отправляем форму автоматически
+    // form.submit(); // ЗАКОММЕНТИРОВАНО
+}
+
+// Функция показа уведомления
+function showMobileNotification(message) {
+    // Создаем элемент уведомления
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+    notification.textContent = message;
+
+    document.body.appendChild(notification);
+
+    // Автоматически скрываем через 2 секунды
+    setTimeout(() => {
+        notification.remove();
+    }, 2000);
+}
+
+// Функция применения фильтров
+function applyMobileFilters() {
+    const form = document.getElementById('mobile-filter-form');
+    if (form) {
+        form.submit();
+    }
+}
+
+// Автоматическое открытие секций с активными фильтрами
+function openActiveFilterSections() {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    const sectionsToOpen = [];
+
+    if (urlParams.has('search')) sectionsToOpen.push('Поиск');
+    if (urlParams.has('property_type')) sectionsToOpen.push('Тип недвижимости');
+    if (urlParams.has('rental_type')) sectionsToOpen.push('Вид размещения');
+    if (urlParams.has('location')) sectionsToOpen.push('Город');
+    if (urlParams.has('min_price') || urlParams.has('max_price')) sectionsToOpen.push('Цена');
+
+    sectionsToOpen.forEach(sectionName => {
+        document.querySelectorAll('.mobile-filter-section').forEach(section => {
+            const header = section.querySelector('.font-medium');
+            if (header && header.textContent.trim() === sectionName) {
+                const content = section.querySelector('.mobile-filter-content');
+                const icon = section.querySelector('svg');
+                content.classList.remove('hidden');
+                icon.classList.add('rotate-180');
+            }
+        });
+    });
+}
+
+// Инициализация при загрузке
+document.addEventListener('DOMContentLoaded', function() {
+    initMobileFilters();
+    openActiveFilterSections();
+    updateMobileFilterIndicator();
+
+    // Скрываем ПК фильтры на мобильных устройствах
+    if (window.innerWidth < 1024) {
+        const pcFilters = document.querySelector('.filter-sidebar');
+        if (pcFilters) {
+            pcFilters.style.display = 'none';
+        }
+    }
+
+    // Обработчик для кнопки "Применить" в мобильных фильтрах
+    const mobileApplyBtn = document.querySelector('#mobile-filter-form button[type="submit"]');
+    if (mobileApplyBtn) {
+        mobileApplyBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            applyMobileFilters();
+        });
+    }
+});
+
+// Обработчик изменения размера окна
+window.addEventListener('resize', function() {
+    const pcFilters = document.querySelector('.filter-sidebar');
+    if (pcFilters) {
+        if (window.innerWidth < 1024) {
+            pcFilters.style.display = 'none';
+        } else {
+            pcFilters.style.display = 'block';
+        }
+    }
+});
+
+// Обработчики для чипсов типа недвижимости и вида размещения в мобильной версии
+document.addEventListener('DOMContentLoaded', function() {
+    // Обработчик для чипсов в мобильной версии
+    document.querySelectorAll('#mobile-filter-form .chip').forEach(chip => {
+        chip.addEventListener('click', function(e) {
+            e.preventDefault();
+            const checkbox = this.querySelector('input[type="checkbox"]');
+            if (checkbox) {
+                checkbox.checked = !checkbox.checked;
+                this.classList.toggle('active', checkbox.checked);
+
+                // Обновляем индикатор активных фильтров
+                updateMobileFilterIndicator();
+            }
+        });
+    });
+
+    // Инициализация состояния чипсов при загрузке
+    document.querySelectorAll('#mobile-filter-form input[type="checkbox"]').forEach(checkbox => {
+        const chip = checkbox.closest('.chip');
+        if (chip) {
+            chip.classList.toggle('active', checkbox.checked);
+        }
+    });
+});
+
+// Глобальная переменная для выбранных станций метро
+let mobileSelectedStations = [];
+
+// Глобальные функции для обновления отображения станций
+function updateMobileSelectedStationsInModal() {
+    document.querySelectorAll('#mobile-metro-dropdown .metro-station-option').forEach(option => {
+        const station = option.getAttribute('data-station');
+        if (mobileSelectedStations.includes(station)) {
+            option.classList.add('selected');
+        } else {
+            option.classList.remove('selected');
+        }
+    });
+}
+
+function updateMobileSelectedStationsText() {
+    const selectedMetroText = document.getElementById('mobile-selected-metro-text');
+    if (!selectedMetroText) return;
+
+    if (mobileSelectedStations.length === 0) {
+        selectedMetroText.innerHTML = 'Выберите станции метро';
+        return;
+    }
+
+    let html = '';
+    mobileSelectedStations.slice(0, 2).forEach(station => {
+        html += `<span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-1 mb-1">${station}</span>`;
+    });
+
+    if (mobileSelectedStations.length > 2) {
+        html += `<span class="inline-block bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">+${mobileSelectedStations.length - 2}</span>`;
+    }
+
+    selectedMetroText.innerHTML = html;
+}
 
     // Улучшенная функция переключения линий метро с разрешенной прокруткой
     window.toggleMobileMetroLine = function(header) {

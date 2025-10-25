@@ -360,6 +360,8 @@
         width: 100%; /* ФИКС: занимает всю ширину слайда */
         max-width: 100%; /* ФИКС: не больше ширины слайда */
         box-sizing: border-box; /* ФИКС: правильный расчет размеров */
+        display: flex;
+        flex-direction: column;
     }
 
     .listing-card-compact:hover {
@@ -416,46 +418,85 @@
 
     .listing-card-compact .body {
         padding: 16px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
     }
 
     .listing-card-compact .body strong {
         font-size: 16px;
         line-height: 1.4;
         display: block;
-        margin-bottom: 8px;
+        margin-bottom: 12px;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
         min-height: 44px;
+        color: var(--text);
+        font-weight: 700;
     }
 
+    /* УЛУЧШЕННОЕ ОТОБРАЖЕНИЕ ПАРАМЕТРОВ */
     .meta-compact {
         display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
+        flex-direction: column;
+        gap: 8px;
         color: var(--muted);
-        font-size: 13px;
-        margin-bottom: 10px;
+        font-size: 14px;
+        margin-bottom: 16px;
+        flex-grow: 1;
+    }
+
+    .property-type {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 4px;
+    }
+
+    .property-details {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+
+    .detail-item {
+        background: rgba(124, 102, 255, 0.1);
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--brand);
+    }
+
+    .price-section {
+        margin-top: auto;
+        border-top: 1px solid rgba(0,0,0,0.1);
+        padding-top: 12px;
     }
 
     .price-compact {
         font-weight: 700;
-        font-size: 16px;
-        margin-left: auto;
-        color: var(--text);
+        font-size: 18px;
+        color: var(--brand);
+        text-align: left;
+        width: 100%;
+        margin-bottom: 8px;
     }
 
+    /* КНОПКА В ПРАВОМ НИЖНЕМ УГЛУ */
     .card-actions-compact {
         display: flex;
-        gap: 8px;
-        margin-top: 12px;
+        justify-content: flex-end;
+        margin-top: auto;
     }
 
     .btn-compact {
         cursor: pointer;
         border: none;
-        padding: 10px 14px;
+        padding: 10px 20px;
         border-radius: 10px;
         font-weight: 600;
         transition: .3s ease;
@@ -463,7 +504,8 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 13px;
+        font-size: 14px;
+        min-height: 36px;
     }
 
     .btn-primary-compact {
@@ -471,7 +513,7 @@
         color: #fff;
         box-shadow: var(--glow);
         border: none;
-        flex: 1;
+        padding: 10px 20px;
     }
 
     .btn-primary-compact:hover {
@@ -615,16 +657,21 @@
         }
 
         .meta-compact {
-            font-size: 12px;
+            font-size: 13px;
         }
 
         .price-compact {
-            font-size: 15px;
+            font-size: 16px;
         }
 
         .btn-compact {
-            padding: 8px 12px;
-            font-size: 12px;
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+
+        .detail-item {
+            font-size: 11px;
+            padding: 3px 6px;
         }
     }
 
@@ -639,6 +686,15 @@
 
         .slider-slide {
             padding: 0 2px;
+        }
+
+        .price-compact {
+            font-size: 15px;
+        }
+
+        .btn-compact {
+            padding: 8px 14px;
+            font-size: 12px;
         }
     }
 
@@ -656,107 +712,6 @@
         color: var(--muted);
         width: 100%;
     }
-    /* Стили для четкого отображения параметров */
-.meta-compact {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    color: var(--muted);
-    font-size: 13px;
-    margin-bottom: 10px;
-}
-
-.meta-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 2px 0;
-}
-
-.meta-label {
-    color: var(--muted);
-    font-size: 12px;
-}
-
-.meta-value {
-    color: var(--text);
-    font-weight: 600;
-    font-size: 13px;
-}
-
-.price-item {
-    margin-top: 4px;
-    padding-top: 6px;
-    border-top: 1px solid rgba(255,255,255,0.1);
-}
-
-.price-compact {
-    font-weight: 700;
-    font-size: 14px;
-    color: var(--brand);
-    text-align: right;
-    width: 100%;
-}
-
-/* Уменьшенная кнопка "Подробнее" */
-.card-actions-compact {
-    display: flex;
-    gap: 8px;
-    margin-top: 12px;
-}
-
-.btn-compact {
-    cursor: pointer;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-weight: 600;
-    transition: .3s ease;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    min-height: 32px;
-}
-
-.btn-primary-compact {
-    background: linear-gradient(135deg, var(--brand), var(--brand-2));
-    color: #fff;
-    box-shadow: var(--glow);
-    border: none;
-    flex: 1;
-}
-
-.btn-primary-compact:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 0 0 1px rgba(124,102,255,.3), 0 0 30px rgba(92,76,255,.25);
-}
-
-/* Адаптация для мобильных */
-@media (max-width: 768px) {
-    .meta-compact {
-        font-size: 12px;
-    }
-
-    .meta-label {
-        font-size: 11px;
-    }
-
-    .meta-value {
-        font-size: 12px;
-    }
-
-    .price-compact {
-        font-size: 13px;
-    }
-
-    .btn-compact {
-        padding: 6px 10px;
-        font-size: 11px;
-        min-height: 28px;
-    }
-}
 </style>
 
 <!-- Hero -->
@@ -874,19 +829,39 @@
                     <div class="body">
                         <strong>{{ property.title }}</strong>
                         <div class="meta-compact">
-                            <span>{{ property.rooms }} комн.</span>
-                            <span>{{ property.total_area|floatformat:"0" }} м²</span>
-                            <span class="price-compact">
-                                {% if property.is_rental == 'monthly' and property.monthly_price %}
-                                    {{ property.monthly_price|floatformat:"0" }} ₽/мес
-                                {% elif property.is_rental == 'daily' and property.daily_price %}
-                                    {{ property.daily_price|floatformat:"0" }} ₽/сут
-                                {% elif property.price %}
-                                    {{ property.price|floatformat:"0" }} ₽
+                            <div class="property-type">
+                                {% if property.property_type == 'apartment' %}
+                                    Квартира
+                                {% elif property.property_type == 'house' %}
+                                    Дом
+                                {% elif property.property_type == 'commercial' %}
+                                    Коммерческая
                                 {% else %}
-                                    Цена не указана
+                                    Недвижимость
                                 {% endif %}
-                            </span>
+                            </div>
+                            <div class="property-details">
+                                <span class="detail-item">{{ property.total_area|floatformat:"0" }} м²</span>
+                                {% if property.floor and property.total_floors %}
+                                <span class="detail-item">{{ property.floor }}/{{ property.total_floors }} эт.</span>
+                                {% endif %}
+                                {% if property.rooms %}
+                                <span class="detail-item">{{ property.rooms }} комн.</span>
+                                {% endif %}
+                            </div>
+                            <div class="price-section">
+                                <div class="price-compact">
+                                    {% if property.is_rental == 'monthly' and property.monthly_price %}
+                                        {{ property.monthly_price|floatformat:"0" }} ₽/мес
+                                    {% elif property.is_rental == 'daily' and property.daily_price %}
+                                        {{ property.daily_price|floatformat:"0" }} ₽/сут
+                                    {% elif property.price %}
+                                        {{ property.price|floatformat:"0" }} ₽
+                                    {% else %}
+                                        Цена не указана
+                                    {% endif %}
+                                </div>
+                            </div>
                         </div>
                         <div class="card-actions-compact">
                             <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}{% endif %}" class="btn-compact btn-primary-compact">Подробнее</a>
@@ -930,38 +905,34 @@
         </div>
 
         <div class="slider-container">
-            <div class="auto-scroll-track continuous" id="media-track">
-                {% for media in featured_media %}
+            <div class="auto-scroll-track continuous" id="media-content-track">
+                {% for media in media_content %}
                 <div class="slider-slide">
-                    <a href="{% url 'media_content:detail' media.id %}" class="link">
-                        <article class="media-card-compact">
-                            <div class="thumb">
-                                {% if media.thumbnail_url %}
-                                    <img src="{{ media.thumbnail_url }}" alt="{{ media.title }}">
-                                {% elif media.media_type == 'video' %}
-                                    <div style="background: linear-gradient(135deg, #7c66ff, #30d0ff); display: flex; align-items: center; justify-content: center; color: white;">
-                                        <i class="fas fa-play-circle fa-2x"></i>
-                                    </div>
+                    <a href="{% if user.is_authenticated %}{% url 'media_content:detail' media.id %}{% else %}{% url 'register' %}?next={% url 'media_content:detail' media.id %}{% endif %}" class="media-card-compact link">
+                        <div class="thumb">
+                            {% if media.thumbnail %}
+                                <img src="{{ media.thumbnail.url }}" alt="{{ media.title }}">
+                            {% else %}
+                                <div>
+                                    {{ media.title|truncatechars:30 }}
+                                </div>
+                            {% endif %}
+                            <div class="thumb-overlay-compact">
+                                {% if media.media_type == 'video' %}
+                                    <i class="fas fa-play mr-1"></i> Видео
+                                {% elif media.media_type == 'article' %}
+                                    <i class="fas fa-newspaper mr-1"></i> Статья
                                 {% else %}
-                                    <div style="background: linear-gradient(135deg, #7c66ff, #30d0ff); display: flex; align-items: center; justify-content: center; color: white;">
-                                        <i class="fas fa-newspaper fa-2x"></i>
-                                    </div>
+                                    <i class="fas fa-file-alt mr-1"></i> Материал
                                 {% endif %}
-                                <div class="thumb-overlay-compact">
-                                    {% if media.media_type == 'video' %}
-                                        <i class="fas fa-play"></i> Видео
-                                    {% else %}
-                                        <i class="fas fa-newspaper"></i> Статья
-                                    {% endif %}
-                                </div>
                             </div>
-                            <div class="body">
-                                <strong>{{ media.title }}</strong>
-                                <div class="media-meta-compact">
-                                    {{ media.created_at|date:"d.m.Y" }}
-                                </div>
+                        </div>
+                        <div class="body">
+                            <strong>{{ media.title }}</strong>
+                            <div class="media-meta-compact">
+                                {{ media.created_at|date:"d.m.Y" }}
                             </div>
-                        </article>
+                        </div>
                     </a>
                 </div>
                 {% endfor %}
@@ -971,68 +942,92 @@
 </section>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Автоматическая плавная прокрутка для горячих предложений
-    initSmoothAutoScroll('hot-properties-track');
-    // Автоматическая плавная прокрутка для медиа
-    initSmoothAutoScroll('media-track');
+    document.addEventListener('DOMContentLoaded', function() {
+        // Инициализация слайдеров
+        initSlider('hot-properties-track', '.prev-hot', '.next-hot');
+        initSlider('media-content-track', '.prev-media', '.next-media');
 
-    function initSmoothAutoScroll(trackId) {
-        const track = document.getElementById(trackId);
-        if (!track) return;
+        function initSlider(trackId, prevBtnSelector, nextBtnSelector) {
+            const track = document.getElementById(trackId);
+            const prevBtn = document.querySelector(prevBtnSelector);
+            const nextBtn = document.querySelector(nextBtnSelector);
+            const slides = track.querySelectorAll('.slider-slide');
 
-        const slides = track.querySelectorAll('.slider-slide');
-        if (slides.length === 0) return;
+            if (!track || slides.length === 0) return;
 
-        // Добавляем класс для непрерывной анимации
-        track.classList.add('continuous');
+            const slideWidth = slides[0].offsetWidth + 16; // ширина слайда + отступ
+            let currentPosition = 0;
+            const maxPosition = -(slideWidth * (slides.length - 3)); // 3 слайда видно
 
-        // Пауза при наведении
-        track.addEventListener('mouseenter', function() {
-            track.style.animationPlayState = 'paused';
-        });
+            // Клонируем слайды для бесконечной прокрутки
+            const cloneSlides = Array.from(slides).map(slide => slide.cloneNode(true));
+            cloneSlides.forEach(slide => {
+                track.appendChild(slide);
+            });
 
-        track.addEventListener('mouseleave', function() {
-            track.style.animationPlayState = 'running';
-        });
+            // Остановка автопрокрутки при ручном управлении
+            function stopAutoScroll() {
+                track.style.animationPlayState = 'paused';
+                setTimeout(() => {
+                    track.style.animationPlayState = 'running';
+                }, 5000); // возобновить через 5 секунд
+            }
 
-        // Перезапуск анимации при клике (на случай если она остановится)
-        track.addEventListener('click', function() {
-            track.style.animation = 'none';
-            setTimeout(() => {
-                track.style.animation = 'smoothScroll 40s linear infinite';
-            }, 10);
-        });
-    }
+            // Перемотка вперед
+            nextBtn.addEventListener('click', function() {
+                stopAutoScroll();
+                currentPosition -= slideWidth;
+                if (currentPosition < maxPosition) {
+                    currentPosition = 0;
+                }
+                track.style.transform = `translateX(${currentPosition}px)`;
+            });
 
-    // Инициализация при загрузке
-    setTimeout(() => {
-        const tracks = document.querySelectorAll('.auto-scroll-track');
-        tracks.forEach(track => {
-            track.style.animation = 'smoothScroll 40s linear infinite';
-        });
-    }, 100);
+            // Перемотка назад
+            prevBtn.addEventListener('click', function() {
+                stopAutoScroll();
+                currentPosition += slideWidth;
+                if (currentPosition > 0) {
+                    currentPosition = maxPosition;
+                }
+                track.style.transform = `translateX(${currentPosition}px)`;
+            });
 
-    // Обработчики для кнопок навигации (оставлены на случай ручного управления)
-    document.querySelector('.prev-hot')?.addEventListener('click', function() {
-        const track = document.getElementById('hot-properties-track');
-        track.style.animationPlayState = 'paused';
+            // Адаптация при изменении размера окна
+            window.addEventListener('resize', function() {
+                const newSlideWidth = slides[0].offsetWidth + 16;
+                if (newSlideWidth !== slideWidth) {
+                    currentPosition = 0;
+                    track.style.transform = `translateX(0px)`;
+                }
+            });
+        }
+
+        // Геолокация
+        const geoBtn = document.getElementById('geolocation-btn');
+        const geoCoords = document.getElementById('geo-coords');
+        const locationSearch = document.getElementById('location-search');
+
+        if (geoBtn) {
+            geoBtn.addEventListener('click', function() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        function(position) {
+                            const lat = position.coords.latitude;
+                            const lng = position.coords.longitude;
+                            geoCoords.value = `${lat},${lng},5`; // 5km radius
+                            locationSearch.value = 'рядом со мной';
+                            locationSearch.focus();
+                        },
+                        function(error) {
+                            alert('Не удалось получить ваше местоположение. Пожалуйста, разрешите доступ к геолокации.');
+                        }
+                    );
+                } else {
+                    alert('Геолокация не поддерживается вашим браузером.');
+                }
+            });
+        }
     });
-
-    document.querySelector('.next-hot')?.addEventListener('click', function() {
-        const track = document.getElementById('hot-properties-track');
-        track.style.animationPlayState = 'paused';
-    });
-
-    document.querySelector('.prev-media')?.addEventListener('click', function() {
-        const track = document.getElementById('media-track');
-        track.style.animationPlayState = 'paused';
-    });
-
-    document.querySelector('.next-media')?.addEventListener('click', function() {
-        const track = document.getElementById('media-track');
-        track.style.animationPlayState = 'paused';
-    });
-});
 </script>
 {% endblock %}
