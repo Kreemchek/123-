@@ -27,10 +27,17 @@
         body {
             display: flex;
             flex-direction: column;
-            background-color: #f9fafb;
+            background-color: var(--bg);
             font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
             line-height: 1.6;
             letter-spacing: .2px;
+            min-height: 100vh;
+        }
+
+        /* Основной контент должен растягиваться */
+        main {
+            flex: 1 0 auto;
+            background-color: var(--bg);
         }
 
         /* Специфичные стили для home-page */
@@ -41,12 +48,11 @@
             color: var(--text);
         }
 
-        main {
-            flex: 1 0 auto;
-            padding-bottom: 2rem;
-        }
-        footer {
-            flex-shrink: 0;
+        /* Фон для main на home-page */
+        body.home-page main {
+            background: radial-gradient(1200px 800px at 10% -10%, rgba(124,102,255,.18), transparent 60%),
+                        radial-gradient(1000px 600px at 90% 10%, rgba(48,208,255,.18), transparent 60%),
+                        var(--bg);
         }
 
         /* Стили для сообщений */
