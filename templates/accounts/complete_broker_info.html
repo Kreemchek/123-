@@ -217,10 +217,8 @@
 </style>
 
 <div class="registration-container">
-    <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">
-        <svg class="w-8 h-8 inline-block mr-2 gradient-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
-        </svg>
+    <h1 class="text-2xl font-semibold text-center mb-8 text-gray-900">
+        <i class="bi bi-person-badge mr-2 gradient-icon" style="font-size: 1.5rem;"></i>
         Профессиональная информация
     </h1>
 
@@ -239,15 +237,10 @@
         <!-- Опыт работы -->
         <div class="form-group">
             <label class="form-label">
-                <svg class="w-5 h-5 inline-block mr-2 gradient-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                </svg>
-                {{ form.experience.label }}
+                <i class="bi bi-graph-up mr-2 gradient-icon"></i>{{ form.experience.label }}
             </label>
             <div class="input-wrapper">
-                <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                </svg>
+                <i class="input-icon bi bi-briefcase"></i>
                 <input type="number"
                        name="{{ form.experience.name }}"
                        value="{{ form.experience.value|default:'' }}"
@@ -268,10 +261,7 @@
         <!-- О себе -->
         <div class="form-group">
             <label class="form-label">
-                <svg class="w-5 h-5 inline-block mr-2 gradient-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                </svg>
-                {{ form.about.label }}
+                <i class="bi bi-person-circle mr-2 gradient-icon"></i>{{ form.about.label }}
             </label>
             <textarea name="{{ form.about.name }}"
                       class="about-textarea"
@@ -293,10 +283,7 @@
         {% if 'services' in form.fields %}
         <div class="form-group">
             <h3 class="section-title">
-                <svg class="w-5 h-5 inline-block mr-2 gradient-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                </svg>
-                {{ form.services.label }}
+                <i class="bi bi-list-check mr-2 gradient-icon"></i>{{ form.services.label }}
             </h3>
             <div class="checkbox-grid">
                 {% for checkbox in form.services %}
@@ -322,10 +309,7 @@
         {% if 'specializations' in form.fields %}
         <div class="form-group">
             <h3 class="section-title">
-                <svg class="w-5 h-5 inline-block mr-2 gradient-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                </svg>
-                {{ form.specializations.label }}
+                <i class="bi bi-geo-alt mr-2 gradient-icon"></i>{{ form.specializations.label }}
             </h3>
             <div class="checkbox-grid">
                 {% for checkbox in form.specializations %}
@@ -348,10 +332,7 @@
         {% endif %}
 
         <button type="submit" class="btn-primary">
-            Сохранить данные
-            <svg class="w-5 h-5 inline-block ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-            </svg>
+            Сохранить данные <i class="bi bi-check2 ml-2"></i>
         </button>
     </form>
 </div>

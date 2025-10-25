@@ -102,6 +102,14 @@
         }
     }
 
+    /* Основной фон для всей страницы home */
+    body.home-page {
+        background: radial-gradient(1200px 800px at 10% -10%, rgba(124,102,255,.18), transparent 60%),
+                    radial-gradient(1000px 600px at 90% 10%, rgba(48,208,255,.18), transparent 60%),
+                    var(--bg) !important;
+        background-attachment: fixed !important;
+    }
+
     /* Hero */
     .hero .container {
         max-width: 1240px;
@@ -258,6 +266,7 @@
     /* Стили для вертикального расположения блоков */
     .vertical-section {
         margin-top: 60px;
+        width: 100%; /* Важно: ширина 100% */
         background: transparent;
     }
 
@@ -278,6 +287,10 @@
         box-shadow: var(--shadow-1);
         margin-bottom: 40px;
         overflow: hidden;
+        max-width: 1240px; /* Ограничиваем ширину как у hero */
+        margin-left: auto;
+        margin-right: auto;
+        width: calc(100% - clamp(16px, 4vw, 28px) * 2); /* Учитываем отступы как у hero */
     }
 
     .section-header {
@@ -615,6 +628,10 @@
         .slider-slide {
             min-width: 50%;
         }
+
+        .section-block {
+            width: calc(100% - 32px);
+        }
     }
 
     /* АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ */
@@ -630,6 +647,7 @@
 
         .section-block {
             padding: 20px;
+            width: calc(100% - 32px);
         }
 
         .section-header h3 {
@@ -679,6 +697,7 @@
     @media (max-width: 480px) {
         .section-block {
             padding: 16px;
+            width: calc(100% - 32px);
         }
 
         .section-header {
