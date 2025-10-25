@@ -479,11 +479,7 @@
                     <!-- Футер карточки -->
                     <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
                         <span class="text-lg font-bold text-gray-900">
-                            {% if broker.hourly_rate %}
-                                от {{ broker.hourly_rate }} ₽/час
-                            {% else %}
-                                Цена по запросу
-                            {% endif %}
+
                         </span>
                         <a href="{% url 'broker-detail' broker.pk %}"
                            class="px-4 py-2 text-white text-sm font-medium rounded-lg hover:shadow-lg transition-all"
