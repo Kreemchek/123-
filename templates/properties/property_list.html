@@ -2424,13 +2424,13 @@ body.mobile-modal-open {
 <!-- Мобильная кнопка открытия фильтров -->
 <!-- Мобильная кнопка открытия фильтров -->
 <div class="lg:hidden mb-4">
-    <button class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-4 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 font-bold flex items-center justify-center shadow-lg" id="mobile-filters-btn">
-        <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <button class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 font-medium flex items-center justify-center shadow-lg" id="mobile-filters-btn">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
         </svg>
-        <span class="text-lg">Фильтры</span>
+        Фильтры
         {% if request.GET.search or request.GET.property_type or request.GET.rental_type or request.GET.location or request.GET.min_price or request.GET.max_price %}
-        <span class="ml-3 bg-red-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">!</span>
+        <span class="ml-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">!</span>
         {% endif %}
     </button>
 </div>
