@@ -2421,11 +2421,11 @@ body.mobile-modal-open {
         </div>
     </div>
 </div>
-<!-- Обновленная разметка для модального окна метро -->
-<div id="mobile-metro-dropdown" class="fixed inset-0 z-60 hidden bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-xl w-full max-w-full max-h-[90vh] overflow-y-auto flex flex-col">
+<!-- Модальное окно выбора метро (мобильная версия) -->
+<div id="mobile-metro-dropdown" class="fixed inset-0 z-60 hidden bg-black bg-opacity-50 backdrop-blur-sm">
+    <div class="bg-white rounded-xl w-full h-full max-h-full max-w-full m-0 flex flex-col">
         <!-- Заголовок с поиском -->
-        <div class="sticky top-0 bg-white p-4 border-b border-gray-200 z-10">
+        <div class="sticky top-0 bg-white p-4 border-b border-gray-200">
             <div class="flex justify-between items-center">
                 <h2 class="text-xl font-bold">Выберите станции метро</h2>
                 <button id="mobile-close-metro-modal" class="text-gray-500 hover:text-gray-700 text-2xl">
@@ -2441,42 +2441,19 @@ body.mobile-modal-open {
         </div>
 
         <!-- Контент с прокруткой -->
-        <div class="p-4 flex-1">
+        <div class="p-4 flex-1 overflow-y-auto">
             {% if location %}
                 {% if metro_lines %}
                     <div class="metro-lines-container space-y-3">
                         {% for line in metro_lines %}
-                            <div class="metro-line-section border rounded-lg overflow-hidden">
-                                <div class="metro-line-header flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50 transition-colors"
-                                    onclick="toggleMobileMetroLine(this)">
-                                    <div class="flex items-center min-w-0">
-                                        <div class="metro-line-color w-4 h-4 rounded-full mr-2 flex-shrink-0"
-                                            style="background-color: {{ line.line_color }}"></div>
-                                        <h3 class="metro-line-name font-medium text-sm truncate">{{ line.line|default:"Другие станции" }}</h3>
-                                    </div>
-                                    <i class="bi bi-chevron-down transition-transform duration-200 flex-shrink-0"></i>
-                                </div>
-
-                                <div class="metro-stations-container transition-all duration-300 overflow-hidden"
-                                    style="max-height: 0">
-                                    {% for station in line.stations %}
-                                        <button type="button"
-                                                class="metro-station-option flex items-center px-3 py-2 w-full text-left hover:bg-gray-50 transition-colors {% if station.name in filter.form.metro_station.value %}bg-blue-100 text-blue-800{% endif %}"
-                                                data-station="{{ station.name }}">
-                                            <div class="metro-station-color w-3 h-3 rounded-full mr-3 flex-shrink-0"
-                                                style="background-color: {{ station.line_color|default:'#cccccc' }}"></div>
-                                            <span class="metro-station-name truncate">{{ station.name }}</span>
-                                        </button>
-                                    {% endfor %}
-                                </div>
-                            </div>
+                            <!-- линии метро -->
                         {% endfor %}
                     </div>
                 {% else %}
                     <p class="text-gray-500 py-4 text-center">Для выбранного города нет данных о станциях метро</p>
                 {% endif %}
             {% else %}
-                <p class="text-gray-500 py-4 text-center">Сначала выберите город</p>
+                <p class="text-gray-500 py-4 text-center">Сначала выберите город и примените фильтрацию</p>
             {% endif %}
         </div>
 
@@ -2495,7 +2472,6 @@ body.mobile-modal-open {
         </div>
     </div>
 </div>
-
 
 
 
@@ -3325,7 +3301,6 @@ body.mobile-modal-open {
 
 
 <script>
-// Мобильное меню фильтров
 // Мобильное меню фильтров - основные функции
 function initMobileFilters() {
     const mobileFiltersBtn = document.getElementById('mobile-filters-btn');
@@ -3382,10 +3357,25 @@ function initMobileFilters() {
     initMobileModals();
 }
 
-// Мобильные модальные окны для города и метро
-// Мобильные модальные окна для города и метро
-
+// Обновленные функции для мобильных модальных окон
 function initMobileModals() {
+    // Функции для управления состоянием прокрутки
+    function enableBodyScroll() {
+        document.body.classList.remove('mobile-modal-open');
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.width = '';
+        document.body.style.height = '';
+    }
+
+    function disableBodyScroll() {
+        document.body.classList.add('mobile-modal-open');
+        document.body.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.width = '100%';
+        document.body.style.height = '100%';
+    }
+
     // Обновленные функции для управления модальными окнами
     function openMobileModal(modal) {
         // Сначала закрываем все другие модальные окна
@@ -3396,8 +3386,7 @@ function initMobileModals() {
         modal.classList.remove('hidden');
 
         // Блокируем прокрутку body
-        document.body.style.overflow = 'hidden';
-        document.body.classList.add('modal-open');
+        disableBodyScroll();
 
         // Фокусируемся на поле поиска если оно есть
         setTimeout(() => {
@@ -3407,6 +3396,7 @@ function initMobileModals() {
             }
         }, 100);
     }
+
     function closeAllMobileModals() {
         document.querySelectorAll('#mobile-city-dropdown, #mobile-metro-dropdown').forEach(modal => {
             modal.classList.add('hidden');
@@ -3414,15 +3404,53 @@ function initMobileModals() {
         });
 
         // Восстанавливаем прокрутку
-        document.body.style.overflow = '';
-        document.body.classList.remove('modal-open');
+        enableBodyScroll();
+    }
+
+    // Предотвращаем прокрутку фона при скролле модального окна
+    document.querySelectorAll('#mobile-city-dropdown, #mobile-metro-dropdown').forEach(modal => {
+        modal.addEventListener('touchmove', function(e) {
+            // Разрешаем прокрутку только внутри модального окна
+            const content = modal.querySelector('.p-4');
+            if (content && content.contains(e.target)) {
+                return; // Разрешаем прокрутку контента
+            }
+            e.preventDefault(); // Блокируем прокрутку фона
+        }, { passive: false });
+    });
+
+    // Обработчики для закрытия по клику вне контента
+    document.querySelectorAll('#mobile-city-dropdown, #mobile-metro-dropdown').forEach(modal => {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeAllMobileModals();
+            }
+        });
+    });
+
+    // Обработчик ESC для закрытия модальных окон
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeAllMobileModals();
+        }
+    });
+
+    // Обработчики для кнопок закрытия
+    const mobileCloseCityModal = document.getElementById('mobile-close-city-modal');
+    const mobileCloseMetroModal = document.getElementById('mobile-close-metro-modal');
+
+    if (mobileCloseCityModal) {
+        mobileCloseCityModal.addEventListener('click', closeAllMobileModals);
+    }
+
+    if (mobileCloseMetroModal) {
+        mobileCloseMetroModal.addEventListener('click', closeAllMobileModals);
     }
 
     // Модальное окно города
     const mobileCityInput = document.getElementById('mobile-city-input');
     const mobileCityDropdown = document.getElementById('mobile-city-dropdown');
     const mobileCitySearch = document.getElementById('mobile-city-search');
-    const mobileCloseCityModal = document.getElementById('mobile-close-city-modal');
     const mobileUseCustomCityBtn = document.getElementById('mobile-use-custom-city');
 
     let mobileCustomCity = '';
@@ -3439,22 +3467,6 @@ function initMobileModals() {
                 setTimeout(() => {
                     if (mobileCitySearch) mobileCitySearch.focus();
                 }, 100);
-            }
-        });
-    }
-
-    // Закрытие модального окна города
-    if (mobileCloseCityModal) {
-        mobileCloseCityModal.addEventListener('click', function() {
-            closeAllMobileModals();
-        });
-    }
-
-    // Закрытие при клике вне контента
-    if (mobileCityDropdown) {
-        mobileCityDropdown.addEventListener('click', function(e) {
-            if (e.target === mobileCityDropdown) {
-                closeAllMobileModals();
             }
         });
     }
@@ -3514,7 +3526,6 @@ function initMobileModals() {
     const mobileMetroInput = document.getElementById('mobile-metro-input');
     const mobileMetroDropdown = document.getElementById('mobile-metro-dropdown');
     const mobileMetroSearch = document.getElementById('mobile-metro-search');
-    const mobileCloseMetroModal = document.getElementById('mobile-close-metro-modal');
     const mobileApplyMetroBtn = document.getElementById('mobile-apply-metro-selection');
     const mobileClearMetroBtn = document.getElementById('mobile-clear-metro-selection');
 
@@ -3539,22 +3550,6 @@ function initMobileModals() {
                     if (mobileMetroSearch) mobileMetroSearch.focus();
                 }, 100);
                 updateMobileSelectedStationsInModal();
-            }
-        });
-    }
-
-    // Закрытие модального окна метро
-    if (mobileCloseMetroModal) {
-        mobileCloseMetroModal.addEventListener('click', function() {
-            closeAllMobileModals();
-        });
-    }
-
-    // Закрытие при клике вне контента
-    if (mobileMetroDropdown) {
-        mobileMetroDropdown.addEventListener('click', function(e) {
-            if (e.target === mobileMetroDropdown) {
-                closeAllMobileModals();
             }
         });
     }
@@ -3775,7 +3770,7 @@ window.addEventListener('resize', function() {
 });
 
 // Функция инициализации карты
- function initMap() {
+function initMap() {
     console.log("[DEBUG] Начало инициализации карты");
 
     if (typeof ymaps === 'undefined') {
@@ -3962,311 +3957,294 @@ function loadYandexMaps() {
     document.head.appendChild(script);
 }
 
-  // Запускаем загрузку карт после полной загрузки страницы
-  document.addEventListener('DOMContentLoaded', function() {
-      console.log("[DEBUG] DOM полностью загружен, начинаем загрузку карт");
-      loadYandexMaps();
+// Запускаем загрузку карт после полной загрузки страницы
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("[DEBUG] DOM полностью загружен, начинаем загрузку карт");
+    loadYandexMaps();
 
-      // Переключение видимости фильтров на мобильных
-      const filterToggle = document.querySelector('.filter-toggle');
-      const filterSidebar = document.getElementById('filter-sidebar');
+    // Переключение видимости фильтров на мобильных
+    const filterToggle = document.querySelector('.filter-toggle');
+    const filterSidebar = document.getElementById('filter-sidebar');
 
-      if (filterToggle && filterSidebar) {
-          filterToggle.addEventListener('click', function() {
-              filterSidebar.classList.toggle('hidden');
-          });
-      }
+    if (filterToggle && filterSidebar) {
+        filterToggle.addEventListener('click', function() {
+            filterSidebar.classList.toggle('hidden');
+        });
+    }
 
-      // Обработчик для кнопки "Избранное"
-      document.querySelectorAll('.toggle-favorite').forEach(button => {
-          button.addEventListener('click', function(e) {
-              e.preventDefault();
-              const propertyId = this.getAttribute('data-property-id');
-              const icon = this.querySelector('i');
+    // Обработчик для кнопки "Избранное"
+    document.querySelectorAll('.toggle-favorite').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const propertyId = this.getAttribute('data-property-id');
+            const icon = this.querySelector('i');
 
-              fetch(`/properties/${propertyId}/toggle-favorite/`, {
-                  method: 'POST',
-                  headers: {
-                      'X-CSRFToken': '{{ csrf_token }}',
-                      'Accept': 'application/json',
-                  },
-              })
-              .then(response => response.json())
-              .then(data => {
-                  if (data.status === 'added') {
-                      icon.classList.add('bi-heart-fill', 'text-red-500');
-                      icon.classList.remove('bi-heart');
-                  } else {
-                      icon.classList.remove('bi-heart-fill', 'text-red-500');
-                      icon.classList.add('bi-heart');
-                  }
-              })
-              .catch(error => console.error('Error:', error));
-          });
-      });
+            fetch(`/properties/${propertyId}/toggle-favorite/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Accept': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'added') {
+                    icon.classList.add('bi-heart-fill', 'text-red-500');
+                    icon.classList.remove('bi-heart');
+                } else {
+                    icon.classList.remove('bi-heart-fill', 'text-red-500');
+                    icon.classList.add('bi-heart');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    });
 
-      // Обработчик для выбора города
-      const cityInput = document.getElementById('city-input');
-      const cityDropdown = document.getElementById('city-dropdown');
-      const citySearch = document.getElementById('city-search');
-      const closeCityModal = document.getElementById('close-city-modal');
-      const useCustomCityBtn = document.getElementById('use-custom-city');
-      let customCity = '';
+    // Обработчик для выбора города
+    const cityInput = document.getElementById('city-input');
+    const cityDropdown = document.getElementById('city-dropdown');
+    const citySearch = document.getElementById('city-search');
+    const closeCityModal = document.getElementById('close-city-modal');
+    const useCustomCityBtn = document.getElementById('use-custom-city');
+    let customCity = '';
 
-      // Открытие модального окна
-      cityInput.addEventListener('click', function(e) {
-          e.preventDefault();
-          cityDropdown.classList.remove('hidden');
-          citySearch.focus();
-      });
+    // Открытие модального окна
+    cityInput.addEventListener('click', function(e) {
+        e.preventDefault();
+        cityDropdown.classList.remove('hidden');
+        citySearch.focus();
+    });
 
-      // Закрытие модального окна
-      closeCityModal.addEventListener('click', function() {
-          cityDropdown.classList.add('hidden');
-      });
+    // Закрытие модального окна
+    closeCityModal.addEventListener('click', function() {
+        cityDropdown.classList.add('hidden');
+    });
 
-      // Закрытие при клике вне контента
-      cityDropdown.addEventListener('click', function(e) {
-          if (e.target === cityDropdown) {
-              cityDropdown.classList.add('hidden');
-          }
-      });
+    // Закрытие при клике вне контента
+    cityDropdown.addEventListener('click', function(e) {
+        if (e.target === cityDropdown) {
+            cityDropdown.classList.add('hidden');
+        }
+    });
 
-      // Обработка выбора города из списка
-      document.querySelectorAll('.city-option').forEach(option => {
-          option.addEventListener('click', function() {
-              const city = this.getAttribute('data-city');
-              document.getElementById('selected-city-text').textContent = city;
-              document.getElementById('city-hidden-input').value = city;
-              cityDropdown.classList.add('hidden');
-              document.getElementById('apply_filters').click();
-          });
-      });
+    // Обработка выбора города из списка
+    document.querySelectorAll('.city-option').forEach(option => {
+        option.addEventListener('click', function() {
+            const city = this.getAttribute('data-city');
+            document.getElementById('selected-city-text').textContent = city;
+            document.getElementById('city-hidden-input').value = city;
+            cityDropdown.classList.add('hidden');
+            document.getElementById('apply_filters').click();
+        });
+    });
 
-      // Обработчик ввода в поле поиска
-      citySearch.addEventListener('input', function() {
-          const searchTerm = this.value.trim();
-          customCity = searchTerm;
+    // Обработчик ввода в поле поиска
+    citySearch.addEventListener('input', function() {
+        const searchTerm = this.value.trim();
+        customCity = searchTerm;
 
-          // Показываем/скрываем кнопку для ручного ввода
-          if (searchTerm.length > 2) {
-              useCustomCityBtn.classList.remove('hidden');
-              useCustomCityBtn.textContent = `Использовать "${searchTerm}"`;
-          } else {
-              useCustomCityBtn.classList.add('hidden');
-          }
+        // Показываем/скрываем кнопку для ручного ввода
+        if (searchTerm.length > 2) {
+            useCustomCityBtn.classList.remove('hidden');
+            useCustomCityBtn.textContent = `Использовать "${searchTerm}"`;
+        } else {
+            useCustomCityBtn.classList.add('hidden');
+        }
 
-          // Фильтрация стандартных городов
-          document.querySelectorAll('.city-option').forEach(option => {
-              const city = option.getAttribute('data-city').toLowerCase();
-              if (city.includes(searchTerm.toLowerCase())) {
-                  option.classList.remove('hidden');
-              } else {
-                  option.classList.add('hidden');
-              }
-          });
-      });
-
-      // Обработчик выбора ручного ввода
-      useCustomCityBtn.addEventListener('click', function() {
-          if (customCity) {
-              document.getElementById('selected-city-text').textContent = customCity;
-              document.getElementById('city-hidden-input').value = customCity;
-              cityDropdown.classList.add('hidden');
-              document.getElementById('apply_filters').click();
-          }
-      });
-
-      // Обработчик Enter в поле поиска
-      citySearch.addEventListener('keydown', function(e) {
-          if (e.key === 'Enter' && customCity) {
-              e.preventDefault();
-              document.getElementById('selected-city-text').textContent = customCity;
-              document.getElementById('city-hidden-input').value = customCity;
-              cityDropdown.classList.add('hidden');
-              document.getElementById('apply_filters').click();
-          }
-      });
-
-      // Обработчик Enter в основном поле
-      cityInput.addEventListener('keydown', function(e) {
-          if (e.key === 'Enter') {
-              e.preventDefault();
-              document.getElementById('apply_filters').click();
-          }
-      });
-
-      // Обработчик для выбора станций метро
-      const metroInput = document.getElementById('metro-input');
-      const metroDropdown = document.getElementById('metro-dropdown');
-      const metroSearch = document.getElementById('metro-search');
-      const closeMetroModal = document.getElementById('close-metro-modal');
-      const applyMetroBtn = document.getElementById('apply-metro-selection');
-      const clearMetroBtn = document.getElementById('clear-metro-selection');
-      const metroHiddenInput = document.getElementById('metro-hidden-input');
-      const selectedMetroText = document.getElementById('selected-metro-text');
-
-      let selectedStations = [];
-
-      // Инициализация выбранных станций
-      if (metroHiddenInput.value) {
-          selectedStations = metroHiddenInput.value.split(',');
-      }
-
-      // Открытие модального окна
-      metroInput.addEventListener('click', function(e) {
-          e.preventDefault();
-          metroDropdown.classList.remove('hidden');
-          metroSearch.focus();
-          updateSelectedStationsInModal();
-      });
-
-      // Закрытие модального окна
-      closeMetroModal.addEventListener('click', function() {
-          metroDropdown.classList.add('hidden');
-      });
-
-      // Закрытие при клике вне контента
-      metroDropdown.addEventListener('click', function(e) {
-          if (e.target === metroDropdown) {
-              metroDropdown.classList.add('hidden');
-          }
-      });
-
-      // Поиск станций
-  metroSearch.addEventListener('input', function() {
-    const searchTerm = this.value.toLowerCase();
-
-    document.querySelectorAll('.metro-line-section').forEach(section => {
-        const header = section.querySelector('.metro-line-header');
-        const stationsContainer = section.querySelector('.metro-stations-container');
-        let hasVisibleStations = false;
-
-        // Показываем/скрываем станции
-        section.querySelectorAll('.metro-station-option').forEach(option => {
-            const stationName = option.querySelector('.metro-station-name').textContent.toLowerCase();
-            if (stationName.includes(searchTerm)) {
+        // Фильтрация стандартных городов
+        document.querySelectorAll('.city-option').forEach(option => {
+            const city = option.getAttribute('data-city').toLowerCase();
+            if (city.includes(searchTerm.toLowerCase())) {
                 option.classList.remove('hidden');
-                hasVisibleStations = true;
             } else {
                 option.classList.add('hidden');
             }
         });
+    });
 
-        // Показываем/скрываем всю линию
-        if (searchTerm.length > 0) {
-            if (hasVisibleStations) {
-                section.classList.remove('hidden');
-                header.classList.add('expanded');
-                stationsContainer.classList.add('expanded');
-                header.querySelector('.bi-chevron-down').classList.add('rotate-180');
-            } else {
-                section.classList.add('hidden');
-            }
-        } else {
-            section.classList.remove('hidden');
-            header.classList.remove('expanded');
-            stationsContainer.classList.remove('expanded');
-            header.querySelector('.bi-chevron-down').classList.remove('rotate-180');
+    // Обработчик выбора ручного ввода
+    useCustomCityBtn.addEventListener('click', function() {
+        if (customCity) {
+            document.getElementById('selected-city-text').textContent = customCity;
+            document.getElementById('city-hidden-input').value = customCity;
+            cityDropdown.classList.add('hidden');
+            document.getElementById('apply_filters').click();
         }
     });
+
+    // Обработчик Enter в поле поиска
+    citySearch.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && customCity) {
+            e.preventDefault();
+            document.getElementById('selected-city-text').textContent = customCity;
+            document.getElementById('city-hidden-input').value = customCity;
+            cityDropdown.classList.add('hidden');
+            document.getElementById('apply_filters').click();
+        }
+    });
+
+    // Обработчик Enter в основном поле
+    cityInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            document.getElementById('apply_filters').click();
+        }
+    });
+
+    // Обработчик для выбора станций метро
+    const metroInput = document.getElementById('metro-input');
+    const metroDropdown = document.getElementById('metro-dropdown');
+    const metroSearch = document.getElementById('metro-search');
+    const closeMetroModal = document.getElementById('close-metro-modal');
+    const applyMetroBtn = document.getElementById('apply-metro-selection');
+    const clearMetroBtn = document.getElementById('clear-metro-selection');
+    const metroHiddenInput = document.getElementById('metro-hidden-input');
+    const selectedMetroText = document.getElementById('selected-metro-text');
+
+    let selectedStations = [];
+
+    // Инициализация выбранных станций
+    if (metroHiddenInput.value) {
+        selectedStations = metroHiddenInput.value.split(',');
+    }
+
+    // Открытие модального окна
+    metroInput.addEventListener('click', function(e) {
+        e.preventDefault();
+        metroDropdown.classList.remove('hidden');
+        metroSearch.focus();
+        updateSelectedStationsInModal();
+    });
+
+    // Закрытие модального окна
+    closeMetroModal.addEventListener('click', function() {
+        metroDropdown.classList.add('hidden');
+    });
+
+    // Закрытие при клике вне контента
+    metroDropdown.addEventListener('click', function(e) {
+        if (e.target === metroDropdown) {
+            metroDropdown.classList.add('hidden');
+        }
+    });
+
+    // Поиск станций
+    metroSearch.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+
+        document.querySelectorAll('.metro-line-section').forEach(section => {
+            const header = section.querySelector('.metro-line-header');
+            const stationsContainer = section.querySelector('.metro-stations-container');
+            let hasVisibleStations = false;
+
+            // Показываем/скрываем станции
+            section.querySelectorAll('.metro-station-option').forEach(option => {
+                const stationName = option.querySelector('.metro-station-name').textContent.toLowerCase();
+                if (stationName.includes(searchTerm)) {
+                    option.classList.remove('hidden');
+                    hasVisibleStations = true;
+                } else {
+                    option.classList.add('hidden');
+                }
+            });
+
+            // Показываем/скрываем всю линию
+            if (searchTerm.length > 0) {
+                if (hasVisibleStations) {
+                    section.classList.remove('hidden');
+                    header.classList.add('expanded');
+                    stationsContainer.classList.add('expanded');
+                    header.querySelector('.bi-chevron-down').classList.add('rotate-180');
+                } else {
+                    section.classList.add('hidden');
+                }
+            } else {
+                section.classList.remove('hidden');
+                header.classList.remove('expanded');
+                stationsContainer.classList.remove('expanded');
+                header.querySelector('.bi-chevron-down').classList.remove('rotate-180');
+            }
+        });
+    });
+
+    // Выбор/отмена выбора станции
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.metro-station-option')) {
+            const option = e.target.closest('.metro-station-option');
+            const station = option.querySelector('.metro-station-name').textContent;
+
+            if (selectedStations.includes(station)) {
+                selectedStations = selectedStations.filter(s => s !== station);
+                option.classList.remove('selected');
+            } else {
+                if (selectedStations.length < 5) {
+                    selectedStations.push(station);
+                    option.classList.add('selected');
+                } else {
+                    alert('Можно выбрать не более 5 станций');
+                }
+            }
+        }
+    });
+
+    // Очистка выбора
+    clearMetroBtn.addEventListener('click', function() {
+        selectedStations = [];
+        updateSelectedStationsInModal();
+    });
+
+    // Применение выбора
+    applyMetroBtn.addEventListener('click', function() {
+        metroHiddenInput.value = selectedStations.join(',');
+        updateSelectedStationsText();
+        metroDropdown.classList.add('hidden');
+        document.getElementById('apply_filters').click();
+    });
+
+    // Обновление отображения выбранных станций в модальном окне
+    function updateSelectedStationsInModal() {
+        document.querySelectorAll('.metro-station-option').forEach(option => {
+            const station = option.getAttribute('data-station');
+            if (selectedStations.includes(station)) {
+                option.classList.add('bg-blue-100', 'border-blue-500');
+                option.classList.remove('border-gray-200', 'hover:bg-gray-50');
+            } else {
+                option.classList.remove('bg-blue-100', 'border-blue-500');
+                option.classList.add('border-gray-200', 'hover:bg-gray-50');
+            }
+        });
+    }
+
+    // Обновите функцию updateSelectedStationsText:
+    function updateSelectedStationsText() {
+        const selectedStations = metroHiddenInput.value ?
+            metroHiddenInput.value.split(',') : [];
+
+        if (selectedStations.length === 0) {
+            selectedMetroText.innerHTML = 'Выберите станции метро';
+            return;
+        }
+
+        let html = '';
+        selectedStations.slice(0, 3).forEach(station => {
+            html += `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        ${station}
+                    </span>`;
+        });
+
+        if (selectedStations.length > 3) {
+            html += `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                        +${selectedStations.length - 3}
+                    </span>`;
+        }
+
+        selectedMetroText.innerHTML = html;
+    }
+
+    // Инициализация текста при загрузке
+    updateSelectedStationsText();
 });
 
-      // Выбор/отмена выбора станции
-       document.addEventListener('click', function(e) {
-      if (e.target.closest('.metro-station-option')) {
-          const option = e.target.closest('.metro-station-option');
-          const station = option.querySelector('.metro-station-name').textContent;
-
-          if (selectedStations.includes(station)) {
-              selectedStations = selectedStations.filter(s => s !== station);
-              option.classList.remove('selected');
-          } else {
-              if (selectedStations.length < 5) {
-                  selectedStations.push(station);
-                  option.classList.add('selected');
-              } else {
-                  alert('Можно выбрать не более 5 станций');
-              }
-          }
-      }
-  });
-
-      // Очистка выбора
-      clearMetroBtn.addEventListener('click', function() {
-          selectedStations = [];
-          updateSelectedStationsInModal();
-      });
-
-      // Применение выбора
-      applyMetroBtn.addEventListener('click', function() {
-          metroHiddenInput.value = selectedStations.join(',');
-          updateSelectedStationsText();
-          metroDropdown.classList.add('hidden');
-          document.getElementById('apply_filters').click();
-      });
-
-      // Обновление отображения выбранных станций в модальном окне
-      function updateSelectedStationsInModal() {
-          document.querySelectorAll('.metro-station-option').forEach(option => {
-              const station = option.getAttribute('data-station');
-              if (selectedStations.includes(station)) {
-                  option.classList.add('bg-blue-100', 'border-blue-500');
-                  option.classList.remove('border-gray-200', 'hover:bg-gray-50');
-              } else {
-                  option.classList.remove('bg-blue-100', 'border-blue-500');
-                  option.classList.add('border-gray-200', 'hover:bg-gray-50');
-              }
-          });
-      }
-
-      // Обновите функцию updateSelectedStationsText:
-  function updateSelectedStationsText() {
-      const selectedStations = metroHiddenInput.value ?
-          metroHiddenInput.value.split(',') : [];
-
-      if (selectedStations.length === 0) {
-          selectedMetroText.innerHTML = 'Выберите станции метро';
-          return;
-      }
-
-      let html = '';
-      selectedStations.slice(0, 3).forEach(station => {
-          html += `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                      ${station}
-                  </span>`;
-      });
-
-      if (selectedStations.length > 3) {
-          html += `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                      +${selectedStations.length - 3}
-                  </span>`;
-      }
-
-      selectedMetroText.innerHTML = html;
-  }
-
-      // Инициализация текста при загрузке
-      updateSelectedStationsText();
-  });
-
-  // Обновляем статус карты в интерфейсе
-  function updateMapStatus(status) {
-      const statusElement = document.getElementById('map-status-text');
-      if (statusElement) {
-          statusElement.textContent = status;
-
-          // Добавляем цвет в зависимости от статуса
-          if (status.includes('успешно')) {
-              statusElement.style.color = 'green';
-          } else if (status.includes('ошибка')) {
-              statusElement.style.color = 'red';
-          } else {
-              statusElement.style.color = 'orange';
-          }
-      }
-  }
-// Функция для переключения видимости станций метро
 // Функция для переключения видимости станций метро
 function toggleMetroLine(header) {
     const lineSection = header.closest('.metro-line-section');
@@ -4325,12 +4303,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 const header = lineSection.querySelector('.metro-line-header');
 
                 header.classList.add('expanded');
-                stationsContainer.style.maxHeight = '300px';
+                stationsContainer.style.maxHeight = stationsContainer.scrollHeight + 'px';
                 lineSection.querySelector('.bi-chevron-down').classList.add('rotate-180');
             }
         });
     }
-
 
     // Обработчик выбора станции
     document.addEventListener('click', function(e) {
@@ -4574,7 +4551,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-// Обработчики для чипсов типа недвижимости и вида размещения
+
 // Обработчики для чипсов типа недвижимости и вида размещения
 document.addEventListener('DOMContentLoaded', function() {
     // Обработчик для чипсов
@@ -4602,6 +4579,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
 // Скрываем ПК фильтры на мобильных устройствах
 if (window.innerWidth < 1024) {
     const pcFilters = document.querySelector('aside.w-full.lg\\:w-80');
