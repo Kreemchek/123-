@@ -268,23 +268,22 @@
         text-align: center;
     }
 
-    /* Обновляем стили для section-block чтобы вмещал увеличенные карточки */
+    /* ОКОНЧАТЕЛЬНОЕ ИСПРАВЛЕНИЕ: Увеличиваем отступы для section-block */
     .section-block {
         background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
         border: 1px solid rgba(255,255,255,.08);
         border-radius: var(--radius);
-        padding: 24px; /* Увеличиваем отступы */
+        padding: 30px; /* УВЕЛИЧИВАЕМ отступы */
         box-shadow: var(--shadow-1);
-        margin-bottom: 40px; /* Увеличиваем отступ между блоками */
-        /* Гарантируем что контент не обрезается */
-        overflow: hidden;
+        margin-bottom: 40px;
+        overflow: visible; /* Разрешаем видимость за пределами */
     }
 
     .section-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 16px;
+        margin-bottom: 20px; /* Увеличиваем отступ */
     }
 
     .section-header h3 {
@@ -393,23 +392,21 @@
         outline: none;
     }
 
-    /* ИСПРАВЛЕННЫЕ стили для слайдеров */
+    /* ОКОНЧАТЕЛЬНОЕ ИСПРАВЛЕНИЕ: Создаем безопасную зону для слайдера */
     .slider-container {
         position: relative;
-        /* ВОЗВРАЩАЕМ overflow: hidden но настраиваем правильные отступы */
-        overflow: hidden;
+        overflow: visible; /* Разрешаем видимость */
         border-radius: var(--radius);
-        /* Добавляем внутренние отступы чтобы карточки не обрезались */
-        padding: 16px 0;
-        margin: -16px 0;
+        /* Создаем безопасную зону вокруг слайдера */
+        padding: 20px 0;
+        margin: -20px 0;
     }
 
     /* Плавная анимация для автоматической прокрутки */
     .auto-scroll-track {
         display: flex;
         transition: transform 1.2s cubic-bezier(0.25, 0.1, 0.25, 1);
-        /* Оставляем overflow: visible для трека */
-        overflow: visible;
+        overflow: visible; /* Разрешаем видимость */
     }
 
     .auto-scroll-track.continuous {
@@ -417,12 +414,11 @@
         animation: smoothScroll 40s linear infinite;
     }
 
-    /* ОБНОВЛЕННЫЕ стили для слайдеров - 3 карточки на десктопе */
+    /* ОКОНЧАТЕЛЬНОЕ ИСПРАВЛЕНИЕ: Уменьшаем ширину слайдов для безопасных отступов */
     .slider-slide {
-        min-width: calc(33.333% - 16px); /* 3 карточки в ряд с учетом отступов */
+        min-width: calc(33.333% - 24px); /* Увеличиваем вычитаемые отступы */
         flex-shrink: 0;
-        padding: 0 8px;
-        /* Убираем внешние отступы, используем только padding */
+        padding: 0 12px;
         margin: 0;
     }
 
@@ -450,8 +446,7 @@
         transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         backdrop-filter: blur(10px);
         height: 100%;
-        /* Уменьшаем максимальную ширину чтобы влезало в контейнер */
-        max-width: 350px;
+        max-width: 340px; /* Уменьшаем для безопасных отступов */
         margin: 0 auto;
         transform-origin: center;
     }
@@ -595,8 +590,7 @@
         text-decoration: none;
         color: inherit;
         height: 100%;
-        /* Уменьшаем максимальную ширину чтобы влезало в контейнер */
-        max-width: 350px;
+        max-width: 340px; /* Уменьшаем для безопасных отступов */
         margin: 0 auto;
         transform-origin: center;
     }
@@ -669,7 +663,7 @@
     /* Адаптация для планшетов */
     @media (max-width: 1200px) {
         .slider-slide {
-            min-width: calc(50% - 16px); /* 2 карточки в ряд с учетом отступов */
+            min-width: calc(50% - 24px); /* Увеличиваем вычитаемые отступы */
         }
 
         .listing-card-compact,
@@ -690,7 +684,7 @@
         }
 
         .section-block {
-            padding: 20px;
+            padding: 24px; /* Сохраняем достаточные отступы */
         }
 
         .section-header h3 {
@@ -703,7 +697,7 @@
         }
 
         .slider-slide {
-            min-width: calc(100% - 16px); /* 1 карточка в ряд с учетом отступов */
+            min-width: calc(100% - 24px); /* Увеличиваем вычитаемые отступы */
         }
 
         .listing-card-compact,
@@ -731,23 +725,23 @@
         }
 
         .slider-container {
-            padding: 12px 0;
-            margin: -12px 0;
+            padding: 16px 0;
+            margin: -16px 0;
         }
     }
 
     @media (max-width: 480px) {
         .section-block {
-            padding: 16px;
+            padding: 20px;
         }
 
         .section-header {
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
 
         .slider-slide {
-            padding: 0 6px;
-            min-width: calc(100% - 12px);
+            padding: 0 8px;
+            min-width: calc(100% - 16px);
         }
 
         .listing-card-compact,
