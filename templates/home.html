@@ -874,7 +874,7 @@
     </div>
 </div>
 
-    <!-- Блок медиа -->
+      <!-- Блок медиа -->
     <div class="section-block">
         <div class="section-header">
             <h3>📰 Медиа</h3>
@@ -905,34 +905,38 @@
         </div>
 
         <div class="slider-container">
-            <div class="auto-scroll-track continuous" id="media-content-track">
-                {% for media in media_content %}
+            <div class="auto-scroll-track continuous" id="media-track">
+                {% for media in featured_media %}
                 <div class="slider-slide">
-                    <a href="{% if user.is_authenticated %}{% url 'media_content:detail' media.id %}{% else %}{% url 'register' %}?next={% url 'media_content:detail' media.id %}{% endif %}" class="media-card-compact link">
-                        <div class="thumb">
-                            {% if media.thumbnail %}
-                                <img src="{{ media.thumbnail.url }}" alt="{{ media.title }}">
-                            {% else %}
-                                <div>
-                                    {{ media.title|truncatechars:30 }}
-                                </div>
-                            {% endif %}
-                            <div class="thumb-overlay-compact">
-                                {% if media.media_type == 'video' %}
-                                    <i class="fas fa-play mr-1"></i> Видео
-                                {% elif media.media_type == 'article' %}
-                                    <i class="fas fa-newspaper mr-1"></i> Статья
+                    <a href="{% url 'media_content:detail' media.id %}" class="link">
+                        <article class="media-card-compact">
+                            <div class="thumb">
+                                {% if media.thumbnail_url %}
+                                    <img src="{{ media.thumbnail_url }}" alt="{{ media.title }}">
+                                {% elif media.media_type == 'video' %}
+                                    <div style="background: linear-gradient(135deg, #7c66ff, #30d0ff); display: flex; align-items: center; justify-content: center; color: white;">
+                                        <i class="fas fa-play-circle fa-2x"></i>
+                                    </div>
                                 {% else %}
-                                    <i class="fas fa-file-alt mr-1"></i> Материал
+                                    <div style="background: linear-gradient(135deg, #7c66ff, #30d0ff); display: flex; align-items: center; justify-content: center; color: white;">
+                                        <i class="fas fa-newspaper fa-2x"></i>
+                                    </div>
                                 {% endif %}
+                                <div class="thumb-overlay-compact">
+                                    {% if media.media_type == 'video' %}
+                                        <i class="fas fa-play"></i> Видео
+                                    {% else %}
+                                        <i class="fas fa-newspaper"></i> Статья
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
-                        <div class="body">
-                            <strong>{{ media.title }}</strong>
-                            <div class="media-meta-compact">
-                                {{ media.created_at|date:"d.m.Y" }}
+                            <div class="body">
+                                <strong>{{ media.title }}</strong>
+                                <div class="media-meta-compact">
+                                    {{ media.created_at|date:"d.m.Y" }}
+                                </div>
                             </div>
-                        </div>
+                        </article>
                     </a>
                 </div>
                 {% endfor %}
