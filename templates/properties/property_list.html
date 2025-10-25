@@ -2347,6 +2347,27 @@ body.mobile-modal-open {
         display: none !important;
     }
 }
+/* Градиентные кнопки */
+.btn-gradient {
+    background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%);
+    color: white;
+    border: none;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(123, 97, 255, 0.2);
+}
+
+.btn-gradient:hover {
+    background: linear-gradient(135deg, #6a50e6 0%, #2bb7c2 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(123, 97, 255, 0.3);
+}
+
+.btn-gradient:active {
+    transform: translateY(0);
+}
 </style>
 {% endblock %}
 
