@@ -1853,6 +1853,84 @@ body.properties-page{
     background: #e2e8f0;
     border-radius: 2px;
 }
+/* Стили для скроллера модальных окон на мобильных */
+#mobile-city-dropdown .bg-white.rounded-xl,
+#mobile-metro-dropdown .bg-white.rounded-xl {
+    max-height: 90vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
+}
+
+/* Кастомный скроллбар для модальных окон */
+#mobile-city-dropdown .bg-white.rounded-xl::-webkit-scrollbar,
+#mobile-metro-dropdown .bg-white.rounded-xl::-webkit-scrollbar {
+    width: 6px;
+}
+
+#mobile-city-dropdown .bg-white.rounded-xl::-webkit-scrollbar-track,
+#mobile-metro-dropdown .bg-white.rounded-xl::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+}
+
+#mobile-city-dropdown .bg-white.rounded-xl::-webkit-scrollbar-thumb,
+#mobile-metro-dropdown .bg-white.rounded-xl::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+#mobile-city-dropdown .bg-white.rounded-xl::-webkit-scrollbar-thumb:hover,
+#mobile-metro-dropdown .bg-white.rounded-xl::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Улучшенные стили для контента модальных окон */
+#mobile-city-dropdown .p-4,
+#mobile-metro-dropdown .p-4 {
+    padding-bottom: 2rem;
+}
+
+/* Фиксируем заголовок при скролле */
+#mobile-city-dropdown .sticky,
+#mobile-metro-dropdown .sticky {
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 20;
+}
+
+/* Улучшенные стили для списка городов */
+#mobile-city-dropdown .grid {
+    max-height: none;
+    overflow-y: visible;
+}
+
+/* Улучшенные стили для контейнера метро */
+#mobile-metro-dropdown .metro-lines-container {
+    max-height: none;
+    overflow-y: visible;
+}
+
+/* Адаптивные отступы для мобильных */
+@media (max-width: 640px) {
+    #mobile-city-dropdown,
+    #mobile-metro-dropdown {
+        padding: 0.25rem;
+    }
+
+    #mobile-city-dropdown .bg-white.rounded-xl,
+    #mobile-metro-dropdown .bg-white.rounded-xl {
+        max-height: 95vh;
+    }
+}
+
+/* Предотвращение скролла body когда открыто модальное окно */
+body.modal-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}
 </style>
 {% endblock %}
 
@@ -2206,30 +2284,54 @@ body.properties-page{
 </div>
 
 <!-- Модальное окно выбора города (мобильная версия) -->
-<div id="mobile-city-dropdown" class="fixed inset-0 z-60 hidden bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-xl w-full max-w-full max-h-[90vh] overflow-y-auto">
+<!-- Обновленная разметка для модального окна метро -->
+<div id="mobile-metro-dropdown" class="fixed inset-0 z-60 hidden bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-full max-h-[90vh] overflow-y-auto flex flex-col">
+        <!-- Заголовок с поиском -->
         <div class="sticky top-0 bg-white p-4 border-b border-gray-200 z-10">
             <div class="flex justify-between items-center">
-                <h2 class="text-xl font-bold">Выберите город</h2>
-                <button id="mobile-close-city-modal" class="text-gray-500 hover:text-gray-700 text-2xl">
+                <h2 class="text-xl font-bold">Выберите станции метро</h2>
+                <button id="mobile-close-metro-modal" class="text-gray-500 hover:text-gray-700 text-2xl">
                     ×
                 </button>
             </div>
-
             <div class="mt-4">
                 <input type="text"
-                       id="mobile-city-search"
-                       placeholder="Начните вводить название города..."
+                       id="mobile-metro-search"
+                       placeholder="Начните вводить название станции..."
                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
             </div>
         </div>
 
-        <div class="p-4">
-            <button type="button" id="mobile-use-custom-city" class="hidden w-full mb-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
-                Применить выбранный город
+        <!-- Контент с прокруткой -->
+        <div class="p-4 flex-1">
+            {% if location %}
+                {% if metro_lines %}
+                    <div class="metro-lines-container space-y-3">
+                        {% for line in metro_lines %}
+                            <!-- линии метро -->
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-gray-500 py-4 text-center">Для выбранного города нет данных о станциях метро</p>
+                {% endif %}
+            {% else %}
+                <p class="text-gray-500 py-4 text-center">Сначала выберите город</p>
+            {% endif %}
+        </div>
+
+        <!-- Футер -->
+        <div class="sticky bottom-0 bg-white p-4 border-t border-gray-200 flex justify-end gap-3">
+            <button type="button"
+                    id="mobile-clear-metro-selection"
+                    class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50">
+                Очистить
             </button>
-
-
+            <button type="button"
+                    id="mobile-apply-metro-selection"
+                    class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">
+                Применить
+            </button>
         </div>
     </div>
 </div>
@@ -3194,6 +3296,7 @@ function initMobileFilters() {
 
 // Мобильные модальные окны для города и метро
 // Мобильные модальные окна для города и метро
+function // Обновленная функция для мобильных модальных окон
 function initMobileModals() {
     // Обновленные функции для управления модальными окнами
     function openMobileModal(modal) {
@@ -3207,8 +3310,15 @@ function initMobileModals() {
         // Блокируем прокрутку body
         document.body.style.overflow = 'hidden';
         document.body.classList.add('modal-open');
-    }
 
+        // Фокусируемся на поле поиска если оно есть
+        setTimeout(() => {
+            const searchInput = modal.querySelector('input[type="text"]');
+            if (searchInput) {
+                searchInput.focus();
+            }
+        }, 100);
+    }
     function closeAllMobileModals() {
         document.querySelectorAll('#mobile-city-dropdown, #mobile-metro-dropdown').forEach(modal => {
             modal.classList.add('hidden');
