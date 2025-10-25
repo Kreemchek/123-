@@ -2041,6 +2041,43 @@ body.mobile-modal-open {
     width: 100% !important;
     height: 100% !important;
 }
+/* Стили для прокрутки линий метро в мобильном модальном окне */
+#mobile-metro-dropdown .metro-lines-container {
+    max-height: none !important;
+    overflow-y: visible !important;
+}
+
+#mobile-metro-dropdown .metro-stations-container.expanded {
+    max-height: 300px !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+}
+
+/* Улучшенный скроллбар для станций метро */
+#mobile-metro-dropdown .metro-stations-container::-webkit-scrollbar {
+    width: 3px !important;
+}
+
+#mobile-metro-dropdown .metro-stations-container::-webkit-scrollbar-track {
+    background: #f8fafc !important;
+    border-radius: 2px !important;
+}
+
+#mobile-metro-dropdown .metro-stations-container::-webkit-scrollbar-thumb {
+    background: #e2e8f0 !important;
+    border-radius: 2px !important;
+}
+
+#mobile-metro-dropdown .metro-stations-container::-webkit-scrollbar-thumb:hover {
+    background: #cbd5e1 !important;
+}
+
+/* Убедимся, что контент модального окна прокручивается */
+#mobile-metro-dropdown .p-4 {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding-bottom: 2rem !important;
+}
 </style>
 {% endblock %}
 
@@ -2425,7 +2462,7 @@ body.mobile-modal-open {
 <div id="mobile-metro-dropdown" class="fixed inset-0 z-60 hidden bg-black bg-opacity-50 backdrop-blur-sm">
     <div class="bg-white rounded-xl w-full h-full max-h-full max-w-full m-0 flex flex-col">
         <!-- Заголовок с поиском -->
-        <div class="sticky top-0 bg-white p-4 border-b border-gray-200">
+        <div class="sticky top-0 bg-white p-4 border-b border-gray-200 z-20">
             <div class="flex justify-between items-center">
                 <h2 class="text-xl font-bold">Выберите станции метро</h2>
                 <button id="mobile-close-metro-modal" class="text-gray-500 hover:text-gray-700 text-2xl">
@@ -2441,32 +2478,31 @@ body.mobile-modal-open {
         </div>
 
         <!-- Контент с прокруткой -->
-        <div class="p-4 flex-1 overflow-y-auto">
+        <div class="p-4 flex-1 overflow-y-auto" style="padding-bottom: 6rem;">
             {% if location %}
                 {% if metro_lines %}
                     <div class="metro-lines-container space-y-3">
                         {% for line in metro_lines %}
-
-                            <div class="metro-line-section border rounded-lg overflow-hidden">
-                                <div class="metro-line-header flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50 transition-colors"
+                            <div class="metro-line-section border rounded-lg overflow-hidden bg-white shadow-sm">
+                                <div class="metro-line-header flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50 transition-colors bg-gray-50"
                                     onclick="toggleMobileMetroLine(this)">
-                                    <div class="flex items-center min-w-0">
-                                        <div class="metro-line-color w-4 h-4 rounded-full mr-2 flex-shrink-0"
+                                    <div class="flex items-center min-w-0 flex-1">
+                                        <div class="metro-line-color w-4 h-4 rounded-full mr-3 flex-shrink-0"
                                             style="background-color: {{ line.line_color }}"></div>
                                         <h3 class="metro-line-name font-medium text-sm truncate">{{ line.line|default:"Другие станции" }}</h3>
                                     </div>
-                                    <i class="bi bi-chevron-down transition-transform duration-200 flex-shrink-0"></i>
+                                    <i class="bi bi-chevron-down transition-transform duration-200 flex-shrink-0 text-gray-500"></i>
                                 </div>
 
-                                <div class="metro-stations-container transition-all duration-300 overflow-hidden"
+                                <div class="metro-stations-container transition-all duration-300 overflow-hidden bg-white"
                                     style="max-height: 0">
                                     {% for station in line.stations %}
                                         <button type="button"
-                                                class="metro-station-option flex items-center px-3 py-2 w-full text-left hover:bg-gray-50 transition-colors {% if station.name in filter.form.metro_station.value %}bg-blue-100 text-blue-800{% endif %}"
+                                                class="metro-station-option flex items-center px-4 py-3 w-full text-left hover:bg-blue-50 transition-colors border-b border-gray-100 last:border-b-0 {% if station.name in filter.form.metro_station.value %}bg-blue-100 text-blue-800{% endif %}"
                                                 data-station="{{ station.name }}">
                                             <div class="metro-station-color w-3 h-3 rounded-full mr-3 flex-shrink-0"
                                                 style="background-color: {{ station.line_color|default:'#cccccc' }}"></div>
-                                            <span class="metro-station-name truncate">{{ station.name }}</span>
+                                            <span class="metro-station-name truncate text-sm">{{ station.name }}</span>
                                         </button>
                                     {% endfor %}
                                 </div>
@@ -2474,23 +2510,29 @@ body.mobile-modal-open {
                         {% endfor %}
                     </div>
                 {% else %}
-                    <p class="text-gray-500 py-4 text-center">Для выбранного города нет данных о станциях метро</p>
+                    <div class="text-center py-8">
+                        <i class="bi bi-train-front text-4xl text-gray-300 mb-3"></i>
+                        <p class="text-gray-500">Для выбранного города нет данных о станциях метро</p>
+                    </div>
                 {% endif %}
             {% else %}
-                <p class="text-gray-500 py-4 text-center">Сначала выберите город и примените фильтрацию</p>
+                <div class="text-center py-8">
+                    <i class="bi bi-geo-alt text-4xl text-gray-300 mb-3"></i>
+                    <p class="text-gray-500">Сначала выберите город</p>
+                </div>
             {% endif %}
         </div>
 
         <!-- Футер -->
-        <div class="sticky bottom-0 bg-white p-4 border-t border-gray-200 flex justify-end gap-3">
+        <div class="sticky bottom-0 bg-white p-4 border-t border-gray-200 flex justify-end gap-3 z-20">
             <button type="button"
                     id="mobile-clear-metro-selection"
-                    class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50">
+                    class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
                 Очистить
             </button>
             <button type="button"
                     id="mobile-apply-metro-selection"
-                    class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">
+                    class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
                 Применить
             </button>
         </div>
@@ -3579,42 +3621,67 @@ function initMobileModals() {
     }
 
     // Поиск станций метро
-    if (mobileMetroSearch) {
-        mobileMetroSearch.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
+if (mobileMetroSearch) {
+    mobileMetroSearch.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
 
-            document.querySelectorAll('#mobile-metro-dropdown .metro-line-section').forEach(section => {
-                let hasVisibleStations = false;
+        document.querySelectorAll('#mobile-metro-dropdown .metro-line-section').forEach(section => {
+            let hasVisibleStations = false;
 
-                section.querySelectorAll('.metro-station-option').forEach(option => {
-                    const stationName = option.querySelector('.metro-station-name').textContent.toLowerCase();
-                    if (stationName.includes(searchTerm)) {
-                        option.classList.remove('hidden');
-                        hasVisibleStations = true;
-                    } else {
-                        option.classList.add('hidden');
-                    }
-                });
+            section.querySelectorAll('.metro-station-option').forEach(option => {
+                const stationName = option.querySelector('.metro-station-name').textContent.toLowerCase();
+                if (stationName.includes(searchTerm)) {
+                    option.classList.remove('hidden');
+                    hasVisibleStations = true;
 
-                if (searchTerm.length > 0) {
-                    if (hasVisibleStations) {
-                        section.classList.remove('hidden');
-                        // Автоматически раскрываем линию при поиске
-                        const header = section.querySelector('.metro-line-header');
-                        const stationsContainer = section.querySelector('.metro-stations-container');
-                        if (header && stationsContainer) {
-                            header.classList.add('expanded');
-                            stationsContainer.style.maxHeight = stationsContainer.scrollHeight + 'px';
-                        }
-                    } else {
-                        section.classList.add('hidden');
+                    // Автоматически раскрываем родительскую линию
+                    const header = section.querySelector('.metro-line-header');
+                    const stationsContainer = section.querySelector('.metro-stations-container');
+                    if (header && stationsContainer && !header.classList.contains('expanded')) {
+                        stationsContainer.style.maxHeight = '300px';
+                        stationsContainer.style.overflowY = 'auto';
+                        header.classList.add('expanded');
+                        header.querySelector('.bi-chevron-down').classList.add('rotate-180');
                     }
                 } else {
-                    section.classList.remove('hidden');
+                    option.classList.add('hidden');
                 }
             });
+
+            if (searchTerm.length > 0) {
+                if (hasVisibleStations) {
+                    section.classList.remove('hidden');
+                } else {
+                    section.classList.add('hidden');
+                }
+            } else {
+                section.classList.remove('hidden');
+                // Закрываем все линии при очистке поиска
+                const header = section.querySelector('.metro-line-header');
+                const stationsContainer = section.querySelector('.metro-stations-container');
+                if (header && stationsContainer) {
+                    stationsContainer.style.maxHeight = '0';
+                    stationsContainer.style.overflowY = 'hidden';
+                    header.classList.remove('expanded');
+                    header.querySelector('.bi-chevron-down').classList.remove('rotate-180');
+                }
+            }
         });
-    }
+
+        // Прокручиваем к первому найденному результату
+        if (searchTerm.length > 0) {
+            const firstVisibleSection = document.querySelector('#mobile-metro-dropdown .metro-line-section:not(.hidden)');
+            if (firstVisibleSection) {
+                setTimeout(() => {
+                    firstVisibleSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'nearest'
+                    });
+                }, 200);
+            }
+        }
+    });
+}
 
     // Выбор/отмена выбора станции
     document.addEventListener('click', function(e) {
@@ -3689,24 +3756,41 @@ function initMobileModals() {
         selectedMetroText.innerHTML = html;
     }
 
-    // Переключение линий метро в мобильной версии
-    window.toggleMobileMetroLine = function(header) {
-        const lineSection = header.closest('.metro-line-section');
-        const stationsContainer = lineSection.querySelector('.metro-stations-container');
-        const chevron = header.querySelector('.bi-chevron-down');
+// Переключение линий метро в мобильной версии с улучшенной прокруткой
+window.toggleMobileMetroLine = function(header) {
+    const lineSection = header.closest('.metro-line-section');
+    const stationsContainer = lineSection.querySelector('.metro-stations-container');
+    const chevron = header.querySelector('.bi-chevron-down');
 
-        const isExpanded = header.classList.contains('expanded');
+    const isExpanded = header.classList.contains('expanded');
 
-        if (isExpanded) {
-            stationsContainer.style.maxHeight = '0';
-            header.classList.remove('expanded');
-            chevron.classList.remove('rotate-180');
-        } else {
-            stationsContainer.style.maxHeight = stationsContainer.scrollHeight + 'px';
-            header.classList.add('expanded');
-            chevron.classList.add('rotate-180');
-        }
-    };
+    if (isExpanded) {
+        // Закрываем
+        stationsContainer.style.maxHeight = '0';
+        stationsContainer.style.overflowY = 'hidden';
+        header.classList.remove('expanded');
+        chevron.classList.remove('rotate-180');
+    } else {
+        // Открываем
+        stationsContainer.style.maxHeight = '300px';
+        stationsContainer.style.overflowY = 'auto';
+        header.classList.add('expanded');
+        chevron.classList.add('rotate-180');
+
+        // Прокручиваем к открытой линии если она не видна полностью
+        setTimeout(() => {
+            const containerRect = stationsContainer.getBoundingClientRect();
+            const modalContent = document.querySelector('#mobile-metro-dropdown .p-4');
+
+            if (containerRect.bottom > window.innerHeight - 100) {
+                lineSection.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'nearest'
+                });
+            }
+        }, 100);
+    }
+};
 
     // Инициализация при загрузке
     updateMobileSelectedStationsText();
