@@ -3280,71 +3280,7 @@ function updateMobileMetroDropdown(metroStations) {
         console.log('Станции метро успешно отображены в мобильном модальном окне');
     }
 }
-// Обновленный обработчик открытия модального окна метро с проверкой города
-metroInput.addEventListener('click', function(e) {
-    e.preventDefault();
 
-    const selectedCity = document.getElementById('city-hidden-input')?.value;
-    if (!selectedCity) {
-        showNotification('Сначала выберите город', 'warning');
-        return;
-    }
-
-    // Убеждаемся, что станции метро загружены
-    ensureMetroStationsLoaded();
-
-    metroDropdown.classList.remove('hidden');
-
-    // Даем время на отрисовку DOM
-    setTimeout(() => {
-        const metroContent = metroDropdown.querySelector('.metro-lines-container');
-        if (metroContent && metroContent.children.length > 0) {
-            console.log('Модальное окно метро открыто со станциями');
-        } else {
-            console.log('Модальное окно метро открыто, но станции не найдены');
-            // Перезагружаем станции
-            loadMetroStationsForCity(selectedCity);
-        }
-    }, 100);
-
-    updateSelectedStationsInModal();
-});
-// Обновленный обработчик открытия модального окна метро с проверкой города
-if (mobileMetroInput) {
-    mobileMetroInput.addEventListener('click', function(e) {
-        e.preventDefault();
-
-        const selectedCity = document.getElementById('mobile-city-hidden-input')?.value;
-        if (!selectedCity) {
-            showNotification('Сначала выберите город', 'warning');
-            return;
-        }
-
-        // Убеждаемся, что станции метро загружены
-        ensureMobileMetroStationsLoaded();
-
-        if (typeof closeMobileFilters === 'function') {
-            closeMobileFilters();
-        }
-        if (mobileMetroDropdown) {
-            openMobileModal(mobileMetroDropdown);
-
-            // Даем время на отрисовку DOM
-            setTimeout(() => {
-                const metroContent = mobileMetroDropdown.querySelector('.metro-lines-container');
-                if (metroContent && metroContent.children.length > 0) {
-                    console.log('Мобильное модальное окно метро открыто со станциями');
-                } else {
-                    console.log('Мобильное модальное окно метро открыто, но станции не найдены');
-                    // Перезагружаем станции
-                    loadMobileMetroStationsForCity(selectedCity);
-                }
-            }, 100);
-
-            updateMobileSelectedStationsInModal();
-        }
-    });
-}
 // Функция для показа уведомлений
 function showNotification(message, type = 'info') {
     // Создаем элемент уведомления
