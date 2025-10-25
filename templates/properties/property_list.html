@@ -2134,6 +2134,156 @@ body.mobile-modal-open {
     background: #e2e8f0 !important;
     border-radius: 2px !important;
 }
+/* Стили для полной прокрутки модального окна метро на мобильных */
+#mobile-metro-dropdown {
+    z-index: 9999 !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: stretch !important;
+    justify-content: stretch !important;
+    overflow: hidden !important;
+    background: rgba(0, 0, 0, 0.5) !important;
+    backdrop-filter: blur(5px) !important;
+}
+
+#mobile-metro-dropdown > .bg-white.rounded-xl {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+}
+
+/* Контейнер контента с прокруткой - ОСНОВНОЙ СКРОЛЛЕР */
+#mobile-metro-dropdown .p-4 {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: 1rem !important;
+    height: auto !important;
+    max-height: none !important;
+}
+
+/* Заголовок фиксированный */
+#mobile-metro-dropdown .sticky.top-0 {
+    position: sticky !important;
+    top: 0 !important;
+    background: white !important;
+    z-index: 10 !important;
+    padding: 1rem !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    flex-shrink: 0 !important;
+}
+
+/* Футер фиксированный */
+#mobile-metro-dropdown .sticky.bottom-0 {
+    position: sticky !important;
+    bottom: 0 !important;
+    background: white !important;
+    z-index: 10 !important;
+    padding: 1rem !important;
+    border-top: 1px solid #e5e7eb !important;
+    flex-shrink: 0 !important;
+}
+
+/* Контейнер линий метро */
+#mobile-metro-dropdown .metro-lines-container {
+    max-height: none !important;
+    overflow-y: visible !important;
+    height: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+}
+
+/* Секции линий метро */
+#mobile-metro-dropdown .metro-line-section {
+    border: 1px solid #e5e7eb !important;
+    border-radius: 0.75rem !important;
+    overflow: hidden !important;
+    background: white !important;
+    margin-bottom: 0 !important;
+}
+
+/* Контейнер станций с ВЛОЖЕННОЙ прокруткой */
+#mobile-metro-dropdown .metro-stations-container {
+    transition: max-height 0.3s ease !important;
+    overflow: hidden !important;
+    background: white !important;
+}
+
+#mobile-metro-dropdown .metro-stations-container.expanded {
+    max-height: 300px !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+}
+
+/* Улучшенный скроллбар для основного контента модального окна */
+#mobile-metro-dropdown .p-4::-webkit-scrollbar {
+    width: 6px !important;
+}
+
+#mobile-metro-dropdown .p-4::-webkit-scrollbar-track {
+    background: #f1f5f9 !important;
+    border-radius: 3px !important;
+}
+
+#mobile-metro-dropdown .p-4::-webkit-scrollbar-thumb {
+    background: #cbd5e1 !important;
+    border-radius: 3px !important;
+}
+
+#mobile-metro-dropdown .p-4::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8 !important;
+}
+
+/* Улучшенный скроллбар для станций метро */
+#mobile-metro-dropdown .metro-stations-container::-webkit-scrollbar {
+    width: 4px !important;
+}
+
+#mobile-metro-dropdown .metro-stations-container::-webkit-scrollbar-track {
+    background: #f8fafc !important;
+    border-radius: 2px !important;
+}
+
+#mobile-metro-dropdown .metro-stations-container::-webkit-scrollbar-thumb {
+    background: #e2e8f0 !important;
+    border-radius: 2px !important;
+}
+
+#mobile-metro-dropdown .metro-stations-container::-webkit-scrollbar-thumb:hover {
+    background: #cbd5e1 !important;
+}
+
+/* Адаптивность для очень маленьких экранов */
+@media (max-width: 640px) {
+    #mobile-metro-dropdown {
+        padding: 0 !important;
+    }
+
+    #mobile-metro-dropdown > .bg-white.rounded-xl {
+        border-radius: 0 !important;
+    }
+
+    #mobile-metro-dropdown .p-4 {
+        padding: 0.75rem !important;
+    }
+
+    #mobile-metro-dropdown .metro-stations-container.expanded {
+        max-height: 250px !important;
+    }
+}
 </style>
 {% endblock %}
 

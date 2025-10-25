@@ -723,70 +723,80 @@
 <section class="vertical-section">
     <h2>Популярные предложения и медиа</h2>
 
-    <!-- Блок горячих предложений -->
-    <div class="section-block">
-        <div class="section-header">
-            <h3>🔥 Горячие предложения</h3>
-            <div class="slider-controls">
-                <button class="slider-btn prev-hot">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <button class="slider-btn next-hot">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-            </div>
+<!-- Блок горячих предложений -->
+<div class="section-block">
+    <div class="section-header">
+        <h3>🔥 Горячие предложения</h3>
+        <div class="slider-controls">
+            <button class="slider-btn prev-hot">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="slider-btn next-hot">
+                <i class="fas fa-chevron-right"></i>
+            </button>
         </div>
+    </div>
 
-        <!-- Элементы управления автопрокруткой (скрыты) -->
-        <div class="auto-scroll-controls">
-            <div class="auto-scroll-toggle" id="hot-auto-toggle">
-                <div class="toggle-switch"></div>
-                <span>Автопрокрутка</span>
-            </div>
-            <div class="scroll-speed-control">
-                <span>Скорость:</span>
-                <select id="hot-speed-select">
-                    <option value="40">Медленно</option>
-                    <option value="30" selected>Средне</option>
-                    <option value="20">Быстро</option>
-                </select>
-            </div>
+    <!-- Элементы управления автопрокруткой (скрыты) -->
+    <div class="auto-scroll-controls">
+        <div class="auto-scroll-toggle" id="hot-auto-toggle">
+            <div class="toggle-switch"></div>
+            <span>Автопрокрутка</span>
         </div>
+        <div class="scroll-speed-control">
+            <span>Скорость:</span>
+            <select id="hot-speed-select">
+                <option value="40">Медленно</option>
+                <option value="30" selected>Средне</option>
+                <option value="20">Быстро</option>
+            </select>
+        </div>
+    </div>
 
-        <div class="slider-container">
-            <div class="auto-scroll-track continuous" id="hot-properties-track">
-                {% for property in hot_properties %}
-                <div class="slider-slide">
-                    <div class="listing-card-compact">
-                        {% if property.is_hot %}
-                        <div class="hot-property-badge-compact">🔥 Горячее</div>
+    <div class="slider-container">
+        <div class="auto-scroll-track continuous" id="hot-properties-track">
+            {% for property in hot_properties %}
+            <div class="slider-slide">
+                <div class="listing-card-compact">
+                    {% if property.is_hot %}
+                    <div class="hot-property-badge-compact">🔥 Горячее</div>
+                    {% endif %}
+                    <div class="thumb">
+                        {% if property.images.all %}
+                            <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}">
+                        {% else %}
+                            <div>
+                                {{ property.title|truncatechars:30 }}
+                            </div>
                         {% endif %}
-                        <div class="thumb">
-                            {% if property.images.all %}
-                                <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}">
-                            {% else %}
-                                <div>
-                                    {{ property.title|truncatechars:30 }}
-                                </div>
-                            {% endif %}
+                    </div>
+                    <div class="body">
+                        <strong>{{ property.title }}</strong>
+                        <div class="meta-compact">
+                            <span>{{ property.rooms }} комн.</span>
+                            <span>{{ property.total_area|floatformat:"0" }} м²</span>
+                            <span class="price-compact">
+                                {% if property.is_rental == 'monthly' and property.monthly_price %}
+                                    {{ property.monthly_price|floatformat:"0" }} ₽/мес
+                                {% elif property.is_rental == 'daily' and property.daily_price %}
+                                    {{ property.daily_price|floatformat:"0" }} ₽/сут
+                                {% elif property.price %}
+                                    {{ property.price|floatformat:"0" }} ₽
+                                {% else %}
+                                    Цена не указана
+                                {% endif %}
+                            </span>
                         </div>
-                        <div class="body">
-                            <strong>{{ property.title }}</strong>
-                            <div class="meta-compact">
-                                <span>{{ property.rooms }} комн.</span>
-                                <span>{{ property.total_area|floatformat:"0" }} м²</span>
-                                <span class="price-compact">{{ property.price|floatformat:"0" }} ₽</span>
-                            </div>
-                            <div class="card-actions-compact">
-                                <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}{% endif %}" class="btn-compact btn-primary-compact">Подробнее</a>
-                            </div>
+                        <div class="card-actions-compact">
+                            <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}{% endif %}" class="btn-compact btn-primary-compact">Подробнее</a>
                         </div>
                     </div>
                 </div>
-                {% endfor %}
             </div>
+            {% endfor %}
         </div>
     </div>
+</div>
 
     <!-- Блок медиа -->
     <div class="section-block">

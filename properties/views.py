@@ -900,11 +900,22 @@ class MetroStationsView(View):
 
 
 def home_view(request):
+    # Получаем премиальные объекты
     featured_properties = Property.objects.filter(is_premium=True, is_approved=True)[:6]
-    hot_properties = Property.objects.filter(is_hot=True, is_approved=True)[:6]  # Добавьте эту строку
+
+    # Получаем горячие предложения (включая арендные)
+    hot_properties = Property.objects.filter(
+        is_hot=True,
+        is_approved=True
+    ).exclude(
+        # Исключаем объекты без цены
+        Q(price__isnull=True) &
+        Q(monthly_price__isnull=True) &
+        Q(daily_price__isnull=True)
+    )[:6]
 
     context = {
         'featured_properties': featured_properties,
-        'hot_properties': hot_properties,  # Добавьте эту строку
+        'hot_properties': hot_properties,
     }
     return render(request, 'home.html', context)
