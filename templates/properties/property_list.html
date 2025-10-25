@@ -3316,6 +3316,98 @@ function ensureMobileMetroStationsLoaded() {
     }
 }
 
+// ДОБАВЛЕНЫ НЕДОСТАЮЩИЕ ФУНКЦИИ:
+
+// Функция обновления текста выбранных станций (ПК версия)
+function updateSelectedStationsText() {
+    const metroHiddenInput = document.getElementById('metro-hidden-input');
+    const selectedStations = metroHiddenInput.value ?
+        metroHiddenInput.value.split(',') : [];
+    const selectedMetroText = document.getElementById('selected-metro-text');
+
+    if (!selectedMetroText) return;
+
+    if (selectedStations.length === 0) {
+        selectedMetroText.innerHTML = 'Выберите станции метро';
+        return;
+    }
+
+    let html = '';
+    selectedStations.slice(0, 3).forEach(station => {
+        html += `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-1">
+                    ${station}
+                </span>`;
+    });
+
+    if (selectedStations.length > 3) {
+        html += `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                    +${selectedStations.length - 3}
+                </span>`;
+    }
+
+    selectedMetroText.innerHTML = html;
+}
+
+// Функция обновления текста выбранных станций (мобильная версия)
+function updateMobileSelectedStationsText() {
+    const mobileMetroHiddenInput = document.getElementById('mobile-metro-hidden-input');
+    const selectedStations = mobileMetroHiddenInput && mobileMetroHiddenInput.value ?
+        mobileMetroHiddenInput.value.split(',') : [];
+    const selectedMetroText = document.getElementById('mobile-selected-metro-text');
+
+    if (!selectedMetroText) return;
+
+    if (selectedStations.length === 0) {
+        selectedMetroText.innerHTML = 'Выберите станции метро';
+        return;
+    }
+
+    let html = '';
+    selectedStations.slice(0, 2).forEach(station => {
+        html += `<span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-1 mb-1">${station}</span>`;
+    });
+
+    if (selectedStations.length > 2) {
+        html += `<span class="inline-block bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">+${selectedStations.length - 2}</span>`;
+    }
+
+    selectedMetroText.innerHTML = html;
+}
+
+// Функция обновления отображения выбранных станций в модальном окне (ПК версия)
+function updateSelectedStationsInModal() {
+    const metroHiddenInput = document.getElementById('metro-hidden-input');
+    const selectedStations = metroHiddenInput.value ?
+        metroHiddenInput.value.split(',') : [];
+
+    document.querySelectorAll('.metro-station-option').forEach(option => {
+        const station = option.getAttribute('data-station');
+        if (selectedStations.includes(station)) {
+            option.classList.add('bg-blue-100', 'border-blue-500');
+            option.classList.remove('border-gray-200', 'hover:bg-gray-50');
+        } else {
+            option.classList.remove('bg-blue-100', 'border-blue-500');
+            option.classList.add('border-gray-200', 'hover:bg-gray-50');
+        }
+    });
+}
+
+// Функция обновления отображения выбранных станций в модальном окне (мобильная версия)
+function updateMobileSelectedStationsInModal() {
+    const mobileMetroHiddenInput = document.getElementById('mobile-metro-hidden-input');
+    const selectedStations = mobileMetroHiddenInput && mobileMetroHiddenInput.value ?
+        mobileMetroHiddenInput.value.split(',') : [];
+
+    document.querySelectorAll('#mobile-metro-dropdown .metro-station-option').forEach(option => {
+        const station = option.getAttribute('data-station');
+        if (selectedStations.includes(station)) {
+            option.classList.add('selected');
+        } else {
+            option.classList.remove('selected');
+        }
+    });
+}
+
 // Мобильные модальные окна для города и метро
 function initMobileModals() {
     // Обновленные функции для управления модальными окнами
@@ -3577,40 +3669,6 @@ function initMobileModals() {
             }
             closeAllMobileModals();
         });
-    }
-
-    // Функция обновления отображения выбранных станций в модальном окне
-    function updateMobileSelectedStationsInModal() {
-        document.querySelectorAll('#mobile-metro-dropdown .metro-station-option').forEach(option => {
-            const station = option.getAttribute('data-station');
-            if (mobileSelectedStations.includes(station)) {
-                option.classList.add('selected');
-            } else {
-                option.classList.remove('selected');
-            }
-        });
-    }
-
-    // Функция обновления текста выбранных станций
-    function updateMobileSelectedStationsText() {
-        const selectedMetroText = document.getElementById('mobile-selected-metro-text');
-        if (!selectedMetroText) return;
-
-        if (mobileSelectedStations.length === 0) {
-            selectedMetroText.innerHTML = 'Выберите станции метро';
-            return;
-        }
-
-        let html = '';
-        mobileSelectedStations.slice(0, 2).forEach(station => {
-            html += `<span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-1 mb-1">${station}</span>`;
-        });
-
-        if (mobileSelectedStations.length > 2) {
-            html += `<span class="inline-block bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">+${mobileSelectedStations.length - 2}</span>`;
-        }
-
-        selectedMetroText.innerHTML = html;
     }
 
     // Переключение линий метро в мобильной версии
@@ -4617,7 +4675,6 @@ window.addEventListener('resize', function() {
         if (mobileFiltersBtn) mobileFiltersBtn.style.display = 'none';
     }
 });
-
 </script>
 
 
