@@ -757,279 +757,6 @@
         min-height: 28px;
     }
 }
-    /* Улучшенные стили для карточек объектов */
-.listing-card-compact {
-    position: relative;
-    border-radius: 20px;
-    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-    border: 1px solid rgba(255, 255, 255, 0.9);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-    overflow: hidden;
-    transition: all 0.4s ease;
-    height: 100%;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.listing-card-compact:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-}
-
-.listing-card-compact .thumb {
-    aspect-ratio: 4/3;
-    position: relative;
-    overflow: hidden;
-    width: 100%;
-}
-
-.listing-card-compact .thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.6s ease;
-}
-
-.listing-card-compact:hover .thumb img {
-    transform: scale(1.08);
-}
-
-.no-image-placeholder {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 800;
-    background: linear-gradient(135deg, #7c66ff, #30d0ff);
-    font-size: 18px;
-    text-align: center;
-    padding: 16px;
-}
-
-.property-type-badge {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 6px 12px;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 12px;
-    backdrop-filter: blur(10px);
-}
-
-.hot-property-badge-compact {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: linear-gradient(45deg, #ff4d4d, #f95700);
-    color: white;
-    padding: 8px 14px;
-    border-radius: 20px;
-    font-weight: bold;
-    font-size: 12px;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.3);
-    z-index: 2;
-}
-
-.listing-card-compact .body {
-    padding: 20px;
-}
-
-.property-title {
-    font-size: 17px;
-    line-height: 1.4;
-    display: block;
-    margin-bottom: 16px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    min-height: 48px;
-    font-weight: 700;
-    color: #1a202c;
-}
-
-/* Улучшенные стили мета-информации */
-.meta-compact {
-    margin-bottom: 16px;
-}
-
-.meta-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-}
-
-.meta-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex: 1;
-}
-
-.meta-icon {
-    font-size: 14px;
-    opacity: 0.8;
-}
-
-.meta-text {
-    color: #4a5568;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-/* Секция цены */
-.price-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 0;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-    margin-bottom: 8px;
-}
-
-.price-compact {
-    font-weight: 800;
-    font-size: 16px;
-    color: #2d3748;
-    background: linear-gradient(135deg, #7c66ff, #30d0ff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.rental-badge, .sale-badge {
-    padding: 4px 10px;
-    border-radius: 8px;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-}
-
-.rental-badge {
-    background: linear-gradient(135deg, #48bb78, #38a169);
-    color: white;
-}
-
-.sale-badge {
-    background: linear-gradient(135deg, #ed8936, #dd6b20);
-    color: white;
-}
-
-/* Улучшенная кнопка "Подробнее" */
-.card-actions-compact {
-    display: flex;
-    gap: 8px;
-    margin-top: 8px;
-}
-
-.btn-compact {
-    cursor: pointer;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 12px;
-    font-weight: 700;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    min-height: 44px;
-    flex: 1;
-    gap: 8px;
-}
-
-.btn-primary-compact {
-    background: linear-gradient(135deg, #7c66ff, #30d0ff);
-    color: #fff;
-    box-shadow: 0 6px 20px rgba(124, 102, 255, 0.3);
-    border: none;
-    position: relative;
-    overflow: hidden;
-}
-
-.btn-primary-compact::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-    transition: left 0.5s;
-}
-
-.btn-primary-compact:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(124, 102, 255, 0.4);
-}
-
-.btn-primary-compact:hover::before {
-    left: 100%;
-}
-
-.btn-icon {
-    font-size: 16px;
-}
-
-/* Адаптация для мобильных */
-@media (max-width: 768px) {
-    .listing-card-compact .body {
-        padding: 16px;
-    }
-
-    .property-title {
-        font-size: 16px;
-        min-height: 44px;
-    }
-
-    .meta-text {
-        font-size: 12px;
-    }
-
-    .price-compact {
-        font-size: 15px;
-    }
-
-    .btn-compact {
-        padding: 10px 16px;
-        font-size: 13px;
-        min-height: 40px;
-    }
-
-    .meta-row {
-        flex-direction: column;
-        gap: 6px;
-        margin-bottom: 8px;
-    }
-
-    .meta-item {
-        justify-content: flex-start;
-    }
-}
-
-@media (max-width: 480px) {
-    .listing-card-compact .body {
-        padding: 14px;
-    }
-
-    .property-title {
-        font-size: 15px;
-        min-height: 42px;
-    }
-
-    .btn-compact {
-        padding: 9px 14px;
-        font-size: 12px;
-        min-height: 38px;
-    }
-}
 </style>
 
 <!-- Hero -->
@@ -1111,6 +838,22 @@
         </div>
     </div>
 
+    <!-- Элементы управления автопрокруткой (скрыты) -->
+    <div class="auto-scroll-controls">
+        <div class="auto-scroll-toggle" id="hot-auto-toggle">
+            <div class="toggle-switch"></div>
+            <span>Автопрокрутка</span>
+        </div>
+        <div class="scroll-speed-control">
+            <span>Скорость:</span>
+            <select id="hot-speed-select">
+                <option value="40">Медленно</option>
+                <option value="30" selected>Средне</option>
+                <option value="20">Быстро</option>
+            </select>
+        </div>
+    </div>
+
     <div class="slider-container">
         <div class="auto-scroll-track continuous" id="hot-properties-track">
             {% for property in hot_properties %}
@@ -1119,63 +862,20 @@
                     {% if property.is_hot %}
                     <div class="hot-property-badge-compact">🔥 Горячее</div>
                     {% endif %}
-
                     <div class="thumb">
                         {% if property.images.all %}
                             <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}">
                         {% else %}
-                            <div class="no-image-placeholder">
-                                {% if property.property_type == 'apartment' %}
-                                    🏢 Квартира
-                                {% elif property.property_type == 'house' %}
-                                    🏡 Дом
-                                {% elif property.property_type == 'commercial' %}
-                                    🏢 Коммерция
-                                {% else %}
-                                    🏠 Недвижимость
-                                {% endif %}
+                            <div>
+                                {{ property.title|truncatechars:30 }}
                             </div>
                         {% endif %}
-                        <div class="property-type-badge">
-                            {% if property.property_type == 'apartment' %}
-                                🏢 Квартира
-                            {% elif property.property_type == 'house' %}
-                                🏡 Дом
-                            {% elif property.property_type == 'commercial' %}
-                                🏢 Коммерция
-                            {% else %}
-                                🏠 Недвижимость
-                            {% endif %}
-                        </div>
                     </div>
-
                     <div class="body">
-                        <strong class="property-title">{{ property.title }}</strong>
-
+                        <strong>{{ property.title }}</strong>
                         <div class="meta-compact">
-                            <div class="meta-row">
-                                <div class="meta-item">
-                                    <span class="meta-icon">🚪</span>
-                                    <span class="meta-text">{{ property.rooms }} комн.</span>
-                                </div>
-                                <div class="meta-item">
-                                    <span class="meta-icon">📐</span>
-                                    <span class="meta-text">{{ property.total_area|floatformat:"0" }} м²</span>
-                                </div>
-                            </div>
-                            <div class="meta-row">
-                                <div class="meta-item">
-                                    <span class="meta-icon">🏢</span>
-                                    <span class="meta-text">{{ property.floor }}/{{ property.total_floors }} эт.</span>
-                                </div>
-                                <div class="meta-item">
-                                    <span class="meta-icon">📍</span>
-                                    <span class="meta-text">{{ property.city|default:"Город" }}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="price-section">
+                            <span>{{ property.rooms }} комн.</span>
+                            <span>{{ property.total_area|floatformat:"0" }} м²</span>
                             <span class="price-compact">
                                 {% if property.is_rental == 'monthly' and property.monthly_price %}
                                     {{ property.monthly_price|floatformat:"0" }} ₽/мес
@@ -1184,21 +884,12 @@
                                 {% elif property.price %}
                                     {{ property.price|floatformat:"0" }} ₽
                                 {% else %}
-                                    💰 Цена по запросу
+                                    Цена не указана
                                 {% endif %}
                             </span>
-                            {% if property.is_rental %}
-                                <span class="rental-badge">🏠 Аренда</span>
-                            {% else %}
-                                <span class="sale-badge">💰 Продажа</span>
-                            {% endif %}
                         </div>
-
                         <div class="card-actions-compact">
-                            <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}{% endif %}" class="btn-compact btn-primary-compact">
-                                <span class="btn-icon">👁️</span>
-                                Подробнее
-                            </a>
+                            <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}{% endif %}" class="btn-compact btn-primary-compact">Подробнее</a>
                         </div>
                     </div>
                 </div>
