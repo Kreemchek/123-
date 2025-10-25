@@ -48,13 +48,6 @@
             color: var(--text);
         }
 
-        /* Фон для main на home-page - УБИРАЕМ ЭТОТ СТИЛЬ */
-        /* body.home-page main {
-            background: radial-gradient(1200px 800px at 10% -10%, rgba(124,102,255,.18), transparent 60%),
-                        radial-gradient(1000px 600px at 90% 10%, rgba(48,208,255,.18), transparent 60%),
-                        var(--bg);
-        } */
-
         /* Стили для сообщений */
         .fixed.top-4.right-4 {
             z-index: 50;
@@ -118,14 +111,51 @@
         .muted { color: var(--muted); }
         .hidden-sm { display: inline-flex; }
 
+        /* Стили для мобильного меню */
+        .mobile-menu-btn {
+            display: none;
+            background: var(--card);
+            border: 1px solid rgba(255,255,255,.08);
+            padding: 10px 12px;
+            border-radius: 12px;
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        .mobile-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: color-mix(in oklab, var(--bg-soft) 95%, transparent);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,.08);
+            padding: 16px;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 100;
+        }
+
+        .mobile-menu.active {
+            display: flex;
+        }
+
+        .mobile-menu .topbar-chip {
+            justify-content: center;
+            width: 100%;
+        }
+
         /* Уменьшение кнопок на мобильных устройствах */
         @media (max-width: 640px) {
             .hidden-sm { display:none; }
+            .topbar-nav { display: none; }
 
-            /* Уменьшаем кнопки навигации */
-            .topbar-chip {
-                padding: 8px 10px;
-                font-size: 14px;
+            /* Показываем кнопку меню на мобильных */
+            .mobile-menu-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
 
             /* Уменьшаем кнопки баланса и пополнения */
@@ -151,10 +181,6 @@
 
             .topbar-row {
                 gap: 12px;
-            }
-
-            .topbar-nav {
-                gap: 6px;
             }
         }
 
@@ -406,9 +432,10 @@
             <div class="logo">W</div>
             <div>
                 <div style="font-size:14px; opacity:.8;">WinWinDeal</div>
-
             </div>
         </a>
+
+        <!-- Навигация для десктопа -->
         <nav class="topbar-nav" aria-label="Основная навигация">
             {% if user.is_authenticated %}
                 <a class="topbar-chip" href="{% url 'broker-list' %}">Брокеры</a>
@@ -422,6 +449,12 @@
                 <a class="topbar-chip" href="{% url 'register' %}">Медиа</a>
             {% endif %}
         </nav>
+
+        <!-- Кнопка меню для мобильных -->
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <i class="fas fa-bars"></i>
+        </button>
+
         <div class="topbar-row" style="gap:10px;">
             {% if user.is_authenticated %}
                 <div class="topbar-balance">
@@ -438,6 +471,21 @@
                 <a href="{% url 'register' %}" class="topbar-btn topbar-btn-primary">Регистрация</a>
             {% endif %}
         </div>
+    </div>
+
+    <!-- Мобильное меню -->
+    <div class="mobile-menu" id="mobileMenu">
+        {% if user.is_authenticated %}
+            <a class="topbar-chip" href="{% url 'broker-list' %}">Брокеры</a>
+            <a class="topbar-chip" href="{% url 'properties:property-list' %}">Объекты</a>
+            <a class="topbar-chip" href="{% url 'developer-list' %}">Застройщики</a>
+            <a class="topbar-chip" href="{% url 'media_content:list' %}">Медиа</a>
+        {% else %}
+            <a class="topbar-chip" href="{% url 'register' %}">Брокеры</a>
+            <a class="topbar-chip" href="{% url 'register' %}">Объекты</a>
+            <a class="topbar-chip" href="{% url 'register' %}">Застройщики</a>
+            <a class="topbar-chip" href="{% url 'register' %}">Медиа</a>
+        {% endif %}
     </div>
 </div>
 
@@ -520,6 +568,23 @@
             // Проверяем, находимся ли мы на home или properties странице
             const isHomePage = document.body.classList.contains('home-page');
             const isPropertiesPage = document.body.classList.contains('properties-page');
+
+            // Управление мобильным меню
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('active');
+                });
+
+                // Закрытие меню при клике вне его
+                document.addEventListener('click', function(event) {
+                    if (!mobileMenu.contains(event.target) && !mobileMenuBtn.contains(event.target)) {
+                        mobileMenu.classList.remove('active');
+                    }
+                });
+            }
 
             if (isHomePage || isPropertiesPage) {
                 // Функция для переключения чипов
