@@ -5,6 +5,80 @@
 
 {% block content %}
 <style>
+    /* Стили для сообщений поверх хедера */
+    .messages-overlay {
+        position: fixed;
+        top: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        width: auto;
+        max-width: 90%;
+        animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateX(-50%) translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    }
+
+    .message-alert {
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        min-width: 300px;
+        text-align: center;
+    }
+
+    .message-success {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        border: none;
+    }
+
+    .message-error {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+        border: none;
+    }
+
+    .message-warning {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+        border: none;
+    }
+
+    .message-info {
+        background: linear-gradient(135deg, #7b61ff, #36d1dc);
+        color: white;
+        border: none;
+    }
+
+    /* Адаптивность для мобильных устройств */
+    @media (max-width: 768px) {
+        .messages-overlay {
+            top: 70px;
+            max-width: 95%;
+        }
+
+        .message-alert {
+            padding: 10px 16px;
+            font-size: 14px;
+            min-width: 250px;
+        }
+    }
+
     .creation-stepper {
         max-width: 800px;
         margin: 2rem auto;
@@ -158,6 +232,24 @@
         }
     }
 </style>
+
+<!-- Контейнер для сообщений поверх хедера -->
+<div class="messages-overlay">
+    {% for message in messages %}
+        <div class="message-alert message-{{ message.tags|default:'info' }}">
+            {% if message.tags == 'success' %}
+                <i class="bi bi-check-circle-fill"></i>
+            {% elif message.tags == 'error' %}
+                <i class="bi bi-exclamation-circle-fill"></i>
+            {% elif message.tags == 'warning' %}
+                <i class="bi bi-exclamation-triangle-fill"></i>
+            {% else %}
+                <i class="bi bi-info-circle-fill"></i>
+            {% endif %}
+            {{ message }}
+        </div>
+    {% endfor %}
+</div>
 
 <div class="creation-stepper">
     <div class="step-indicator">
@@ -353,6 +445,30 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Автоматическое скрытие сообщений через 5 секунд
+        const messageAlerts = document.querySelectorAll('.message-alert');
+
+        messageAlerts.forEach(alert => {
+            setTimeout(() => {
+                alert.style.opacity = '0';
+                alert.style.transform = 'translateX(-50%) translateY(-20px)';
+                setTimeout(() => {
+                    alert.remove();
+                }, 300);
+            }, 5000);
+        });
+
+        // Также добавляем возможность закрыть сообщение кликом
+        messageAlerts.forEach(alert => {
+            alert.addEventListener('click', function() {
+                this.style.opacity = '0';
+                this.style.transform = 'translateX(-50%) translateY(-20px)';
+                setTimeout(() => {
+                    this.remove();
+                }, 300);
+            });
+        });
+
         const steps = document.querySelectorAll('.form-step');
         const prevBtn = document.querySelector('.prev-step');
         const nextBtn = document.querySelector('.next-step');
