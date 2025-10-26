@@ -188,192 +188,192 @@
             </div>
         </div>
 
-        <!-- Мобильное меню фильтров -->
-        <div class="mobile-catalog-dropdown lg:hidden fixed top-0 left-0 right-0 bottom-0 bg-white z-50 overflow-y-auto transform -translate-x-full transition-transform duration-300" id="mobile-filters-dropdown">
-            <div class="sticky top-0 bg-white border-b border-gray-200 z-10">
-                <div class="flex justify-between items-center p-4">
-                    <h2 class="text-xl font-semibold text-gray-900">Фильтры</h2>
-<button type="submit"
-        style="background: linear-gradient(135deg, #7b61ff, #36d1dc); color: white; border: none; border-radius: 0.5rem; padding: 0.75rem 1rem; font-weight: 500; flex: 1; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;"
-        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 6px rgba(123, 97, 255, 0.3)';"
-        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
-    Применить
-</button>
+<!-- Мобильное меню фильтров -->
+<div class="mobile-catalog-dropdown lg:hidden fixed top-0 left-0 right-0 bottom-0 bg-white z-50 overflow-y-auto transform -translate-x-full transition-transform duration-300" id="mobile-filters-dropdown">
+    <div class="sticky top-0 bg-white border-b border-gray-200 z-10">
+        <div class="flex justify-between items-center p-4">
+            <h2 class="text-xl font-semibold text-gray-900">Фильтры</h2>
+            <!-- Убираем кнопку "Применить" отсюда -->
+            <button type="button" class="text-gray-400 hover:text-gray-500" id="mobile-filters-close">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="p-4">
+        <!-- Мобильная форма фильтров -->
+        <form method="get" class="space-y-6" id="mobile-filters-form">
+            <!-- Поиск по имени -->
+            <div class="mobile-filter-section">
+                <div class="flex justify-between items-center py-3 border-b border-gray-200">
+                    <span class="font-medium text-gray-900">Поиск по имени</span>
+                    <i class="fas fa-chevron-down text-gray-400 transition-transform"></i>
+                </div>
+                <div class="mobile-filter-content pt-3" style="display: none;">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                        </span>
+                        <input type="text" name="search" value="{{ request.GET.search }}"
+                               class="pl-10 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:border-transparent"
+                               style="focus:ring: linear-gradient(135deg, #7b61ff, #36d1dc);"
+                               placeholder="Введите имя...">
+                    </div>
                 </div>
             </div>
 
-            <div class="p-4">
-                <!-- Мобильная форма фильтров -->
-                <form method="get" class="space-y-6">
-                    <!-- Поиск по имени -->
-                    <div class="mobile-filter-section">
-                        <div class="flex justify-between items-center py-3 border-b border-gray-200">
-                            <span class="font-medium text-gray-900">Поиск по имени</span>
-                            <i class="fas fa-chevron-down text-gray-400 transition-transform"></i>
-                        </div>
-                        <div class="mobile-filter-content pt-3" style="display: none;">
-                            <div class="relative">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-                                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                                    </svg>
-                                </span>
-                                <input type="text" name="search" value="{{ request.GET.search }}"
-                                       class="pl-10 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:border-transparent"
-                                       style="focus:ring: linear-gradient(135deg, #7b61ff, #36d1dc);"
-                                       placeholder="Введите имя...">
-                            </div>
-                        </div>
+            <!-- Рейтинг -->
+            <div class="mobile-filter-section">
+                <div class="flex justify-between items-center py-3 border-b border-gray-200">
+                    <span class="font-medium text-gray-900">Рейтинг</span>
+                    <i class="fas fa-chevron-down text-gray-400 transition-transform"></i>
+                </div>
+                <div class="mobile-filter-content pt-3" style="display: none;">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Минимальный рейтинг</label>
+                    <div class="flex items-center space-x-2">
+                        <input type="range" name="rating" min="0" max="5" step="0.5"
+                               value="{{ request.GET.rating|default:'0' }}"
+                               class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                               id="ratingSliderMobile">
+                        <span id="ratingValueMobile" class="text-sm font-medium text-gray-700 w-10 text-center">
+                            {{ request.GET.rating|default:'0' }}
+                        </span>
                     </div>
-
-                    <!-- Рейтинг -->
-                    <div class="mobile-filter-section">
-                        <div class="flex justify-between items-center py-3 border-b border-gray-200">
-                            <span class="font-medium text-gray-900">Рейтинг</span>
-                            <i class="fas fa-chevron-down text-gray-400 transition-transform"></i>
-                        </div>
-                        <div class="mobile-filter-content pt-3" style="display: none;">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Минимальный рейтинг</label>
-                            <div class="flex items-center space-x-2">
-                                <input type="range" name="rating" min="0" max="5" step="0.5"
-                                       value="{{ request.GET.rating|default:'0' }}"
-                                       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                                       id="ratingSliderMobile">
-                                <span id="ratingValueMobile" class="text-sm font-medium text-gray-700 w-10 text-center">
-                                    {{ request.GET.rating|default:'0' }}
-                                </span>
-                            </div>
-                            <div class="flex justify-between text-xs text-gray-500 mt-1">
-                                <span>0</span>
-                                <span class="flex items-center">
-                                    <svg class="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                    </svg>
-                                    5
-                                </span>
-                            </div>
-                        </div>
+                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>0</span>
+                        <span class="flex items-center">
+                            <svg class="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            5
+                        </span>
                     </div>
-
-                    <!-- Опыт работы -->
-                    <div class="mobile-filter-section">
-                        <div class="flex justify-between items-center py-3 border-b border-gray-200">
-                            <span class="font-medium text-gray-900">Опыт работы</span>
-                            <i class="fas fa-chevron-down text-gray-400 transition-transform"></i>
-                        </div>
-                        <div class="mobile-filter-content pt-3" style="display: none;">
-                            <select name="experience" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:border-transparent"
-                                    style="focus:ring: linear-gradient(135deg, #7b61ff, #36d1dc);">
-                                <option value="">Все уровни опыта</option>
-                                <option value="0-2" {% if request.GET.experience == "0-2" %}selected{% endif %}>Менее 2 лет</option>
-                                <option value="2-5" {% if request.GET.experience == "2-5" %}selected{% endif %}>2-5 лет</option>
-                                <option value="5-10" {% if request.GET.experience == "5-10" %}selected{% endif %}>5-10 лет</option>
-                                <option value="10+" {% if request.GET.experience == "10+" %}selected{% endif %}>Более 10 лет</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Услуги -->
-                    <div class="mobile-filter-section">
-                        <div class="flex justify-between items-center py-3 border-b border-gray-200">
-                            <span class="font-medium text-gray-900">Услуги</span>
-                            <i class="fas fa-chevron-down text-gray-400 transition-transform"></i>
-                        </div>
-                        <div class="mobile-filter-content pt-3" style="display: none;">
-                            <div class="space-y-2">
-                                <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
-                                    <input type="checkbox" name="services" value="consultation"
-                                           {% if "consultation" in request.GET.getlist %}checked{% endif %}
-                                           class="rounded border-gray-300 focus:ring-2 focus:ring-offset-1"
-                                           style="accent-color: #7b61ff;">
-                                    <span class="ml-3 text-sm text-gray-700">Консультации</span>
-                                </label>
-                                <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
-                                    <input type="checkbox" name="services" value="selection"
-                                           {% if "selection" in request.GET.getlist %}checked{% endif %}
-                                           class="rounded border-gray-300 focus:ring-2 focus:ring-offset-1"
-                                           style="accent-color: #7b61ff;">
-                                    <span class="ml-3 text-sm text-gray-700">Подбор объекта</span>
-                                </label>
-                                <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
-                                    <input type="checkbox" name="services" value="transaction"
-                                           {% if "transaction" in request.GET.getlist %}checked{% endif %}
-                                           class="rounded border-gray-300 focus:ring-2 focus:ring-offset-1"
-                                           style="accent-color: #7b61ff;">
-                                    <span class="ml-3 text-sm text-gray-700">Проведение сделок</span>
-                                </label>
-                                <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
-                                    <input type="checkbox" name="services" value="legal"
-                                           {% if "legal" in request.GET.getlist %}checked{% endif %}
-                                           class="rounded border-gray-300 focus:ring-2 focus:ring-offset-1"
-                                           style="accent-color: #7b61ff;">
-                                    <span class="ml-3 text-sm text-gray-700">Юридическое сопровождение</span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Специализация -->
-                    <div class="mobile-filter-section">
-                        <div class="flex justify-between items-center py-3 border-b border-gray-200">
-                            <span class="font-medium text-gray-900">Специализация</span>
-                            <i class="fas fa-chevron-down text-gray-400 transition-transform"></i>
-                        </div>
-                        <div class="mobile-filter-content pt-3" style="display: none;">
-                            <div class="space-y-2">
-                                <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
-                                    <input type="checkbox" name="specialization" value="residential"
-                                           {% if "residential" in request.GET.getlist %}checked{% endif %}
-                                           class="rounded border-gray-300 focus:ring-2 focus:ring-offset-1"
-                                           style="accent-color: #7b61ff;">
-                                    <span class="ml-3 text-sm text-gray-700">Жилая недвижимость</span>
-                                </label>
-                                <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
-                                    <input type="checkbox" name="specialization" value="commercial"
-                                           {% if "commercial" in request.GET.getlist %}checked{% endif %}
-                                           class="rounded border-gray-300 focus:ring-2 focus:ring-offset-1"
-                                           style="accent-color: #7b61ff;">
-                                    <span class="ml-3 text-sm text-gray-700">Коммерческая недвижимость</span>
-                                </label>
-                                <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
-                                    <input type="checkbox" name="specialization" value="country"
-                                           {% if "country" in request.GET.getlist %}checked{% endif %}
-                                           class="rounded border-gray-300 focus:ring-2 focus:ring-offset-1"
-                                           style="accent-color: #7b61ff;">
-                                    <span class="ml-3 text-sm text-gray-700">Загородная недвижимость</span>
-                                </label>
-                                <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
-                                    <input type="checkbox" name="specialization" value="rent"
-                                           {% if "rent" in request.GET.getlist %}checked{% endif %}
-                                           class="rounded border-gray-300 focus:ring-2 focus:ring-offset-1"
-                                           style="accent-color: #7b61ff;">
-                                    <span class="ml-3 text-sm text-gray-700">Аренда</span>
-                                </label>
-                                <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
-                                    <input type="checkbox" name="specialization" value="mortgage"
-                                           {% if "mortgage" in request.GET.getlist %}checked{% endif %}
-                                           class="rounded border-gray-300 focus:ring-2 focus:ring-offset-1"
-                                           style="accent-color: #7b61ff;">
-                                    <span class="ml-3 text-sm text-gray-700">Ипотека</span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Кнопки действий -->
-                    <div class="sticky bottom-0 bg-white pt-4 pb-6 border-t border-gray-200 mt-6">
-                        <div class="flex gap-3">
-                            <a href="{% url 'broker-list' %}" class="flex-1 bg-gray-100 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors font-medium text-center">
-                                Сбросить
-                            </a>
-                            <button type="submit" class="flex-1 bg-gradient-to-r from-[#7b61ff] to-[#36d1dc] text-white py-3 px-4 rounded-lg hover:shadow-lg transition-all font-medium flex items-center justify-center">
-                                Применить
-                            </button>
-                        </div>
-                    </div>
-                </form>
+                </div>
             </div>
+
+            <!-- Опыт работы -->
+            <div class="mobile-filter-section">
+                <div class="flex justify-between items-center py-3 border-b border-gray-200">
+                    <span class="font-medium text-gray-900">Опыт работы</span>
+                    <i class="fas fa-chevron-down text-gray-400 transition-transform"></i>
+                </div>
+                <div class="mobile-filter-content pt-3" style="display: none;">
+                    <select name="experience" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:border-transparent"
+                            style="focus:ring: linear-gradient(135deg, #7b61ff, #36d1dc);">
+                        <option value="">Все уровни опыта</option>
+                        <option value="0-2" {% if request.GET.experience == "0-2" %}selected{% endif %}>Менее 2 лет</option>
+                        <option value="2-5" {% if request.GET.experience == "2-5" %}selected{% endif %}>2-5 лет</option>
+                        <option value="5-10" {% if request.GET.experience == "5-10" %}selected{% endif %}>5-10 лет</option>
+                        <option value="10+" {% if request.GET.experience == "10+" %}selected{% endif %}>Более 10 лет</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Услуги -->
+            <div class="mobile-filter-section">
+                <div class="flex justify-between items-center py-3 border-b border-gray-200">
+                    <span class="font-medium text-gray-900">Услуги</span>
+                    <i class="fas fa-chevron-down text-gray-400 transition-transform"></i>
+                </div>
+                <div class="mobile-filter-content pt-3" style="display: none;">
+                    <div class="space-y-2">
+                        <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                            <input type="checkbox" name="services" value="consultation"
+                                   {% if "consultation" in request.GET.getlist %}checked{% endif %}
+                                   class="rounded border-gray-300 focus:ring-2 focus:ring-offset-1"
+                                   style="accent-color: #7b61ff;">
+                            <span class="ml-3 text-sm text-gray-700">Консультации</span>
+                        </label>
+                        <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                            <input type="checkbox" name="services" value="selection"
+                                   {% if "selection" in request.GET.getlist %}checked{% endif %}
+                                   class="rounded border-gray-300 focus:ring-2 focus:ring-offset-1"
+                                   style="accent-color: #7b61ff;">
+                            <span class="ml-3 text-sm text-gray-700">Подбор объекта</span>
+                        </label>
+                        <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                            <input type="checkbox" name="services" value="transaction"
+                                   {% if "transaction" in request.GET.getlist %}checked{% endif %}
+                                   class="rounded border-gray-300 focus:ring-2 focus:ring-offset-1"
+                                   style="accent-color: #7b61ff;">
+                            <span class="ml-3 text-sm text-gray-700">Проведение сделок</span>
+                        </label>
+                        <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                            <input type="checkbox" name="services" value="legal"
+                                   {% if "legal" in request.GET.getlist %}checked{% endif %}
+                                   class="rounded border-gray-300 focus:ring-2 focus:ring-offset-1"
+                                   style="accent-color: #7b61ff;">
+                            <span class="ml-3 text-sm text-gray-700">Юридическое сопровождение</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Специализация -->
+            <div class="mobile-filter-section">
+                <div class="flex justify-between items-center py-3 border-b border-gray-200">
+                    <span class="font-medium text-gray-900">Специализация</span>
+                    <i class="fas fa-chevron-down text-gray-400 transition-transform"></i>
+                </div>
+                <div class="mobile-filter-content pt-3" style="display: none;">
+                    <div class="space-y-2">
+                        <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                            <input type="checkbox" name="specialization" value="residential"
+                                   {% if "residential" in request.GET.getlist %}checked{% endif %}
+                                   class="rounded border-gray-300 focus:ring-2 focus:ring-offset-1"
+                                   style="accent-color: #7b61ff;">
+                            <span class="ml-3 text-sm text-gray-700">Жилая недвижимость</span>
+                        </label>
+                        <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                            <input type="checkbox" name="specialization" value="commercial"
+                                   {% if "commercial" in request.GET.getlist %}checked{% endif %}
+                                   class="rounded border-gray-300 focus:ring-2 focus:ring-offset-1"
+                                   style="accent-color: #7b61ff;">
+                            <span class="ml-3 text-sm text-gray-700">Коммерческая недвижимость</span>
+                        </label>
+                        <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                            <input type="checkbox" name="specialization" value="country"
+                                   {% if "country" in request.GET.getlist %}checked{% endif %}
+                                   class="rounded border-gray-300 focus:ring-2 focus:ring-offset-1"
+                                   style="accent-color: #7b61ff;">
+                            <span class="ml-3 text-sm text-gray-700">Загородная недвижимость</span>
+                        </label>
+                        <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                            <input type="checkbox" name="specialization" value="rent"
+                                   {% if "rent" in request.GET.getlist %}checked{% endif %}
+                                   class="rounded border-gray-300 focus:ring-2 focus:ring-offset-1"
+                                   style="accent-color: #7b61ff;">
+                            <span class="ml-3 text-sm text-gray-700">Аренда</span>
+                        </label>
+                        <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                            <input type="checkbox" name="specialization" value="mortgage"
+                                   {% if "mortgage" in request.GET.getlist %}checked{% endif %}
+                                   class="rounded border-gray-300 focus:ring-2 focus:ring-offset-1"
+                                   style="accent-color: #7b61ff;">
+                            <span class="ml-3 text-sm text-gray-700">Ипотека</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Кнопки действий - ПЕРЕМЕЩЕНЫ ВНИЗ -->
+    <div class="sticky bottom-0 bg-white pt-4 pb-6 border-t border-gray-200 mt-6 px-4">
+        <div class="flex gap-3">
+            <a href="{% url 'broker-list' %}" class="flex-1 bg-gray-100 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors font-medium text-center">
+                Сбросить
+            </a>
+            <button type="submit" form="mobile-filters-form" class="flex-1 bg-gradient-to-r from-[#7b61ff] to-[#36d1dc] text-white py-3 px-4 rounded-lg hover:shadow-lg transition-all font-medium flex items-center justify-center">
+                Применить
+            </button>
         </div>
+    </div>
+</div>
 
         <!-- Оверлей для мобильного меню -->
         <div class="overlay lg:hidden" id="mobile-filters-overlay" style="display: none;"></div>
