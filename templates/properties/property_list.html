@@ -2418,6 +2418,15 @@ body.mobile-modal-open {
         width: calc(100% - 1rem) !important;
     }
 }
+/* На отдалении убираем курсор указателя у кластеров */
+.ymaps-cluster {
+    cursor: default !important;
+}
+
+/* На нормальном приближении возвращаем стандартный курсор */
+.ymaps-2-1-79-cluster .ymaps-2-1-79-cluster__content {
+    cursor: default !important;
+}
 </style>
 {% endblock %}
 
@@ -4347,20 +4356,27 @@ function initMap() {
             allPropertiesMap.setCenter([55.751574, 37.617635], 10);
         }
 
-        // Убираем автоматическое открытие балунов при изменении масштаба
+        // Обработчик изменения масштаба - настраиваем видимость и кликабельность
         allPropertiesMap.events.add('boundschange', function(e) {
             const zoom = e.get('newZoom');
 
-            // Просто показываем/скрываем объекты в зависимости от масштаба
+            // На отдалении (zoom < 12) - показываем только кластеры и делаем их некликабельными
             if (zoom < 12) {
                 objectManager.objects.options.set({ visible: false });
-                objectManager.clusters.options.set({ visible: true });
+                objectManager.clusters.options.set({
+                    visible: true,
+                    cursor: 'default' // Убираем курсор указателя
+                });
             } else {
+                // На нормальном приближении - показываем объекты и разрешаем клики
                 objectManager.objects.options.set({
                     visible: true,
                     preset: 'islands#darkBlueHomeIcon'
                 });
-                objectManager.clusters.options.set({ visible: false });
+                objectManager.clusters.options.set({
+                    visible: false,
+                    cursor: 'pointer' // Возвращаем курсор указателя
+                });
             }
         });
 
@@ -4378,14 +4394,25 @@ function initMap() {
             });
         });
 
-        // Обработчик клика по кластеру - тоже не открываем автоматически
+        // Обработчик клика по кластеру - проверяем zoom
         objectManager.clusters.events.add('click', function(e) {
-            // Просто зумируем на кластер, но не открываем балуны
+            const currentZoom = allPropertiesMap.getZoom();
+
+            // Если zoom маленький (карта на отдалении) - блокируем клик
+            if (currentZoom < 12) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Клик по кластеру заблокирован (малый zoom)');
+                return false;
+            }
+
+            // Если zoom нормальный - разрешаем стандартное поведение (зум)
             const cluster = e.get('target');
             allPropertiesMap.setCenter(cluster.geometry.getCoordinates(), allPropertiesMap.getZoom() + 2);
         });
     });
 }
+
 
 // Загружаем Яндекс.Карты динамически
 function loadYandexMaps() {
