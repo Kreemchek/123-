@@ -362,20 +362,21 @@
         </form>
     </div>
 
-    <!-- Кнопки действий - ПЕРЕМЕЩЕНЫ ВНИЗ -->
-    <div class="sticky bottom-0 bg-white pt-4 pb-6 border-t border-gray-200 mt-6 px-4">
-        <div class="flex gap-3">
-            <a href="{% url 'broker-list' %}" class="flex-1 bg-gray-100 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors font-medium text-center">
-                Сбросить
-            </a>
-<button type="submit"
-        style="background: linear-gradient(135deg, #7b61ff, #36d1dc); color: white; border: none; border-radius: 0.5rem; padding: 0.75rem 1rem; font-weight: 500; flex: 1; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;"
-        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 6px rgba(123, 97, 255, 0.3)';"
-        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
-    Применить
-</button>
-        </div>
+<!-- Кнопки действий - ПЕРЕМЕЩЕНЫ ВНИЗ -->
+<div class="sticky bottom-0 bg-white pt-4 pb-6 border-t border-gray-200 mt-6 px-4">
+    <div class="flex gap-3">
+        <a href="{% url 'broker-list' %}" class="flex-1 bg-gray-100 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors font-medium text-center">
+            Сбросить
+        </a>
+        <button type="submit"
+                form="mobile-filters-form"
+                style="background: linear-gradient(135deg, #7b61ff, #36d1dc); color: white; border: none; border-radius: 0.5rem; padding: 0.75rem 1rem; font-weight: 500; flex: 1; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;"
+                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 6px rgba(123, 97, 255, 0.3)';"
+                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+            Применить
+        </button>
     </div>
+</div>
 </div>
 
         <!-- Оверлей для мобильного меню -->
