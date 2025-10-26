@@ -2427,6 +2427,27 @@ body.mobile-modal-open {
 .ymaps-2-1-79-cluster .ymaps-2-1-79-cluster__content {
     cursor: default !important;
 }
+/* Блокировка кликов по кластерам на отдалении */
+.ymaps-cluster {
+    cursor: default !important;
+    pointer-events: none !important;
+}
+
+.ymaps-2-1-79-cluster .ymaps-2-1-79-cluster__content {
+    cursor: default !important;
+    pointer-events: none !important;
+}
+
+/* На нормальном приближении возвращаем стандартное поведение */
+.ymaps-2-1-79-map .ymaps-2-1-79-cluster {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+}
+
+.ymaps-2-1-79-map .ymaps-2-1-79-cluster .ymaps-2-1-79-cluster__content {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+}
 </style>
 {% endblock %}
 
@@ -4227,7 +4248,6 @@ function openActiveFilterSections() {
     });
 }
 
-// Функция инициализации карты
 function initMap() {
     console.log("[DEBUG] Начало инициализации карты");
 
@@ -4356,6 +4376,9 @@ function initMap() {
             allPropertiesMap.setCenter([55.751574, 37.617635], 10);
         }
 
+        // Переменная для отслеживания текущего состояния кликабельности
+        let clustersClickable = false;
+
         // Обработчик изменения масштаба - настраиваем видимость и кликабельность
         allPropertiesMap.events.add('boundschange', function(e) {
             const zoom = e.get('newZoom');
@@ -4363,20 +4386,23 @@ function initMap() {
             // На отдалении (zoom < 12) - показываем только кластеры и делаем их некликабельными
             if (zoom < 12) {
                 objectManager.objects.options.set({ visible: false });
-                objectManager.clusters.options.set({
-                    visible: true,
-                    cursor: 'default' // Убираем курсор указателя
-                });
+                objectManager.clusters.options.set({ visible: true });
+                clustersClickable = false;
+
+                // Принудительно применяем CSS класс для отключения курсора
+                setTimeout(() => {
+                    document.querySelectorAll('.ymaps-cluster').forEach(cluster => {
+                        cluster.style.cursor = 'default';
+                    });
+                }, 100);
             } else {
                 // На нормальном приближении - показываем объекты и разрешаем клики
                 objectManager.objects.options.set({
                     visible: true,
                     preset: 'islands#darkBlueHomeIcon'
                 });
-                objectManager.clusters.options.set({
-                    visible: false,
-                    cursor: 'pointer' // Возвращаем курсор указателя
-                });
+                objectManager.clusters.options.set({ visible: false });
+                clustersClickable = true;
             }
         });
 
@@ -4399,9 +4425,10 @@ function initMap() {
             const currentZoom = allPropertiesMap.getZoom();
 
             // Если zoom маленький (карта на отдалении) - блокируем клик
-            if (currentZoom < 12) {
+            if (currentZoom < 12 || !clustersClickable) {
                 e.preventDefault();
                 e.stopPropagation();
+                e.stopImmediatePropagation();
                 console.log('Клик по кластеру заблокирован (малый zoom)');
                 return false;
             }
@@ -4410,6 +4437,22 @@ function initMap() {
             const cluster = e.get('target');
             allPropertiesMap.setCenter(cluster.geometry.getCoordinates(), allPropertiesMap.getZoom() + 2);
         });
+
+        // Дополнительная защита: периодически обновляем курсор кластеров
+        setInterval(() => {
+            const currentZoom = allPropertiesMap.getZoom();
+            if (currentZoom < 12) {
+                document.querySelectorAll('.ymaps-cluster').forEach(cluster => {
+                    cluster.style.cursor = 'default';
+                    cluster.style.pointerEvents = 'none';
+                });
+            } else {
+                document.querySelectorAll('.ymaps-cluster').forEach(cluster => {
+                    cluster.style.cursor = 'pointer';
+                    cluster.style.pointerEvents = 'auto';
+                });
+            }
+        }, 500);
     });
 }
 
