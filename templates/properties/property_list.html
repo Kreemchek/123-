@@ -2418,61 +2418,6 @@ body.mobile-modal-open {
         width: calc(100% - 1rem) !important;
     }
 }
-/* На отдалении убираем курсор указателя у кластеров */
-.ymaps-cluster {
-    cursor: default !important;
-}
-
-/* На нормальном приближении возвращаем стандартный курсор */
-.ymaps-2-1-79-cluster .ymaps-2-1-79-cluster__content {
-    cursor: default !important;
-}
-/* Блокировка кликов по кластерам на отдалении */
-.ymaps-cluster {
-    cursor: default !important;
-    pointer-events: none !important;
-}
-
-.ymaps-2-1-79-cluster .ymaps-2-1-79-cluster__content {
-    cursor: default !important;
-    pointer-events: none !important;
-}
-
-/* На нормальном приближении возвращаем стандартное поведение */
-.ymaps-2-1-79-map .ymaps-2-1-79-cluster {
-    cursor: pointer !important;
-    pointer-events: auto !important;
-}
-
-.ymaps-2-1-79-map .ymaps-2-1-79-cluster .ymaps-2-1-79-cluster__content {
-    cursor: pointer !important;
-    pointer-events: auto !important;
-}
-/* АГРЕССИВНАЯ БЛОКИРОВКА КЛАСТЕРОВ НА ОТДАЛЕНИИ */
-.ymaps-cluster,
-.ymaps-2-1-79-cluster,
-.ymaps-2-1-79-cluster__content,
-.ymaps-2-1-79-cluster__text,
-[class*="cluster"],
-[class*="Cluster"] {
-    cursor: default !important;
-    pointer-events: none !important;
-}
-
-/* Принудительная блокировка всех возможных элементов кластера */
-.ymaps-2-1-79-cluster-placemark,
-.ymaps-2-1-79-cluster__circle,
-.ymaps-2-1-79-cluster__content > * {
-    pointer-events: none !important;
-    cursor: default !important;
-}
-
-/* Разблокировка только на нормальном приближении */
-.ymaps-2-1-79-map[style*="z-index: 1"] .ymaps-cluster,
-.ymaps-2-1-79-map[style*="z-index: 1"] .ymaps-2-1-79-cluster {
-    pointer-events: auto !important;
-    cursor: pointer !important;
-}
 </style>
 {% endblock %}
 
@@ -4273,6 +4218,7 @@ function openActiveFilterSections() {
     });
 }
 
+// Функция инициализации карты
 function initMap() {
     console.log("[DEBUG] Начало инициализации карты");
 
@@ -4311,14 +4257,14 @@ function initMap() {
         const objectManager = new ymaps.ObjectManager({
             clusterize: true,
             gridSize: 64,
-            clusterDisableClickZoom: false // Включаем клики по кластерам
+            clusterDisableClickZoom: true
         });
 
         // Настройка внешнего вида кластеров
         objectManager.clusters.options.set({
             preset: 'islands#invertedDarkBlueClusterIcons',
             groupByCoordinates: false,
-            clusterDisableClickZoom: false,
+            clusterDisableClickZoom: true,
             clusterHideIconOnBalloonOpen: false,
             geoObjectHideIconOnBalloonOpen: false
         });
@@ -4401,95 +4347,45 @@ function initMap() {
             allPropertiesMap.setCenter([55.751574, 37.617635], 10);
         }
 
-        // Функция для блокировки/разблокировки кластеров
-        function updateClusterInteractivity(zoom) {
-            const clusters = document.querySelectorAll('.ymaps-cluster, .ymaps-2-1-79-cluster');
+        // Убираем автоматическое открытие балунов при изменении масштаба
+        allPropertiesMap.events.add('boundschange', function(e) {
+            const zoom = e.get('newZoom');
 
+            // Просто показываем/скрываем объекты в зависимости от масштаба
             if (zoom < 12) {
-                // Блокируем кластеры на отдалении
-                clusters.forEach(cluster => {
-                    cluster.style.pointerEvents = 'none';
-                    cluster.style.cursor = 'default';
-
-                    // Добавляем обработчик для предотвращения событий
-                    cluster.onclick = function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        return false;
-                    };
-                });
-
-                // Показываем только кластеры
                 objectManager.objects.options.set({ visible: false });
                 objectManager.clusters.options.set({ visible: true });
-
-                console.log('Кластеры заблокированы (zoom:', zoom, ')');
             } else {
-                // Разблокируем кластеры на приближении
-                clusters.forEach(cluster => {
-                    cluster.style.pointerEvents = 'auto';
-                    cluster.style.cursor = 'pointer';
-                    cluster.onclick = null;
-                });
-
-                // Показываем объекты
                 objectManager.objects.options.set({
                     visible: true,
                     preset: 'islands#darkBlueHomeIcon'
                 });
                 objectManager.clusters.options.set({ visible: false });
-
-                console.log('Кластеры разблокированы (zoom:', zoom, ')');
             }
-        }
-
-        // Обработчик изменения масштаба
-        allPropertiesMap.events.add('boundschange', function(e) {
-            const zoom = e.get('newZoom');
-            updateClusterInteractivity(zoom);
         });
 
-        // Обработчик клика по кластеру с ручной проверкой
-        objectManager.clusters.events.add('click', function(e) {
-            const currentZoom = allPropertiesMap.getZoom();
-
-            if (currentZoom < 12) {
-                // Полностью блокируем обработку события
-                e.preventDefault();
-                e.stopPropagation();
-                e.stopImmediatePropagation();
-
-                console.log('Клик по кластеру заблокирован на zoom:', currentZoom);
-                return false;
-            }
-
-            // Разрешаем зум только на нормальном приближении
-            const cluster = e.get('target');
-            allPropertiesMap.setCenter(cluster.geometry.getCoordinates(), allPropertiesMap.getZoom() + 2);
-        });
-
-        // Обработчик клика по объекту
+        // Обработчик клика по объекту - открываем балун только по клику
         objectManager.objects.events.add('click', function(e) {
             const objectId = e.get('objectId');
+
+            // Закрываем все балуны перед открытием нового
             objectManager.objects.balloon.close();
+
+            // Открываем балун для выбранного объекта
             objectManager.objects.balloon.open(objectId, {
                 autoPan: true,
                 closeButton: true
             });
         });
 
-        // Принудительная инициализация при загрузке
-        setTimeout(() => {
-            updateClusterInteractivity(allPropertiesMap.getZoom());
-        }, 1000);
-
-        // Периодическая проверка (на случай динамических изменений)
-        setInterval(() => {
-            updateClusterInteractivity(allPropertiesMap.getZoom());
-        }, 1000);
+        // Обработчик клика по кластеру - тоже не открываем автоматически
+        objectManager.clusters.events.add('click', function(e) {
+            // Просто зумируем на кластер, но не открываем балуны
+            const cluster = e.get('target');
+            allPropertiesMap.setCenter(cluster.geometry.getCoordinates(), allPropertiesMap.getZoom() + 2);
+        });
     });
 }
-
 
 // Загружаем Яндекс.Карты динамически
 function loadYandexMaps() {
