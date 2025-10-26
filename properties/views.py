@@ -33,6 +33,7 @@ from payments.models import Payment
 from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse
 from django.contrib.gis.geos import Point
+from django.urls import reverse
 import logging
 from django.core.serializers.json import DjangoJSONEncoder
 logger = logging.getLogger(__name__)
@@ -435,15 +436,16 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
                     order=idx
                 )
 
-            messages.success(
-                self.request,
-                f"Объект успешно создан! С вашего баланса будет списано {listing_type.price} ₽. Теперь заполните адрес "
-            )
+            # УДАЛЕНО: messages.success - больше не используем Django messages
 
             if 'selected_listing_type' in self.request.session:
                 del self.request.session['selected_listing_type']
 
-            return redirect('properties:property-detail', pk=self.object.pk)
+            # Редирект с параметрами для уведомления через JavaScript
+            redirect_url = reverse('properties:property-detail', kwargs={'pk': self.object.pk})
+            redirect_url += f'?creation_success=1&price={listing_type.price}'
+
+            return redirect(redirect_url)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
