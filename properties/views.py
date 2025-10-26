@@ -435,7 +435,10 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
                     order=idx
                 )
 
-
+            messages.success(
+                self.request,
+                f"Объект успешно создан! С вашего баланса будет списано {listing_type.price} ₽. Теперь заполните адрес "
+            )
 
             if 'selected_listing_type' in self.request.session:
                 del self.request.session['selected_listing_type']
