@@ -2473,6 +2473,25 @@ body.mobile-modal-open {
     pointer-events: auto !important;
     cursor: pointer !important;
 }
+/* Дополнительные стили для выбранных станций метро в ПК версии */
+.metro-station-option.selected {
+    background-color: #3b82f6 !important;
+    color: white !important;
+}
+
+.metro-station-option.selected:hover {
+    background-color: #2563eb !important;
+}
+
+#metro-dropdown .metro-station-option {
+    transition: all 0.2s ease;
+    border-radius: 6px;
+    margin: 2px 0;
+}
+
+#metro-dropdown .metro-station-option:hover {
+    background-color: #f3f4f6;
+}
 </style>
 {% endblock %}
 
@@ -4490,7 +4509,6 @@ function initMap() {
     });
 }
 
-
 // Загружаем Яндекс.Карты динамически
 function loadYandexMaps() {
     console.log("[DEBUG] Начало загрузки Yandex Maps API");
@@ -4708,7 +4726,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Обработчик для выбора станций метро
+    // Обработчик для выбора станций метро - ИСПРАВЛЕННАЯ ВЕРСИЯ ДЛЯ ПК
     const metroInput = document.getElementById('metro-input');
     const metroDropdown = document.getElementById('metro-dropdown');
     const metroSearch = document.getElementById('metro-search');
@@ -4784,23 +4802,35 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Выбор/отмена выбора станции
+    // ВЫБОР/ОТМЕНА ВЫБОРА СТАНЦИИ - ИСПРАВЛЕННАЯ ВЕРСИЯ ДЛЯ ПК
     document.addEventListener('click', function(e) {
         if (e.target.closest('.metro-station-option')) {
             const option = e.target.closest('.metro-station-option');
-            const station = option.querySelector('.metro-station-name').textContent;
+            // ИСПРАВЛЕНИЕ: Используем data-station атрибут вместо текста
+            const station = option.getAttribute('data-station');
+
+            if (!station) {
+                console.error('Station data not found for option:', option);
+                return;
+            }
 
             if (selectedStations.includes(station)) {
                 selectedStations = selectedStations.filter(s => s !== station);
                 option.classList.remove('selected');
+                option.classList.remove('bg-blue-100', 'text-blue-800');
+                option.classList.add('hover:bg-gray-200');
             } else {
                 if (selectedStations.length < 5) {
                     selectedStations.push(station);
                     option.classList.add('selected');
+                    option.classList.add('bg-blue-100', 'text-blue-800');
+                    option.classList.remove('hover:bg-gray-200');
                 } else {
                     alert('Можно выбрать не более 5 станций');
                 }
             }
+
+            console.log('Selected stations:', selectedStations);
         }
     });
 
@@ -4818,25 +4848,22 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('apply_filters').click();
     });
 
-    // Обновление отображения выбранных станций в модальном окне
+    // ОБНОВЛЕННАЯ функция обновления отображения выбранных станций в модальном окне
     function updateSelectedStationsInModal() {
         document.querySelectorAll('.metro-station-option').forEach(option => {
             const station = option.getAttribute('data-station');
             if (selectedStations.includes(station)) {
-                option.classList.add('bg-blue-100', 'border-blue-500');
-                option.classList.remove('border-gray-200', 'hover:bg-gray-50');
+                option.classList.add('selected', 'bg-blue-100', 'text-blue-800');
+                option.classList.remove('hover:bg-gray-200');
             } else {
-                option.classList.remove('bg-blue-100', 'border-blue-500');
-                option.classList.add('border-gray-200', 'hover:bg-gray-50');
+                option.classList.remove('selected', 'bg-blue-100', 'text-blue-800');
+                option.classList.add('hover:bg-gray-200');
             }
         });
     }
 
-    // Обновите функцию updateSelectedStationsText:
+    // ОБНОВЛЕННАЯ функция обновления текста выбранных станций
     function updateSelectedStationsText() {
-        const selectedStations = metroHiddenInput.value ?
-            metroHiddenInput.value.split(',') : [];
-
         if (selectedStations.length === 0) {
             selectedMetroText.innerHTML = 'Выберите станции метро';
             return;
@@ -4844,7 +4871,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         let html = '';
         selectedStations.slice(0, 3).forEach(station => {
-            html += `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+            html += `<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-1 mb-1">
                         ${station}
                     </span>`;
         });
