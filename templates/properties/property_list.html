@@ -2429,66 +2429,66 @@ body.mobile-modal-open {
 <body class="properties-page">
 <div class="container mx-auto px-4 py-6">
 
-    <!-- Улучшенный контейнер для поиска -->
-    <div class="mb-8">
-        <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 shadow-lg border border-blue-100/50">
-            <div class="flex flex-col lg:flex-row items-center justify-between gap-6">
-                <!-- Заголовок -->
-                <div class="text-center lg:text-left">
-                    <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-                        {% if user.is_authenticated and user.is_broker %}
-                            Мои объекты
-                        {% else %}
-                            Каталог недвижимости
-                        {% endif %}
-                    </h1>
-                    <p class="text-gray-600 text-lg">Найдите идеальную недвижимость среди тысяч предложений</p>
-                </div>
+<!-- Улучшенный контейнер для поиска -->
+<div class="mb-8 hidden lg:block"> <!-- Добавлен hidden lg:block -->
+    <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 shadow-lg border border-blue-100/50">
+        <div class="flex flex-col lg:flex-row items-center justify-between gap-6">
+            <!-- Заголовок -->
+            <div class="text-center lg:text-left">
+                <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                    {% if user.is_authenticated and user.is_broker %}
+                        Мои объекты
+                    {% else %}
+                        Каталог недвижимости
+                    {% endif %}
+                </h1>
+                <p class="text-gray-600 text-lg">Найдите идеальную недвижимость среди тысяч предложений</p>
+            </div>
 
-                <!-- Улучшенное поле поиска -->
-                <div class="w-full lg:w-auto flex-1 max-w-2xl">
-                    <form class="search-form relative">
-                        <div class="relative">
-                            <div class="search-container relative">
-                                <!-- Градиентная обводка -->
-                                <div class="search-gradient-border absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 p-0.5 opacity-0 transition-all duration-500"></div>
+            <!-- Улучшенное поле поиска -->
+            <div class="w-full lg:w-auto flex-1 max-w-2xl">
+                <form class="search-form relative">
+                    <div class="relative">
+                        <div class="search-container relative">
+                            <!-- Градиентная обводка -->
+                            <div class="search-gradient-border absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 p-0.5 opacity-0 transition-all duration-500"></div>
 
-                                <!-- Основное поле ввода -->
-                                <input type="search"
-                                       name="search"
-                                       placeholder="🔍 Поиск по названию, локации, цене или типу недвижимости..."
-                                       class="w-full h-full px-6 py-5 rounded-2xl border-0 bg-white/95 backdrop-blur-sm text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-4 focus:ring-blue-200/50 shadow-xl transition-all duration-300 relative z-10 text-lg">
+                            <!-- Основное поле ввода -->
+                            <input type="search"
+                                   name="search"
+                                   placeholder="🔍 Поиск по названию, локации, цене или типу недвижимости..."
+                                   class="w-full h-full px-6 py-5 rounded-2xl border-0 bg-white/95 backdrop-blur-sm text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-4 focus:ring-blue-200/50 shadow-xl transition-all duration-300 relative z-10 text-lg">
 
-                                <!-- Кнопка поиска -->
-                                <button type="submit"
-                                        class="absolute right-3 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-blue-300/50 z-20">
-                                    <i class="bi bi-search text-xl"></i>
-                                </button>
+                            <!-- Кнопка поиска -->
+                            <button type="submit"
+                                    class="absolute right-3 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-blue-300/50 z-20">
+                                <i class="bi bi-search text-xl"></i>
+                            </button>
 
-                                <!-- Дополнительные подсказки -->
-                                <div class="search-hints absolute -bottom-10 left-0 right-0 flex justify-center gap-4 text-sm text-gray-600 opacity-0 transition-all duration-500 pointer-events-none">
-                                    <span class="bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full">квартира в Москве</span>
-                                    <span class="bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full">цена до 5 млн</span>
-                                    <span class="bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full">2-комнатная</span>
-                                </div>
+                            <!-- Дополнительные подсказки -->
+                            <div class="search-hints absolute -bottom-10 left-0 right-0 flex justify-center gap-4 text-sm text-gray-600 opacity-0 transition-all duration-500 pointer-events-none">
+                                <span class="bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full">квартира в Москве</span>
+                                <span class="bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full">цена до 5 млн</span>
+                                <span class="bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full">2-комнатная</span>
                             </div>
                         </div>
-                    </form>
-                </div>
-
-                <!-- Кнопка добавления -->
-                {% if user.is_authenticated and user.is_broker %}
-                    <div class="lg:flex-shrink-0">
-                        <a href="{% url 'properties:select-listing-type' %}"
-                           class="btn-primary flex items-center justify-center gap-3 whitespace-nowrap px-8 py-5 rounded-2xl transition-all duration-300 hover:scale-105 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold shadow-xl hover:shadow-2xl text-lg">
-                            <i class="bi bi-plus-lg text-xl"></i>
-                            <span>Добавить объект</span>
-                        </a>
                     </div>
-                {% endif %}
+                </form>
             </div>
+
+            <!-- Кнопка добавления -->
+            {% if user.is_authenticated and user.is_broker %}
+                <div class="lg:flex-shrink-0">
+                    <a href="{% url 'properties:select-listing-type' %}"
+                       class="btn-primary flex items-center justify-center gap-3 whitespace-nowrap px-8 py-5 rounded-2xl transition-all duration-300 hover:scale-105 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold shadow-xl hover:shadow-2xl text-lg">
+                        <i class="bi bi-plus-lg text-xl"></i>
+                        <span>Добавить объект</span>
+                    </a>
+                </div>
+            {% endif %}
         </div>
     </div>
+</div>
 
 
 
