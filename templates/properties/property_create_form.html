@@ -279,8 +279,8 @@
     }
 </style>
 
-<!-- Контейнер для сообщений в правом нижнем углу -->
-<div class="messages-overlay">
+<!-- Контейнер для всех уведомлений в правом нижнем углу -->
+<div class="messages-overlay" id="global-messages-overlay">
     {% for message in messages %}
         <div class="message-alert message-{{ message.tags|default:'info' }}">
             <div class="message-icon">
@@ -305,7 +305,6 @@
 </div>
 
 <div class="creation-stepper">
-    <!-- ... остальной код формы без изменений ... -->
     <div class="step-indicator">
         <div class="step-badge step-active">1</div>
         <span class="text-blue-600 font-semibold">Основные данные</span>
@@ -498,6 +497,73 @@
 </div>
 
 <script>
+    // Функция для показа глобальных уведомлений
+    function showGlobalMessage(message, type = 'info') {
+        const container = document.getElementById('global-messages-overlay');
+        if (!container) {
+            console.error('Контейнер для глобальных уведомлений не найден');
+            return;
+        }
+
+        const messageElement = document.createElement('div');
+        messageElement.className = `message-alert message-${type}`;
+
+        // Определяем иконку по типу сообщения
+        let iconClass = 'bi bi-info-circle-fill';
+        if (type === 'success') iconClass = 'bi bi-check-circle-fill';
+        else if (type === 'error') iconClass = 'bi bi-exclamation-circle-fill';
+        else if (type === 'warning') iconClass = 'bi bi-exclamation-triangle-fill';
+
+        messageElement.innerHTML = `
+            <div class="message-icon">
+                <i class="${iconClass}"></i>
+            </div>
+            <div class="message-content">
+                ${message}
+            </div>
+            <button class="message-close">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        `;
+
+        container.appendChild(messageElement);
+
+        // Анимация появления
+        setTimeout(() => {
+            messageElement.style.animation = 'slideInRight 0.3s ease-out';
+        }, 10);
+
+        // Обработчик закрытия
+        const closeBtn = messageElement.querySelector('.message-close');
+        closeBtn.addEventListener('click', function() {
+            closeMessage(messageElement);
+        });
+
+        // Автоматическое закрытие через 5 секунд
+        setTimeout(() => {
+            if (messageElement.parentNode) {
+                closeMessage(messageElement);
+            }
+        }, 5000);
+
+        // Закрытие при клике на сообщение
+        messageElement.addEventListener('click', function(e) {
+            if (!e.target.classList.contains('message-close') && !e.target.closest('.message-close')) {
+                closeMessage(messageElement);
+            }
+        });
+    }
+
+    // Функция закрытия сообщения с анимацией
+    function closeMessage(messageElement) {
+        messageElement.style.animation = 'slideOutRight 0.3s ease-in forwards';
+        setTimeout(() => {
+            if (messageElement.parentNode) {
+                messageElement.remove();
+            }
+        }, 300);
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         // Автоматическое скрытие сообщений через 5 секунд
         const messageAlerts = document.querySelectorAll('.message-alert');
@@ -743,14 +809,14 @@
         function checkImageDimensions(file) {
             return new Promise((resolve) => {
                 if (!file.type.match('image.*')) {
-                    alert('Пожалуйста, выберите файл изображения (JPEG, PNG)');
+                    showGlobalMessage('Пожалуйста, выберите файл изображения (JPEG, PNG)', 'error');
                     resolve(false);
                     return;
                 }
 
                 const MAX_FILE_SIZE = 5 * 1024 * 1024;
                 if (file.size > MAX_FILE_SIZE) {
-                    alert(`Файл ${file.name} слишком большой (${(file.size/1024/1024).toFixed(2)} MB). Максимальный размер: 5MB`);
+                    showGlobalMessage(`Файл ${file.name} слишком большой (${(file.size/1024/1024).toFixed(2)} MB). Максимальный размер: 5MB`, 'error');
                     resolve(false);
                     return;
                 }
@@ -761,14 +827,14 @@
                 img.onload = function() {
                     const isCorrectSize = this.width <= 1280 && this.height <= 720;
                     if (!isCorrectSize) {
-                        alert(`Изображение ${file.name} слишком большое (${this.width}x${this.height}). Максимальный размер: 1280x720 пикселей`);
+                        showGlobalMessage(`Изображение ${file.name} слишком большое (${this.width}x${this.height}). Максимальный размер: 1280x720 пикселей`, 'error');
                     }
                     URL.revokeObjectURL(url);
                     resolve(isCorrectSize);
                 };
 
                 img.onerror = function() {
-                    alert('Ошибка загрузки изображения. Пожалуйста, выберите другой файл.');
+                    showGlobalMessage('Ошибка загрузки изображения. Пожалуйста, выберите другой файл.', 'error');
                     URL.revokeObjectURL(url);
                     resolve(false);
                 };

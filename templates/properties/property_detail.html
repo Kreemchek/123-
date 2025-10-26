@@ -358,32 +358,122 @@
     }
 
     /* Стили для уведомлений */
-    .toast {
+    .messages-overlay {
         position: fixed;
         bottom: 20px;
         right: 20px;
-        padding: 12px 24px;
-        border-radius: 8px;
-        color: white;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-width: 400px;
+    }
+
+    .message-alert {
+        padding: 16px 20px;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         font-weight: 500;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        z-index: 1000;
-        opacity: 0;
-        transform: translateY(20px);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 300px;
+        max-width: 400px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        animation: slideInRight 0.3s ease-out;
+        cursor: pointer;
         transition: all 0.3s ease;
     }
 
-    .toast.show {
+    .message-alert:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes slideOutRight {
+        from {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+    }
+
+    .message-success {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+    }
+
+    .message-error {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+    }
+
+    .message-warning {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+    }
+
+    .message-info {
+        background: linear-gradient(135deg, #7b61ff, #36d1dc);
+        color: white;
+    }
+
+    .message-icon {
+        font-size: 1.2em;
+        flex-shrink: 0;
+    }
+
+    .message-content {
+        flex: 1;
+        line-height: 1.4;
+    }
+
+    .message-close {
+        background: none;
+        border: none;
+        color: white;
+        opacity: 0.7;
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 4px;
+        transition: opacity 0.2s;
+        flex-shrink: 0;
+    }
+
+    .message-close:hover {
         opacity: 1;
-        transform: translateY(0);
+        background: rgba(255, 255, 255, 0.2);
     }
 
-    .toast.success {
-        background-color: #10b981;
-    }
+    /* Адаптивность для мобильных устройств */
+    @media (max-width: 768px) {
+        .messages-overlay {
+            bottom: 10px;
+            right: 10px;
+            left: 10px;
+            max-width: none;
+        }
 
-    .toast.error {
-        background-color: #ef4444;
+        .message-alert {
+            min-width: auto;
+            max-width: none;
+            padding: 14px 16px;
+        }
     }
 
     /* Анимация спиннера */
@@ -403,56 +493,14 @@
     padding: 1rem;
     margin-top: 1rem;
     text-align: center;
-}
-
-#map-fallback p {
-    margin-bottom: 0.5rem;
-}
-
-#map-fallback button {
-    margin-top: 0.5rem;
-}
-    .toast-container {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 1000;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
     }
 
-    .toast {
-        padding: 12px 24px;
-        border-radius: 8px;
-        color: white;
-        font-weight: 500;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        opacity: 0;
-        transform: translateY(20px);
-        transition: all 0.3s ease;
-        max-width: 300px;
+    #map-fallback p {
+        margin-bottom: 0.5rem;
     }
 
-    .toast.show {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    .toast.success {
-        background-color: #10b981;
-    }
-
-    .toast.error {
-        background-color: #ef4444;
-    }
-
-    .toast.warning {
-        background-color: #f59e0b;
-    }
-
-    .toast.info {
-        background: linear-gradient(135deg, #7b61ff, #36d1dc);
+    #map-fallback button {
+        margin-top: 0.5rem;
     }
 
     /* Цвет цены */
@@ -799,45 +847,142 @@
     </div>
 </div>
 
+<!-- Контейнер для всех уведомлений в правом нижнем углу -->
+<div class="messages-overlay" id="global-messages-overlay">
+    {% for message in messages %}
+        <div class="message-alert message-{{ message.tags|default:'info' }}">
+            <div class="message-icon">
+                {% if message.tags == 'success' %}
+                    <i class="bi bi-check-circle-fill"></i>
+                {% elif message.tags == 'error' %}
+                    <i class="bi bi-exclamation-circle-fill"></i>
+                {% elif message.tags == 'warning' %}
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                {% else %}
+                    <i class="bi bi-info-circle-fill"></i>
+                {% endif %}
+            </div>
+            <div class="message-content">
+                {{ message }}
+            </div>
+            <button class="message-close" onclick="this.parentElement.remove()">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+    {% endfor %}
+</div>
+
 <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
 <script src="https://api-maps.yandex.ru/2.1/?apikey={{ YANDEX_MAPS_API_KEY }}&lang=ru_RU"></script>
 <script>
-
-// Функция для повторной попытки загрузки карты
-function loadMapWithRetry(attempt = 0) {
-    if (attempt > 2) {
-        console.error('Превышено количество попыток загрузки карты');
-        document.getElementById('map-fallback').style.display = 'block';
-        return;
-    }
-
-    if (typeof ymaps === 'undefined') {
-        console.log('API Яндекс.Карт еще не загружен, попытка', attempt + 1);
-        setTimeout(() => loadMapWithRetry(attempt + 1), 1000);
-        return;
-    }
-
-    try {
-        if (coordinates_json) {
-            console.log('Инициализация карты для всех пользователей');
-            initViewMap();
-        } else {
-            console.log('Координаты отсутствуют');
-            document.getElementById('map-fallback').style.display = 'block';
-            showToast('Адрес объекта не указан', 'warning');
+    // Функция для показа глобальных уведомлений
+    function showGlobalMessage(message, type = 'info') {
+        const container = document.getElementById('global-messages-overlay');
+        if (!container) {
+            console.error('Контейнер для глобальных уведомлений не найден');
+            return;
         }
-    } catch (e) {
-        console.error('Ошибка инициализации карты:', e);
-        document.getElementById('map-fallback').style.display = 'block';
-        showToast('Ошибка загрузки карты', 'error');
-    }
-}
 
-// Инициализация после загрузки API
-ymaps.ready(function() {
-    console.log('API Яндекс.Карт загружен');
-    loadMapWithRetry();
-});
+        const messageElement = document.createElement('div');
+        messageElement.className = `message-alert message-${type}`;
+
+        // Определяем иконку по типу сообщения
+        let iconClass = 'bi bi-info-circle-fill';
+        if (type === 'success') iconClass = 'bi bi-check-circle-fill';
+        else if (type === 'error') iconClass = 'bi bi-exclamation-circle-fill';
+        else if (type === 'warning') iconClass = 'bi bi-exclamation-triangle-fill';
+
+        messageElement.innerHTML = `
+            <div class="message-icon">
+                <i class="${iconClass}"></i>
+            </div>
+            <div class="message-content">
+                ${message}
+            </div>
+            <button class="message-close">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        `;
+
+        container.appendChild(messageElement);
+
+        // Анимация появления
+        setTimeout(() => {
+            messageElement.style.animation = 'slideInRight 0.3s ease-out';
+        }, 10);
+
+        // Обработчик закрытия
+        const closeBtn = messageElement.querySelector('.message-close');
+        closeBtn.addEventListener('click', function() {
+            closeMessage(messageElement);
+        });
+
+        // Автоматическое закрытие через 5 секунд
+        setTimeout(() => {
+            if (messageElement.parentNode) {
+                closeMessage(messageElement);
+            }
+        }, 5000);
+
+        // Закрытие при клике на сообщение
+        messageElement.addEventListener('click', function(e) {
+            if (!e.target.classList.contains('message-close') && !e.target.closest('.message-close')) {
+                closeMessage(messageElement);
+            }
+        });
+    }
+
+    // Функция закрытия сообщения с анимацией
+    function closeMessage(messageElement) {
+        messageElement.style.animation = 'slideOutRight 0.3s ease-in forwards';
+        setTimeout(() => {
+            if (messageElement.parentNode) {
+                messageElement.remove();
+            }
+        }, 300);
+    }
+
+    // Обновить существующую функцию showToast для использования глобальных уведомлений
+    function showToast(message, type = 'info') {
+        showGlobalMessage(message, type);
+    }
+
+    // Функция для повторной попытки загрузки карты
+    function loadMapWithRetry(attempt = 0) {
+        if (attempt > 2) {
+            console.error('Превышено количество попыток загрузки карты');
+            document.getElementById('map-fallback').style.display = 'block';
+            return;
+        }
+
+        if (typeof ymaps === 'undefined') {
+            console.log('API Яндекс.Карт еще не загружен, попытка', attempt + 1);
+            setTimeout(() => loadMapWithRetry(attempt + 1), 1000);
+            return;
+        }
+
+        try {
+            if (coordinates_json) {
+                console.log('Инициализация карты для всех пользователей');
+                initViewMap();
+            } else {
+                console.log('Координаты отсутствуют');
+                document.getElementById('map-fallback').style.display = 'block';
+                showGlobalMessage('Адрес объекта не указан', 'warning');
+            }
+        } catch (e) {
+            console.error('Ошибка инициализации карты:', e);
+            document.getElementById('map-fallback').style.display = 'block';
+            showGlobalMessage('Ошибка загрузки карты', 'error');
+        }
+    }
+
+    // Инициализация после загрузки API
+    ymaps.ready(function() {
+        console.log('API Яндекс.Карт загружен');
+        loadMapWithRetry();
+    });
+
     // Анимация при скролле
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -940,77 +1085,76 @@ ymaps.ready(function() {
     }
 
     // Инициализация карты для просмотра
-// Инициализация переменных из Django-контекста
-const coordinates_json = '{{ coordinates_json|escapejs }}' || null;
-const metro_coordinates_json = '{{ metro_coordinates_json|escapejs }}' || null;
-const property_address = '{{ property.address|escapejs }}' || 'Адрес не указан';
-const metro_station = '{{ property.metro_station|escapejs }}' || 'Метро не указано';
+    // Инициализация переменных из Django-контекста
+    const coordinates_json = '{{ coordinates_json|escapejs }}' || null;
+    const metro_coordinates_json = '{{ metro_coordinates_json|escapejs }}' || null;
+    const property_address = '{{ property.address|escapejs }}' || 'Адрес не указан';
+    const metro_station = '{{ property.metro_station|escapejs }}' || 'Метро не указано';
 
-function initViewMap() {
-    console.log('[MAP] Инициализация карты просмотра');
+    function initViewMap() {
+        console.log('[MAP] Инициализация карты просмотра');
 
-    try {
-        let coords = [55.751574, 37.617635]; // Москва по умолчанию
+        try {
+            let coords = [55.751574, 37.617635]; // Москва по умолчанию
 
-        if (coordinates_json) {
-            const coordsData = JSON.parse(coordinates_json);
-            coords = [coordsData.y, coordsData.x];
-            console.log('[MAP] Координаты:', coords);
-        }
-
-        // Создаем карту
-        viewMap = new ymaps.Map('map-view', {
-            center: coords,
-            zoom: 15,
-            controls: ['zoomControl', 'fullscreenControl']
-        });
-
-        // Добавляем метку
-        viewPlacemark = new ymaps.Placemark(coords, {
-            hintContent: property_address
-        }, {
-            preset: 'islands#redDotIcon',
-            draggable: false
-        });
-
-        viewMap.geoObjects.add(viewPlacemark);
-        console.log('[MAP] Карта успешно инициализирована');
-
-        // Добавляем метро если есть
-        if (metro_coordinates_json) {
-            try {
-                const metroCoordsData = JSON.parse(metro_coordinates_json);
-                const metroCoords = [metroCoordsData.y, metroCoordsData.x];
-                const metroPlacemark = new ymaps.Placemark(metroCoords, {
-                    hintContent: metro_station
-                }, {
-                    preset: 'islands#blueCircleDotIcon',
-                    iconColor: '#1e88e5'
-                });
-                viewMap.geoObjects.add(metroPlacemark);
-
-                const polyline = new ymaps.Polyline(
-                    [coords, metroCoords],
-                    {},
-                    {
-                        strokeColor: "#1e88e5",
-                        strokeWidth: 3,
-                        strokeOpacity: 0.5
-                    }
-                );
-                viewMap.geoObjects.add(polyline);
-            } catch (e) {
-                console.error('[MAP] Ошибка загрузки метро:', e);
+            if (coordinates_json) {
+                const coordsData = JSON.parse(coordinates_json);
+                coords = [coordsData.y, coordsData.x];
+                console.log('[MAP] Координаты:', coords);
             }
+
+            // Создаем карту
+            viewMap = new ymaps.Map('map-view', {
+                center: coords,
+                zoom: 15,
+                controls: ['zoomControl', 'fullscreenControl']
+            });
+
+            // Добавляем метку
+            viewPlacemark = new ymaps.Placemark(coords, {
+                hintContent: property_address
+            }, {
+                preset: 'islands#redDotIcon',
+                draggable: false
+            });
+
+            viewMap.geoObjects.add(viewPlacemark);
+            console.log('[MAP] Карта успешно инициализирована');
+
+            // Добавляем метро если есть
+            if (metro_coordinates_json) {
+                try {
+                    const metroCoordsData = JSON.parse(metro_coordinates_json);
+                    const metroCoords = [metroCoordsData.y, metroCoordsData.x];
+                    const metroPlacemark = new ymaps.Placemark(metroCoords, {
+                        hintContent: metro_station
+                    }, {
+                        preset: 'islands#blueCircleDotIcon',
+                        iconColor: '#1e88e5'
+                    });
+                    viewMap.geoObjects.add(metroPlacemark);
+
+                    const polyline = new ymaps.Polyline(
+                        [coords, metroCoords],
+                        {},
+                        {
+                            strokeColor: "#1e88e5",
+                            strokeWidth: 3,
+                            strokeOpacity: 0.5
+                        }
+                    );
+                    viewMap.geoObjects.add(polyline);
+                } catch (e) {
+                    console.error('[MAP] Ошибка загрузки метро:', e);
+                }
+            }
+
+        } catch (error) {
+            console.error('[MAP] Ошибка:', error);
+            document.getElementById('map-fallback').style.display = 'block';
+            throw error;
         }
-
-    } catch (error) {
-        console.error('[MAP] Ошибка:', error);
-        document.getElementById('map-fallback').style.display = 'block';
-        throw error;
     }
-}
-
 // Инициализация после загрузки API
 ymaps.ready(function() {
     console.log('API Яндекс.Карт загружен');
@@ -1076,10 +1220,10 @@ ymaps.ready(function() {
                         getAddress(coords);
                         findNearestMetro(coords);
                     }, function(error) {
-                        showToast('Не удалось определить ваше местоположение: ' + error.message, 'error');
+                        showGlobalMessage('Не удалось определить ваше местоположение: ' + error.message, 'error');
                     });
                 } else {
-                    showToast('Ваш браузер не поддерживает геолокацию', 'error');
+                    showGlobalMessage('Ваш браузер не поддерживает геолокацию', 'error');
                 }
             });
 
@@ -1215,46 +1359,6 @@ ymaps.ready(function() {
         });
     }
 
-    // Функция для показа уведомлений
-// Улучшенная функция для показа уведомлений
-function showToast(message, type = 'info') {
-    console.log(`[Toast] Показ уведомления: ${message} (${type})`);
-
-    const container = document.getElementById('toast-container');
-    if (!container) {
-        console.error('Контейнер для уведомлений не найден');
-        return;
-    }
-
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.textContent = message;
-    container.appendChild(toast);
-
-    // Показываем уведомление
-    setTimeout(() => {
-        toast.classList.add('show');
-    }, 10);
-
-    // Автоматическое скрытие через 5 секунд
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => {
-            toast.remove();
-        }, 300);
-    }, 5000);
-
-    // Возможность закрыть уведомление кликом
-    toast.addEventListener('click', () => {
-        toast.classList.remove('show');
-        setTimeout(() => {
-            toast.remove();
-        }, 300);
-    });
-}
-
-
-
     // Обработчик сохранения адреса
     document.getElementById('save-address-btn').addEventListener('click', async function() {
     const btn = this;
@@ -1314,82 +1418,79 @@ function showToast(message, type = 'info') {
                 addressParamElement.textContent = data.address;
             }
 
-            showToast('Адрес успешно сохранен!', 'success');
+            showGlobalMessage('Адрес успешно сохранен!', 'success');
         } else {
             throw new Error(data.message || 'Неизвестная ошибка');
         }
     } catch (error) {
         console.error('Ошибка:', error);
-        showToast(`Ошибка: ${error.message}`, 'error');
+        showGlobalMessage(`Ошибка: ${error.message}`, 'error');
     } finally {
         btn.disabled = false;
         btn.innerHTML = originalText;
     }
 });
+
     // Основная инициализация
-// Основная инициализация
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOMContentLoaded: начал выполнение');
 
-// Основная инициализация
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOMContentLoaded: начал выполнение');
+        try {
+            // Инициализация свайпера и модального окна
+            const swiper = initSwiper();
+            setupModal();
+            setupFavorites();
 
-    try {
-        // Инициализация свайпера и модального окна
-        const swiper = initSwiper();
-        setupModal();
-        setupFavorites();
+            // Проверка загрузки API Яндекс.Карт
+            if (typeof ymaps === 'undefined') {
+                showGlobalMessage('Не удалось загрузить карты. Пожалуйста, попробуйте перезагрузить страницу.', 'error');
+                document.getElementById('map-fallback').style.display = 'block';
+                return;
+            }
 
-        // Проверка загрузки API Яндекс.Карт
-        if (typeof ymaps === 'undefined') {
-            showToast('Не удалось загрузить карты. Пожалуйста, попробуйте перезагрузить страницу.', 'error');
-            document.getElementById('map-fallback').style.display = 'block';
-            return;
-        }
-
-        // Инициализация карт
-        ymaps.ready(function() {
-            try {
-                // Инициализация карты просмотра только для не-брокеров/не-застройщиков/не-админов
-                const isEditor = {% if request.user == property.broker.user or request.user == property.developer or request.user.is_admin %}true{% else %}false{% endif %};
-                if (!isEditor && typeof coordinates_json !== 'undefined' && coordinates_json) {
-                    console.log('Инициализация карты просмотра...');
-                    try {
-                        initViewMap();
-                    } catch (e) {
-                        console.error('Ошибка инициализации карты просмотра:', e);
+            // Инициализация карт
+            ymaps.ready(function() {
+                try {
+                    // Инициализация карты просмотра только для не-брокеров/не-застройщиков/не-админов
+                    const isEditor = {% if request.user == property.broker.user or request.user == property.developer or request.user.is_admin %}true{% else %}false{% endif %};
+                    if (!isEditor && typeof coordinates_json !== 'undefined' && coordinates_json) {
+                        console.log('Инициализация карты просмотра...');
+                        try {
+                            initViewMap();
+                        } catch (e) {
+                            console.error('Ошибка инициализации карты просмотра:', e);
+                            document.getElementById('map-fallback').style.display = 'block';
+                        }
+                    } else if (!isEditor) {
+                        console.log('Нет координат для инициализации карты просмотра');
+                        showGlobalMessage('Адрес объекта не указан', 'warning');
                         document.getElementById('map-fallback').style.display = 'block';
                     }
-                } else if (!isEditor) {
-                    console.log('Нет координат для инициализации карты просмотра');
-                    showToast('Адрес объекта не указан', 'warning');
+
+                    {% if request.user.is_authenticated %}
+                        {% if request.user == property.broker.user or request.user == property.developer or request.user.is_admin %}
+                            console.log('Инициализация карты редактирования...');
+                            initEditMap();
+                        {% endif %}
+                    {% endif %}
+                } catch (e) {
+                    console.error('Ошибка инициализации карт:', e);
+                    showGlobalMessage('Ошибка при загрузке карты. Пожалуйста, попробуйте позже.', 'error');
                     document.getElementById('map-fallback').style.display = 'block';
                 }
+            });
+        } catch (e) {
+            console.error('Ошибка в основном блоке инициализации:', e);
+            showGlobalMessage('Произошла ошибка при загрузке страницы', 'error');
+        }
+    });
 
-                {% if request.user.is_authenticated %}
-                    {% if request.user == property.broker.user or request.user == property.developer or request.user.is_admin %}
-                        console.log('Инициализация карты редактирования...');
-                        initEditMap();
-                    {% endif %}
-                {% endif %}
-            } catch (e) {
-                console.error('Ошибка инициализации карт:', e);
-                showToast('Ошибка при загрузке карты. Пожалуйста, попробуйте позже.', 'error');
-                document.getElementById('map-fallback').style.display = 'block';
-            }
-        });
-    } catch (e) {
-        console.error('Ошибка в основном блоке инициализации:', e);
-        showToast('Произошла ошибка при загрузке страницы', 'error');
+    // Функция для повторной загрузки
+    function retryMapLoading() {
+        console.log('Попытка перезагрузки карты...');
+        showGlobalMessage('Пытаемся загрузить карту...', 'info');
+        location.reload();
     }
-});
-
-// Функция для повторной загрузки
-function retryMapLoading() {
-    console.log('Попытка перезагрузки карты...');
-    showToast('Пытаемся загрузить карту...', 'info');
-    location.reload();
-}
 
 </script>
-    <div id="toast-container" class="toast-container"></div>
 {% endblock %}
