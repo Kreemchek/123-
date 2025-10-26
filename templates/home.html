@@ -169,10 +169,13 @@
         .searchbar {
             flex-wrap: wrap;
             gap: 8px;
+            position: relative;
+            padding-right: 80px; /* Место для кнопки */
         }
 
         .searchbar input {
             padding: 12px 14px;
+            padding-right: 70px; /* Чтобы текст не заезжал под кнопку */
             font-size: 14px;
             order: 1;
             width: 100%;
@@ -180,17 +183,55 @@
 
         .searchbar svg {
             order: 0;
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 2;
         }
 
         .searchbar .btn-primary {
             order: 2;
-            width: 100%;
-            margin-top: 8px;
-            padding: 14px;
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: auto;
+            margin-top: 0;
+            padding: 8px 12px;
+            font-size: 14px;
+            border-radius: 8px;
+            min-height: 32px;
         }
 
         #geolocation-btn {
             display: none !important;
+        }
+    }
+
+    /* Еще более компактно на очень маленьких экранах */
+    @media (max-width: 480px) {
+        .searchbar {
+            padding-right: 70px;
+        }
+
+        .searchbar input {
+            padding: 10px 12px;
+            padding-right: 60px;
+            font-size: 13px;
+        }
+
+        .searchbar .btn-primary {
+            padding: 6px 10px;
+            font-size: 13px;
+            min-height: 28px;
+            right: 4px;
+        }
+
+        .searchbar svg {
+            left: 12px;
+            width: 16px;
+            height: 16px;
         }
     }
 
@@ -729,26 +770,26 @@
         <h1>Сервис выгодных сделок с недвижимостью</h1>
         <p>База проверенных брокеров и эксклюзивных предложений</p>
 
-        <form class="searchbar" role="search" id="search-form"
-              action="{% if user.is_authenticated %}{% url 'properties:property-list' %}{% else %}{% url 'register' %}?next={% url 'properties:property-list' %}{% endif %}"
-              method="get">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.6"/><path d="M20 20L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-            <input type="text"
-                   name="search"
-                   placeholder="Введите город, метро, '2-комнатная', 'цена 5-10 млн'"
-                   class="flex-grow px-6 py-4 text-gray-800 border-0 focus:ring-4 focus:ring-blue-200/50 focus:outline-none placeholder-gray-500 text-lg"
-                   id="location-search"
-                   autocomplete="off">
+      <form class="searchbar" role="search" id="search-form"
+      action="{% if user.is_authenticated %}{% url 'properties:property-list' %}{% else %}{% url 'register' %}?next={% url 'properties:property-list' %}{% endif %}"
+      method="get">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.6"/><path d="M20 20L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    <input type="text"
+           name="search"
+           placeholder="Введите город, метро, '2-комнатная', 'цена 5-10 млн'"
+           class="flex-grow px-6 py-4 text-gray-800 border-0 focus:ring-4 focus:ring-blue-200/50 focus:outline-none placeholder-gray-500 text-lg"
+           id="location-search"
+           autocomplete="off">
 
-            <button type="submit" class="btn-primary">Найти</button>
+    <button type="submit" class="btn-primary">Найти</button>
 
-            <!-- Скрытый инпут для геолокации -->
-            <input type="hidden" id="geo-coords" name="radius_filter">
+    <!-- Скрытый инпут для геолокации -->
+    <input type="hidden" id="geo-coords" name="radius_filter">
 
-            <div id="search-suggestions" class="hidden bg-white mt-2 rounded-xl shadow-lg z-10 max-h-60 overflow-auto border border-gray-200">
-                <!-- Здесь будут подсказки -->
-            </div>
-        </form>
+    <div id="search-suggestions" class="hidden bg-white mt-2 rounded-xl shadow-lg z-10 max-h-60 overflow-auto border border-gray-200">
+        <!-- Здесь будут подсказки -->
+    </div>
+</form>
 
         <!-- Большие карточки быстрого доступа -->
         <div class="quick">
