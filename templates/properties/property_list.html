@@ -2628,36 +2628,6 @@ body.mobile-modal-open {
     </div>
 </div>
 
-
-
-<!-- Мобильная кнопка открытия фильтров -->
-<!-- Мобильная кнопка открытия фильтров -->
-<div class="lg:hidden mb-4 w-full">
-    <button class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-4 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 font-medium flex items-center justify-center shadow-lg" id="mobile-filters-btn">
-        <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
-        </svg>
-        <span class="text-lg font-semibold">Фильтры</span>
-        {% if request.GET.search or request.GET.property_type or request.GET.rental_type or request.GET.location or request.GET.min_price or request.GET.max_price %}
-        <span class="ml-3 bg-red-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">!</span>
-        {% endif %}
-    </button>
-</div>
-
-<!-- Мобильное меню фильтров -->
-<div class="mobile-filters-overlay fixed inset-0 bg-black bg-opacity-50 z-50 hidden" id="mobile-filters-overlay"></div>
-
-<div class="mobile-filters-sidebar fixed left-0 top-0 h-full w-80 bg-white shadow-xl z-50 transform -translate-x-full transition-transform duration-300 overflow-y-auto" id="mobile-filters-sidebar">
-    <div class="sticky top-0 bg-white border-b border-gray-200 z-10">
-        <div class="flex justify-between items-center p-4">
-            <h2 class="text-xl font-semibold text-gray-900">Фильтры</h2>
-            <button class="p-2 rounded-lg hover:bg-gray-100 transition-colors" id="mobile-filters-close">
-                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
-        </div>
-    </div>
 <!-- Добавьте этот блок после мобильной кнопки фильтров и перед основным контентом -->
 <div class="applied-filters-container mb-6" id="applied-filters-container"
      style="{% if not has_active_filters %}display: none;{% endif %}">
@@ -2774,6 +2744,36 @@ body.mobile-modal-open {
         </div>
     </div>
 </div>
+
+<!-- Мобильная кнопка открытия фильтров -->
+<!-- Мобильная кнопка открытия фильтров -->
+<div class="lg:hidden mb-4 w-full">
+    <button class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-4 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 font-medium flex items-center justify-center shadow-lg" id="mobile-filters-btn">
+        <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+        </svg>
+        <span class="text-lg font-semibold">Фильтры</span>
+        {% if request.GET.search or request.GET.property_type or request.GET.rental_type or request.GET.location or request.GET.min_price or request.GET.max_price %}
+        <span class="ml-3 bg-red-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">!</span>
+        {% endif %}
+    </button>
+</div>
+
+<!-- Мобильное меню фильтров -->
+<div class="mobile-filters-overlay fixed inset-0 bg-black bg-opacity-50 z-50 hidden" id="mobile-filters-overlay"></div>
+
+<div class="mobile-filters-sidebar fixed left-0 top-0 h-full w-80 bg-white shadow-xl z-50 transform -translate-x-full transition-transform duration-300 overflow-y-auto" id="mobile-filters-sidebar">
+    <div class="sticky top-0 bg-white border-b border-gray-200 z-10">
+        <div class="flex justify-between items-center p-4">
+            <h2 class="text-xl font-semibold text-gray-900">Фильтры</h2>
+            <button class="p-2 rounded-lg hover:bg-gray-100 transition-colors" id="mobile-filters-close">
+                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
     <div class="p-4">
         <form method="get" class="space-y-6" id="mobile-filter-form">
             <!-- Поиск -->
