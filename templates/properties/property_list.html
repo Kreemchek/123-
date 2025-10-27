@@ -4276,7 +4276,7 @@ function toggleMobileFilterSection(header) {
     icon.classList.toggle('rotate-180');
 }
 
-// Сброс фильтров - ИСПРАВЛЕННАЯ ВЕРСИЯ
+// Обновленная функция сброса мобильных фильтров
 function resetMobileFilters() {
     // Получаем форму
     const form = document.getElementById('mobile-filter-form');
@@ -4284,6 +4284,11 @@ function resetMobileFilters() {
 
     // Сбрасываем значения формы
     form.reset();
+
+    // Сбрасываем состояние мобильных чипсов
+    document.querySelectorAll('.chip-mobile').forEach(chip => {
+        chip.classList.remove('active-mobile');
+    });
 
     // Дополнительно сбрасываем скрытые поля города и метро
     const cityHiddenInput = document.getElementById('mobile-city-hidden-input');
