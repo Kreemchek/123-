@@ -2664,129 +2664,239 @@ body.mobile-modal-open {
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
-/* Обновленные стили для примененных фильтров */
+/* ОБНОВЛЕННАЯ ЦВЕТОВАЯ СХЕМА - фиолетовый (#7b61ff) к бирюзовому (#36d1dc) */
+
+/* Основные кнопки */
+.btn-primary {
+    background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%) !important;
+    color: white !important;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #6a50e6 0%, #2bc4cf 100%) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(123, 97, 255, 0.4);
+}
+
+/* Кнопка добавления объекта */
+a[href*="select-listing-type"] {
+    background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%) !important;
+    border: none !important;
+}
+
+a[href*="select-listing-type"]:hover {
+    background: linear-gradient(135deg, #6a50e6 0%, #2bc4cf 100%) !important;
+}
+
+/* Заголовки и акценты */
+.text-4xl.font-bold.bg-gradient-to-r {
+    background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+}
+
+/* Поле поиска */
+.search-gradient-border {
+    background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%) !important;
+}
+
+.search-container input:focus {
+    border-color: #7b61ff !important;
+    box-shadow: 0 0 0 3px rgba(123, 97, 255, 0.2) !important;
+}
+
+/* Фильтры - активные состояния */
+.filter-section:hover h3 {
+    color: #7b61ff !important;
+}
+
+.filter-section h3::after {
+    background: #7b61ff !important;
+}
+
+.filter-section input:focus,
+.filter-section select:focus {
+    border-color: #7b61ff !important;
+    box-shadow: 0 0 0 3px rgba(123, 97, 255, 0.2) !important;
+}
+
+/* Чипсы фильтров */
+.chip.active {
+    background: linear-gradient(135deg, rgba(123, 97, 255, 0.1) 0%, rgba(54, 209, 220, 0.1) 100%) !important;
+    border: 1px solid rgba(123, 97, 255, 0.3) !important;
+    color: #7b61ff !important;
+}
+
+.chip:hover {
+    border-color: #7b61ff !important;
+    color: #7b61ff !important;
+}
+
+/* Кнопки в фильтрах */
+.btn-accent {
+    background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%) !important;
+    border: none !important;
+    box-shadow: 0 6px 20px rgba(123, 97, 255, 0.3) !important;
+}
+
+.btn-accent:hover {
+    background: linear-gradient(135deg, #6a50e6 0%, #2bc4cf 100%) !important;
+    box-shadow: 0 8px 25px rgba(123, 97, 255, 0.4) !important;
+}
+
+/* Поля ввода города и метро */
+#city-input, #metro-input {
+    border-color: #7b61ff !important;
+}
+
+#city-input:hover, #metro-input:hover {
+    background: rgba(123, 97, 255, 0.05) !important;
+}
+
+/* Мобильные фильтры */
+#mobile-filters-btn {
+    background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%) !important;
+}
+
+#mobile-filters-btn:hover {
+    background: linear-gradient(135deg, #6a50e6 0%, #2bc4cf 100%) !important;
+}
+
+/* Активные фильтры в мобильной версии */
+.mobile-filter-section .flex.items-center input[type="checkbox"]:checked,
+.mobile-filter-section .flex.items-center input[type="radio"]:checked {
+    background-color: #7b61ff !important;
+    border-color: #7b61ff !important;
+}
+
+/* Кнопки в мобильных модальных окнах */
+#mobile-apply-metro-selection,
+#apply-metro-selection {
+    background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%) !important;
+}
+
+#mobile-apply-metro-selection:hover,
+#apply-metro-selection:hover {
+    background: linear-gradient(135deg, #6a50e6 0%, #2bc4cf 100%) !important;
+}
+
+/* Выбранные станции метро */
+.metro-station-option.selected {
+    background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%) !important;
+    color: white !important;
+}
+
+/* Пагинация */
+.page-item.bg-blue-600 {
+    background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%) !important;
+    border-color: #7b61ff !important;
+}
+
+/* ОБНОВЛЕННОЕ МЕНЮ АКТИВНЫХ ФИЛЬТРОВ */
 .applied-filters-container {
     animation: slideDown 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.filter-card {
-    background: white;
+.applied-filter-chip {
+    display: inline-flex;
+    align-items: center;
+    background: linear-gradient(135deg, rgba(123, 97, 255, 0.1) 0%, rgba(54, 209, 220, 0.1) 100%);
     border: 2px solid;
-    border-image: linear-gradient(135deg, #7b61ff, #36d1dc) 1;
-    border-radius: 16px;
-    padding: 0;
+    border-image: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%) 1;
+    border-radius: 20px;
+    padding: 10px 16px;
+    font-size: 14px;
+    color: #1e293b;
+    font-weight: 500;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(123, 97, 255, 0.08);
+    margin: 0 8px 8px 0;
 }
 
-.filter-card::before {
+.applied-filter-chip::before {
     content: '';
     position: absolute;
     top: 0;
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, rgba(123, 97, 255, 0.05), rgba(54, 209, 220, 0.05));
+    background: linear-gradient(135deg, rgba(123, 97, 255, 0.15) 0%, rgba(54, 209, 220, 0.15) 100%);
     transition: left 0.4s ease;
-    z-index: 0;
+    z-index: -1;
 }
 
-.filter-card:hover::before {
+.applied-filter-chip:hover::before {
     left: 0;
 }
 
-.filter-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(123, 97, 255, 0.15);
-    border-image: linear-gradient(135deg, #6a50e6, #2bb7c2) 1;
+.applied-filter-chip:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(123, 97, 255, 0.2);
+    border-image: linear-gradient(135deg, #6a50e6 0%, #2bc4cf 100%) 1;
 }
 
-.filter-card-content {
-    display: flex;
-    align-items: center;
-    padding: 16px;
-    gap: 12px;
-    position: relative;
-    z-index: 1;
+.applied-filter-chip .font-medium {
+    font-weight: 600;
+    color: #374151;
 }
 
-.filter-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #7b61ff, #36d1dc);
+.applied-filter-chip button {
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
-    transition: all 0.3s ease;
-}
-
-.filter-card:hover .filter-icon {
-    transform: scale(1.1) rotate(5deg);
-}
-
-.filter-icon i {
-    color: white;
-    font-size: 18px;
-}
-
-.filter-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.filter-label {
-    display: block;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #6b7280;
-    margin-bottom: 2px;
-}
-
-.filter-value {
-    display: block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
     font-size: 14px;
-    font-weight: 600;
-    color: #1f2937;
-    line-height: 1.3;
-    word-break: break-word;
-}
-
-.filter-remove-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 10px;
-    background: linear-gradient(135deg, rgba(123, 97, 255, 0.1), rgba(54, 209, 220, 0.1));
-    border: 1px solid;
-    border-image: linear-gradient(135deg, #7b61ff, #36d1dc) 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #7b61ff;
+    font-weight: bold;
     transition: all 0.2s ease;
-    flex-shrink: 0;
+    margin-left: 8px;
+    background: transparent;
+    border: none;
+    color: #64748b;
     cursor: pointer;
 }
 
-.filter-remove-btn:hover {
-    background: linear-gradient(135deg, #7b61ff, #36d1dc);
-    color: white;
+.applied-filter-chip button:hover {
+    background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%) !important;
+    color: white !important;
     transform: scale(1.1);
 }
 
-.filter-remove-btn i {
-    font-size: 14px;
+/* Заголовок меню активных фильтров */
+.applied-filters-container h3 {
+    background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    font-weight: 700 !important;
 }
 
+/* Кнопка сброса всех фильтров */
+.applied-filters-container button[onclick="clearAllFilters()"] {
+    background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%) !important;
+    border: none !important;
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(123, 97, 255, 0.3) !important;
+}
+
+.applied-filters-container button[onclick="clearAllFilters()"]:hover {
+    background: linear-gradient(135deg, #6a50e6 0%, #2bc4cf 100%) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(123, 97, 255, 0.4) !important;
+}
+
+/* Иконки в активных фильтрах */
+.applied-filter-chip i {
+    font-size: 14px;
+    color: #7b61ff;
+}
+
+/* Анимация появления */
 @keyframes slideDown {
     from {
         opacity: 0;
-        transform: translateY(-20px) scale(0.95);
+        transform: translateY(-15px) scale(0.95);
     }
     to {
         opacity: 1;
@@ -2801,61 +2911,40 @@ body.mobile-modal-open {
         margin-right: 0.5rem;
     }
 
-    .filter-card-content {
-        padding: 12px;
-        gap: 10px;
+    .applied-filter-chip {
+        font-size: 12px;
+        padding: 8px 12px;
+        margin-bottom: 6px;
     }
 
-    .filter-icon {
-        width: 36px;
-        height: 36px;
-    }
-
-    .filter-icon i {
-        font-size: 16px;
-    }
-
-    .filter-value {
-        font-size: 13px;
-    }
-
-    .filter-remove-btn {
-        width: 28px;
-        height: 28px;
-    }
-
-    .filter-remove-btn i {
+    .applied-filter-chip .font-medium {
         font-size: 12px;
     }
 }
 
-/* Анимация появления карточек */
-.filter-card {
-    animation: cardAppear 0.5s ease-out forwards;
-    opacity: 0;
-    transform: translateY(10px);
-}
+/* Дополнительные элементы, которые были синими */
+.bg-blue-600 { background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%) !important; }
+.border-blue-500 { border-color: #7b61ff !important; }
+.text-blue-600 { color: #7b61ff !important; }
+.bg-blue-100 { background: rgba(123, 97, 255, 0.1) !important; }
+.text-blue-800 { color: #7b61ff !important; }
+.border-blue-200 { border-color: rgba(123, 97, 255, 0.2) !important; }
 
-@keyframes cardAppear {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+/* Ховер-эффекты для синих элементов */
+.hover\:bg-blue-50:hover { background: rgba(123, 97, 255, 0.05) !important; }
+.hover\:bg-blue-700:hover { background: linear-gradient(135deg, #6a50e6 0%, #2bc4cf 100%) !important; }
 
-/* Задержки для анимации карточек */
-.filter-card:nth-child(1) { animation-delay: 0.1s; }
-.filter-card:nth-child(2) { animation-delay: 0.15s; }
-.filter-card:nth-child(3) { animation-delay: 0.2s; }
-.filter-card:nth-child(4) { animation-delay: 0.25s; }
-.filter-card:nth-child(5) { animation-delay: 0.3s; }
-.filter-card:nth-child(6) { animation-delay: 0.35s; }
-.filter-card:nth-child(7) { animation-delay: 0.4s; }
-.filter-card:nth-child(8) { animation-delay: 0.45s; }
-.filter-card:nth-child(9) { animation-delay: 0.5s; }
-.filter-card:nth-child(10) { animation-delay: 0.55s; }
-.filter-card:nth-child(11) { animation-delay: 0.6s; }
-.filter-card:nth-child(12) { animation-delay: 0.65s; }
+/* Фокус-эффекты */
+.focus\:ring-blue-500:focus { box-shadow: 0 0 0 3px rgba(123, 97, 255, 0.2) !important; }
+.focus\:border-blue-500:focus { border-color: #7b61ff !important; }
+
+/* Градиентный текст */
+.text-gradient-purple-teal {
+    background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
 </style>
 {% endblock %}
 
@@ -2928,12 +3017,12 @@ body.mobile-modal-open {
     </div>
 </div>
 
-<!-- Добавьте этот блок после мобильной кнопки фильтров и перед основным контентом -->
+<!-- Обновленный контейнер активных фильтров -->
 <div class="applied-filters-container mb-6" id="applied-filters-container"
      style="{% if not has_active_filters %}display: none;{% endif %}">
     <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-6">
         <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-bold bg-gradient-to-r from-purple-600 to-teal-500 bg-clip-text text-transparent">
+            <h3 class="text-xl font-bold text-gradient-purple-teal">
                 🎯 Активные фильтры
             </h3>
             <button type="button" onclick="clearAllFilters()"
@@ -2943,270 +3032,269 @@ body.mobile-modal-open {
             </button>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div class="flex flex-wrap gap-3">
             <!-- Фильтр по поиску -->
             {% if request.GET.search %}
-            <div class="filter-card group" data-filter="search">
-                <div class="filter-card-content">
-                    <div class="filter-icon">
-                        <i class="bi bi-search"></i>
-                    </div>
-                    <div class="filter-info">
-                        <span class="filter-label">Поиск</span>
-                        <span class="filter-value">"{{ request.GET.search }}"</span>
-                    </div>
-                    <button type="button" onclick="removeFilter('search')" class="filter-remove-btn">
-                        <i class="bi bi-x-lg"></i>
-                    </button>
+            <div class="applied-filter-chip" data-filter="search">
+                <div class="flex items-center">
+                    <i class="bi bi-search mr-2"></i>
+                    <span class="font-medium">Поиск:</span>
+                    <span class="ml-1">"{{ request.GET.search }}"</span>
                 </div>
+                <button type="button" onclick="removeFilter('search')">
+                    <i class="bi bi-x"></i>
+                </button>
             </div>
             {% endif %}
 
             <!-- Фильтры по типу недвижимости -->
             {% for prop_type in selected_property_types %}
-            <div class="filter-card group" data-filter="property_type" data-value="{{ prop_type }}">
-                <div class="filter-card-content">
-                    <div class="filter-icon">
-                        <i class="bi bi-building"></i>
-                    </div>
-                    <div class="filter-info">
-                        <span class="filter-label">Тип</span>
-                        <span class="filter-value">
-                            {% if prop_type == "new_flat" %}🏗️ Новостройка
-                            {% elif prop_type == "resale_flat" %}🏘️ Вторичка
-                            {% elif prop_type == "house" %}🏠 Дом
-                            {% elif prop_type == "commercial" %}🏢 Нежилое
-                            {% else %}{{ prop_type|title }}
-                            {% endif %}
-                        </span>
-                    </div>
-                    <button type="button" onclick="removeFilter('property_type', '{{ prop_type }}')" class="filter-remove-btn">
-                        <i class="bi bi-x-lg"></i>
-                    </button>
+            <div class="applied-filter-chip" data-filter="property_type" data-value="{{ prop_type }}">
+                <div class="flex items-center">
+                    <i class="bi bi-building mr-2"></i>
+                    <span class="font-medium">Тип:</span>
+                    <span class="ml-1">
+                        {% if prop_type == "new_flat" %}🏗️ Новостройка
+                        {% elif prop_type == "resale_flat" %}🏘️ Вторичка
+                        {% elif prop_type == "house" %}🏠 Дом
+                        {% elif prop_type == "commercial" %}🏢 Нежилое
+                        {% else %}{{ prop_type|title }}
+                        {% endif %}
+                    </span>
                 </div>
+                <button type="button" onclick="removeFilter('property_type', '{{ prop_type }}')">
+                    <i class="bi bi-x"></i>
+                </button>
             </div>
             {% endfor %}
 
             <!-- Фильтры по виду размещения -->
             {% for rental_type in selected_rental_types %}
-            <div class="filter-card group" data-filter="rental_type" data-value="{{ rental_type }}">
-                <div class="filter-card-content">
-                    <div class="filter-icon">
-                        <i class="bi bi-tag"></i>
-                    </div>
-                    <div class="filter-info">
-                        <span class="filter-label">Размещение</span>
-                        <span class="filter-value">
-                            {% if rental_type == 'no' %}💰 Купить
-                            {% elif rental_type == 'monthly' %}📅 Помесячно
-                            {% elif rental_type == 'daily' %}🌅 Посуточно
-                            {% endif %}
-                        </span>
-                    </div>
-                    <button type="button" onclick="removeFilter('rental_type', '{{ rental_type }}')" class="filter-remove-btn">
-                        <i class="bi bi-x-lg"></i>
-                    </button>
+            <div class="applied-filter-chip" data-filter="rental_type" data-value="{{ rental_type }}">
+                <div class="flex items-center">
+                    <i class="bi bi-tag mr-2"></i>
+                    <span class="font-medium">Размещение:</span>
+                    <span class="ml-1">
+                        {% if rental_type == 'no' %}💰 Купить
+                        {% elif rental_type == 'monthly' %}📅 Помесячно
+                        {% elif rental_type == 'daily' %}🌅 Посуточно
+                        {% endif %}
+                    </span>
                 </div>
+                <button type="button" onclick="removeFilter('rental_type', '{{ rental_type }}')">
+                    <i class="bi bi-x"></i>
+                </button>
             </div>
             {% endfor %}
 
             <!-- Фильтр по городу -->
             {% if request.GET.location %}
-            <div class="filter-card group" data-filter="location">
-                <div class="filter-card-content">
-                    <div class="filter-icon">
-                        <i class="bi bi-geo-alt"></i>
-                    </div>
-                    <div class="filter-info">
-                        <span class="filter-label">Город</span>
-                        <span class="filter-value">{{ request.GET.location }}</span>
-                    </div>
-                    <button type="button" onclick="removeFilter('location')" class="filter-remove-btn">
-                        <i class="bi bi-x-lg"></i>
-                    </button>
+            <div class="applied-filter-chip" data-filter="location">
+                <div class="flex items-center">
+                    <i class="bi bi-geo-alt mr-2"></i>
+                    <span class="font-medium">Город:</span>
+                    <span class="ml-1">{{ request.GET.location }}</span>
                 </div>
+                <button type="button" onclick="removeFilter('location')">
+                    <i class="bi bi-x"></i>
+                </button>
             </div>
             {% endif %}
 
             <!-- Фильтры по метро -->
             {% if selected_metro_stations %}
                 {% for station in selected_metro_stations %}
-                <div class="filter-card group" data-filter="metro_station" data-value="{{ station }}">
-                    <div class="filter-card-content">
-                        <div class="filter-icon">
-                            <i class="bi bi-train-front"></i>
-                        </div>
-                        <div class="filter-info">
-                            <span class="filter-label">Метро</span>
-                            <span class="filter-value">{{ station }}</span>
-                        </div>
-                        <button type="button" onclick="removeFilter('metro_station', '{{ station }}')" class="filter-remove-btn">
-                            <i class="bi bi-x-lg"></i>
-                        </button>
+                <div class="applied-filter-chip" data-filter="metro_station" data-value="{{ station }}">
+                    <div class="flex items-center">
+                        <i class="bi bi-train-front mr-2"></i>
+                        <span class="font-medium">Метро:</span>
+                        <span class="ml-1">{{ station }}</span>
                     </div>
+                    <button type="button" onclick="removeFilter('metro_station', '{{ station }}')">
+                        <i class="bi bi-x"></i>
+                    </button>
                 </div>
                 {% endfor %}
             {% endif %}
 
             <!-- Фильтр по цене -->
             {% if request.GET.min_price or request.GET.max_price %}
-            <div class="filter-card group" data-filter="price">
-                <div class="filter-card-content">
-                    <div class="filter-icon">
-                        <i class="bi bi-currency-dollar"></i>
-                    </div>
-                    <div class="filter-info">
-                        <span class="filter-label">Цена</span>
-                        <span class="filter-value">
-                            {% if request.GET.min_price %}от {{ request.GET.min_price|space_format }} ₽{% endif %}
-                            {% if request.GET.max_price %}{% if request.GET.min_price %} - {% else %}до {% endif %}{{ request.GET.max_price|space_format }} ₽{% endif %}
-                        </span>
-                    </div>
-                    <button type="button" onclick="removeFilter('price')" class="filter-remove-btn">
-                        <i class="bi bi-x-lg"></i>
-                    </button>
+            <div class="applied-filter-chip" data-filter="price">
+                <div class="flex items-center">
+                    <i class="bi bi-currency-dollar mr-2"></i>
+                    <span class="font-medium">Цена:</span>
+                    <span class="ml-1">
+                        {% if request.GET.min_price %}от {{ request.GET.min_price|space_format }} ₽{% endif %}
+                        {% if request.GET.max_price %}{% if request.GET.min_price %} - {% else %}до {% endif %}{{ request.GET.max_price|space_format }} ₽{% endif %}
+                    </span>
                 </div>
+                <button type="button" onclick="removeFilter('price')">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            {% endif %}
+
+            <!-- Фильтр по цене за м² -->
+            {% if request.GET.min_price_per_sqm or request.GET.max_price_per_sqm %}
+            <div class="applied-filter-chip" data-filter="price_per_sqm">
+                <div class="flex items-center">
+                    <i class="bi bi-currency-dollar mr-2"></i>
+                    <span class="font-medium">Цена за м²:</span>
+                    <span class="ml-1">
+                        {% if request.GET.min_price_per_sqm %}от {{ request.GET.min_price_per_sqm|space_format }} ₽{% endif %}
+                        {% if request.GET.max_price_per_sqm %}{% if request.GET.min_price_per_sqm %} - {% else %}до {% endif %}{{ request.GET.max_price_per_sqm|space_format }} ₽{% endif %}
+                    </span>
+                </div>
+                <button type="button" onclick="removeFilter('price_per_sqm')">
+                    <i class="bi bi-x"></i>
+                </button>
             </div>
             {% endif %}
 
             <!-- Фильтр по площади -->
             {% if request.GET.min_area or request.GET.max_area %}
-            <div class="filter-card group" data-filter="area">
-                <div class="filter-card-content">
-                    <div class="filter-icon">
-                        <i class="bi bi-arrows-fullscreen"></i>
-                    </div>
-                    <div class="filter-info">
-                        <span class="filter-label">Площадь</span>
-                        <span class="filter-value">
-                            {% if request.GET.min_area %}от {{ request.GET.min_area }} м²{% endif %}
-                            {% if request.GET.max_area %}{% if request.GET.min_area %} - {% else %}до {% endif %}{{ request.GET.max_area }} м²{% endif %}
-                        </span>
-                    </div>
-                    <button type="button" onclick="removeFilter('area')" class="filter-remove-btn">
-                        <i class="bi bi-x-lg"></i>
-                    </button>
+            <div class="applied-filter-chip" data-filter="area">
+                <div class="flex items-center">
+                    <i class="bi bi-arrows-fullscreen mr-2"></i>
+                    <span class="font-medium">Площадь:</span>
+                    <span class="ml-1">
+                        {% if request.GET.min_area %}от {{ request.GET.min_area }} м²{% endif %}
+                        {% if request.GET.max_area %}{% if request.GET.min_area %} - {% else %}до {% endif %}{{ request.GET.max_area }} м²{% endif %}
+                    </span>
                 </div>
+                <button type="button" onclick="removeFilter('area')">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            {% endif %}
+
+            <!-- Фильтр по жилой площади -->
+            {% if request.GET.min_living_area or request.GET.max_living_area %}
+            <div class="applied-filter-chip" data-filter="living_area">
+                <div class="flex items-center">
+                    <i class="bi bi-house-door mr-2"></i>
+                    <span class="font-medium">Жилая площадь:</span>
+                    <span class="ml-1">
+                        {% if request.GET.min_living_area %}от {{ request.GET.min_living_area }} м²{% endif %}
+                        {% if request.GET.max_living_area %}{% if request.GET.min_living_area %} - {% else %}до {% endif %}{{ request.GET.max_living_area }} м²{% endif %}
+                    </span>
+                </div>
+                <button type="button" onclick="removeFilter('living_area')">
+                    <i class="bi bi-x"></i>
+                </button>
             </div>
             {% endif %}
 
             <!-- Фильтр по комнатам -->
             {% if request.GET.rooms__gte or request.GET.rooms__lte %}
-            <div class="filter-card group" data-filter="rooms">
-                <div class="filter-card-content">
-                    <div class="filter-icon">
-                        <i class="bi bi-door-open"></i>
-                    </div>
-                    <div class="filter-info">
-                        <span class="filter-label">Комнаты</span>
-                        <span class="filter-value">
-                            {% if request.GET.rooms__gte %}от {{ request.GET.rooms__gte }}{% endif %}
-                            {% if request.GET.rooms__lte %}{% if request.GET.rooms__gte %} - {% else %}до {% endif %}{{ request.GET.rooms__lte }}{% endif %}
-                        </span>
-                    </div>
-                    <button type="button" onclick="removeFilter('rooms')" class="filter-remove-btn">
-                        <i class="bi bi-x-lg"></i>
-                    </button>
+            <div class="applied-filter-chip" data-filter="rooms">
+                <div class="flex items-center">
+                    <i class="bi bi-door-open mr-2"></i>
+                    <span class="font-medium">Комнаты:</span>
+                    <span class="ml-1">
+                        {% if request.GET.rooms__gte %}от {{ request.GET.rooms__gte }}{% endif %}
+                        {% if request.GET.rooms__lte %}{% if request.GET.rooms__gte %} - {% else %}до {% endif %}{{ request.GET.rooms__lte }}{% endif %}
+                    </span>
                 </div>
+                <button type="button" onclick="removeFilter('rooms')">
+                    <i class="bi bi-x"></i>
+                </button>
             </div>
             {% endif %}
 
             <!-- Фильтр по этажу -->
             {% if request.GET.min_floor or request.GET.max_floor %}
-            <div class="filter-card group" data-filter="floor">
-                <div class="filter-card-content">
-                    <div class="filter-icon">
-                        <i class="bi bi-building-up"></i>
-                    </div>
-                    <div class="filter-info">
-                        <span class="filter-label">Этаж</span>
-                        <span class="filter-value">
-                            {% if request.GET.min_floor %}от {{ request.GET.min_floor }}{% endif %}
-                            {% if request.GET.max_floor %}{% if request.GET.min_floor %} - {% else %}до {% endif %}{{ request.GET.max_floor }}{% endif %}
-                        </span>
-                    </div>
-                    <button type="button" onclick="removeFilter('floor')" class="filter-remove-btn">
-                        <i class="bi bi-x-lg"></i>
-                    </button>
+            <div class="applied-filter-chip" data-filter="floor">
+                <div class="flex items-center">
+                    <i class="bi bi-building-up mr-2"></i>
+                    <span class="font-medium">Этаж:</span>
+                    <span class="ml-1">
+                        {% if request.GET.min_floor %}от {{ request.GET.min_floor }}{% endif %}
+                        {% if request.GET.max_floor %}{% if request.GET.min_floor %} - {% else %}до {% endif %}{{ request.GET.max_floor }}{% endif %}
+                    </span>
                 </div>
+                <button type="button" onclick="removeFilter('floor')">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            {% endif %}
+
+            <!-- Фильтр по этажности дома -->
+            {% if request.GET.min_total_floors or request.GET.max_total_floors %}
+            <div class="applied-filter-chip" data-filter="total_floors">
+                <div class="flex items-center">
+                    <i class="bi bi-buildings mr-2"></i>
+                    <span class="font-medium">Этажность дома:</span>
+                    <span class="ml-1">
+                        {% if request.GET.min_total_floors %}от {{ request.GET.min_total_floors }}{% endif %}
+                        {% if request.GET.max_total_floors %}{% if request.GET.min_total_floors %} - {% else %}до {% endif %}{{ request.GET.max_total_floors }}{% endif %}
+                    </span>
+                </div>
+                <button type="button" onclick="removeFilter('total_floors')">
+                    <i class="bi bi-x"></i>
+                </button>
             </div>
             {% endif %}
 
             <!-- Фильтр по году постройки -->
             {% if request.GET.min_construction_year or request.GET.max_construction_year %}
-            <div class="filter-card group" data-filter="construction_year">
-                <div class="filter-card-content">
-                    <div class="filter-icon">
-                        <i class="bi bi-calendar-event"></i>
-                    </div>
-                    <div class="filter-info">
-                        <span class="filter-label">Год постройки</span>
-                        <span class="filter-value">
-                            {% if request.GET.min_construction_year %}от {{ request.GET.min_construction_year }}{% endif %}
-                            {% if request.GET.max_construction_year %}{% if request.GET.min_construction_year %} - {% else %}до {% endif %}{{ request.GET.max_construction_year }}{% endif %}
-                        </span>
-                    </div>
-                    <button type="button" onclick="removeFilter('construction_year')" class="filter-remove-btn">
-                        <i class="bi bi-x-lg"></i>
-                    </button>
+            <div class="applied-filter-chip" data-filter="construction_year">
+                <div class="flex items-center">
+                    <i class="bi bi-calendar-event mr-2"></i>
+                    <span class="font-medium">Год постройки:</span>
+                    <span class="ml-1">
+                        {% if request.GET.min_construction_year %}от {{ request.GET.min_construction_year }}{% endif %}
+                        {% if request.GET.max_construction_year %}{% if request.GET.min_construction_year %} - {% else %}до {% endif %}{{ request.GET.max_construction_year }}{% endif %}
+                    </span>
                 </div>
-            </div>
-            {% endif %}
-
-            <!-- Фильтр по отделке -->
-            {% if request.GET.has_finishing %}
-            <div class="filter-card group" data-filter="has_finishing">
-                <div class="filter-card-content">
-                    <div class="filter-icon">
-                        <i class="bi bi-palette"></i>
-                    </div>
-                    <div class="filter-info">
-                        <span class="filter-label">Отделка</span>
-                        <span class="filter-value">✅ С отделкой</span>
-                    </div>
-                    <button type="button" onclick="removeFilter('has_finishing')" class="filter-remove-btn">
-                        <i class="bi bi-x-lg"></i>
-                    </button>
-                </div>
-            </div>
-            {% endif %}
-
-            <!-- Фильтр по сданным объектам -->
-            {% if request.GET.is_delivered %}
-            <div class="filter-card group" data-filter="is_delivered">
-                <div class="filter-card-content">
-                    <div class="filter-icon">
-                        <i class="bi bi-check-circle"></i>
-                    </div>
-                    <div class="filter-info">
-                        <span class="filter-label">Статус</span>
-                        <span class="filter-value">🏁 Сданные</span>
-                    </div>
-                    <button type="button" onclick="removeFilter('is_delivered')" class="filter-remove-btn">
-                        <i class="bi bi-x-lg"></i>
-                    </button>
-                </div>
+                <button type="button" onclick="removeFilter('construction_year')">
+                    <i class="bi bi-x"></i>
+                </button>
             </div>
             {% endif %}
 
             <!-- Фильтр по расстоянию до центра -->
             {% if request.GET.min_distance_to_center or request.GET.max_distance_to_center %}
-            <div class="filter-card group" data-filter="distance_to_center">
-                <div class="filter-card-content">
-                    <div class="filter-icon">
-                        <i class="bi bi-geo"></i>
-                    </div>
-                    <div class="filter-info">
-                        <span class="filter-label">До центра</span>
-                        <span class="filter-value">
-                            {% if request.GET.min_distance_to_center %}от {{ request.GET.min_distance_to_center }} км{% endif %}
-                            {% if request.GET.max_distance_to_center %}{% if request.GET.min_distance_to_center %} - {% else %}до {% endif %}{{ request.GET.max_distance_to_center }} км{% endif %}
-                        </span>
-                    </div>
-                    <button type="button" onclick="removeFilter('distance_to_center')" class="filter-remove-btn">
-                        <i class="bi bi-x-lg"></i>
-                    </button>
+            <div class="applied-filter-chip" data-filter="distance_to_center">
+                <div class="flex items-center">
+                    <i class="bi bi-geo mr-2"></i>
+                    <span class="font-medium">До центра:</span>
+                    <span class="ml-1">
+                        {% if request.GET.min_distance_to_center %}от {{ request.GET.min_distance_to_center }} км{% endif %}
+                        {% if request.GET.max_distance_to_center %}{% if request.GET.min_distance_to_center %} - {% else %}до {% endif %}{{ request.GET.max_distance_to_center }} км{% endif %}
+                    </span>
                 </div>
+                <button type="button" onclick="removeFilter('distance_to_center')">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            {% endif %}
+
+            <!-- Фильтр по отделке -->
+            {% if request.GET.has_finishing %}
+            <div class="applied-filter-chip" data-filter="has_finishing">
+                <div class="flex items-center">
+                    <i class="bi bi-palette mr-2"></i>
+                    <span class="font-medium">Отделка:</span>
+                    <span class="ml-1">✅ С отделкой</span>
+                </div>
+                <button type="button" onclick="removeFilter('has_finishing')">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            {% endif %}
+
+            <!-- Фильтр по сданным объектам -->
+            {% if request.GET.is_delivered %}
+            <div class="applied-filter-chip" data-filter="is_delivered">
+                <div class="flex items-center">
+                    <i class="bi bi-check-circle mr-2"></i>
+                    <span class="font-medium">Статус:</span>
+                    <span class="ml-1">🏁 Сданные</span>
+                </div>
+                <button type="button" onclick="removeFilter('is_delivered')">
+                    <i class="bi bi-x"></i>
+                </button>
             </div>
             {% endif %}
         </div>
