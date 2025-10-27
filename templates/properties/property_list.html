@@ -3247,28 +3247,29 @@ a[href*="select-listing-type"]:hover {
             </div>
             {% endfor %}
 
-            <!-- Фильтры по виду размещения -->
-            {% for rental_type in selected_rental_types %}
-            <div class="filter-card group" data-filter="rental_type" data-value="{{ rental_type }}">
-                <div class="filter-card-content" style="background: white; border: 1px solid #e5e7eb; border-radius: 0.75rem; padding: 0.75rem; position: relative; transition: all 0.2s ease;">
-                    <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                        <i class="bi bi-tag text-sm md:text-base"></i>
-                    </div>
-                    <div class="filter-info">
-                        <span class="filter-label" style="color: #64748b; font-size: 0.75rem; line-height: 1;">Размещение</span>
-                        <span class="filter-value" style="color: #374151; font-weight: 500; font-size: 0.875rem; line-height: 1.2;">
-                            {% if rental_type == 'no' %}💰 Купить
-                            {% elif rental_type == 'monthly' %}📅 Помесячно
-                            {% elif rental_type == 'daily' %}🌅 Посуточно
-                            {% endif %}
-                        </span>
-                    </div>
-                    <button type="button" onclick="removeFilter('rental_type', '{{ rental_type }}')" class="filter-remove-btn" style="position: absolute; top: 0.25rem; right: 0.25rem; background: none; border: none; cursor: pointer; padding: 0.125rem; border-radius: 0.25rem; transition: all 0.2s ease; color: #64748b;">
-                        <i class="bi bi-x-lg text-xs md:text-sm"></i>
-                    </button>
-                </div>
-            </div>
-            {% endfor %}
+         <!-- Фильтры по виду размещения -->
+{% for rental_type in selected_rental_types %}
+<div class="filter-card group" data-filter="rental_type" data-value="{{ rental_type }}">
+    <div class="filter-card-content" style="background: white; border: 1px solid #e5e7eb; border-radius: 0.75rem; padding: 0.75rem; position: relative; transition: all 0.2s ease;">
+        <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            <i class="bi bi-tag text-sm md:text-base"></i>
+        </div>
+        <div class="filter-info">
+            <span class="filter-label" style="color: #64748b; font-size: 0.75rem; line-height: 1;">Размещение</span>
+            <span class="filter-value" style="color: #374151; font-weight: 500; font-size: 0.875rem; line-height: 1.2;">
+                {% if rental_type == 'no' %}💰 Купить
+                {% elif rental_type == 'monthly' %}📅 Помесячно
+                {% elif rental_type == 'daily' %}🌅 Посуточно
+                {% else %}{{ rental_type|title }}
+                {% endif %}
+            </span>
+        </div>
+        <button type="button" onclick="removeFilter('rental_type', '{{ rental_type }}')" class="filter-remove-btn" style="position: absolute; top: 0.25rem; right: 0.25rem; background: none; border: none; cursor: pointer; padding: 0.125rem; border-radius: 0.25rem; transition: all 0.2s ease; color: #64748b;">
+            <i class="bi bi-x-lg text-xs md:text-sm"></i>
+        </button>
+    </div>
+</div>
+{% endfor %}
 
             <!-- Фильтр по городу -->
             {% if request.GET.location %}
@@ -3545,31 +3546,32 @@ a[href*="select-listing-type"]:hover {
                 </div>
                 {% endfor %}
 
-                <!-- Фильтры по виду размещения -->
-                {% for rental_type in selected_rental_types %}
-                <div class="filter-card-mobile snap-start flex-shrink-0" data-filter="rental_type" data-value="{{ rental_type }}">
-                    <div class="filter-card-content-mobile" style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 8px 12px; position: relative; transition: all 0.2s ease; min-width: 100px;">
-                        <div class="flex items-center justify-between gap-2">
-                            <div class="flex items-center gap-2 min-w-0 flex-1">
-                                <div class="filter-icon-mobile" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                                    <i class="bi bi-tag text-xs"></i>
-                                </div>
-                                <div class="filter-info-mobile min-w-0 flex-1">
-                                    <div class="filter-value-mobile" style="color: #374151; font-weight: 500; font-size: 12px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                        {% if rental_type == 'no' %}💰 Купить
-                                        {% elif rental_type == 'monthly' %}📅 Помесячно
-                                        {% elif rental_type == 'daily' %}🌅 Посуточно
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </div>
-                            <button type="button" onclick="removeFilter('rental_type', '{{ rental_type }}')" class="filter-remove-btn-mobile flex-shrink-0" style="background: none; border: none; cursor: pointer; padding: 2px; border-radius: 4px; transition: all 0.2s ease; color: #64748b; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
-                                <i class="bi bi-x text-xs"></i>
-                            </button>
-                        </div>
+<!-- Фильтры по виду размещения -->
+{% for rental_type in selected_rental_types %}
+<div class="filter-card-mobile snap-start flex-shrink-0" data-filter="rental_type" data-value="{{ rental_type }}">
+    <div class="filter-card-content-mobile" style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 8px 12px; position: relative; transition: all 0.2s ease; min-width: 100px;">
+        <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2 min-w-0 flex-1">
+                <div class="filter-icon-mobile" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                    <i class="bi bi-tag text-xs"></i>
+                </div>
+                <div class="filter-info-mobile min-w-0 flex-1">
+                    <div class="filter-value-mobile" style="color: #374151; font-weight: 500; font-size: 12px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        {% if rental_type == 'no' %}💰 Купить
+                        {% elif rental_type == 'monthly' %}📅 Помесячно
+                        {% elif rental_type == 'daily' %}🌅 Посуточно
+                        {% else %}{{ rental_type|title }}
+                        {% endif %}
                     </div>
                 </div>
-                {% endfor %}
+            </div>
+            <button type="button" onclick="removeFilter('rental_type', '{{ rental_type }}')" class="filter-remove-btn-mobile flex-shrink-0" style="background: none; border: none; cursor: pointer; padding: 2px; border-radius: 4px; transition: all 0.2s ease; color: #64748b; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-x text-xs"></i>
+            </button>
+        </div>
+    </div>
+</div>
+{% endfor %}
 
                 <!-- Фильтр по городу -->
                 {% if request.GET.location %}
