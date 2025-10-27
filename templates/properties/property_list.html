@@ -2492,6 +2492,70 @@ body.mobile-modal-open {
 #metro-dropdown .metro-station-option:hover {
     background-color: #f3f4f6;
 }
+.applied-filters-container {
+    animation: slideDown 0.3s ease-out;
+}
+
+.applied-filter-chip {
+    display: inline-flex;
+    align-items: center;
+    background: linear-gradient(135deg, #f0f7ff 0%, #e6f3ff 100%);
+    border: 1px solid #bfdbfe;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 14px;
+    color: #1e40af;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.applied-filter-chip:hover {
+    background: linear-gradient(135deg, #e1effe 0%, #dbeafe 100%);
+    border-color: #3b82f6;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+}
+
+.applied-filter-chip button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.applied-filter-chip button:hover {
+    background-color: #3b82f6;
+    color: white;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    .applied-filters-container {
+        margin-left: 0.5rem;
+        margin-right: 0.5rem;
+    }
+
+    .applied-filter-chip {
+        font-size: 12px;
+        padding: 4px 8px;
+    }
+}
 </style>
 {% endblock %}
 
@@ -2594,7 +2658,122 @@ body.mobile-modal-open {
             </button>
         </div>
     </div>
+<!-- Добавьте этот блок после мобильной кнопки фильтров и перед основным контентом -->
+<div class="applied-filters-container mb-6" id="applied-filters-container"
+     style="{% if not has_active_filters %}display: none;{% endif %}">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+        <div class="flex flex-wrap items-center gap-2">
+            <span class="text-sm font-medium text-gray-700 mr-2">Активные фильтры:</span>
 
+            <!-- Фильтр по поиску -->
+            {% if request.GET.search %}
+            <div class="applied-filter-chip" data-filter="search">
+                <span>Поиск: "{{ request.GET.search }}"</span>
+                <button type="button" onclick="removeFilter('search')" class="ml-1 text-gray-500 hover:text-gray-700">
+                    ×
+                </button>
+            </div>
+            {% endif %}
+
+            <!-- Фильтры по типу недвижимости -->
+            {% for prop_type in selected_property_types %}
+            <div class="applied-filter-chip" data-filter="property_type" data-value="{{ prop_type }}">
+                <span>Тип: {{ prop_type|title }}</span>
+                <button type="button" onclick="removeFilter('property_type', '{{ prop_type }}')" class="ml-1 text-gray-500 hover:text-gray-700">
+                    ×
+                </button>
+            </div>
+            {% endfor %}
+
+            <!-- Фильтры по виду размещения -->
+            {% for rental_type in selected_rental_types %}
+            <div class="applied-filter-chip" data-filter="rental_type" data-value="{{ rental_type }}">
+                <span>
+                    {% if rental_type == 'no' %}Купить
+                    {% elif rental_type == 'monthly' %}Аренда помесячно
+                    {% elif rental_type == 'daily' %}Аренда посуточно
+                    {% endif %}
+                </span>
+                <button type="button" onclick="removeFilter('rental_type', '{{ rental_type }}')" class="ml-1 text-gray-500 hover:text-gray-700">
+                    ×
+                </button>
+            </div>
+            {% endfor %}
+
+            <!-- Фильтр по городу -->
+            {% if request.GET.location %}
+            <div class="applied-filter-chip" data-filter="location">
+                <span>Город: {{ request.GET.location }}</span>
+                <button type="button" onclick="removeFilter('location')" class="ml-1 text-gray-500 hover:text-gray-700">
+                    ×
+                </button>
+            </div>
+            {% endif %}
+
+            <!-- Фильтры по метро -->
+            {% if selected_metro_stations %}
+                {% for station in selected_metro_stations %}
+                <div class="applied-filter-chip" data-filter="metro_station" data-value="{{ station }}">
+                    <span>Метро: {{ station }}</span>
+                    <button type="button" onclick="removeFilter('metro_station', '{{ station }}')" class="ml-1 text-gray-500 hover:text-gray-700">
+                        ×
+                    </button>
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Фильтр по цене -->
+            {% if request.GET.min_price or request.GET.max_price %}
+            <div class="applied-filter-chip" data-filter="price">
+                <span>
+                    Цена:
+                    {% if request.GET.min_price %}от {{ request.GET.min_price|space_format }} ₽{% endif %}
+                    {% if request.GET.max_price %}{% if request.GET.min_price %} - {% else %}до {% endif %}{{ request.GET.max_price|space_format }} ₽{% endif %}
+                </span>
+                <button type="button" onclick="removeFilter('price')" class="ml-1 text-gray-500 hover:text-gray-700">
+                    ×
+                </button>
+            </div>
+            {% endif %}
+
+            <!-- Фильтр по площади -->
+            {% if request.GET.min_area or request.GET.max_area %}
+            <div class="applied-filter-chip" data-filter="area">
+                <span>
+                    Площадь:
+                    {% if request.GET.min_area %}от {{ request.GET.min_area }} м²{% endif %}
+                    {% if request.GET.max_area %}{% if request.GET.min_area %} - {% else %}до {% endif %}{{ request.GET.max_area }} м²{% endif %}
+                </span>
+                <button type="button" onclick="removeFilter('area')" class="ml-1 text-gray-500 hover:text-gray-700">
+                    ×
+                </button>
+            </div>
+            {% endif %}
+
+            <!-- Фильтр по комнатам -->
+            {% if request.GET.rooms__gte or request.GET.rooms__lte %}
+            <div class="applied-filter-chip" data-filter="rooms">
+                <span>
+                    Комнаты:
+                    {% if request.GET.rooms__gte %}от {{ request.GET.rooms__gte }}{% endif %}
+                    {% if request.GET.rooms__lte %}{% if request.GET.rooms__gte %} - {% else %}до {% endif %}{{ request.GET.rooms__lte }}{% endif %}
+                </span>
+                <button type="button" onclick="removeFilter('rooms')" class="ml-1 text-gray-500 hover:text-gray-700">
+                    ×
+                </button>
+            </div>
+            {% endif %}
+
+            <!-- Кнопка сброса всех фильтров -->
+            {% if has_active_filters %}
+            <button type="button" onclick="clearAllFilters()"
+                    class="ml-2 px-3 py-1 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors">
+                Сбросить все
+            </button>
+            {% endif %}
+        </div>
+    </div>
+</div>
     <div class="p-4">
         <form method="get" class="space-y-6" id="mobile-filter-form">
             <!-- Поиск -->
@@ -3861,7 +4040,7 @@ function initMobileFilters() {
     initMobileModals();
 }
 
-// Мобильные модальные окны для города и метро
+// Мобильные модальные окна для города и метро
 function initMobileModals() {
     // Обновленные функции для управления модальными окнами
     function openMobileModal(modal) {
@@ -4290,6 +4469,122 @@ function resetAllFilters() {
     resetMobileFilters();
 }
 
+// Функция для удаления конкретного фильтра
+function removeFilter(filterType, value = null) {
+    const url = new URL(window.location.href);
+    const params = new URLSearchParams(url.search);
+
+    switch(filterType) {
+        case 'search':
+            params.delete('search');
+            break;
+
+        case 'property_type':
+        case 'rental_type':
+        case 'metro_station':
+            if (value) {
+                const currentValues = params.getAll(filterType);
+                const newValues = currentValues.filter(v => v !== value);
+                params.delete(filterType);
+                newValues.forEach(v => params.append(filterType, v));
+            }
+            break;
+
+        case 'location':
+            params.delete('location');
+            // Также сбрасываем метро при смене города
+            params.delete('metro_station');
+            break;
+
+        case 'price':
+            params.delete('min_price');
+            params.delete('max_price');
+            break;
+
+        case 'area':
+            params.delete('min_area');
+            params.delete('max_area');
+            break;
+
+        case 'rooms':
+            params.delete('rooms__gte');
+            params.delete('rooms__lte');
+            break;
+    }
+
+    // Обновляем URL и перезагружаем страницу
+    url.search = params.toString();
+    window.location.href = url.toString();
+}
+
+// Функция для сброса всех фильтров
+function clearAllFilters() {
+    const url = new URL(window.location);
+    const baseUrl = url.origin + url.pathname;
+    window.location.href = baseUrl;
+}
+
+// Функция для проверки активных фильтров и показа/скрытия контейнера
+function updateAppliedFiltersVisibility() {
+    const container = document.getElementById('applied-filters-container');
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasFilters = Array.from(urlParams.keys()).some(key =>
+        key !== 'page' && urlParams.get(key) !== ''
+    );
+
+    if (container) {
+        container.style.display = hasFilters ? 'block' : 'none';
+    }
+}
+
+// Функция для обновления счетчика активных фильтров на мобильной кнопке
+function updateMobileFilterBadge() {
+    const badge = document.querySelector('#mobile-filters-btn .bg-red-500');
+    const urlParams = new URLSearchParams(window.location.search);
+
+    let filterCount = 0;
+    const ignoredParams = ['page'];
+
+    urlParams.forEach((value, key) => {
+        if (!ignoredParams.includes(key) && value !== '') {
+            filterCount++;
+        }
+    });
+
+    if (badge) {
+        if (filterCount > 0) {
+            badge.textContent = filterCount;
+            badge.style.display = 'flex';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+}
+
+// Функция для применения фильтров (обновленная)
+function applyFilters() {
+    // Показываем контейнер примененных фильтров
+    const container = document.getElementById('applied-filters-container');
+    if (container) {
+        container.style.display = 'block';
+    }
+
+    // Отправляем форму
+    document.getElementById('filter-form').submit();
+}
+
+// Функция для применения мобильных фильтров
+function applyMobileFilters() {
+    // Показываем контейнер примененных фильтров
+    const container = document.getElementById('applied-filters-container');
+    if (container) {
+        container.style.display = 'block';
+    }
+
+    // Отправляем мобильную форму
+    document.getElementById('mobile-filter-form').submit();
+}
+
 // Автоматическое открытие секций с активными фильтрами
 function openActiveFilterSections() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -4545,7 +4840,7 @@ function loadYandexMaps() {
     };
 
     script.onerror = function() {
-        console.error("[DEBUG] Ошибка загрузки скрипта Yandex Maps API");
+        console.error("[DEBUG] Ошибка загрузки скрипт Yandex Maps API");
     };
 
     document.head.appendChild(script);
@@ -4603,6 +4898,10 @@ document.addEventListener('DOMContentLoaded', function() {
     initMobileFilters();
     openActiveFilterSections();
 
+    // Инициализация функций для примененных фильтров
+    updateAppliedFiltersVisibility();
+    updateMobileFilterBadge();
+
     // Добавляем обработчик для кнопки сброса в мобильной версии
     const mobileResetBtn = document.querySelector('#mobile-filter-form button[type="button"]');
     if (mobileResetBtn && mobileResetBtn.textContent.includes('Сбросить')) {
@@ -4617,6 +4916,24 @@ document.addEventListener('DOMContentLoaded', function() {
         desktopResetBtn.addEventListener('click', function(e) {
             e.preventDefault();
             resetAllFilters();
+        });
+    }
+
+    // Для ПК версии - обновите обработчик кнопки "Применить"
+    const applyBtn = document.querySelector('#filter-form button[type="submit"]');
+    if (applyBtn) {
+        applyBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            applyFilters();
+        });
+    }
+
+    // Для мобильной версии - обновите обработчик кнопки "Применить"
+    const mobileApplyBtn = document.querySelector('#mobile-filter-form button[type="submit"]');
+    if (mobileApplyBtn) {
+        mobileApplyBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            applyMobileFilters();
         });
     }
 
@@ -4961,6 +5278,5 @@ window.addEventListener('resize', function() {
     }
 });
 </script>
-
 
 {% endblock %}
