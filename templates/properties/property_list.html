@@ -4276,8 +4276,8 @@ a[href*="select-listing-type"]:hover {
                 <div class="filter-group" style="background: #f9fafb; border-radius: 12px; padding: 12px; margin-bottom: 12px; border: 1px solid #e5e7eb;">
                     <label class="field" style="display: block; font-size: 13px; color: #64748b; margin-bottom: 6px">Год постройки</label>
                     <div class="two" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px">
-                        <input type="number" name="min_construction_year" value="{{ filter.form.min_construction_year.value|default:'' }}" placeholder="От" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e5e7eb; background: white; color: #1e293b; font-size: 14px" />
-                        <input type="number" name="max_construction_year" value="{{ filter.form.max_construction_year.value|default:'' }}" placeholder="До" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e5e7eb; background: white; color: #1e293b; font-size: 14px" />
+<input type="number" name="min_construction_year" value="{{ request.GET.min_construction_year }}" placeholder="От" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e5e7eb; background: white; color: #1e293b; font-size: 14px" />
+<input type="number" name="max_construction_year" value="{{ request.GET.max_construction_year }}" placeholder="До" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e5e7eb; background: white; color: #1e293b; font-size: 14px" />
                     </div>
 
                     <div style="margin-top: 12px">
