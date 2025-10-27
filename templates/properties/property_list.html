@@ -3769,26 +3769,27 @@ a[href*="select-listing-type"]:hover {
         </svg>
     </div>
     <div class="mobile-filter-content hidden pt-3">
-        <div class="space-y-2">
-            <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
-                <input type="checkbox" name="rental_type[]" value="no"
-                       {% if "no" in selected_rental_types %}checked{% endif %}
-                       class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-3">
-                <span class="text-sm text-gray-700">Купить</span>
-            </label>
-            <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
-                <input type="checkbox" name="rental_type[]" value="monthly"
-                       {% if "monthly" in selected_rental_types %}checked{% endif %}
-                       class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-3">
-                <span class="text-sm text-gray-700">Аренда помесячно</span>
-            </label>
-            <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
-                <input type="checkbox" name="rental_type[]" value="daily"
-                       {% if "daily" in selected_rental_types %}checked{% endif %}
-                       class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-3">
-                <span class="text-sm text-gray-700">Аренда посуточно</span>
-            </label>
-        </div>
+      <!-- В мобильных фильтрах замените этот блок -->
+<div class="space-y-2">
+    <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+        <input type="checkbox" name="rental_type" value="no"
+               {% if 'no' in selected_rental_types %}checked{% endif %}
+               class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-3">
+        <span class="text-sm text-gray-700">Купить</span>
+    </label>
+    <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+        <input type="checkbox" name="rental_type" value="monthly"
+               {% if 'monthly' in selected_rental_types %}checked{% endif %}
+               class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-3">
+        <span class="text-sm text-gray-700">Аренда помесячно</span>
+    </label>
+    <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+        <input type="checkbox" name="rental_type" value="daily"
+               {% if 'daily' in selected_rental_types %}checked{% endif %}
+               class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-3">
+        <span class="text-sm text-gray-700">Аренда посуточно</span>
+    </label>
+</div>
     </div>
 </div>
 
@@ -4142,37 +4143,35 @@ a[href*="select-listing-type"]:hover {
     </div>
 
     <h3 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-100" style="margin-top: 16px;">Вид размещения</h3>
-    <div class="checkbox-row" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px">
-        <!-- Купить -->
-        <label class="chip {% if 'no' in selected_rental_types %}active{% endif %}"
-               style="cursor: pointer; padding: 8px 10px; border-radius: 10px; font-size: 13px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden;">
-            <input type="checkbox" name="rental_type[]" value="no"
-                   {% if 'no' in selected_rental_types %}checked{% endif %}
-                   style="display: none;">
-            <span class="relative z-10">Купить</span>
-            <div class="chip-hover-gradient" style="position: absolute; inset: 0; background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%); opacity: 0; transition: opacity 0.2s ease; z-index: 1;"></div>
-        </label>
+   <!-- В desktop фильтрах замените этот блок -->
+<div class="checkbox-row" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px">
+    <!-- Купить -->
+    <label class="chip {% if 'no' in selected_rental_types %}active{% endif %}"
+           style="cursor: pointer; padding: 8px 10px; border-radius: 10px; font-size: 13px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden;">
+        <input type="checkbox" name="rental_type" value="no"
+               {% if 'no' in selected_rental_types %}checked{% endif %}
+               style="display: none;">
+        <span class="relative z-10">Купить</span>
+    </label>
 
-        <!-- Аренда помесячно -->
-        <label class="chip {% if 'monthly' in selected_rental_types %}active{% endif %}"
-               style="cursor: pointer; padding: 8px 10px; border-radius: 10px; font-size: 13px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden;">
-            <input type="checkbox" name="rental_type[]" value="monthly"
-                   {% if 'monthly' in selected_rental_types %}checked{% endif %}
-                   style="display: none;">
-            <span class="relative z-10">Аренда помесячно</span>
-            <div class="chip-hover-gradient" style="position: absolute; inset: 0; background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%); opacity: 0; transition: opacity 0.2s ease; z-index: 1;"></div>
-        </label>
+    <!-- Аренда помесячно -->
+    <label class="chip {% if 'monthly' in selected_rental_types %}active{% endif %}"
+           style="cursor: pointer; padding: 8px 10px; border-radius: 10px; font-size: 13px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden;">
+        <input type="checkbox" name="rental_type" value="monthly"
+               {% if 'monthly' in selected_rental_types %}checked{% endif %}
+               style="display: none;">
+        <span class="relative z-10">Аренда помесячно</span>
+    </label>
 
-        <!-- Аренда посуточно -->
-        <label class="chip {% if 'daily' in selected_rental_types %}active{% endif %}"
-               style="cursor: pointer; padding: 8px 10px; border-radius: 10px; font-size: 13px; background: #ffffff; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden;">
-            <input type="checkbox" name="rental_type[]" value="daily"
-                   {% if 'daily' in selected_rental_types %}checked{% endif %}
-                   style="display: none;">
-            <span class="relative z-10">Аренда посуточно</span>
-            <div class="chip-hover-gradient" style="position: absolute; inset: 0; background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%); opacity: 0; transition: opacity 0.2s ease; z-index: 1;"></div>
-        </label>
-    </div>
+    <!-- Аренда посуточно -->
+    <label class="chip {% if 'daily' in selected_rental_types %}active{% endif %}"
+           style="cursor: pointer; padding: 8px 10px; border-radius: 10px; font-size: 13px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden;">
+        <input type="checkbox" name="rental_type" value="daily"
+               {% if 'daily' in selected_rental_types %}checked{% endif %}
+               style="display: none;">
+        <span class="relative z-10">Аренда посуточно</span>
+    </label>
+</div>
 </div>
 
                 <!-- Город и Метро -->

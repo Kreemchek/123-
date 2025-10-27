@@ -77,11 +77,13 @@ class PropertyFilter(FilterSet):
         if not value:
             return queryset
 
-        # Поддержка обоих форматов: строка с запятыми и список
+        # Обрабатываем разные форматы входящих данных
         if isinstance(value, list):
             rental_types = value
-        else:
+        elif ',' in value:
             rental_types = [t.strip() for t in value.split(',') if t.strip()]
+        else:
+            rental_types = [value]
 
         if not rental_types:
             return queryset
@@ -89,6 +91,7 @@ class PropertyFilter(FilterSet):
         q_objects = Q()
 
         for rental_type in rental_types:
+            rental_type = rental_type.strip().lower()
             if rental_type == 'monthly':
                 q_objects |= Q(is_rental='monthly', monthly_price__isnull=False)
             elif rental_type == 'daily':
@@ -96,7 +99,7 @@ class PropertyFilter(FilterSet):
             elif rental_type == 'no':
                 q_objects |= Q(is_rental='no')
 
-        return queryset.filter(q_objects) if q_objects else queryset
+        return queryset.filter(q_objects).distinct() if q_objects else queryset
 
 
     # Тип недвижимости
