@@ -4494,9 +4494,12 @@ a[href*="select-listing-type"]:hover {
                                     {{ property.price|space_format }} ₽
                                 {% endif %}
                             </div>
-                            <div class="price-per-sqm" style="font-size: 12px; color: #64748b;">
-                                {{ property.price_per_sqm|space_format }} ₽/м²
-                            </div>
+<div class="price-per-sqm" style="font-size: 12px; color: #64748b;">
+    {% if property.price and property.total_area %}
+        {% widthratio property.price property.total_area 1 as price_per_sqm %}
+        {{ price_per_sqm|floatformat:0|space_format }} ₽/м²
+    {% endif %}
+</div>
                         </div>
 
                         <a href="{% url 'properties:property-detail' property.id %}"
