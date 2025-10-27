@@ -4682,8 +4682,7 @@ function resetAllFilters() {
     // Сбрасываем мобильную форму
     resetMobileFilters();
 }
-
-/// Обновленная функция для удаления конкретного фильтра
+// Функция для удаления конкретного фильтра
 function removeFilter(filterType, value = null) {
     const url = new URL(window.location.href);
     const params = new URLSearchParams(url.search);
@@ -4723,24 +4722,6 @@ function removeFilter(filterType, value = null) {
         case 'rooms':
             params.delete('rooms__gte');
             params.delete('rooms__lte');
-            break;
-
-        case 'floor':
-            params.delete('min_floor');
-            params.delete('max_floor');
-            break;
-
-        case 'construction_year':
-            params.delete('min_construction_year');
-            params.delete('max_construction_year');
-            break;
-
-        case 'has_finishing':
-            params.delete('has_finishing');
-            break;
-
-        case 'is_delivered':
-            params.delete('is_delivered');
             break;
     }
 
