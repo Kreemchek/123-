@@ -56,13 +56,8 @@ class PropertyListView(FilterView):
             print(f"🔍 ADMIN: Objects with finishing: {queryset.filter(has_finishing=True).count()}")
             return queryset
 
-        # Аннотируем цену за квадратный метр
-        queryset = queryset.annotate(
-            price_per_sqm=ExpressionWrapper(
-                F('price') / F('total_area'),
-                output_field=FloatField()
-            )
-        )
+        # УБРАНА аннотация price_per_sqm - она теперь в фильтрах
+        # ОСТАВЛЯЕМ весь остальной код метода без изменений!
 
         # Для неаутентифицированных пользователей показываем только одобренные объекты
         if not self.request.user.is_authenticated:

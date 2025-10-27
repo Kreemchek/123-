@@ -1,11 +1,12 @@
-import re  # Добавьте эту строку в начало файла
+import re
 from django import forms
-from django.db.models import Q
+from django.db.models import Q, ExpressionWrapper, F, FloatField
 from django.contrib.gis.geos import Point
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import D
 from django_filters import FilterSet, NumberFilter, CharFilter, BooleanFilter, ModelMultipleChoiceFilter
 from .models import Property, PropertyType, CityCenter, MetroStation
+
 
 class MetroStationMultipleChoiceWidget(forms.SelectMultiple):
     max_choices = 5
@@ -17,12 +18,13 @@ class MetroStationMultipleChoiceWidget(forms.SelectMultiple):
             'data-max-choices': self.max_choices
         })
 
+
 class MetroStationFilter(CharFilter):
     def filter(self, qs, value):
         if not value:
             return qs
 
-        # Разделяем строку по запятым, удаляем пробелы и пустые значения,а также зап
+        # Разделяем строку по запятым, удаляем пробелы и пустые значения
         stations = [s.strip() for s in value.split(',') if s.strip()]
         if not stations:
             return qs
@@ -35,10 +37,13 @@ class MetroStationFilter(CharFilter):
 
         return qs.filter(q_objects).distinct()
 
+
 class PropertyFilter(FilterSet):
     # Существующие фильтры
     min_price = NumberFilter(field_name='price', lookup_expr='gte')
     max_price = NumberFilter(field_name='price', lookup_expr='lte')
+
+    # УБРАН фильтр price_per_sqm или ЗАМЕНЕН на исправленную версию:
     min_price_per_sqm = NumberFilter(method='filter_price_per_sqm')
     max_price_per_sqm = NumberFilter(method='filter_price_per_sqm')
 
@@ -84,13 +89,14 @@ class PropertyFilter(FilterSet):
                 q_objects |= Q(is_rental='no')
 
         return queryset.filter(q_objects) if q_objects else queryset
+
     # Тип недвижимости
     property_type = ModelMultipleChoiceFilter(
-        field_name='property_type__name',  # Фильтруем по полю name модели PropertyType
+        field_name='property_type__name',
         queryset=PropertyType.objects.all(),
         widget=forms.CheckboxSelectMultiple,
         label='Тип недвижимости',
-        to_field_name='name'  # Используем поле name для сравнения
+        to_field_name='name'
     )
     metro_station = MetroStationFilter(label='Станции метро')
 
@@ -111,7 +117,6 @@ class PropertyFilter(FilterSet):
     location = CharFilter(field_name='location', lookup_expr='icontains')
 
     # Дополнительные параметры
-    # Дополнительные параметры
     has_finishing = BooleanFilter(
         field_name='has_finishing',
         label='Только с отделкой'
@@ -121,6 +126,7 @@ class PropertyFilter(FilterSet):
         field_name='is_delivered',
         label='Только сданные'
     )
+
     # Поиск по радиусу
     radius_filter = CharFilter(method='filter_by_radius')
 
@@ -147,16 +153,24 @@ class PropertyFilter(FilterSet):
                     ).order_by('name')
             except (ValueError, TypeError):
                 pass
+
     def filter_price_per_sqm(self, queryset, name, value):
         if value:
+            # Аннотируем queryset ценой за квадратный метр
+            queryset = queryset.annotate(
+                price_per_sqm=ExpressionWrapper(
+                    F('price') / F('total_area'),
+                    output_field=FloatField()
+                )
+            )
+
             if name == 'min_price_per_sqm':
                 return queryset.filter(price_per_sqm__gte=value)
             elif name == 'max_price_per_sqm':
                 return queryset.filter(price_per_sqm__lte=value)
         return queryset
 
-        # Обновляем фильтр расстояния до центра
-
+    # Обновляем фильтр расстояния до центра
     def filter_by_distance_to_center(self, queryset, name, value):
         if not value:
             return queryset
@@ -367,6 +381,3 @@ class PropertyFilter(FilterSet):
                     )
 
         return queryset.filter(q_objects).distinct() if q_objects else queryset
-
-
-
