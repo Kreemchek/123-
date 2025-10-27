@@ -2492,49 +2492,6 @@ body.mobile-modal-open {
 #metro-dropdown .metro-station-option:hover {
     background-color: #f3f4f6;
 }
-/* Стили для мобильных чипсов */
-.chip-mobile {
-    background: white;
-    border: 1px solid #e5e7eb;
-    color: #64748b;
-    transition: all 0.2s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.chip-mobile:hover {
-    border-color: #7b61ff;
-    color: #7b61ff;
-}
-
-.chip-mobile.active-mobile {
-    background: linear-gradient(90deg, #3aa7ff22, #6f53ff22);
-    border: 1px solid rgba(120, 110, 255, 0.3);
-    color: #4c37d4;
-    font-weight: 600;
-}
-
-.chip-mobile .chip-hover-gradient {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%);
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    z-index: 1;
-}
-
-.chip-mobile:hover .chip-hover-gradient {
-    opacity: 0.05;
-}
-
-.chip-mobile.active-mobile .chip-hover-gradient {
-    opacity: 0.1;
-}
-
-.chip-mobile span {
-    position: relative;
-    z-index: 2;
-}
 </style>
 {% endblock %}
 
@@ -2655,7 +2612,8 @@ body.mobile-modal-open {
                 </div>
             </div>
 
-           <!-- Замените существующий блок "Тип недвижимости" в мобильном меню на этот код -->
+            <!-- Тип недвижимости -->
+         <!-- Тип недвижимости -->
 <div class="mobile-filter-section">
     <div class="flex justify-between items-center py-3 cursor-pointer border-b border-gray-200" onclick="toggleMobileFilterSection(this)">
         <span class="font-medium text-gray-900">Тип недвижимости</span>
@@ -2664,86 +2622,72 @@ body.mobile-modal-open {
         </svg>
     </div>
     <div class="mobile-filter-content hidden pt-3">
-        <!-- Контейнер для типов недвижимости -->
-        <div class="filter-group" style="background: #f9fafb; border-radius: 12px; padding: 12px; margin-bottom: 12px; border: 1px solid #e5e7eb;">
-            <h3 class="text-sm font-bold text-gray-800 mb-3 pb-2 border-b border-blue-100">Тип недвижимости</h3>
-            <div class="checkbox-row" style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px">
-                <!-- Новостройка -->
-                <label class="chip-mobile {% if 'new_flat' in selected_property_types %}active-mobile{% endif %}"
-                       style="cursor: pointer; padding: 10px 12px; border-radius: 10px; font-size: 14px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden; flex: 1; min-width: calc(50% - 6px); text-align: center;">
-                    <input type="checkbox" name="property_type" value="new_flat"
-                           {% if 'new_flat' in selected_property_types %}checked{% endif %}
-                           style="display: none;">
-                    <span class="relative z-10">Новостройка</span>
-                    <div class="chip-hover-gradient" style="position: absolute; inset: 0; background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%); opacity: 0; transition: opacity 0.2s ease; z-index: 1;"></div>
-                </label>
+        <div class="space-y-2">
+            <!-- Новостройка -->
+            <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                <input type="checkbox" name="property_type" value="new_flat"
+                       {% if "new_flat" in request.GET.getlist %}checked{% endif %}
+                       class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-3">
+                <span class="text-sm text-gray-700">Новостройка</span>
+            </label>
 
-                <!-- Вторичка -->
-                <label class="chip-mobile {% if 'resale_flat' in selected_property_types %}active-mobile{% endif %}"
-                       style="cursor: pointer; padding: 10px 12px; border-radius: 10px; font-size: 14px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden; flex: 1; min-width: calc(50% - 6px); text-align: center;">
-                    <input type="checkbox" name="property_type" value="resale_flat"
-                           {% if 'resale_flat' in selected_property_types %}checked{% endif %}
-                           style="display: none;">
-                    <span class="relative z-10">Вторичка</span>
-                    <div class="chip-hover-gradient" style="position: absolute; inset: 0; background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%); opacity: 0; transition: opacity 0.2s ease; z-index: 1;"></div>
-                </label>
+            <!-- Вторичка -->
+            <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                <input type="checkbox" name="property_type" value="resale_flat"
+                       {% if "resale_flat" in request.GET.getlist %}checked{% endif %}
+                       class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-3">
+                <span class="text-sm text-gray-700">Вторичка</span>
+            </label>
 
-                <!-- Дом -->
-                <label class="chip-mobile {% if 'house' in selected_property_types %}active-mobile{% endif %}"
-                       style="cursor: pointer; padding: 10px 12px; border-radius: 10px; font-size: 14px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden; flex: 1; min-width: calc(50% - 6px); text-align: center;">
-                    <input type="checkbox" name="property_type" value="house"
-                           {% if 'house' in selected_property_types %}checked{% endif %}
-                           style="display: none;">
-                    <span class="relative z-10">Дом</span>
-                    <div class="chip-hover-gradient" style="position: absolute; inset: 0; background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%); opacity: 0; transition: opacity 0.2s ease; z-index: 1;"></div>
-                </label>
+            <!-- Дом -->
+            <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                <input type="checkbox" name="property_type" value="house"
+                       {% if "house" in request.GET.getlist %}checked{% endif %}
+                       class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-3">
+                <span class="text-sm text-gray-700">Дом</span>
+            </label>
 
-                <!-- Нежилое помещение -->
-                <label class="chip-mobile {% if 'commercial' in selected_property_types %}active-mobile{% endif %}"
-                       style="cursor: pointer; padding: 10px 12px; border-radius: 10px; font-size: 14px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden; flex: 1; min-width: calc(50% - 6px); text-align: center;">
-                    <input type="checkbox" name="property_type" value="commercial"
-                           {% if 'commercial' in selected_property_types %}checked{% endif %}
-                           style="display: none;">
-                    <span class="relative z-10">Нежилое</span>
-                    <div class="chip-hover-gradient" style="position: absolute; inset: 0; background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%); opacity: 0; transition: opacity 0.2s ease; z-index: 1;"></div>
-                </label>
-            </div>
-
-            <h3 class="text-sm font-bold text-gray-800 mb-3 pb-2 border-b border-blue-100" style="margin-top: 16px;">Вид размещения</h3>
-            <div class="checkbox-row" style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px">
-                <!-- Купить -->
-                <label class="chip-mobile {% if 'no' in selected_rental_types %}active-mobile{% endif %}"
-                       style="cursor: pointer; padding: 10px 12px; border-radius: 10px; font-size: 14px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden; flex: 1; min-width: calc(50% - 6px); text-align: center;">
-                    <input type="checkbox" name="rental_type" value="no"
-                           {% if 'no' in selected_rental_types %}checked{% endif %}
-                           style="display: none;">
-                    <span class="relative z-10">Купить</span>
-                    <div class="chip-hover-gradient" style="position: absolute; inset: 0; background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%); opacity: 0; transition: opacity 0.2s ease; z-index: 1;"></div>
-                </label>
-
-                <!-- Аренда помесячно -->
-                <label class="chip-mobile {% if 'monthly' in selected_rental_types %}active-mobile{% endif %}"
-                       style="cursor: pointer; padding: 10px 12px; border-radius: 10px; font-size: 14px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden; flex: 1; min-width: calc(50% - 6px); text-align: center;">
-                    <input type="checkbox" name="rental_type" value="monthly"
-                           {% if 'monthly' in selected_rental_types %}checked{% endif %}
-                           style="display: none;">
-                    <span class="relative z-10">Помесячно</span>
-                    <div class="chip-hover-gradient" style="position: absolute; inset: 0; background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%); opacity: 0; transition: opacity 0.2s ease; z-index: 1;"></div>
-                </label>
-
-                <!-- Аренда посуточно -->
-                <label class="chip-mobile {% if 'daily' in selected_rental_types %}active-mobile{% endif %}"
-                       style="cursor: pointer; padding: 10px 12px; border-radius: 10px; font-size: 14px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden; flex: 1; min-width: calc(50% - 6px); text-align: center;">
-                    <input type="checkbox" name="rental_type" value="daily"
-                           {% if 'daily' in selected_rental_types %}checked{% endif %}
-                           style="display: none;">
-                    <span class="relative z-10">Посуточно</span>
-                    <div class="chip-hover-gradient" style="position: absolute; inset: 0; background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%); opacity: 0; transition: opacity 0.2s ease; z-index: 1;"></div>
-                </label>
-            </div>
+            <!-- Нежилое помещение -->
+            <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                <input type="checkbox" name="property_type" value="commercial"
+                       {% if "commercial" in request.GET.getlist %}checked{% endif %}
+                       class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-3">
+                <span class="text-sm text-gray-700">Нежилое помещение</span>
+            </label>
         </div>
     </div>
 </div>
+            <!-- Вид размещения -->
+            <div class="mobile-filter-section">
+                <div class="flex justify-between items-center py-3 cursor-pointer border-b border-gray-200" onclick="toggleMobileFilterSection(this)">
+                    <span class="font-medium text-gray-900">Вид размещения</span>
+                    <svg class="w-4 h-4 text-gray-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </div>
+                <div class="mobile-filter-content hidden pt-3">
+                    <div class="space-y-2">
+                        <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                            <input type="checkbox" name="rental_type" value="no"
+                                   {% if "no" in request.GET.getlist %}checked{% endif %}
+                                   class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-3">
+                            <span class="text-sm text-gray-700">Купить</span>
+                        </label>
+                        <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                            <input type="checkbox" name="rental_type" value="monthly"
+                                   {% if "monthly" in request.GET.getlist %}checked{% endif %}
+                                   class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-3">
+                            <span class="text-sm text-gray-700">Аренда помесячно</span>
+                        </label>
+                        <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                            <input type="checkbox" name="rental_type" value="daily"
+                                   {% if "daily" in request.GET.getlist %}checked{% endif %}
+                                   class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-3">
+                            <span class="text-sm text-gray-700">Аренда посуточно</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
 
             <!-- Город (мобильная версия) -->
             <div class="mobile-filter-section">
@@ -4276,7 +4220,7 @@ function toggleMobileFilterSection(header) {
     icon.classList.toggle('rotate-180');
 }
 
-// Обновленная функция сброса мобильных фильтров
+// Сброс фильтров - ИСПРАВЛЕННАЯ ВЕРСИЯ
 function resetMobileFilters() {
     // Получаем форму
     const form = document.getElementById('mobile-filter-form');
@@ -4284,11 +4228,6 @@ function resetMobileFilters() {
 
     // Сбрасываем значения формы
     form.reset();
-
-    // Сбрасываем состояние мобильных чипсов
-    document.querySelectorAll('.chip-mobile').forEach(chip => {
-        chip.classList.remove('active-mobile');
-    });
 
     // Дополнительно сбрасываем скрытые поля города и метро
     const cityHiddenInput = document.getElementById('mobile-city-hidden-input');
