@@ -5396,93 +5396,155 @@ function resetAllFilters() {
 }
 
 // Обновленная функция для удаления конкретного фильтра
+// Полная функция для удаления фильтров
 function removeFilter(filterType, value = null) {
     const url = new URL(window.location.href);
-    const params = new URLSearchParams(url.search);
+    const searchParams = new URLSearchParams(url.search);
 
     switch(filterType) {
         case 'search':
-            params.delete('search');
+            searchParams.delete('search');
             break;
 
         case 'property_type':
         case 'rental_type':
         case 'metro_station':
             if (value) {
-                const currentValues = params.getAll(filterType);
+                const currentValues = searchParams.getAll(filterType);
                 const newValues = currentValues.filter(v => v !== value);
-                params.delete(filterType);
-                newValues.forEach(v => params.append(filterType, v));
+                searchParams.delete(filterType);
+                newValues.forEach(v => searchParams.append(filterType, v));
+            } else {
+                searchParams.delete(filterType);
             }
             break;
 
         case 'location':
-            params.delete('location');
-            params.delete('metro_station');
+            searchParams.delete('location');
+            // Также удаляем связанные станции метро
+            searchParams.delete('metro_station');
             break;
 
         case 'price':
-            params.delete('min_price');
-            params.delete('max_price');
+            searchParams.delete('min_price');
+            searchParams.delete('max_price');
+            searchParams.delete('min_price_per_sqm');
+            searchParams.delete('max_price_per_sqm');
             break;
 
         case 'area':
-            params.delete('min_area');
-            params.delete('max_area');
+            searchParams.delete('min_area');
+            searchParams.delete('max_area');
+            searchParams.delete('min_living_area');
+            searchParams.delete('max_living_area');
             break;
 
         case 'rooms':
-            params.delete('rooms__gte');
-            params.delete('rooms__lte');
+            searchParams.delete('rooms');
+            searchParams.delete('rooms__gte');
+            searchParams.delete('rooms__lte');
             break;
 
         case 'floor':
-            params.delete('min_floor');
-            params.delete('max_floor');
+            searchParams.delete('min_floor');
+            searchParams.delete('max_floor');
+            searchParams.delete('min_total_floors');
+            searchParams.delete('max_total_floors');
             break;
 
         case 'construction_year':
-            params.delete('min_construction_year');
-            params.delete('max_construction_year');
-            break;
-
-        case 'has_finishing':
-            params.delete('has_finishing');
-            break;
-
-        case 'is_delivered':
-            params.delete('is_delivered');
+            searchParams.delete('min_construction_year');
+            searchParams.delete('max_construction_year');
             break;
 
         case 'distance_to_center':
-            params.delete('min_distance_to_center');
-            params.delete('max_distance_to_center');
+            searchParams.delete('min_distance_to_center');
+            searchParams.delete('max_distance_to_center');
+            break;
+
+        case 'has_finishing':
+            searchParams.delete('has_finishing');
+            break;
+
+        case 'is_delivered':
+            searchParams.delete('is_delivered');
+            break;
+
+        default:
+            // Для неизвестных типов просто удаляем параметр
+            searchParams.delete(filterType);
             break;
     }
 
     // Обновляем URL и перезагружаем страницу
-    url.search = params.toString();
-    window.location.href = url.toString();
+    window.location.href = `${url.pathname}?${searchParams.toString()}`;
 }
 
 // Функция для сброса всех фильтров
 function clearAllFilters() {
-    const url = new URL(window.location);
-    const baseUrl = url.origin + url.pathname;
-    window.location.href = baseUrl;
+    // Сохраняем только параметр broker если он есть
+    const currentUrl = new URL(window.location.href);
+    const brokerId = currentUrl.searchParams.get('broker');
+
+    if (brokerId) {
+        window.location.href = `${currentUrl.pathname}?broker=${brokerId}`;
+    } else {
+        window.location.href = currentUrl.pathname;
+    }
 }
 
-// Функция для проверки активных фильтров и показа/скрытия контейнера
-function updateAppliedFiltersVisibility() {
-    const container = document.getElementById('applied-filters-container');
-    const urlParams = new URLSearchParams(window.location.search);
-    const hasFilters = Array.from(urlParams.keys()).some(key =>
-        key !== 'page' && urlParams.get(key) !== ''
-    );
+// Дополнительные вспомогательные функции для работы с фильтрами
 
-    if (container) {
-        container.style.display = hasFilters ? 'block' : 'none';
+// Функция для обновления счетчика активных фильтров
+function updateActiveFiltersCount() {
+    const url = new URL(window.location.href);
+    const searchParams = url.searchParams;
+
+    let activeCount = 0;
+
+    // Проверяем основные параметры фильтров
+    const filterParams = [
+        'search',
+        'property_type',
+        'rental_type',
+        'location',
+        'metro_station',
+        'min_price', 'max_price',
+        'min_area', 'max_area',
+        'rooms__gte', 'rooms__lte',
+        'min_floor', 'max_floor',
+        'min_construction_year', 'max_construction_year',
+        'has_finishing',
+        'is_delivered',
+        'min_distance_to_center', 'max_distance_to_center'
+    ];
+
+    filterParams.forEach(param => {
+        if (searchParams.has(param)) {
+            const values = searchParams.getAll(param);
+            if (values.length > 0 && values.some(v => v !== '')) {
+                activeCount += values.filter(v => v !== '').length;
+            }
+        }
+    });
+
+    // Обновляем индикатор на кнопке мобильных фильтров
+    const mobileFilterBtn = document.getElementById('mobile-filters-btn');
+    if (mobileFilterBtn) {
+        const indicator = mobileFilterBtn.querySelector('.bg-red-500');
+        if (activeCount > 0) {
+            if (!indicator) {
+                const newIndicator = document.createElement('span');
+                newIndicator.className = 'ml-3 bg-red-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold';
+                newIndicator.textContent = '!';
+                mobileFilterBtn.appendChild(newIndicator);
+            }
+        } else if (indicator) {
+            indicator.remove();
+        }
     }
+
+    return activeCount;
 }
 
 // Функция для обновления счетчика активных фильтров на мобильной кнопке
