@@ -3758,37 +3758,37 @@ a[href*="select-listing-type"]:hover {
         </div>
     </div>
 </div>
-            <!-- Вид размещения -->
-            <div class="mobile-filter-section">
-                <div class="flex justify-between items-center py-3 cursor-pointer border-b border-gray-200" onclick="toggleMobileFilterSection(this)">
-                    <span class="font-medium text-gray-900">Вид размещения</span>
-                    <svg class="w-4 h-4 text-gray-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                    </svg>
-                </div>
-                <div class="mobile-filter-content hidden pt-3">
-                    <div class="space-y-2">
-                        <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
-                            <input type="checkbox" name="rental_type" value="no"
-                                   {% if "no" in request.GET.getlist %}checked{% endif %}
-                                   class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-3">
-                            <span class="text-sm text-gray-700">Купить</span>
-                        </label>
-                        <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
-                            <input type="checkbox" name="rental_type" value="monthly"
-                                   {% if "monthly" in request.GET.getlist %}checked{% endif %}
-                                   class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-3">
-                            <span class="text-sm text-gray-700">Аренда помесячно</span>
-                        </label>
-                        <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
-                            <input type="checkbox" name="rental_type" value="daily"
-                                   {% if "daily" in request.GET.getlist %}checked{% endif %}
-                                   class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-3">
-                            <span class="text-sm text-gray-700">Аренда посуточно</span>
-                        </label>
-                    </div>
-                </div>
-            </div>
+<!-- Вид размещения - МОБИЛЬНАЯ ВЕРСИЯ -->
+<div class="mobile-filter-section">
+    <div class="flex justify-between items-center py-3 cursor-pointer border-b border-gray-200" onclick="toggleMobileFilterSection(this)">
+        <span class="font-medium text-gray-900">Вид размещения</span>
+        <svg class="w-4 h-4 text-gray-400 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+    </div>
+    <div class="mobile-filter-content hidden pt-3">
+        <div class="space-y-2">
+            <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                <input type="checkbox" name="rental_type[]" value="no"
+                       {% if "no" in selected_rental_types %}checked{% endif %}
+                       class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-3">
+                <span class="text-sm text-gray-700">Купить</span>
+            </label>
+            <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                <input type="checkbox" name="rental_type[]" value="monthly"
+                       {% if "monthly" in selected_rental_types %}checked{% endif %}
+                       class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-3">
+                <span class="text-sm text-gray-700">Аренда помесячно</span>
+            </label>
+            <label class="flex items-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                <input type="checkbox" name="rental_type[]" value="daily"
+                       {% if "daily" in selected_rental_types %}checked{% endif %}
+                       class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-3">
+                <span class="text-sm text-gray-700">Аренда посуточно</span>
+            </label>
+        </div>
+    </div>
+</div>
 
             <!-- Город (мобильная версия) -->
             <div class="mobile-filter-section">
