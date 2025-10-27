@@ -139,10 +139,37 @@ class PropertyListView(FilterView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        # Получаем параметры фильтров
+        request = self.request
+        selected_property_types = request.GET.getlist('property_type', [])
+        selected_rental_types = request.GET.getlist('rental_type', [])
+        selected_metro_stations = request.GET.getlist('metro_station', [])
+
+        # Проверяем есть ли активные фильтры
+        has_active_filters = any([
+            request.GET.get('search'),
+            selected_property_types,
+            selected_rental_types,
+            request.GET.get('location'),
+            selected_metro_stations,
+            request.GET.get('min_price'),
+            request.GET.get('max_price'),
+            request.GET.get('min_area'),
+            request.GET.get('max_area'),
+            request.GET.get('rooms__gte'),
+            request.GET.get('rooms__lte'),
+        ])
+
+        context.update({
+            'selected_property_types': selected_property_types,
+            'selected_rental_types': selected_rental_types,
+            'selected_metro_stations': selected_metro_stations,
+            'has_active_filters': has_active_filters,
+        })
+
         context['YANDEX_MAPS_API_KEY'] = settings.YANDEX_MAPS_API_KEY
         context['property_types'] = PropertyType.objects.all()
-        context['selected_property_types'] = self.request.GET.getlist('property_type', [])
-        context['selected_rental_types'] = self.request.GET.getlist('rental_type', [])
 
         # Получаем выбранный город из GET-параметров
         selected_city = self.request.GET.get('location', '')
@@ -186,6 +213,7 @@ class PropertyListView(FilterView):
             context['is_broker'] = self.request.user.is_broker
             context['is_developer'] = self.request.user.is_developer
             context['is_client'] = not (self.request.user.is_broker or self.request.user.is_developer)
+
         return context
 
     def render_to_response(self, context, **response_kwargs):
