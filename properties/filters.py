@@ -98,6 +98,18 @@ class PropertyFilter(FilterSet):
 
         return queryset.filter(q_objects) if q_objects else queryset
 
+
+    # Тип недвижимости
+    property_type = ModelMultipleChoiceFilter(
+        field_name='property_type__name',
+        queryset=PropertyType.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        label='Тип недвижимости',
+        to_field_name='name'
+    )
+    metro_station = MetroStationFilter(label='Станции метро')
+
+
     def filter_by_metro_name(self, queryset, name, value):
         if not value:
             return queryset
