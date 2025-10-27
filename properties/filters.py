@@ -77,8 +77,11 @@ class PropertyFilter(FilterSet):
         if not value:
             return queryset
 
-        # Разделяем значения по запятым для поддержки множественного выбора
-        rental_types = [t.strip() for t in value.split(',') if t.strip()]
+        # Поддержка обоих форматов: строка с запятыми и список
+        if isinstance(value, list):
+            rental_types = value
+        else:
+            rental_types = [t.strip() for t in value.split(',') if t.strip()]
 
         if not rental_types:
             return queryset

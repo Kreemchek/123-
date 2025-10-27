@@ -138,14 +138,21 @@ class PropertyListView(FilterView):
         # Получаем параметры фильтров
         request = self.request
         selected_property_types = request.GET.getlist('property_type', [])
-        selected_rental_types = request.GET.getlist('rental_type', [])
+
+        # ИСПРАВЛЕНИЕ: Обрабатываем rental_type как строку с запятыми
+        rental_type_param = request.GET.get('rental_type', '')
+        if rental_type_param:
+            selected_rental_types = [t.strip() for t in rental_type_param.split(',') if t.strip()]
+        else:
+            selected_rental_types = []
+
         selected_metro_stations = request.GET.getlist('metro_station', [])
 
         # Проверяем есть ли активные фильтры
         has_active_filters = any([
             request.GET.get('search'),
             selected_property_types,
-            selected_rental_types,
+            selected_rental_types,  # Теперь это список
             request.GET.get('location'),
             selected_metro_stations,
             request.GET.get('min_price'),
