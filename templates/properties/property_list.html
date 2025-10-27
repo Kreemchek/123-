@@ -3110,291 +3110,274 @@ a[href*="select-listing-type"]:hover {
             </button>
         </div>
 
-        <!-- Десктопная версия -->
-        <div class="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            <!-- Десктопные фильтры (остаются как были) -->
-            {% if request.GET.search %}
-            <div class="filter-card group" data-filter="search">
-                <div class="filter-card-content" style="background: white; border: 2px solid #e5e7eb; border-radius: 1rem; padding: 1rem; position: relative; transition: all 0.2s ease;">
-                    <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                        <i class="bi bi-search"></i>
-                    </div>
-                    <div class="filter-info">
-                        <span class="filter-label" style="color: #64748b; font-size: 0.875rem;">Поиск</span>
-                        <span class="filter-value" style="color: #374151; font-weight: 500;">"{{ request.GET.search }}"</span>
-                    </div>
-                    <button type="button" onclick="removeFilter('search')" class="filter-remove-btn" style="position: absolute; top: 0.5rem; right: 0.5rem; background: none; border: none; cursor: pointer; padding: 0.25rem; border-radius: 0.375rem; transition: all 0.2s ease; color: #64748b;">
-                        <i class="bi bi-x-lg"></i>
-                    </button>
-                </div>
-            </div>
-            {% endif %}
+<!-- Десктопная версия -->
+<div class="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
     <!-- Фильтр по поиску -->
-            {% if request.GET.search %}
-            <div class="filter-card group" data-filter="search">
-                <div class="filter-card-content" style="background: white; border: 1px solid #e5e7eb; border-radius: 0.75rem; padding: 0.75rem; position: relative; transition: all 0.2s ease;">
-                    <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                        <i class="bi bi-search text-sm md:text-base"></i>
-                    </div>
-                    <div class="filter-info">
-                        <span class="filter-label" style="color: #64748b; font-size: 0.75rem; line-height: 1;">Поиск</span>
-                        <span class="filter-value" style="color: #374151; font-weight: 500; font-size: 0.875rem; line-height: 1.2;">"{{ request.GET.search }}"</span>
-                    </div>
-                    <button type="button" onclick="removeFilter('search')" class="filter-remove-btn" style="position: absolute; top: 0.25rem; right: 0.25rem; background: none; border: none; cursor: pointer; padding: 0.125rem; border-radius: 0.25rem; transition: all 0.2s ease; color: #64748b;">
-                        <i class="bi bi-x-lg text-xs md:text-sm"></i>
-                    </button>
-                </div>
+    {% if request.GET.search %}
+    <div class="filter-card group" data-filter="search">
+        <div class="filter-card-content" style="background: white; border: 2px solid #e5e7eb; border-radius: 1rem; padding: 1rem; position: relative; transition: all 0.2s ease;">
+            <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                <i class="bi bi-search"></i>
             </div>
-            {% endif %}
-
-            <!-- Фильтры по типу недвижимости -->
-            {% for prop_type in selected_property_types %}
-            <div class="filter-card group" data-filter="property_type" data-value="{{ prop_type }}">
-                <div class="filter-card-content" style="background: white; border: 1px solid #e5e7eb; border-radius: 0.75rem; padding: 0.75rem; position: relative; transition: all 0.2s ease;">
-                    <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                        <i class="bi bi-building text-sm md:text-base"></i>
-                    </div>
-                    <div class="filter-info">
-                        <span class="filter-label" style="color: #64748b; font-size: 0.75rem; line-height: 1;">Тип</span>
-                        <span class="filter-value" style="color: #374151; font-weight: 500; font-size: 0.875rem; line-height: 1.2;">
-                            {% if prop_type == "new_flat" %}🏗️ Новостр.
-                            {% elif prop_type == "resale_flat" %}🏘️ Вторичка
-                            {% elif prop_type == "house" %}🏠 Дом
-                            {% elif prop_type == "commercial" %}🏢 Нежилое
-                            {% else %}{{ prop_type|title }}
-                            {% endif %}
-                        </span>
-                    </div>
-                    <button type="button" onclick="removeFilter('property_type', '{{ prop_type }}')" class="filter-remove-btn" style="position: absolute; top: 0.25rem; right: 0.25rem; background: none; border: none; cursor: pointer; padding: 0.125rem; border-radius: 0.25rem; transition: all 0.2s ease; color: #64748b;">
-                        <i class="bi bi-x-lg text-xs md:text-sm"></i>
-                    </button>
-                </div>
+            <div class="filter-info">
+                <span class="filter-label" style="color: #64748b; font-size: 0.875rem;">Поиск</span>
+                <span class="filter-value" style="color: #374151; font-weight: 500;">"{{ request.GET.search }}"</span>
             </div>
-            {% endfor %}
-
-            <!-- Фильтры по виду размещения -->
-            {% for rental_type in selected_rental_types %}
-            <div class="filter-card group" data-filter="rental_type" data-value="{{ rental_type }}">
-                <div class="filter-card-content" style="background: white; border: 1px solid #e5e7eb; border-radius: 0.75rem; padding: 0.75rem; position: relative; transition: all 0.2s ease;">
-                    <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                        <i class="bi bi-tag text-sm md:text-base"></i>
-                    </div>
-                    <div class="filter-info">
-                        <span class="filter-label" style="color: #64748b; font-size: 0.75rem; line-height: 1;">Размещение</span>
-                        <span class="filter-value" style="color: #374151; font-weight: 500; font-size: 0.875rem; line-height: 1.2;">
-                            {% if rental_type == 'no' %}💰 Купить
-                            {% elif rental_type == 'monthly' %}📅 Помесячно
-                            {% elif rental_type == 'daily' %}🌅 Посуточно
-                            {% endif %}
-                        </span>
-                    </div>
-                    <button type="button" onclick="removeFilter('rental_type', '{{ rental_type }}')" class="filter-remove-btn" style="position: absolute; top: 0.25rem; right: 0.25rem; background: none; border: none; cursor: pointer; padding: 0.125rem; border-radius: 0.25rem; transition: all 0.2s ease; color: #64748b;">
-                        <i class="bi bi-x-lg text-xs md:text-sm"></i>
-                    </button>
-                </div>
-            </div>
-            {% endfor %}
-
-            <!-- Фильтр по городу -->
-            {% if request.GET.location %}
-            <div class="filter-card group" data-filter="location">
-                <div class="filter-card-content" style="background: white; border: 1px solid #e5e7eb; border-radius: 0.75rem; padding: 0.75rem; position: relative; transition: all 0.2s ease;">
-                    <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                        <i class="bi bi-geo-alt text-sm md:text-base"></i>
-                    </div>
-                    <div class="filter-info">
-                        <span class="filter-label" style="color: #64748b; font-size: 0.75rem; line-height: 1;">Город</span>
-                        <span class="filter-value" style="color: #374151; font-weight: 500; font-size: 0.875rem; line-height: 1.2;">{{ request.GET.location }}</span>
-                    </div>
-                    <button type="button" onclick="removeFilter('location')" class="filter-remove-btn" style="position: absolute; top: 0.25rem; right: 0.25rem; background: none; border: none; cursor: pointer; padding: 0.125rem; border-radius: 0.25rem; transition: all 0.2s ease; color: #64748b;">
-                        <i class="bi bi-x-lg text-xs md:text-sm"></i>
-                    </button>
-                </div>
-            </div>
-            {% endif %}
-
-            <!-- Фильтры по метро -->
-            {% if selected_metro_stations %}
-                {% for station in selected_metro_stations %}
-                <div class="filter-card group" data-filter="metro_station" data-value="{{ station }}">
-                    <div class="filter-card-content" style="background: white; border: 1px solid #e5e7eb; border-radius: 0.75rem; padding: 0.75rem; position: relative; transition: all 0.2s ease;">
-                        <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                            <i class="bi bi-train-front text-sm md:text-base"></i>
-                        </div>
-                        <div class="filter-info">
-                            <span class="filter-label" style="color: #64748b; font-size: 0.75rem; line-height: 1;">Метро</span>
-                            <span class="filter-value" style="color: #374151; font-weight: 500; font-size: 0.875rem; line-height: 1.2;">{{ station }}</span>
-                        </div>
-                        <button type="button" onclick="removeFilter('metro_station', '{{ station }}')" class="filter-remove-btn" style="position: absolute; top: 0.25rem; right: 0.25rem; background: none; border: none; cursor: pointer; padding: 0.125rem; border-radius: 0.25rem; transition: all 0.2s ease; color: #64748b;">
-                            <i class="bi bi-x-lg text-xs md:text-sm"></i>
-                        </button>
-                    </div>
-                </div>
-                {% endfor %}
-            {% endif %}
-
-            <!-- Фильтр по цене -->
-            {% if request.GET.min_price or request.GET.max_price %}
-            <div class="filter-card group" data-filter="price">
-                <div class="filter-card-content" style="background: white; border: 1px solid #e5e7eb; border-radius: 0.75rem; padding: 0.75rem; position: relative; transition: all 0.2s ease;">
-                    <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                        <i class="bi bi-currency-dollar text-sm md:text-base"></i>
-                    </div>
-                    <div class="filter-info">
-                        <span class="filter-label" style="color: #64748b; font-size: 0.75rem; line-height: 1;">Цена</span>
-                        <span class="filter-value" style="color: #374151; font-weight: 500; font-size: 0.875rem; line-height: 1.2;">
-                            {% if request.GET.min_price %}от {{ request.GET.min_price|space_format }} ₽{% endif %}
-                            {% if request.GET.max_price %}{% if request.GET.min_price %} - {% else %}до {% endif %}{{ request.GET.max_price|space_format }} ₽{% endif %}
-                        </span>
-                    </div>
-                    <button type="button" onclick="removeFilter('price')" class="filter-remove-btn" style="position: absolute; top: 0.25rem; right: 0.25rem; background: none; border: none; cursor: pointer; padding: 0.125rem; border-radius: 0.25rem; transition: all 0.2s ease; color: #64748b;">
-                        <i class="bi bi-x-lg text-xs md:text-sm"></i>
-                    </button>
-                </div>
-            </div>
-            {% endif %}
-
-            <!-- Фильтр по площади -->
-            {% if request.GET.min_area or request.GET.max_area %}
-            <div class="filter-card group" data-filter="area">
-                <div class="filter-card-content" style="background: white; border: 1px solid #e5e7eb; border-radius: 0.75rem; padding: 0.75rem; position: relative; transition: all 0.2s ease;">
-                    <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                        <i class="bi bi-arrows-fullscreen text-sm md:text-base"></i>
-                    </div>
-                    <div class="filter-info">
-                        <span class="filter-label" style="color: #64748b; font-size: 0.75rem; line-height: 1;">Площадь</span>
-                        <span class="filter-value" style="color: #374151; font-weight: 500; font-size: 0.875rem; line-height: 1.2;">
-                            {% if request.GET.min_area %}от {{ request.GET.min_area }} м²{% endif %}
-                            {% if request.GET.max_area %}{% if request.GET.min_area %} - {% else %}до {% endif %}{{ request.GET.max_area }} м²{% endif %}
-                        </span>
-                    </div>
-                    <button type="button" onclick="removeFilter('area')" class="filter-remove-btn" style="position: absolute; top: 0.25rem; right: 0.25rem; background: none; border: none; cursor: pointer; padding: 0.125rem; border-radius: 0.25rem; transition: all 0.2s ease; color: #64748b;">
-                        <i class="bi bi-x-lg text-xs md:text-sm"></i>
-                    </button>
-                </div>
-            </div>
-            {% endif %}
-
-            <!-- Фильтр по комнатам -->
-            {% if request.GET.rooms__gte or request.GET.rooms__lte %}
-            <div class="filter-card group" data-filter="rooms">
-                <div class="filter-card-content" style="background: white; border: 1px solid #e5e7eb; border-radius: 0.75rem; padding: 0.75rem; position: relative; transition: all 0.2s ease;">
-                    <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                        <i class="bi bi-door-open text-sm md:text-base"></i>
-                    </div>
-                    <div class="filter-info">
-                        <span class="filter-label" style="color: #64748b; font-size: 0.75rem; line-height: 1;">Комнаты</span>
-                        <span class="filter-value" style="color: #374151; font-weight: 500; font-size: 0.875rem; line-height: 1.2;">
-                            {% if request.GET.rooms__gte %}от {{ request.GET.rooms__gte }}{% endif %}
-                            {% if request.GET.rooms__lte %}{% if request.GET.rooms__gte %} - {% else %}до {% endif %}{{ request.GET.rooms__lte }}{% endif %}
-                        </span>
-                    </div>
-                    <button type="button" onclick="removeFilter('rooms')" class="filter-remove-btn" style="position: absolute; top: 0.25rem; right: 0.25rem; background: none; border: none; cursor: pointer; padding: 0.125rem; border-radius: 0.25rem; transition: all 0.2s ease; color: #64748b;">
-                        <i class="bi bi-x-lg text-xs md:text-sm"></i>
-                    </button>
-                </div>
-            </div>
-            {% endif %}
-
-            <!-- Фильтр по этажу -->
-            {% if request.GET.min_floor or request.GET.max_floor %}
-            <div class="filter-card group" data-filter="floor">
-                <div class="filter-card-content" style="background: white; border: 1px solid #e5e7eb; border-radius: 0.75rem; padding: 0.75rem; position: relative; transition: all 0.2s ease;">
-                    <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                        <i class="bi bi-building-up text-sm md:text-base"></i>
-                    </div>
-                    <div class="filter-info">
-                        <span class="filter-label" style="color: #64748b; font-size: 0.75rem; line-height: 1;">Этаж</span>
-                        <span class="filter-value" style="color: #374151; font-weight: 500; font-size: 0.875rem; line-height: 1.2;">
-                            {% if request.GET.min_floor %}от {{ request.GET.min_floor }}{% endif %}
-                            {% if request.GET.max_floor %}{% if request.GET.min_floor %} - {% else %}до {% endif %}{{ request.GET.max_floor }}{% endif %}
-                        </span>
-                    </div>
-                    <button type="button" onclick="removeFilter('floor')" class="filter-remove-btn" style="position: absolute; top: 0.25rem; right: 0.25rem; background: none; border: none; cursor: pointer; padding: 0.125rem; border-radius: 0.25rem; transition: all 0.2s ease; color: #64748b;">
-                        <i class="bi bi-x-lg text-xs md:text-sm"></i>
-                    </button>
-                </div>
-            </div>
-            {% endif %}
-
-            <!-- Фильтр по году постройки -->
-            {% if request.GET.min_construction_year or request.GET.max_construction_year %}
-            <div class="filter-card group" data-filter="construction_year">
-                <div class="filter-card-content" style="background: white; border: 1px solid #e5e7eb; border-radius: 0.75rem; padding: 0.75rem; position: relative; transition: all 0.2s ease;">
-                    <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                        <i class="bi bi-calendar-event text-sm md:text-base"></i>
-                    </div>
-                    <div class="filter-info">
-                        <span class="filter-label" style="color: #64748b; font-size: 0.75rem; line-height: 1;">Год постройки</span>
-                        <span class="filter-value" style="color: #374151; font-weight: 500; font-size: 0.875rem; line-height: 1.2;">
-                            {% if request.GET.min_construction_year %}от {{ request.GET.min_construction_year }}{% endif %}
-                            {% if request.GET.max_construction_year %}{% if request.GET.min_construction_year %} - {% else %}до {% endif %}{{ request.GET.max_construction_year }}{% endif %}
-                        </span>
-                    </div>
-                    <button type="button" onclick="removeFilter('construction_year')" class="filter-remove-btn" style="position: absolute; top: 0.25rem; right: 0.25rem; background: none; border: none; cursor: pointer; padding: 0.125rem; border-radius: 0.25rem; transition: all 0.2s ease; color: #64748b;">
-                        <i class="bi bi-x-lg text-xs md:text-sm"></i>
-                    </button>
-                </div>
-            </div>
-            {% endif %}
-
-            <!-- Фильтр по отделке -->
-            {% if request.GET.has_finishing %}
-            <div class="filter-card group" data-filter="has_finishing">
-                <div class="filter-card-content" style="background: white; border: 1px solid #e5e7eb; border-radius: 0.75rem; padding: 0.75rem; position: relative; transition: all 0.2s ease;">
-                    <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                        <i class="bi bi-palette text-sm md:text-base"></i>
-                    </div>
-                    <div class="filter-info">
-                        <span class="filter-label" style="color: #64748b; font-size: 0.75rem; line-height: 1;">Отделка</span>
-                        <span class="filter-value" style="color: #374151; font-weight: 500; font-size: 0.875rem; line-height: 1.2;">✅ С отделкой</span>
-                    </div>
-                    <button type="button" onclick="removeFilter('has_finishing')" class="filter-remove-btn" style="position: absolute; top: 0.25rem; right: 0.25rem; background: none; border: none; cursor: pointer; padding: 0.125rem; border-radius: 0.25rem; transition: all 0.2s ease; color: #64748b;">
-                        <i class="bi bi-x-lg text-xs md:text-sm"></i>
-                    </button>
-                </div>
-            </div>
-            {% endif %}
-
-            <!-- Фильтр по сданным объектам -->
-            {% if request.GET.is_delivered %}
-            <div class="filter-card group" data-filter="is_delivered">
-                <div class="filter-card-content" style="background: white; border: 1px solid #e5e7eb; border-radius: 0.75rem; padding: 0.75rem; position: relative; transition: all 0.2s ease;">
-                    <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                        <i class="bi bi-check-circle text-sm md:text-base"></i>
-                    </div>
-                    <div class="filter-info">
-                        <span class="filter-label" style="color: #64748b; font-size: 0.75rem; line-height: 1;">Статус</span>
-                        <span class="filter-value" style="color: #374151; font-weight: 500; font-size: 0.875rem; line-height: 1.2;">🏁 Сданные</span>
-                    </div>
-                    <button type="button" onclick="removeFilter('is_delivered')" class="filter-remove-btn" style="position: absolute; top: 0.25rem; right: 0.25rem; background: none; border: none; cursor: pointer; padding: 0.125rem; border-radius: 0.25rem; transition: all 0.2s ease; color: #64748b;">
-                        <i class="bi bi-x-lg text-xs md:text-sm"></i>
-                    </button>
-                </div>
-            </div>
-            {% endif %}
-
-            <!-- Фильтр по расстоянию до центра -->
-            {% if request.GET.min_distance_to_center or request.GET.max_distance_to_center %}
-            <div class="filter-card group" data-filter="distance_to_center">
-                <div class="filter-card-content" style="background: white; border: 1px solid #e5e7eb; border-radius: 0.75rem; padding: 0.75rem; position: relative; transition: all 0.2s ease;">
-                    <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                        <i class="bi bi-geo text-sm md:text-base"></i>
-                    </div>
-                    <div class="filter-info">
-                        <span class="filter-label" style="color: #64748b; font-size: 0.75rem; line-height: 1;">До центра</span>
-                        <span class="filter-value" style="color: #374151; font-weight: 500; font-size: 0.875rem; line-height: 1.2;">
-                            {% if request.GET.min_distance_to_center %}от {{ request.GET.min_distance_to_center }} км{% endif %}
-                            {% if request.GET.max_distance_to_center %}{% if request.GET.min_distance_to_center %} - {% else %}до {% endif %}{{ request.GET.max_distance_to_center }} км{% endif %}
-                        </span>
-                    </div>
-                    <button type="button" onclick="removeFilter('distance_to_center')" class="filter-remove-btn" style="position: absolute; top: 0.25rem; right: 0.25rem; background: none; border: none; cursor: pointer; padding: 0.125rem; border-radius: 0.25rem; transition: all 0.2s ease; color: #64748b;">
-                        <i class="bi bi-x-lg text-xs md:text-sm"></i>
-                    </button>
-                </div>
-            </div>
-            {% endif %}
+            <button type="button" onclick="removeFilter('search')" class="filter-remove-btn" style="position: absolute; top: 0.5rem; right: 0.5rem; background: none; border: none; cursor: pointer; padding: 0.25rem; border-radius: 0.375rem; transition: all 0.2s ease; color: #64748b;">
+                <i class="bi bi-x-lg"></i>
+            </button>
         </div>
+    </div>
+    {% endif %}
+
+    <!-- Фильтры по типу недвижимости -->
+    {% for prop_type in selected_property_types %}
+    <div class="filter-card group" data-filter="property_type" data-value="{{ prop_type }}">
+        <div class="filter-card-content" style="background: white; border: 2px solid #e5e7eb; border-radius: 1rem; padding: 1rem; position: relative; transition: all 0.2s ease;">
+            <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                <i class="bi bi-building"></i>
+            </div>
+            <div class="filter-info">
+                <span class="filter-label" style="color: #64748b; font-size: 0.875rem;">Тип</span>
+                <span class="filter-value" style="color: #374151; font-weight: 500;">
+                    {% if prop_type == "new_flat" %}🏗️ Новостройка
+                    {% elif prop_type == "resale_flat" %}🏘️ Вторичка
+                    {% elif prop_type == "house" %}🏠 Дом
+                    {% elif prop_type == "commercial" %}🏢 Нежилое
+                    {% else %}{{ prop_type|title }}
+                    {% endif %}
+                </span>
+            </div>
+            <button type="button" onclick="removeFilter('property_type', '{{ prop_type }}')" class="filter-remove-btn" style="position: absolute; top: 0.5rem; right: 0.5rem; background: none; border: none; cursor: pointer; padding: 0.25rem; border-radius: 0.375rem; transition: all 0.2s ease; color: #64748b;">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Фильтры по виду размещения -->
+    {% for rental_type in selected_rental_types %}
+    <div class="filter-card group" data-filter="rental_type" data-value="{{ rental_type }}">
+        <div class="filter-card-content" style="background: white; border: 2px solid #e5e7eb; border-radius: 1rem; padding: 1rem; position: relative; transition: all 0.2s ease;">
+            <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                <i class="bi bi-tag"></i>
+            </div>
+            <div class="filter-info">
+                <span class="filter-label" style="color: #64748b; font-size: 0.875rem;">Размещение</span>
+                <span class="filter-value" style="color: #374151; font-weight: 500;">
+                    {% if rental_type == 'no' %}💰 Купить
+                    {% elif rental_type == 'monthly' %}📅 Помесячно
+                    {% elif rental_type == 'daily' %}🌅 Посуточно
+                    {% endif %}
+                </span>
+            </div>
+            <button type="button" onclick="removeFilter('rental_type', '{{ rental_type }}')" class="filter-remove-btn" style="position: absolute; top: 0.5rem; right: 0.5rem; background: none; border: none; cursor: pointer; padding: 0.25rem; border-radius: 0.375rem; transition: all 0.2s ease; color: #64748b;">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Фильтр по городу -->
+    {% if request.GET.location %}
+    <div class="filter-card group" data-filter="location">
+        <div class="filter-card-content" style="background: white; border: 2px solid #e5e7eb; border-radius: 1rem; padding: 1rem; position: relative; transition: all 0.2s ease;">
+            <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                <i class="bi bi-geo-alt"></i>
+            </div>
+            <div class="filter-info">
+                <span class="filter-label" style="color: #64748b; font-size: 0.875rem;">Город</span>
+                <span class="filter-value" style="color: #374151; font-weight: 500;">{{ request.GET.location }}</span>
+            </div>
+            <button type="button" onclick="removeFilter('location')" class="filter-remove-btn" style="position: absolute; top: 0.5rem; right: 0.5rem; background: none; border: none; cursor: pointer; padding: 0.25rem; border-radius: 0.375rem; transition: all 0.2s ease; color: #64748b;">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Фильтры по метро -->
+    {% if selected_metro_stations %}
+        {% for station in selected_metro_stations %}
+        <div class="filter-card group" data-filter="metro_station" data-value="{{ station }}">
+            <div class="filter-card-content" style="background: white; border: 2px solid #e5e7eb; border-radius: 1rem; padding: 1rem; position: relative; transition: all 0.2s ease;">
+                <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                    <i class="bi bi-train-front"></i>
+                </div>
+                <div class="filter-info">
+                    <span class="filter-label" style="color: #64748b; font-size: 0.875rem;">Метро</span>
+                    <span class="filter-value" style="color: #374151; font-weight: 500;">{{ station }}</span>
+                </div>
+                <button type="button" onclick="removeFilter('metro_station', '{{ station }}')" class="filter-remove-btn" style="position: absolute; top: 0.5rem; right: 0.5rem; background: none; border: none; cursor: pointer; padding: 0.25rem; border-radius: 0.375rem; transition: all 0.2s ease; color: #64748b;">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Фильтр по цене -->
+    {% if request.GET.min_price or request.GET.max_price %}
+    <div class="filter-card group" data-filter="price">
+        <div class="filter-card-content" style="background: white; border: 2px solid #e5e7eb; border-radius: 1rem; padding: 1rem; position: relative; transition: all 0.2s ease;">
+            <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                <i class="bi bi-currency-dollar"></i>
+            </div>
+            <div class="filter-info">
+                <span class="filter-label" style="color: #64748b; font-size: 0.875rem;">Цена</span>
+                <span class="filter-value" style="color: #374151; font-weight: 500;">
+                    {% if request.GET.min_price %}от {{ request.GET.min_price|space_format }} ₽{% endif %}
+                    {% if request.GET.max_price %}{% if request.GET.min_price %} - {% else %}до {% endif %}{{ request.GET.max_price|space_format }} ₽{% endif %}
+                </span>
+            </div>
+            <button type="button" onclick="removeFilter('price')" class="filter-remove-btn" style="position: absolute; top: 0.5rem; right: 0.5rem; background: none; border: none; cursor: pointer; padding: 0.25rem; border-radius: 0.375rem; transition: all 0.2s ease; color: #64748b;">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Фильтр по площади -->
+    {% if request.GET.min_area or request.GET.max_area %}
+    <div class="filter-card group" data-filter="area">
+        <div class="filter-card-content" style="background: white; border: 2px solid #e5e7eb; border-radius: 1rem; padding: 1rem; position: relative; transition: all 0.2s ease;">
+            <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                <i class="bi bi-arrows-fullscreen"></i>
+            </div>
+            <div class="filter-info">
+                <span class="filter-label" style="color: #64748b; font-size: 0.875rem;">Площадь</span>
+                <span class="filter-value" style="color: #374151; font-weight: 500;">
+                    {% if request.GET.min_area %}от {{ request.GET.min_area }} м²{% endif %}
+                    {% if request.GET.max_area %}{% if request.GET.min_area %} - {% else %}до {% endif %}{{ request.GET.max_area }} м²{% endif %}
+                </span>
+            </div>
+            <button type="button" onclick="removeFilter('area')" class="filter-remove-btn" style="position: absolute; top: 0.5rem; right: 0.5rem; background: none; border: none; cursor: pointer; padding: 0.25rem; border-radius: 0.375rem; transition: all 0.2s ease; color: #64748b;">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Фильтр по комнатам -->
+    {% if request.GET.rooms__gte or request.GET.rooms__lte %}
+    <div class="filter-card group" data-filter="rooms">
+        <div class="filter-card-content" style="background: white; border: 2px solid #e5e7eb; border-radius: 1rem; padding: 1rem; position: relative; transition: all 0.2s ease;">
+            <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                <i class="bi bi-door-open"></i>
+            </div>
+            <div class="filter-info">
+                <span class="filter-label" style="color: #64748b; font-size: 0.875rem;">Комнаты</span>
+                <span class="filter-value" style="color: #374151; font-weight: 500;">
+                    {% if request.GET.rooms__gte %}от {{ request.GET.rooms__gte }}{% endif %}
+                    {% if request.GET.rooms__lte %}{% if request.GET.rooms__gte %} - {% else %}до {% endif %}{{ request.GET.rooms__lte }}{% endif %}
+                </span>
+            </div>
+            <button type="button" onclick="removeFilter('rooms')" class="filter-remove-btn" style="position: absolute; top: 0.5rem; right: 0.5rem; background: none; border: none; cursor: pointer; padding: 0.25rem; border-radius: 0.375rem; transition: all 0.2s ease; color: #64748b;">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Фильтр по этажу -->
+    {% if request.GET.min_floor or request.GET.max_floor %}
+    <div class="filter-card group" data-filter="floor">
+        <div class="filter-card-content" style="background: white; border: 2px solid #e5e7eb; border-radius: 1rem; padding: 1rem; position: relative; transition: all 0.2s ease;">
+            <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                <i class="bi bi-building-up"></i>
+            </div>
+            <div class="filter-info">
+                <span class="filter-label" style="color: #64748b; font-size: 0.875rem;">Этаж</span>
+                <span class="filter-value" style="color: #374151; font-weight: 500;">
+                    {% if request.GET.min_floor %}от {{ request.GET.min_floor }}{% endif %}
+                    {% if request.GET.max_floor %}{% if request.GET.min_floor %} - {% else %}до {% endif %}{{ request.GET.max_floor }}{% endif %}
+                </span>
+            </div>
+            <button type="button" onclick="removeFilter('floor')" class="filter-remove-btn" style="position: absolute; top: 0.5rem; right: 0.5rem; background: none; border: none; cursor: pointer; padding: 0.25rem; border-radius: 0.375rem; transition: all 0.2s ease; color: #64748b;">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Фильтр по году постройки -->
+    {% if request.GET.min_construction_year or request.GET.max_construction_year %}
+    <div class="filter-card group" data-filter="construction_year">
+        <div class="filter-card-content" style="background: white; border: 2px solid #e5e7eb; border-radius: 1rem; padding: 1rem; position: relative; transition: all 0.2s ease;">
+            <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                <i class="bi bi-calendar-event"></i>
+            </div>
+            <div class="filter-info">
+                <span class="filter-label" style="color: #64748b; font-size: 0.875rem;">Год постройки</span>
+                <span class="filter-value" style="color: #374151; font-weight: 500;">
+                    {% if request.GET.min_construction_year %}от {{ request.GET.min_construction_year }}{% endif %}
+                    {% if request.GET.max_construction_year %}{% if request.GET.min_construction_year %} - {% else %}до {% endif %}{{ request.GET.max_construction_year }}{% endif %}
+                </span>
+            </div>
+            <button type="button" onclick="removeFilter('construction_year')" class="filter-remove-btn" style="position: absolute; top: 0.5rem; right: 0.5rem; background: none; border: none; cursor: pointer; padding: 0.25rem; border-radius: 0.375rem; transition: all 0.2s ease; color: #64748b;">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Фильтр по отделке -->
+    {% if request.GET.has_finishing %}
+    <div class="filter-card group" data-filter="has_finishing">
+        <div class="filter-card-content" style="background: white; border: 2px solid #e5e7eb; border-radius: 1rem; padding: 1rem; position: relative; transition: all 0.2s ease;">
+            <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                <i class="bi bi-palette"></i>
+            </div>
+            <div class="filter-info">
+                <span class="filter-label" style="color: #64748b; font-size: 0.875rem;">Отделка</span>
+                <span class="filter-value" style="color: #374151; font-weight: 500;">✅ С отделкой</span>
+            </div>
+            <button type="button" onclick="removeFilter('has_finishing')" class="filter-remove-btn" style="position: absolute; top: 0.5rem; right: 0.5rem; background: none; border: none; cursor: pointer; padding: 0.25rem; border-radius: 0.375rem; transition: all 0.2s ease; color: #64748b;">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Фильтр по сданным объектам -->
+    {% if request.GET.is_delivered %}
+    <div class="filter-card group" data-filter="is_delivered">
+        <div class="filter-card-content" style="background: white; border: 2px solid #e5e7eb; border-radius: 1rem; padding: 1rem; position: relative; transition: all 0.2s ease;">
+            <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                <i class="bi bi-check-circle"></i>
+            </div>
+            <div class="filter-info">
+                <span class="filter-label" style="color: #64748b; font-size: 0.875rem;">Статус</span>
+                <span class="filter-value" style="color: #374151; font-weight: 500;">🏁 Сданные</span>
+            </div>
+            <button type="button" onclick="removeFilter('is_delivered')" class="filter-remove-btn" style="position: absolute; top: 0.5rem; right: 0.5rem; background: none; border: none; cursor: pointer; padding: 0.25rem; border-radius: 0.375rem; transition: all 0.2s ease; color: #64748b;">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Фильтр по расстоянию до центра -->
+    {% if request.GET.min_distance_to_center or request.GET.max_distance_to_center %}
+    <div class="filter-card group" data-filter="distance_to_center">
+        <div class="filter-card-content" style="background: white; border: 2px solid #e5e7eb; border-radius: 1rem; padding: 1rem; position: relative; transition: all 0.2s ease;">
+            <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                <i class="bi bi-geo"></i>
+            </div>
+            <div class="filter-info">
+                <span class="filter-label" style="color: #64748b; font-size: 0.875rem;">До центра</span>
+                <span class="filter-value" style="color: #374151; font-weight: 500;">
+                    {% if request.GET.min_distance_to_center %}от {{ request.GET.min_distance_to_center }} км{% endif %}
+                    {% if request.GET.max_distance_to_center %}{% if request.GET.min_distance_to_center %} - {% else %}до {% endif %}{{ request.GET.max_distance_to_center }} км{% endif %}
+                </span>
+            </div>
+            <button type="button" onclick="removeFilter('distance_to_center')" class="filter-remove-btn" style="position: absolute; top: 0.5rem; right: 0.5rem; background: none; border: none; cursor: pointer; padding: 0.25rem; border-radius: 0.375rem; transition: all 0.2s ease; color: #64748b;">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+    </div>
+    {% endif %}
+</div>
 
         <!-- Мобильная версия с горизонтальным скроллом -->
         <div class="md:hidden relative">
