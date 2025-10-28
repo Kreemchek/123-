@@ -17,7 +17,8 @@ from django.contrib import messages
 from django.views import View
 from django_filters.views import FilterView
 from .filters import BrokerFilter
-
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
 
 
 class BrokerPropertyListView(LoginRequiredMixin, ListView):
@@ -225,4 +226,18 @@ class BrokerDashboardView(LoginRequiredMixin, TemplateView):
         })
         return context
 
+@login_required
+def delete_broker_favorite(request, favorite_id):
+    favorite = get_object_or_404(Favorite, id=favorite_id, user=request.user, broker__isnull=False)
+    broker_name = favorite.broker.get_full_name() if favorite.broker else "Брокер"
+    favorite.delete()
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({
+            'status': 'success',
+            'message': f'Брокер "{broker_name}" удален из избранного'
+        })
+    else:
+        messages.success(request, f'Брокер "{broker_name}" удален из избранного')
+        return redirect('dashboard')
 

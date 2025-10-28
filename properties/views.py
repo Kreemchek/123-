@@ -967,3 +967,5 @@ def delete_favorite(request, favorite_id):
     else:
         messages.success(request, f'"{property_title}" удален из избранного')
         return redirect('dashboard')
+
+

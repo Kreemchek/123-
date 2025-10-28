@@ -26,6 +26,7 @@ urlpatterns = [
     path('api/metro/', MetroAutocompleteView.as_view(), name='metro-autocomplete'),
     path('update-address/', views.update_property_address, name='update_property_address'),
     path('api/metro-stations/', views.MetroStationsView.as_view(), name='metro-stations'),
+
 path('favorite/<int:favorite_id>/delete/', views.delete_favorite, name='favorite-delete'),
 
 
