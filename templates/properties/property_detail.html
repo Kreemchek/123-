@@ -875,6 +875,10 @@
 <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
 <script src="https://api-maps.yandex.ru/2.1/?apikey={{ YANDEX_MAPS_API_KEY }}&lang=ru_RU"></script>
 <script>
+// ==============================
+// СИСТЕМА КРАСИВЫХ УВЕДОМЛЕНИЙ
+// ==============================
+
 // Функция для показа глобальных уведомлений
 function showGlobalMessage(message, type = 'info') {
     const container = document.getElementById('global-messages-overlay');
@@ -917,12 +921,12 @@ function showGlobalMessage(message, type = 'info') {
         closeMessage(messageElement);
     });
 
-    // Автоматическое закрытие через 8 секунд (дольше для важных сообщений)
+    // Автоматическое закрытие через 5 секунд
     setTimeout(() => {
         if (messageElement.parentNode) {
             closeMessage(messageElement);
         }
-    }, 8000);
+    }, 5000);
 
     // Закрытие при клике на сообщение
     messageElement.addEventListener('click', function(e) {
@@ -942,139 +946,18 @@ function closeMessage(messageElement) {
     }, 300);
 }
 
-// Проверка URL параметров для показа уведомлений
-function checkUrlForNotifications() {
-    const urlParams = new URLSearchParams(window.location.search);
+// ==============================
+// ОБРАБОТЧИКИ ФОРМ
+// ==============================
 
-    if (urlParams.get('creation_success') === '1') {
-        const price = urlParams.get('price') || '0';
-        showGlobalMessage(
-            `Объект успешно создан! С вашего баланса списано ${price} ₽. Теперь заполните адрес объекта на карте.`,
-            'success'
-        );
-
-        // Очищаем URL параметры без перезагрузки страницы
-        const newUrl = window.location.pathname;
-        window.history.replaceState({}, '', newUrl);
-    }
-}
-
-// Обновить существующую функцию showToast для использования глобальных уведомлений
-function showToast(message, type = 'info') {
-    showGlobalMessage(message, type);
-}
-
-// Функция для повторной попытки загрузки карты
-function loadMapWithRetry(attempt = 0) {
-    if (attempt > 2) {
-        console.error('Превышено количество попыток загрузки карты');
-        document.getElementById('map-fallback').style.display = 'block';
-        return;
-    }
-
-    if (typeof ymaps === 'undefined') {
-        console.log('API Яндекс.Карт еще не загружен, попытка', attempt + 1);
-        setTimeout(() => loadMapWithRetry(attempt + 1), 1000);
-        return;
-    }
-
-    try {
-        if (coordinates_json) {
-            console.log('Инициализация карты для всех пользователей');
-            initViewMap();
-        } else {
-            console.log('Координаты отсутствуют');
-            document.getElementById('map-fallback').style.display = 'block';
-            showGlobalMessage('Адрес объекта не указан', 'warning');
-        }
-    } catch (e) {
-        console.error('Ошибка инициализации карты:', e);
-        document.getElementById('map-fallback').style.display = 'block';
-        showGlobalMessage('Ошибка загрузки карты', 'error');
-    }
-}
-
-// Инициализация после загрузки API
-ymaps.ready(function() {
-    console.log('API Яндекс.Карт загружен');
-    loadMapWithRetry();
-});
-
-// Анимация при скролле
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('reveal');
-        }
-    });
-}, { threshold: 0.1 });
-
-document.querySelectorAll('.animate-block').forEach(element => {
-    observer.observe(element);
-});
-
-// Функция для инициализации свайпера
-function initSwiper() {
-    const swiper = new Swiper('.swiper', {
-        loop: true,
-        navigation: {
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev',
-        },
-        keyboard: { enabled: true },
-        effect: 'slide',
-        speed: 500,
-        preloadImages: false,
-        lazy: {
-            loadPrevNext: true,
-        },
-    });
-
-    return swiper;
-}
-
-// Модальное окно
-function setupModal() {
-    const modal = document.getElementById('imageModal');
-    const modalImg = document.getElementById('expandedImg');
-    const closeBtn = document.querySelector('.close-modal');
-
-    document.querySelectorAll('.swiper-slide img').forEach(img => {
-        img.addEventListener('click', () => {
-            modal.style.display = 'flex';
-            modalImg.src = img.src;
-            modalImg.classList.add('modal-opened');
-        });
-    });
-
-    closeBtn.addEventListener('click', () => {
-        modal.style.display = 'none';
-        modalImg.classList.remove('modal-opened');
-    });
-
-    window.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            modal.style.display = 'none';
-            modalImg.classList.remove('modal-opened');
-        }
-    });
-
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.style.display === 'flex') {
-            modal.style.display = 'none';
-            modalImg.classList.remove('modal-opened');
-        }
-    });
-}
-
-// Обработка избранного
+// Обработка избранного с красивыми уведомлениями
 function setupFavorites() {
     document.querySelectorAll('form[action*="favorite"]').forEach(form => {
         // Удаляем все существующие обработчики submit
         const newForm = form.cloneNode(true);
         form.parentNode.replaceChild(newForm, form);
 
-        // Добавляем один обработчик
+        // Добавляем обработчик
         newForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -1107,7 +990,7 @@ function setupFavorites() {
                     icon.classList.add('bi-heart-fill', 'text-red-500');
                     icon.classList.remove('bi-heart');
                     text.textContent = 'Удалить из избранного';
-                    showGlobalMessage('Объект добавлен в избранное', 'success');
+                    showGlobalMessage('Объект добавлен в избранное ❤️', 'success');
                 } else if (data.status === 'removed') {
                     icon.classList.remove('bi-heart-fill', 'text-red-500');
                     icon.classList.add('bi-heart');
@@ -1128,13 +1011,129 @@ function setupFavorites() {
     });
 }
 
-// Инициализация карты для просмотра
+// Обработчик сохранения адреса с уведомлениями
+function setupAddressSaving() {
+    const saveBtn = document.getElementById('save-address-btn');
+    if (!saveBtn) return;
+
+    saveBtn.addEventListener('click', async function() {
+        const btn = this;
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="bi bi-arrow-repeat spin"></i> Сохранение...';
+
+        try {
+            let coords = [55.751574, 37.617635]; // Москва по умолчанию
+            if (editPlacemark) {
+                const yandexCoords = editPlacemark.geometry.getCoordinates();
+                console.log('Saving Yandex coordinates:', yandexCoords);
+                coords = [yandexCoords[1], yandexCoords[0]];
+                console.log('Converted to PostGIS format:', coords);
+            }
+
+            const response = await fetch('{% url "properties:update_property_address" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    property_id: {{ property.id }},
+                    city: document.getElementById('city-input').value,
+                    address: document.getElementById('address-display').textContent,
+                    metro_station: document.getElementById('metro-input').value,
+                    coordinates: coords.join(','),
+                    _method: 'PATCH'
+                })
+            });
+
+            const data = await response.json();
+            console.log('Server response:', data);
+
+            if (data.status === 'success') {
+                // Обновляем карту просмотра
+                if (typeof viewMap !== 'undefined') {
+                    const newCoords = [data.coordinates.y, data.coordinates.x];
+                    console.log('Updating view map with:', newCoords);
+                    viewMap.setCenter(newCoords, 15);
+
+                    if (viewPlacemark) {
+                        viewMap.geoObjects.remove(viewPlacemark);
+                    }
+
+                    viewPlacemark = new ymaps.Placemark(newCoords, {}, {
+                        preset: 'islands#redDotIcon',
+                        draggable: false
+                    });
+                    viewMap.geoObjects.add(viewPlacemark);
+                }
+
+                // Обновляем адрес в параметрах
+                const addressParamElement = document.querySelector('.params-grid div:nth-child(2) .text-lg');
+                if (addressParamElement) {
+                    addressParamElement.textContent = data.address;
+                }
+
+                showGlobalMessage('✅ Адрес успешно сохранен! Объект теперь виден клиентам', 'success');
+            } else {
+                throw new Error(data.message || 'Неизвестная ошибка');
+            }
+        } catch (error) {
+            console.error('Ошибка:', error);
+            showGlobalMessage(`❌ Ошибка: ${error.message}`, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
+    });
+}
+
+// ==============================
+// ПРОВЕРКА URL ДЛЯ УВЕДОМЛЕНИЙ
+// ==============================
+
+function checkUrlForNotifications() {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // Уведомление об успешном создании объекта
+    if (urlParams.get('creation_success') === '1') {
+        const price = urlParams.get('price') || '0';
+        showGlobalMessage(
+            `🎉 Объект успешно создан! С вашего баланса списано ${price} ₽. Теперь заполните адрес объекта на карте.`,
+            'success'
+        );
+
+        // Очищаем URL параметры без перезагрузки страницы
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, '', newUrl);
+    }
+
+    // Уведомление об успешной оплате контакта
+    if (urlParams.get('contact_paid') === '1') {
+        showGlobalMessage(
+            '✅ Контакт с брокером оплачен! Теперь вы можете написать сообщение.',
+            'success'
+        );
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, '', newUrl);
+    }
+}
+
+// ==============================
+// КАРТЫ И ГЕОЛОКАЦИЯ
+// ==============================
+
 // Инициализация переменных из Django-контекста
 const coordinates_json = '{{ coordinates_json|escapejs }}' || null;
 const metro_coordinates_json = '{{ metro_coordinates_json|escapejs }}' || null;
 const property_address = '{{ property.address|escapejs }}' || 'Адрес не указан';
 const metro_station = '{{ property.metro_station|escapejs }}' || 'Метро не указано';
 
+let viewMap, viewPlacemark;
+let editMap, editPlacemark;
+let searchResults = [];
+
+// Инициализация карты для просмотра
 function initViewMap() {
     console.log('[MAP] Инициализация карты просмотра');
 
@@ -1156,7 +1155,8 @@ function initViewMap() {
 
         // Добавляем метку
         viewPlacemark = new ymaps.Placemark(coords, {
-            hintContent: property_address
+            hintContent: property_address,
+            balloonContent: property_address
         }, {
             preset: 'islands#redDotIcon',
             draggable: false
@@ -1171,13 +1171,15 @@ function initViewMap() {
                 const metroCoordsData = JSON.parse(metro_coordinates_json);
                 const metroCoords = [metroCoordsData.y, metroCoordsData.x];
                 const metroPlacemark = new ymaps.Placemark(metroCoords, {
-                    hintContent: metro_station
+                    hintContent: metro_station,
+                    balloonContent: `Станция метро: ${metro_station}`
                 }, {
                     preset: 'islands#blueCircleDotIcon',
                     iconColor: '#1e88e5'
                 });
                 viewMap.geoObjects.add(metroPlacemark);
 
+                // Линия от объекта до метро
                 const polyline = new ymaps.Polyline(
                     [coords, metroCoords],
                     {},
@@ -1196,25 +1198,12 @@ function initViewMap() {
     } catch (error) {
         console.error('[MAP] Ошибка:', error);
         document.getElementById('map-fallback').style.display = 'block';
+        showGlobalMessage('❌ Не удалось загрузить карту', 'error');
         throw error;
     }
 }
 
-// Инициализация после загрузки API
-ymaps.ready(function() {
-    console.log('API Яндекс.Карт загружен');
-
-    if (coordinates_json) {
-        initViewMap();
-    } else {
-        document.getElementById('map-fallback').style.display = 'block';
-    }
-});
-
 // Инициализация карты для редактирования
-let editMap, editPlacemark;
-let searchResults = [];
-
 function initEditMap() {
     console.log('[DEBUG] Начало инициализации карты редактирования');
 
@@ -1251,11 +1240,13 @@ function initEditMap() {
             updatePlacemark(coords);
             getAddress(coords);
             findNearestMetro(coords);
+            showGlobalMessage('📍 Местоположение объекта выбрано', 'info');
         });
 
         // Кнопка "Мое местоположение"
         document.getElementById('locate-me').addEventListener('click', function() {
             if (navigator.geolocation) {
+                showGlobalMessage('Определяем ваше местоположение...', 'info');
                 navigator.geolocation.getCurrentPosition(function(position) {
                     const coords = [position.coords.latitude, position.coords.longitude];
                     console.log('[DEBUG] Geolocation coordinates:', coords);
@@ -1263,11 +1254,12 @@ function initEditMap() {
                     updatePlacemark(coords);
                     getAddress(coords);
                     findNearestMetro(coords);
+                    showGlobalMessage('✅ Ваше местоположение определено', 'success');
                 }, function(error) {
-                    showGlobalMessage('Не удалось определить ваше местоположение: ' + error.message, 'error');
+                    showGlobalMessage('❌ Не удалось определить ваше местоположение', 'error');
                 });
             } else {
-                showGlobalMessage('Ваш браузер не поддерживает геолокацию', 'error');
+                showGlobalMessage('❌ Ваш браузер не поддерживает геолокацию', 'error');
             }
         });
 
@@ -1299,6 +1291,7 @@ function initEditMap() {
 
                 searchInput.value = result.properties.name;
                 searchResultsContainer.style.display = 'none';
+                showGlobalMessage('📍 Объект найден на карте', 'success');
             }
         });
     });
@@ -1321,6 +1314,7 @@ function initEditMap() {
             const newCoords = editPlacemark.geometry.getCoordinates();
             getAddress(newCoords);
             findNearestMetro(newCoords);
+            showGlobalMessage('📍 Местоположение обновлено', 'info');
         });
     }
 
@@ -1403,81 +1397,93 @@ function initEditMap() {
     });
 }
 
-// Обработчик сохранения адреса
-document.getElementById('save-address-btn').addEventListener('click', async function() {
-    const btn = this;
-    const originalText = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = '<i class="bi bi-arrow-repeat spin"></i> Сохранение...';
+// Функция для повторной загрузки карты
+function retryMapLoading() {
+    console.log('Попытка перезагрузки карты...');
+    showGlobalMessage('🔄 Пытаемся загрузить карту...', 'info');
+    setTimeout(() => {
+        location.reload();
+    }, 1000);
+}
 
-    try {
-        let coords = [55.751574, 37.617635]; // Москва по умолчанию
-        if (editPlacemark) {
-            const yandexCoords = editPlacemark.geometry.getCoordinates();
-            console.log('Saving Yandex coordinates:', yandexCoords);
-            coords = [yandexCoords[1], yandexCoords[0]];
-            console.log('Converted to PostGIS format:', coords);
+// ==============================
+// ДОПОЛНИТЕЛЬНЫЕ ФУНКЦИИ
+// ==============================
+
+// Анимация при скролле
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('reveal');
         }
+    });
+}, { threshold: 0.1 });
 
-        const response = await fetch('{% url "properties:update_property_address" %}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: JSON.stringify({
-                property_id: {{ property.id }},
-                city: document.getElementById('city-input').value,
-                address: document.getElementById('address-display').textContent,
-                metro_station: document.getElementById('metro-input').value,
-                coordinates: coords.join(','),
-                _method: 'PATCH'
-            })
+// Функция для инициализации свайпера
+function initSwiper() {
+    const swiper = new Swiper('.swiper', {
+        loop: true,
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+        keyboard: { enabled: true },
+        effect: 'slide',
+        speed: 500,
+        preloadImages: false,
+        lazy: {
+            loadPrevNext: true,
+        },
+    });
+
+    return swiper;
+}
+
+// Модальное окно для изображений
+function setupModal() {
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('expandedImg');
+    const closeBtn = document.querySelector('.close-modal');
+
+    document.querySelectorAll('.swiper-slide img').forEach(img => {
+        img.addEventListener('click', () => {
+            modal.style.display = 'flex';
+            modalImg.src = img.src;
+            modalImg.classList.add('modal-opened');
         });
+    });
 
-        const data = await response.json();
-        console.log('Server response:', data);
+    closeBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+        modalImg.classList.remove('modal-opened');
+    });
 
-        if (data.status === 'success') {
-            // Обновляем карту просмотра
-            if (typeof viewMap !== 'undefined') {
-                const newCoords = [data.coordinates.y, data.coordinates.x];
-                console.log('Updating view map with:', newCoords);
-                viewMap.setCenter(newCoords, 15);
-
-                if (viewPlacemark) {
-                    viewMap.geoObjects.remove(viewPlacemark);
-                }
-
-                viewPlacemark = new ymaps.Placemark(newCoords, {}, {
-                    preset: 'islands#redDotIcon',
-                    draggable: false
-                });
-                viewMap.geoObjects.add(viewPlacemark);
-            }
-
-            // Обновляем адрес в параметрах
-            const addressParamElement = document.querySelector('.params-grid div:nth-child(2) .text-lg');
-            if (addressParamElement) {
-                addressParamElement.textContent = data.address;
-            }
-
-            showGlobalMessage('Адрес успешно сохранен!', 'success');
-        } else {
-            throw new Error(data.message || 'Неизвестная ошибка');
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+            modalImg.classList.remove('modal-opened');
         }
-    } catch (error) {
-        console.error('Ошибка:', error);
-        showGlobalMessage(`Ошибка: ${error.message}`, 'error');
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = originalText;
-    }
-});
+    });
 
-// Основная инициализация
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.style.display === 'flex') {
+            modal.style.display = 'none';
+            modalImg.classList.remove('modal-opened');
+        }
+    });
+}
+
+// ==============================
+// ОСНОВНАЯ ИНИЦИАЛИЗАЦИЯ
+// ==============================
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOMContentLoaded: начал выполнение');
+
+    // Инициализация анимаций
+    document.querySelectorAll('.animate-block').forEach(element => {
+        observer.observe(element);
+    });
 
     // Проверяем уведомления из URL
     checkUrlForNotifications();
@@ -1487,56 +1493,44 @@ document.addEventListener('DOMContentLoaded', function() {
         const swiper = initSwiper();
         setupModal();
         setupFavorites();
-
-        // Проверка загрузки API Яндекс.Карт
-        if (typeof ymaps === 'undefined') {
-            showGlobalMessage('Не удалось загрузить карты. Пожалуйста, попробуйте перезагрузить страницу.', 'error');
-            document.getElementById('map-fallback').style.display = 'block';
-            return;
-        }
+        setupAddressSaving();
 
         // Инициализация карт
         ymaps.ready(function() {
             try {
                 // Инициализация карты просмотра только для не-брокеров/не-застройщиков/не-админов
                 const isEditor = {% if request.user == property.broker.user or request.user == property.developer or request.user.is_admin %}true{% else %}false{% endif %};
-                if (!isEditor && typeof coordinates_json !== 'undefined' && coordinates_json) {
-                    console.log('Инициализация карты просмотра...');
-                    try {
+
+                if (!isEditor) {
+                    if (coordinates_json) {
+                        console.log('Инициализация карты просмотра...');
                         initViewMap();
-                    } catch (e) {
-                        console.error('Ошибка инициализации карты просмотра:', e);
+                    } else {
+                        console.log('Нет координат для инициализации карты просмотра');
+                        showGlobalMessage('📍 Адрес объекта пока не указан', 'warning');
                         document.getElementById('map-fallback').style.display = 'block';
                     }
-                } else if (!isEditor) {
-                    console.log('Нет координат для инициализации карты просмотра');
-                    showGlobalMessage('Адрес объекта не указан', 'warning');
-                    document.getElementById('map-fallback').style.display = 'block';
                 }
 
+                // Инициализация карты редактирования для брокеров/застройщиков/админов
                 {% if request.user.is_authenticated %}
                     {% if request.user == property.broker.user or request.user == property.developer or request.user.is_admin %}
                         console.log('Инициализация карты редактирования...');
                         initEditMap();
+                        showGlobalMessage('🗺️ Укажите адрес объекта на карте для публикации', 'info');
                     {% endif %}
                 {% endif %}
             } catch (e) {
                 console.error('Ошибка инициализации карт:', e);
-                showGlobalMessage('Ошибка при загрузке карты. Пожалуйста, попробуйте позже.', 'error');
+                showGlobalMessage('❌ Ошибка при загрузке карты', 'error');
                 document.getElementById('map-fallback').style.display = 'block';
             }
         });
+
     } catch (e) {
         console.error('Ошибка в основном блоке инициализации:', e);
-        showGlobalMessage('Произошла ошибка при загрузке страницы', 'error');
+        showGlobalMessage('❌ Произошла ошибка при загрузке страницы', 'error');
     }
 });
-
-// Функция для повторной загрузки
-function retryMapLoading() {
-    console.log('Попытка перезагрузки карты...');
-    showGlobalMessage('Пытаемся загрузить карту...', 'info');
-    location.reload();
-}
 </script>
 {% endblock %}
