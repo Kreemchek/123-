@@ -361,7 +361,7 @@
 
     <div class="flex gap-2 w-full sm:w-auto mt-2 sm:mt-0">
 <form method="POST"
-      action="{% url 'properties:property-favorite' fav.property.id %}"
+      action="{% url 'properties:favorite-delete' fav.id %}"
       class="w-full">
     {% csrf_token %}
     <button type="submit"

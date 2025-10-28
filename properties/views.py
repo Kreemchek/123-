@@ -951,3 +951,10 @@ def home_view(request):
         'hot_properties': hot_properties,
     }
     return render(request, 'home.html', context)
+
+
+@login_required
+def delete_favorite(request, favorite_id):
+    favorite = get_object_or_404(Favorite, id=favorite_id, user=request.user)
+    favorite.delete()
+    return JsonResponse({'status': 'removed'})
