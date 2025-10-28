@@ -426,7 +426,7 @@
             <!-- Кнопка удаления -->
            <!-- Кнопка удаления -->
 <form method="POST"
-      action="{% url 'brokers:broker-favorite-delete' fav.id %}"
+      action="{% url 'broker-favorite-delete' fav.id %}"
       class="broker-favorite-delete-form"
       data-broker-name="{{ fav.broker.get_full_name }}">
     {% csrf_token %}
