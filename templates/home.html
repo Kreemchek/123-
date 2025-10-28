@@ -974,19 +974,14 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Инициализация слайдеров
         initSlider('hot-properties-track', '.prev-hot', '.next-hot');
-        initSlider('media-content-track', '.prev-media', '.next-media');
+        initSlider('media-track', '.prev-media', '.next-media'); // Добавляем инициализацию для медиа
 
         function initSlider(trackId, prevBtnSelector, nextBtnSelector) {
             const track = document.getElementById(trackId);
-            const prevBtn = document.querySelector(prevBtnSelector);
-            const nextBtn = document.querySelector(nextBtnSelector);
+            if (!track) return;
+
             const slides = track.querySelectorAll('.slider-slide');
-
-            if (!track || slides.length === 0) return;
-
-            const slideWidth = slides[0].offsetWidth + 16;
-            let currentPosition = 0;
-            const maxPosition = -(slideWidth * (slides.length - 3));
+            if (slides.length === 0) return;
 
             // Клонируем слайды для бесконечной прокрутки
             const cloneSlides = Array.from(slides).map(slide => slide.cloneNode(true));
@@ -994,42 +989,30 @@
                 track.appendChild(slide);
             });
 
-            // Остановка автопрокрутки при ручном управлении
-            function stopAutoScroll() {
+            // Остановка автопрокрутки при наведении
+            track.addEventListener('mouseenter', function() {
                 track.style.animationPlayState = 'paused';
-                setTimeout(() => {
-                    track.style.animationPlayState = 'running';
-                }, 5000);
+            });
+
+            track.addEventListener('mouseleave', function() {
+                track.style.animationPlayState = 'running';
+            });
+
+            // Остановка автопрокрутки при ручном управлении (если кнопки есть)
+            const prevBtn = document.querySelector(prevBtnSelector);
+            const nextBtn = document.querySelector(nextBtnSelector);
+
+            if (prevBtn && nextBtn) {
+                function stopAutoScroll() {
+                    track.style.animationPlayState = 'paused';
+                    setTimeout(() => {
+                        track.style.animationPlayState = 'running';
+                    }, 5000);
+                }
+
+                nextBtn.addEventListener('click', stopAutoScroll);
+                prevBtn.addEventListener('click', stopAutoScroll);
             }
-
-            // Перемотка вперед
-            nextBtn.addEventListener('click', function() {
-                stopAutoScroll();
-                currentPosition -= slideWidth;
-                if (currentPosition < maxPosition) {
-                    currentPosition = 0;
-                }
-                track.style.transform = `translateX(${currentPosition}px)`;
-            });
-
-            // Перемотка назад
-            prevBtn.addEventListener('click', function() {
-                stopAutoScroll();
-                currentPosition += slideWidth;
-                if (currentPosition > 0) {
-                    currentPosition = maxPosition;
-                }
-                track.style.transform = `translateX(${currentPosition}px)`;
-            });
-
-            // Адаптация при изменении размера окна
-            window.addEventListener('resize', function() {
-                const newSlideWidth = slides[0].offsetWidth + 16;
-                if (newSlideWidth !== slideWidth) {
-                    currentPosition = 0;
-                    track.style.transform = `translateX(0px)`;
-                }
-            });
         }
 
         // Геолокация
