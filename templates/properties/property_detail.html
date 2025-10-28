@@ -1070,12 +1070,17 @@ function setupModal() {
 // Обработка избранного
 function setupFavorites() {
     document.querySelectorAll('form[action*="favorite"]').forEach(form => {
-        form.addEventListener('submit', async (e) => {
+        // Удаляем все существующие обработчики submit
+        const newForm = form.cloneNode(true);
+        form.parentNode.replaceChild(newForm, form);
+
+        // Добавляем один обработчик
+        newForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const icon = form.querySelector('i');
-            const text = form.querySelector('span');
-            const button = form.querySelector('button');
+            const icon = newForm.querySelector('i');
+            const text = newForm.querySelector('span');
+            const button = newForm.querySelector('button');
 
             // Показываем спиннер
             const originalHtml = button.innerHTML;
@@ -1083,10 +1088,10 @@ function setupFavorites() {
             button.disabled = true;
 
             try {
-                const response = await fetch(form.action, {
+                const response = await fetch(newForm.action, {
                     method: 'POST',
                     headers: {
-                        'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value,
+                        'X-CSRFToken': newForm.querySelector('[name=csrfmiddlewaretoken]').value,
                         'Accept': 'application/json',
                     },
                 });
@@ -1096,6 +1101,7 @@ function setupFavorites() {
                 }
 
                 const data = await response.json();
+                console.log('Favorite response:', data);
 
                 if (data.status === 'added') {
                     icon.classList.add('bi-heart-fill', 'text-red-500');
@@ -1525,14 +1531,7 @@ document.addEventListener('DOMContentLoaded', function() {
         showGlobalMessage('Произошла ошибка при загрузке страницы', 'error');
     }
 });
-// Предотвращение стандартной отправки всех форм с избранным
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('form[action*="favorite"]').forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-        });
-    });
-});
+
 // Функция для повторной загрузки
 function retryMapLoading() {
     console.log('Попытка перезагрузки карты...');
