@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import User, Favorite, ContactRequest, DeveloperProfile, \
-    BrokerSubscription, ExclusiveProperty, SupportSettings, UserAgreement
+    BrokerSubscription, SupportSettings, UserAgreement
 from .forms import UserRegistrationForm, UserAdminChangeForm
 from django.utils.translation import gettext_lazy as _
 
@@ -126,11 +126,6 @@ class DeveloperProfileAdmin(admin.ModelAdmin):
 @admin.register(BrokerSubscription)
 class BrokerSubscriptionAdmin(admin.ModelAdmin):
     list_display = ('broker', 'developer', 'status', 'end_date')
-
-
-@admin.register(ExclusiveProperty)
-class ExclusivePropertyAdmin(admin.ModelAdmin):
-    list_display = ('title', 'developer', 'price')
 
 
 @admin.register(SupportSettings)
