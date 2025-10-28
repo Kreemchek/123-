@@ -362,11 +362,11 @@
     <div class="flex gap-2 w-full sm:w-auto mt-2 sm:mt-0">
 <form method="POST"
       action="{% url 'properties:favorite-delete' fav.id %}"
-      class="w-full">
+      class="w-full favorite-delete-form"
+      data-property-title="{{ fav.property.title }}">
     {% csrf_token %}
     <button type="submit"
-            onclick="return confirm('Удалить объект из избранного?')"
-            class="px-2 lg:px-3 py-1 lg:py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 w-full">
+            class="px-2 lg:px-3 py-1 lg:py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 w-full favorite-delete-btn">
         <i class="fas fa-trash"></i>
     </button>
 </form>
@@ -728,7 +728,139 @@
             });
         }
     });
+// Функция для показа красивого уведомления
+function showNotification(message, type = 'success') {
+    // Создаем элемент уведомления
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-xl shadow-lg transform transition-all duration-500 ${
+        type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+    }`;
+    notification.innerHTML = `
+        <div class="flex items-center gap-3">
+            <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+            <span class="font-medium">${message}</span>
+            <button class="ml-4 hover:opacity-70 transition-opacity">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
 
+    // Добавляем в body
+    document.body.appendChild(notification);
+
+    // Анимация появления
+    setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+    }, 100);
+
+    // Удаление при клике на кнопку закрытия
+    notification.querySelector('button').addEventListener('click', () => {
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 500);
+    });
+
+    // Автоматическое удаление через 5 секунд
+    setTimeout(() => {
+        if (document.body.contains(notification)) {
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    document.body.removeChild(notification);
+                }
+            }, 500);
+        }
+    }, 5000);
+}
+
+// Обработка форм удаления из избранного
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteForms = document.querySelectorAll('.favorite-delete-form');
+
+    deleteForms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const propertyTitle = this.getAttribute('data-property-title');
+            const card = this.closest('.profile-card');
+            const submitBtn = this.querySelector('.favorite-delete-btn');
+
+            // Показываем подтверждение
+            if (!confirm(`Удалить "${propertyTitle}" из избранного?`)) {
+                return;
+            }
+
+            // Блокируем кнопку
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+            // Отправляем AJAX-запрос
+            fetch(this.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': this.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Показываем уведомление
+                    showNotification(data.message, 'success');
+
+                    // Анимация удаления карточки
+                    card.style.transform = 'scale(0.95)';
+                    card.style.opacity = '0';
+                    card.style.transition = 'all 0.3s ease';
+
+                    setTimeout(() => {
+                        card.remove();
+
+                        // Если карточек не осталось, показываем сообщение
+                        const container = document.querySelector('.grid');
+                        if (container && container.children.length === 0) {
+                            const emptyMessage = `
+                                <div class="col-span-full text-center py-6 text-gray-500">
+                                    <i class="fas fa-inbox text-2xl lg:text-3xl"></i>
+                                    <p class="text-sm lg:text-base mt-2">Нет избранных объектов</p>
+                                </div>
+                            `;
+                            container.innerHTML = emptyMessage;
+                        }
+                    }, 300);
+                } else {
+                    throw new Error(data.message || 'Ошибка при удалении');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Ошибка при удалении из избранного', 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-trash"></i>';
+            });
+        });
+    });
+});
+
+// Остальной существующий JavaScript...
+document.querySelectorAll('.profile-card').forEach(card => {
+    if (window.innerWidth < 640) {
+        card.addEventListener('touchstart', () => {
+            card.style.transform = 'translateY(-2px) scale(1.01)';
+        });
+        card.addEventListener('touchend', () => {
+            card.style.transform = 'translateY(0) scale(1)';
+        });
+    } else {
+        card.addEventListener('mouseenter', () => {
+            card.style.transform = 'translateY(-5px) scale(1.02)';
+        });
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateY(0) scale(1)';
+        });
+    }
+});
     // Удаление элементов
     document.querySelectorAll('.btn-custom.bg-red-100').forEach(btn => {
         btn.addEventListener('click', function() {

@@ -956,5 +956,14 @@ def home_view(request):
 @login_required
 def delete_favorite(request, favorite_id):
     favorite = get_object_or_404(Favorite, id=favorite_id, user=request.user)
+    property_title = favorite.property.title if favorite.property else "Объект"
     favorite.delete()
-    return JsonResponse({'status': 'removed'})
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({
+            'status': 'success',
+            'message': f'"{property_title}" удален из избранного'
+        })
+    else:
+        messages.success(request, f'"{property_title}" удален из избранного')
+        return redirect('dashboard')
