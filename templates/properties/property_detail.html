@@ -1072,8 +1072,15 @@ function setupFavorites() {
     document.querySelectorAll('form[action*="favorite"]').forEach(form => {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+
             const icon = form.querySelector('i');
             const text = form.querySelector('span');
+            const button = form.querySelector('button');
+
+            // Показываем спиннер
+            const originalHtml = button.innerHTML;
+            button.innerHTML = '<i class="bi bi-arrow-repeat spin"></i>';
+            button.disabled = true;
 
             try {
                 const response = await fetch(form.action, {
@@ -1083,19 +1090,33 @@ function setupFavorites() {
                         'Accept': 'application/json',
                     },
                 });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
                 const data = await response.json();
 
                 if (data.status === 'added') {
                     icon.classList.add('bi-heart-fill', 'text-red-500');
                     icon.classList.remove('bi-heart');
                     text.textContent = 'Удалить из избранного';
-                } else {
+                    showGlobalMessage('Объект добавлен в избранное', 'success');
+                } else if (data.status === 'removed') {
                     icon.classList.remove('bi-heart-fill', 'text-red-500');
                     icon.classList.add('bi-heart');
                     text.textContent = 'Добавить в избранное';
+                    showGlobalMessage('Объект удален из избранного', 'info');
+                } else {
+                    throw new Error(data.error || 'Unknown error');
                 }
             } catch (error) {
                 console.error('Ошибка:', error);
+                showGlobalMessage('Произошла ошибка при обновлении избранного', 'error');
+            } finally {
+                // Восстанавливаем кнопку
+                button.innerHTML = originalHtml;
+                button.disabled = false;
             }
         });
     });
@@ -1504,7 +1525,14 @@ document.addEventListener('DOMContentLoaded', function() {
         showGlobalMessage('Произошла ошибка при загрузке страницы', 'error');
     }
 });
-
+// Предотвращение стандартной отправки всех форм с избранным
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('form[action*="favorite"]').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+        });
+    });
+});
 // Функция для повторной загрузки
 function retryMapLoading() {
     console.log('Попытка перезагрузки карты...');

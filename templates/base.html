@@ -594,31 +594,31 @@
     <div class="container">
         <div class="flex flex-col md:flex-row justify-between items-start py-4 border-t border-[rgba(255,255,255,0.08)]">
             <div class="mb-4 md:mb-0">
-                <h3 class="text-2xl font-bold mb-2 text-white">WinWinDeal</h3>
+                <h3 class="text-2xl font-bold mb-2 text-[#b3b9c6]">WinWinDeal</h3>
                 <p class="text-[#b3b9c6] text-base">Сервис выгодных сделок с недвижимостью</p>
             </div>
 
             <div class="grid grid-cols-2 gap-6">
                 <div>
-                    <h4 class="text-white font-semibold mb-2 text-base border-b border-[rgba(255,255,255,0.2)] pb-1">Разделы</h4>
+                    <h4 class="text-[#b3b9c6] font-semibold mb-2 text-base border-b border-[rgba(255,255,255,0.2)] pb-1">Разделы</h4>
                     <ul class="space-y-1">
                         <li><a href="{% url 'home' %}" class="text-[#b3b9c6] hover:text-white text-base transition-colors font-medium">Главная</a></li>
                         {% if user.is_authenticated %}
                             <li><a href="{% url 'broker-list' %}" class="text-[#b3b9c6] hover:text-white text-base transition-colors font-medium">Брокеры</a></li>
                             <li><a href="{% url 'properties:property-list' %}" class="text-[#b3b9c6] hover:text-white text-base transition-colors font-medium">Объекты</a></li>
                             <li><a href="{% url 'developer-list' %}" class="text-[#b3b9c6] hover:text-white text-base transition-colors font-medium">Застройщики</a></li>
-                            <li><a href="{% url 'media_content:list' %}" class="text-white font-bold text-base transition-colors border-b-2 border-[#7c66ff] pb-1">Медиа</a></li>
+                            <li><a href="{% url 'media_content:list' %}" class="text-[#b3b9c6] font-bold text-base transition-colors border-b-2 border-[#7c66ff] pb-1">Медиа</a></li>
                         {% else %}
                             <li><a href="{% url 'register' %}" class="text-[#b3b9c6] hover:text-white text-base transition-colors font-medium">Брокеры</a></li>
                             <li><a href="{% url 'register' %}" class="text-[#b3b9c6] hover:text-white text-base transition-colors font-medium">Объекты</a></li>
                             <li><a href="{% url 'register' %}" class="text-[#b3b9c6] hover:text-white text-base transition-colors font-medium">Застройщики</a></li>
-                            <li><a href="{% url 'register' %}" class="text-white font-bold text-base transition-colors border-b-2 border-[#7c66ff] pb-1">Медиа</a></li>
+                            <li><a href="{% url 'register' %}" class="text-[#b3b9c6] font-bold text-base transition-colors border-b-2 border-[#7c66ff] pb-1">Медиа</a></li>
                         {% endif %}
                     </ul>
                 </div>
 
                 <div>
-                    <h4 class="text-white font-semibold mb-2 text-base border-b border-[rgba(255,255,255,0.2)] pb-1">Контакты</h4>
+                    <h4 class="text-[#b3b9c6] font-semibold mb-2 text-base border-b border-[rgba(255,255,255,0.2)] pb-1">Контакты</h4>
                     <ul class="space-y-1">
                         <li class="text-[#b3b9c6] text-base flex items-center">
                             <i class="fas fa-envelope mr-2 w-4"></i>
