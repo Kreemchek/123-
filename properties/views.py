@@ -541,7 +541,8 @@ class PropertyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy('property-detail', kwargs={'pk': self.object.pk})
+        # ИСПРАВЛЕНИЕ: Добавляем пространство имен properties
+        return reverse_lazy('properties:property-detail', kwargs={'pk': self.object.pk})
 
 
 @login_required
