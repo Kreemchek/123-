@@ -1074,7 +1074,7 @@ function setupAddressSaving() {
                     addressParamElement.textContent = data.address;
                 }
 
-                showGlobalMessage('✅ Адрес успешно сохранен! Объект теперь виден клиентам', 'success');
+                showGlobalMessage('✅ Адрес успешно сохранен! ', 'success');
             } else {
                 throw new Error(data.message || 'Неизвестная ошибка');
             }
@@ -1517,7 +1517,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     {% if request.user == property.broker.user or request.user == property.developer or request.user.is_admin %}
                         console.log('Инициализация карты редактирования...');
                         initEditMap();
-                        showGlobalMessage('🗺️ Укажите адрес объекта на карте для публикации', 'info');
+
                     {% endif %}
                 {% endif %}
             } catch (e) {
