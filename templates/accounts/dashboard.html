@@ -360,16 +360,16 @@
     </a>
 
     <div class="flex gap-2 w-full sm:w-auto mt-2 sm:mt-0">
-        <form method="POST"
-              action="{% url 'properties:property-favorite' fav.id %}"
-              class="w-full">
-            {% csrf_token %}
-            <button type="submit"
-                    onclick="return confirm('Удалить объект из избранного?')"
-                    class="px-2 lg:px-3 py-1 lg:py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 w-full">
-                <i class="fas fa-trash"></i>
-            </button>
-        </form>
+<form method="POST"
+      action="{% url 'properties:property-favorite' fav.property.id %}"
+      class="w-full">
+    {% csrf_token %}
+    <button type="submit"
+            onclick="return confirm('Удалить объект из избранного?')"
+            class="px-2 lg:px-3 py-1 lg:py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 w-full">
+        <i class="fas fa-trash"></i>
+    </button>
+</form>
     </div>
 </div>
                 </div>
