@@ -830,14 +830,15 @@ class ContactSupportView(LoginRequiredMixin, View):
             messages.error(request, "Служба поддержки временно недоступна")
             return redirect('dashboard')
 
-        # Создаем новый запрос на консультацию
+        # Создаем новый запрос на консультацию БЕЗ лишних параметров
         contact_request = ContactRequest.objects.create(
             requester=request.user,
             broker=support_user,
             status='new',
             is_consultation=True,
-            is_first_message_paid=False,
-            first_message_sent=True
+            # УБИРАЕМ эти параметры:
+            # is_first_message_paid=False,
+            # first_message_sent=True
         )
 
         return redirect('contact_request_detail', pk=contact_request.pk)
