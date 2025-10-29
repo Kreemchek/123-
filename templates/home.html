@@ -992,11 +992,10 @@ body.home-page {
 
                             <!-- Цена и кнопка -->
                             <div class="property-footer-home">
-                                <div class="price-section-home">
-                                    <div class="price-home">{{ property.price|format_price }} ₽</div>
-                                    {% if property.area %}
-                                    <div class="price-per-sqm-home">{{ property.price_per_sqm|format_price }} ₽/м²</div>
-                                    {% endif %}
+                              <div class="price-home">{{ property.price|space_format }} ₽</div>
+{% if property.area %}
+<div class="price-per-sqm-home">{{ property.price_per_sqm|space_format }} ₽/м²</div>
+{% endif %}
                                 </div>
                                 <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.pk %}{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.pk %}{% endif %}"
                                    class="details-btn-home">
