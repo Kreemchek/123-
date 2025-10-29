@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load custom_filters %}
 
 {% block footer %}
 <!-- Кастомный футер только для home.html -->
@@ -402,184 +403,231 @@ body.home-page {
     box-sizing: border-box;
 }
 
-/* ФИКС: КАРТОЧКИ ОБЪЕКТОВ - ОБНОВЛЕННЫЕ СТИЛИ */
-.listing-card-compact {
-    position: relative;
-    border-radius: 16px;
+/* ОБНОВЛЕННЫЕ СТИЛИ ДЛЯ КАРТОЧЕК ОБЪЕКТОВ - КАК В PROPERTY_LIST.HTML */
+.property-card-home {
+    border-radius: 20px;
     background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
     border: 1px solid rgba(255, 255, 255, 0.8);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.08),
+        0 1px 0 rgba(255, 255, 255, 0.8) inset,
+        0 -1px 0 rgba(0, 0, 0, 0.02) inset;
     overflow: hidden;
-    transition: all 0.3s ease;
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    backdrop-filter: blur(10px);
     height: 100%;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
     display: flex;
     flex-direction: column;
 }
 
-.listing-card-compact:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+.property-card-home:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow:
+        0 25px 50px rgba(0, 0, 0, 0.15),
+        0 1px 0 rgba(255, 255, 255, 0.8) inset,
+        0 -1px 0 rgba(0, 0, 0, 0.02) inset;
 }
 
-/* ИЗМЕНЕНИЕ: Увеличиваем область изображения */
-.listing-card-compact .thumb {
-    aspect-ratio: 4/2.5; /* ЕЩЕ БОЛЬШЕ места для фото */
-    position: relative;
-    overflow: hidden;
-    width: 100%;
-    margin: 0;
-    flex-shrink: 0; /* Важно: предотвращает сжатие */
-}
-
-.listing-card-compact .thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.4s ease;
-}
-
-.listing-card-compact:hover .thumb img {
-    transform: scale(1.05);
-}
-
-.listing-card-compact .thumb > div {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 800;
-    background: linear-gradient(135deg, rgba(124,102,255,.35), rgba(48,208,255,.25));
-    font-size: 16px;
-    text-align: center;
-    padding: 16px;
-}
-
-.hot-property-badge-compact {
+/* Градиентный акцент */
+.card-accent {
     position: absolute;
-    top: 12px;
-    right: 12px;
-    background: linear-gradient(45deg, #ff4d4d, #f95700);
-    color: white;
-    padding: 6px 12px;
-    border-radius: 16px;
-    font-weight: bold;
-    font-size: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #7b61ff 0%, #36d1dc 50%, #7b61ff 100%);
+    background-size: 200% 100%;
+    animation: shimmer 3s ease-in-out infinite;
     z-index: 2;
 }
 
-/* ИЗМЕНЕНИЕ: Уменьшаем отступы в теле карточки */
-.listing-card-compact .body {
-    padding: 10px 12px 12px; /* Еще меньше отступов сверху */
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    min-height: 0; /* Важно для правильного flex-распределения */
+/* Бейдж статуса */
+.status-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 10;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.6);
 }
 
-.listing-card-compact .body strong {
-    font-size: 15px; /* Немного уменьшили шрифт */
+/* Изображение с градиентным оверлеем */
+.image-container-home {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    flex-shrink: 0;
+}
+
+.property-image-home {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.6s ease;
+}
+
+.property-card-home:hover .property-image-home {
+    transform: scale(1.1);
+}
+
+/* Градиентный оверлей */
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.1) 0%,
+        transparent 30%,
+        rgba(0, 0, 0, 0.15) 100%
+    );
+}
+
+/* Контент карточки */
+.card-content-home {
+    padding: 24px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Заголовок и тип */
+.property-header-home {
+    margin-bottom: 16px;
+}
+
+.property-type-home {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #7b61ff;
+    margin-bottom: 6px;
+}
+
+.property-title-home {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
     line-height: 1.3;
-    display: block;
-    margin-bottom: 6px; /* Еще меньше отступ */
+    color: #1e293b;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    min-height: 38px; /* Уменьшили минимальную высоту */
-    color: var(--text);
-    font-weight: 700;
 }
 
-/* ИЗМЕНЕНИЕ: Уменьшаем отступы в мета-информации */
-.meta-compact {
+/* Основная информация */
+.property-info-home {
+    margin-bottom: 20px;
+    flex: 1;
+}
+
+.info-grid-home {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.info-item-home {
     display: flex;
-    flex-direction: column;
-    gap: 4px; /* Еще меньше промежутков */
-    color: var(--muted);
-    font-size: 13px; /* Уменьшили шрифт */
-    margin-bottom: 10px; /* Уменьшили отступ снизу */
-    flex-grow: 1;
+    align-items: center;
+    gap: 8px;
 }
 
-.property-type {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 2px;
-}
-
-.property-details {
+.info-icon-home {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
     display: flex;
-    flex-wrap: wrap;
-    gap: 4px; /* Еще меньше промежутков */
-    margin-bottom: 4px;
-}
-
-.detail-item {
-    background: rgba(124, 102, 255, 0.1);
-    padding: 3px 6px; /* Уменьшили паддинг */
-    border-radius: 6px;
-    font-size: 11px; /* Уменьшили шрифт */
-    font-weight: 600;
-    color: var(--brand);
-}
-
-.price-section {
-    margin-top: auto;
-    border-top: 1px solid rgba(0,0,0,0.1);
-    padding-top: 6px; /* Уменьшили отступ */
-}
-
-.price-compact {
-    font-weight: 700;
-    font-size: 16px; /* Уменьшили шрифт */
-    color: var(--brand);
-    text-align: left;
-    width: 100%;
-    margin-bottom: 4px;
-}
-
-/* ИЗМЕНЕНИЕ: Уменьшаем кнопку */
-.card-actions-compact {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: auto;
-    padding-top: 4px; /* Добавили небольшой отступ сверху */
-}
-
-.btn-compact {
-    cursor: pointer;
-    border: none;
-    padding: 6px 12px; /* Еще меньше */
-    border-radius: 8px; /* Немного меньше радиус */
-    font-weight: 600;
-    transition: .3s ease;
-    text-decoration: none;
-    display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px; /* Уменьшили шрифт */
-    min-height: 28px; /* Еще меньше высота */
+    flex-shrink: 0;
 }
 
-.btn-primary-compact {
-    background: linear-gradient(135deg, var(--brand), var(--brand-2));
-    color: #fff;
-    box-shadow: var(--glow);
-    border: none;
-    padding: 6px 12px;
+.info-value-home {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e293b;
 }
 
-.btn-primary-compact:hover {
+.info-label-home {
+    font-size: 12px;
+    color: #64748b;
+}
+
+/* Цена и кнопка */
+.property-footer-home {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    margin-top: auto;
+}
+
+.price-section-home .price-home {
+    font-size: 24px;
+    font-weight: 800;
+    color: #7b61ff;
+    line-height: 1.2;
+}
+
+.price-per-sqm-home {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.details-btn-home {
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%);
+    color: white;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(123, 97, 255, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.details-btn-home:hover {
     transform: translateY(-2px);
-    box-shadow: 0 0 0 1px rgba(124,102,255,.3), 0 0 40px rgba(92,76,255,.25);
+    box-shadow: 0 6px 20px rgba(123, 97, 255, 0.4);
+    color: white;
+}
+
+/* Бейдж горячего предложения */
+.hot-property-badge-home {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    z-index: 10;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    color: #ef4444;
 }
 
 /* ФИКС: КАРТОЧКИ МЕДИА */
@@ -665,6 +713,11 @@ body.home-page {
     }
 }
 
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
 /* СКРЫВАЕМ ЭЛЕМЕНТЫ УПРАВЛЕНИЯ АВТОПРОКРУТКОЙ */
 .auto-scroll-controls {
     display: none !important;
@@ -711,33 +764,30 @@ body.home-page {
         padding: 0 4px;
     }
 
-    .listing-card-compact .body,
-    .media-card-compact .body {
-        padding: 12px;
+    .property-card-home {
+        margin: 0 4px;
     }
 
-    .listing-card-compact .body strong,
-    .media-card-compact .body strong {
-        font-size: 15px;
-        min-height: 42px;
+    .card-content-home {
+        padding: 16px;
     }
 
-    .meta-compact {
-        font-size: 13px;
+    .property-title-home {
+        font-size: 18px;
     }
 
-    .price-compact {
-        font-size: 16px;
+    .info-grid-home {
+        grid-template-columns: 1fr;
+        gap: 8px;
     }
 
-    .btn-compact {
-        padding: 8px 16px;
-        font-size: 13px;
+    .price-home {
+        font-size: 20px;
     }
 
-    .detail-item {
-        font-size: 11px;
-        padding: 3px 6px;
+    .details-btn-home {
+        padding: 10px 16px;
+        font-size: 14px;
     }
 }
 
@@ -755,13 +805,8 @@ body.home-page {
         padding: 0 2px;
     }
 
-    .price-compact {
-        font-size: 15px;
-    }
-
-    .btn-compact {
-        padding: 8px 14px;
-        font-size: 12px;
+    .property-card-home {
+        margin: 0 2px;
     }
 }
 
@@ -850,23 +895,37 @@ body.home-page {
             <div class="auto-scroll-track continuous" id="hot-properties-track">
                 {% for property in hot_properties %}
                 <div class="slider-slide">
-                    <div class="listing-card-compact">
-                        {% if property.is_hot %}
-                        <div class="hot-property-badge-compact">🔥 Горячее</div>
-                        {% endif %}
-                        <div class="thumb">
-                            {% if property.images.all %}
-                                <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}">
+                    <article class="property-card-home">
+                        <!-- Градиентный акцент -->
+                        <div class="card-accent"></div>
+
+                        <!-- Бейдж статуса -->
+                        <div class="status-badge">
+                            {% if property.is_rental == 'monthly' %}
+                                <span style="color: #10b981;">Аренда</span>
+                            {% elif property.is_rental == 'daily' %}
+                                <span style="color: #f59e0b;">Посуточно</span>
                             {% else %}
-                                <div>
-                                    {{ property.title|truncatechars:30 }}
-                                </div>
+                                <span style="color: #7b61ff;">Продажа</span>
                             {% endif %}
                         </div>
-                        <div class="body">
-                            <strong>{{ property.title }}</strong>
-                            <div class="meta-compact">
-                                <div class="property-type">
+
+                        <!-- Бейдж горячего предложения -->
+                        {% if property.is_hot %}
+                        <div class="hot-property-badge-home">🔥 Горячее</div>
+                        {% endif %}
+
+                        <!-- Изображение с градиентным оверлеем -->
+                        <div class="image-container-home">
+                            <div class="property-image-home" style="background-image: url('{% if property.images.all %}{{ property.images.first.image.url }}{% else %}{% static 'img/placeholder.jpg' %}{% endif %}')"></div>
+                            <div class="image-overlay"></div>
+                        </div>
+
+                        <!-- Контент карточки -->
+                        <div class="card-content-home">
+                            <!-- Заголовок и тип -->
+                            <div class="property-header-home">
+                                <div class="property-type-home">
                                     {% if property.property_type == 'apartment' %}
                                         Квартира
                                     {% elif property.property_type == 'house' %}
@@ -877,32 +936,82 @@ body.home-page {
                                         Недвижимость
                                     {% endif %}
                                 </div>
-                                <div class="property-details">
-                                    <span class="detail-item">{{ property.total_area|floatformat:"0" }} м²</span>
-                                    {% if property.floor and property.total_floors %}
-                                    <span class="detail-item">{{ property.floor }}/{{ property.total_floors }} эт.</span>
-                                    {% endif %}
-                                    {% if property.rooms %}
-                                    <span class="detail-item">{{ property.rooms }} комн.</span>
-                                    {% endif %}
-                                </div>
-                                <div class="price-section">
-                                    <div class="price-compact">
-                                        {% if property.is_rental == 'monthly' and property.monthly_price %}
-                                            {{ property.monthly_price|floatformat:"0" }} ₽/мес
-                                        {% elif property.is_rental == 'daily' and property.daily_price %}
-                                            {{ property.daily_price|floatformat:"0" }} ₽/сут
-                                        {% elif property.price %}
-                                            {{ property.price|floatformat:"0" }} ₽
-                                        {% else %}
-                                            Цена не указана
-                                        {% endif %}
+                                <h3 class="property-title-home">
+                                    {{ property.title }}
+                                </h3>
+                            </div>
+
+                            <!-- Основная информация -->
+                            <div class="property-info-home">
+                                <div class="info-grid-home">
+                                    <!-- Площадь -->
+                                    <div class="info-item-home">
+                                        <div class="info-icon-home" style="background: rgba(123, 97, 255, 0.1);">
+                                            <i class="fas fa-ruler-combined" style="color: #7b61ff;"></i>
+                                        </div>
+                                        <div>
+                                            <div class="info-value-home">{{ property.area|default:"-" }} м²</div>
+                                            <div class="info-label-home">Площадь</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Комнаты -->
+                                    <div class="info-item-home">
+                                        <div class="info-icon-home" style="background: rgba(54, 209, 220, 0.1);">
+                                            <i class="fas fa-bed" style="color: #36d1dc;"></i>
+                                        </div>
+                                        <div>
+                                            <div class="info-value-home">{{ property.rooms|default:"-" }}</div>
+                                            <div class="info-label-home">Комнат</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Этаж -->
+                                    <div class="info-item-home">
+                                        <div class="info-icon-home" style="background: rgba(255, 106, 61, 0.1);">
+                                            <i class="fas fa-building" style="color: #ff6a3d;"></i>
+                                        </div>
+                                        <div>
+                                            <div class="info-value-home">{{ property.floor|default:"-" }}/{{ property.total_floors|default:"-" }}</div>
+                                            <div class="info-label-home">Этаж</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Район -->
+                                    <div class="info-item-home">
+                                        <div class="info-icon-home" style="background: rgba(255, 186, 59, 0.1);">
+                                            <i class="fas fa-map-marker-alt" style="color: #ffba3b;"></i>
+                                        </div>
+                                        <div>
+                                            <div class="info-value-home">{{ property.district|default:"-" }}</div>
+                                            <div class="info-label-home">Район</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="card-actions-compact">
-                                <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}{% endif %}" class="btn-compact btn-primary-compact">Подробнее</a>
+
+                            <!-- Цена и кнопка -->
+                            <div class="property-footer-home">
+                                <div class="price-section-home">
+                                    <div class="price-home">{{ property.price|format_price }} ₽</div>
+                                    {% if property.area %}
+                                    <div class="price-per-sqm-home">{{ property.price_per_sqm|format_price }} ₽/м²</div>
+                                    {% endif %}
+                                </div>
+                                <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.pk %}{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.pk %}{% endif %}"
+                                   class="details-btn-home">
+                                    Подробнее
+                                    <i class="fas fa-arrow-right"></i>
+                                </a>
                             </div>
+                        </div>
+                    </article>
+                </div>
+                {% empty %}
+                <div class="slider-slide">
+                    <div class="property-card-home">
+                        <div class="card-content-home">
+                            <p class="muted">Нет горячих предложений</p>
                         </div>
                     </div>
                 </div>
@@ -911,10 +1020,123 @@ body.home-page {
         </div>
     </div>
 
-    <!-- Блок медиа -->
+    <!-- Блок популярных брокеров -->
     <div class="section-block">
         <div class="section-header">
-            <h3>📰 Медиа</h3>
+            <h3>⭐ Популярные брокеры</h3>
+            <div class="slider-controls">
+            </div>
+        </div>
+
+        <!-- Элементы управления автопрокруткой (скрыты) -->
+        <div class="auto-scroll-controls">
+            <div class="auto-scroll-toggle" id="brokers-auto-toggle">
+                <div class="toggle-switch"></div>
+                <span>Автопрокрутка</span>
+            </div>
+            <div class="scroll-speed-control">
+                <span>Скорость:</span>
+                <select id="brokers-speed-select">
+                    <option value="40">Медленно</option>
+                    <option value="30" selected>Средне</option>
+                    <option value="20">Быстро</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="slider-container">
+            <div class="auto-scroll-track continuous" id="popular-brokers-track">
+                {% for broker in popular_brokers %}
+                <div class="slider-slide">
+                    <a href="{% if user.is_authenticated %}{% url 'broker-detail' broker.pk %}{% else %}{% url 'register' %}?next={% url 'broker-detail' broker.pk %}{% endif %}" class="link">
+                        <article class="property-card-home">
+                            <div class="card-accent"></div>
+
+                            <div class="image-container-home">
+                                <div class="property-image-home" style="background-image: url('{% if broker.photo %}{{ broker.photo.url }}{% else %}{% static 'img/broker-placeholder.jpg' %}{% endif %}')"></div>
+                                <div class="image-overlay"></div>
+                            </div>
+
+                            <div class="card-content-home">
+                                <div class="property-header-home">
+                                    <h3 class="property-title-home">{{ broker.name }}</h3>
+                                </div>
+
+                                <div class="property-info-home">
+                                    <div class="info-grid-home">
+                                        <div class="info-item-home">
+                                            <div class="info-icon-home" style="background: rgba(123, 97, 255, 0.1);">
+                                                <i class="fas fa-star" style="color: #7b61ff;"></i>
+                                            </div>
+                                            <div>
+                                                <div class="info-value-home">{{ broker.rating|default:"-" }}</div>
+                                                <div class="info-label-home">Рейтинг</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="info-item-home">
+                                            <div class="info-icon-home" style="background: rgba(54, 209, 220, 0.1);">
+                                                <i class="fas fa-home" style="color: #36d1dc;"></i>
+                                            </div>
+                                            <div>
+                                                <div class="info-value-home">{{ broker.properties_count|default:"0" }}</div>
+                                                <div class="info-label-home">Объектов</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="info-item-home">
+                                            <div class="info-icon-home" style="background: rgba(255, 106, 61, 0.1);">
+                                                <i class="fas fa-award" style="color: #ff6a3d;"></i>
+                                            </div>
+                                            <div>
+                                                <div class="info-value-home">{{ broker.experience_years|default:"0" }}+</div>
+                                                <div class="info-label-home">Лет опыта</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="info-item-home">
+                                            <div class="info-icon-home" style="background: rgba(255, 186, 59, 0.1);">
+                                                <i class="fas fa-map-marker-alt" style="color: #ffba3b;"></i>
+                                            </div>
+                                            <div>
+                                                <div class="info-value-home">{{ broker.city|default:"-" }}</div>
+                                                <div class="info-label-home">Город</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="property-footer-home">
+                                    <div class="price-section-home">
+                                        <div class="price-home">{{ broker.commission_percent|default:"-" }}%</div>
+                                        <div class="price-per-sqm-home">Комиссия</div>
+                                    </div>
+                                    <span class="details-btn-home">
+                                        Подробнее
+                                        <i class="fas fa-arrow-right"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </article>
+                    </a>
+                </div>
+                {% empty %}
+                <div class="slider-slide">
+                    <div class="property-card-home">
+                        <div class="card-content-home">
+                            <p class="muted">Нет популярных брокеров</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Блок медиа-контента -->
+    <div class="section-block">
+        <div class="section-header">
+            <h3>📰 Полезные материалы</h3>
             <div class="slider-controls">
             </div>
         </div>
@@ -936,39 +1158,34 @@ body.home-page {
         </div>
 
         <div class="slider-container">
-            <div class="auto-scroll-track continuous" id="media-track">
-                {% for media in featured_media %}
+            <div class="auto-scroll-track continuous" id="media-content-track">
+                {% for media in media_content %}
                 <div class="slider-slide">
-                    <a href="{% url 'media_content:detail' media.id %}" class="link">
-                        <article class="media-card-compact">
-                            <div class="thumb">
-                                {% if media.thumbnail_url %}
-                                    <img src="{{ media.thumbnail_url }}" alt="{{ media.title }}">
-                                {% elif media.media_type == 'video' %}
-                                    <div style="background: linear-gradient(135deg, #7c66ff, #30d0ff); display: flex; align-items: center; justify-content: center; color: white;">
-                                        <i class="fas fa-play-circle fa-2x"></i>
-                                    </div>
-                                {% else %}
-                                    <div style="background: linear-gradient(135deg, #7c66ff, #30d0ff); display: flex; align-items: center; justify-content: center; color: white;">
-                                        <i class="fas fa-newspaper fa-2x"></i>
-                                    </div>
+                    <a href="{% if user.is_authenticated %}{% url 'media_content:detail' media.pk %}{% else %}{% url 'register' %}?next={% url 'media_content:detail' media.pk %}{% endif %}" class="media-card-compact link">
+                        <div class="thumb">
+                            <img src="{% if media.thumbnail %}{{ media.thumbnail.url }}{% else %}{% static 'img/media-placeholder.jpg' %}{% endif %}" alt="{{ media.title }}">
+                            <div class="thumb-overlay-compact">
+                                <i class="fas fa-{{ media.media_type|default:'file' }}"></i>
+                            </div>
+                        </div>
+                        <div class="body">
+                            <strong>{{ media.title }}</strong>
+                            <div class="media-meta-compact">
+                                <span>{{ media.created_at|date:"d.m.Y" }}</span>
+                                {% if media.author %}
+                                <span> • {{ media.author }}</span>
                                 {% endif %}
-                                <div class="thumb-overlay-compact">
-                                    {% if media.media_type == 'video' %}
-                                        <i class="fas fa-play"></i> Видео
-                                    {% else %}
-                                        <i class="fas fa-newspaper"></i> Статья
-                                    {% endif %}
-                                </div>
                             </div>
-                            <div class="body">
-                                <strong>{{ media.title }}</strong>
-                                <div class="media-meta-compact">
-                                    {{ media.created_at|date:"d.m.Y" }}
-                                </div>
-                            </div>
-                        </article>
+                        </div>
                     </a>
+                </div>
+                {% empty %}
+                <div class="slider-slide">
+                    <div class="media-card-compact">
+                        <div class="body">
+                            <p class="muted">Нет материалов</p>
+                        </div>
+                    </div>
                 </div>
                 {% endfor %}
             </div>
@@ -977,75 +1194,48 @@ body.home-page {
 </section>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Инициализация слайдеров
-        initSlider('hot-properties-track', '.prev-hot', '.next-hot');
-        initSlider('media-track', '.prev-media', '.next-media'); // Добавляем инициализацию для медиа
+document.addEventListener('DOMContentLoaded', function() {
+    // Функция для дублирования контента для бесконечной прокрутки
+    function setupInfiniteScroll(trackId) {
+        const track = document.getElementById(trackId);
+        if (!track) return;
 
-        function initSlider(trackId, prevBtnSelector, nextBtnSelector) {
-            const track = document.getElementById(trackId);
-            if (!track) return;
+        // Дублируем контент
+        const originalContent = track.innerHTML;
+        track.innerHTML = originalContent + originalContent;
 
-            const slides = track.querySelectorAll('.slider-slide');
-            if (slides.length === 0) return;
+        // Сбрасываем анимацию при завершении цикла
+        track.addEventListener('animationiteration', () => {
+            track.style.animation = 'none';
+            void track.offsetWidth; // trigger reflow
+            track.style.animation = null;
+        });
+    }
 
-            // Клонируем слайды для бесконечной прокрутки
-            const cloneSlides = Array.from(slides).map(slide => slide.cloneNode(true));
-            cloneSlides.forEach(slide => {
-                track.appendChild(slide);
-            });
+    // Настройка для всех треков
+    setupInfiniteScroll('hot-properties-track');
+    setupInfiniteScroll('popular-brokers-track');
+    setupInfiniteScroll('media-content-track');
 
-            // Остановка автопрокрутки при наведении
-            track.addEventListener('mouseenter', function() {
-                track.style.animationPlayState = 'paused';
-            });
-
-            track.addEventListener('mouseleave', function() {
-                track.style.animationPlayState = 'running';
-            });
-
-            // Остановка автопрокрутки при ручном управлении (если кнопки есть)
-            const prevBtn = document.querySelector(prevBtnSelector);
-            const nextBtn = document.querySelector(nextBtnSelector);
-
-            if (prevBtn && nextBtn) {
-                function stopAutoScroll() {
-                    track.style.animationPlayState = 'paused';
-                    setTimeout(() => {
-                        track.style.animationPlayState = 'running';
-                    }, 5000);
-                }
-
-                nextBtn.addEventListener('click', stopAutoScroll);
-                prevBtn.addEventListener('click', stopAutoScroll);
-            }
-        }
-
-        // Геолокация
-        const geoBtn = document.getElementById('geolocation-btn');
-        const geoCoords = document.getElementById('geo-coords');
-        const locationSearch = document.getElementById('location-search');
-
-        if (geoBtn) {
-            geoBtn.addEventListener('click', function() {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        function(position) {
-                            const lat = position.coords.latitude;
-                            const lng = position.coords.longitude;
-                            geoCoords.value = `${lat},${lng},5`;
-                            locationSearch.value = 'рядом со мной';
-                            locationSearch.focus();
-                        },
-                        function(error) {
-                            alert('Не удалось получить ваше местоположение. Пожалуйста, разрешите доступ к геолокации.');
-                        }
-                    );
-                } else {
-                    alert('Геолокация не поддерживается вашим браузером.');
-                }
-            });
-        }
+    // Обработчики для элементов управления (оставлены на будущее)
+    const speedControls = document.querySelectorAll('.scroll-speed-control select');
+    speedControls.forEach(select => {
+        select.addEventListener('change', function() {
+            const track = this.closest('.section-block').querySelector('.auto-scroll-track');
+            const speed = parseInt(this.value);
+            track.style.animationDuration = speed + 's';
+        });
     });
+
+    const toggles = document.querySelectorAll('.auto-scroll-toggle');
+    toggles.forEach(toggle => {
+        toggle.addEventListener('click', function() {
+            const track = this.closest('.section-block').querySelector('.auto-scroll-track');
+            const isPaused = track.style.animationPlayState === 'paused';
+            track.style.animationPlayState = isPaused ? 'running' : 'paused';
+            this.classList.toggle('paused', !isPaused);
+        });
+    });
+});
 </script>
 {% endblock %}
