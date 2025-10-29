@@ -3221,6 +3221,60 @@ a[href*="select-listing-type"]:hover {
     color: white !important;
     font-weight: 600;
 }
+/* ---------- Градиентная анимация при наведении на .chip ---------- */
+.properties-page .chip {
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+/* псевдоэлемент с градиентом */
+.properties-page .chip::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #7b61ff, #36d1dc, #10b981);
+  background-size: 200% 200%;
+  opacity: 0;
+  transition: opacity 0.4s ease, background-position 1.2s ease;
+  z-index: 0;
+  border-radius: inherit;
+}
+
+/* эффект при наведении */
+.properties-page .chip:hover::before {
+  opacity: 1;
+  animation: chipGradient 4s ease-in-out infinite;
+}
+
+@keyframes chipGradient {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* текст поверх градиента */
+.properties-page .chip span,
+.properties-page .chip label,
+.properties-page .chip input,
+.properties-page .chip * {
+  position: relative;
+  z-index: 1;
+}
+
+/* активный чип */
+.properties-page .chip.active::before,
+.properties-page .chip input:checked + label::before {
+  opacity: 1;
+  animation: chipGradient 6s ease-in-out infinite;
+}
+.properties-page .chip.active,
+.properties-page .chip:hover {
+  color: white;
+  transform: translateY(-2px);
+}
+
 </style>
 {% endblock %}
 
