@@ -961,6 +961,18 @@ body.home-page {
 /* Utilities */
 .muted { color: var(--muted); }
 .link { text-decoration: none; color: inherit; display: block; }
+/* Скрываем кнопки на десктопе по умолчанию */
+.slider-controls {
+    display: none;
+}
+
+/* Показываем кнопки только на мобилках */
+@media (max-width: 768px) {
+    .slider-controls {
+        display: flex;
+        gap: 8px;
+    }
+}
 </style>
 
 <!-- Hero -->
@@ -1017,11 +1029,17 @@ body.home-page {
 <section class="vertical-section">
     <!-- Блок горячих предложений -->
     <div class="section-block">
-        <div class="section-header">
-            <h3>🔥 Горячие предложения</h3>
-            <div class="slider-controls">
-            </div>
-        </div>
+       <div class="section-header">
+    <h3>🔥 Горячие предложения</h3>
+    <div class="slider-controls">
+        <button class="slider-btn prev-hot">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="slider-btn next-hot">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+</div>
 
         <!-- Элементы управления автопрокруткой (скрыты) -->
         <div class="auto-scroll-controls">
@@ -1178,11 +1196,17 @@ body.home-page {
 
     <!-- Блок медиа -->
     <div class="section-block">
-        <div class="section-header">
-            <h3>📰 Медиа</h3>а
-            <div class="slider-controls">
-            </div>
-        </div>
+       <div class="section-header">
+    <h3>📰 Медиа</h3>
+    <div class="slider-controls">
+        <button class="slider-btn prev-media">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="slider-btn next-media">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+</div>
 
         <!-- Элементы управления автопрокруткой (скрыты) -->
         <div class="auto-scroll-controls">
@@ -1312,5 +1336,69 @@ body.home-page {
             });
         }
     });
+    // Функции для ручного переключения слайдов
+function initManualSlider(trackId, prevBtnSelector, nextBtnSelector) {
+    const track = document.getElementById(trackId);
+    if (!track) return;
+
+    const prevBtn = document.querySelector(prevBtnSelector);
+    const nextBtn = document.querySelector(nextBtnSelector);
+
+    if (!prevBtn || !nextBtn) return;
+
+    const slides = track.querySelectorAll('.slider-slide');
+    if (slides.length === 0) return;
+
+    const slideWidth = slides[0].offsetWidth + 24; // + padding
+    let currentPosition = 0;
+    const visibleSlides = Math.floor(track.offsetWidth / slideWidth);
+    const totalSlides = slides.length;
+
+    // Останавливаем автопрокрутку при ручном управлении
+    function stopAutoScroll() {
+        track.style.animationPlayState = 'paused';
+    }
+
+    function updateSliderPosition() {
+        track.style.transform = `translateX(${currentPosition}px)`;
+    }
+
+    prevBtn.addEventListener('click', function() {
+        stopAutoScroll();
+        if (currentPosition < 0) {
+            currentPosition += slideWidth * visibleSlides;
+            if (currentPosition > 0) currentPosition = 0;
+            updateSliderPosition();
+        }
+    });
+
+    nextBtn.addEventListener('click', function() {
+        stopAutoScroll();
+        const maxPosition = -((totalSlides - visibleSlides) * slideWidth);
+        if (currentPosition > maxPosition) {
+            currentPosition -= slideWidth * visibleSlides;
+            if (currentPosition < maxPosition) currentPosition = maxPosition;
+            updateSliderPosition();
+        }
+    });
+
+    // Скрываем кнопки на десктопе, показываем на мобилках
+    function updateButtonsVisibility() {
+        if (window.innerWidth <= 768) {
+            prevBtn.style.display = 'flex';
+            nextBtn.style.display = 'flex';
+        } else {
+            prevBtn.style.display = 'none';
+            nextBtn.style.display = 'none';
+        }
+    }
+
+    updateButtonsVisibility();
+    window.addEventListener('resize', updateButtonsVisibility);
+}
+
+// Инициализация ручного управления для обоих слайдеров
+initManualSlider('hot-properties-track', '.prev-hot', '.next-hot');
+initManualSlider('media-track', '.prev-media', '.next-media');
 </script>
 {% endblock %}
