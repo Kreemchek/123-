@@ -549,9 +549,7 @@
         <div class="topbar-row" style="gap:10px; flex-shrink: 0;">
             {% if user.is_authenticated %}
                 <div class="topbar-balance">
-                    <span class="pill">{{ user.balance }} ₽</span>
-                    <a href="{% url 'payment_topup' %}" class="topbar-btn topbar-btn-ghost">Пополнить</a>
-                </div>
+
                 <!-- Кнопка личного кабинета с иконкой Font Awesome -->
                 <a href="{% url 'dashboard' %}" class="topbar-btn topbar-btn-ghost" title="Личный кабинет" style="padding: 10px 14px;">
                     <i class="fas fa-user-circle"></i>
