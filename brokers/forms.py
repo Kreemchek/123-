@@ -4,12 +4,11 @@ from .models import BrokerProfile, BrokerReview
 
 
 class BrokerProfileForm(forms.ModelForm):
-    # Используем TypedMultipleChoiceField для лучшей обработки данных
     services = forms.TypedMultipleChoiceField(
         choices=BrokerProfile.SERVICES_CHOICES,
         widget=forms.CheckboxSelectMultiple,
         label='Услуги',
-        required=False,
+        required=True,  # Сделать обязательным
         coerce=str
     )
 
@@ -17,7 +16,7 @@ class BrokerProfileForm(forms.ModelForm):
         choices=BrokerProfile.SPECIALIZATION_CHOICES,
         widget=forms.CheckboxSelectMultiple,
         label='Специализация',
-        required=False,
+        required=True,  # Сделать обязательным
         coerce=str
     )
 
@@ -28,6 +27,18 @@ class BrokerProfileForm(forms.ModelForm):
             'about': forms.Textarea(attrs={'rows': 4, 'class': 'custom-input'}),
             'experience': forms.NumberInput(attrs={'class': 'custom-input'}),
         }
+
+    def clean_services(self):
+        services = self.cleaned_data.get('services')
+        if not services:
+            raise forms.ValidationError("Выберите хотя бы одну услугу")
+        return services
+
+    def clean_specializations(self):
+        specializations = self.cleaned_data.get('specializations')
+        if not specializations:
+            raise forms.ValidationError("Выберите хотя бы одну специализацию")
+        return specializations
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
