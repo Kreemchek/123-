@@ -3114,6 +3114,113 @@ a[href*="select-listing-type"]:hover {
         font-size: 11px !important;
     }
 }
+/* ---------- Gradient hover / active for .chip ---------- */
+.chip {
+    position: relative;
+    overflow: hidden;
+    z-index: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+}
+
+/* Градиентный оверлей */
+.chip .chip-hover-gradient {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0;
+    transform: scale(1.1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 50%, #7b61ff 100%);
+    background-size: 200% 200%;
+    border-radius: 9px;
+}
+
+/* Анимация движения градиента */
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Ховер эффект */
+.chip:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(123, 97, 255, 0.25);
+    border-color: transparent !important;
+}
+
+.chip:hover .chip-hover-gradient {
+    opacity: 1;
+    transform: scale(1);
+    animation: gradientShift 3s ease infinite;
+}
+
+/* Активное состояние (выбранные чипы) */
+.chip.active {
+    background: transparent !important;
+    border-color: transparent !important;
+    color: white !important;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(123, 97, 255, 0.3);
+}
+
+.chip.active .chip-hover-gradient {
+    opacity: 1;
+    transform: scale(1);
+    animation: gradientShift 3s ease infinite;
+}
+
+/* Текст поверх градиента */
+.chip > span {
+    position: relative;
+    z-index: 1;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.chip:hover > span,
+.chip.active > span {
+    color: white !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Плавное изменение цвета текста при ховере */
+.chip:not(.active):hover > span {
+    color: #7b61ff !important;
+}
+
+/* Фокус состояние для доступности */
+.chip:focus-within {
+    outline: 2px solid #7b61ff;
+    outline-offset: 2px;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    .chip:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    .chip.active {
+        transform: none;
+    }
+}
+
+/* Улучшенные стили для выбранных состояний инпутов */
+.chip input[type="checkbox"]:checked ~ .chip-hover-gradient,
+.chip input[type="radio"]:checked ~ .chip-hover-gradient {
+    opacity: 1;
+    transform: scale(1);
+    animation: gradientShift 3s ease infinite;
+}
+
+.chip input[type="checkbox"]:checked ~ span,
+.chip input[type="radio"]:checked ~ span {
+    color: white !important;
+    font-weight: 600;
+}
 </style>
 {% endblock %}
 
@@ -6373,7 +6480,58 @@ window.addEventListener('resize', function() {
 
 // Периодическое обновление счетчика фильтров
 setInterval(updateFiltersCount, 2000);
+// Обработка состояний чипов
+document.addEventListener('DOMContentLoaded', function() {
+    // Функция для обновления состояний чипов
+    function updateChipStates() {
+        document.querySelectorAll('.chip').forEach(chip => {
+            const input = chip.querySelector('input[type="checkbox"], input[type="radio"]');
+            if (input) {
+                // Обновляем класс active в зависимости от состояния checked
+                if (input.checked) {
+                    chip.classList.add('active');
+                } else {
+                    chip.classList.remove('active');
+                }
+            }
+        });
+    }
 
+    // Инициализация при загрузке
+    updateChipStates();
+
+    // Обработчик кликов по чипам
+    document.querySelectorAll('.chip').forEach(chip => {
+        chip.addEventListener('click', function(e) {
+            // Небольшая задержка для обновления состояния после клика
+            setTimeout(updateChipStates, 10);
+        });
+    });
+
+    // Также обновляем при изменении фильтров формы
+    const filterForm = document.getElementById('filter-form');
+    if (filterForm) {
+        filterForm.addEventListener('change', function() {
+            setTimeout(updateChipStates, 50);
+        });
+    }
+
+    // Для мобильной версии
+    const mobileFilterForm = document.getElementById('mobile-filter-form');
+    if (mobileFilterForm) {
+        mobileFilterForm.addEventListener('change', function() {
+            setTimeout(updateChipStates, 50);
+        });
+    }
+});
+
+// Дополнительная функция для плавного переключения
+function smoothChipTransition(chip) {
+    chip.style.transform = 'scale(0.98)';
+    setTimeout(() => {
+        chip.style.transform = '';
+    }, 150);
+}
 </script>
 
 {% endblock %}
