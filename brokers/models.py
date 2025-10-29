@@ -56,8 +56,6 @@ class BrokerProfile(models.Model):
     avatar = CloudinaryField('avatar', blank=True, null=True)
     avatar.verbose_name = _('Avatar')
 
-
-
     is_archived = models.BooleanField(
         default=False,
         verbose_name=_('В архиве')
@@ -159,22 +157,21 @@ class BrokerReview(models.Model):
         return f"Отзыв {self.client} для {self.broker} ({self.rating}/5)"
 
 
-
 class ContactRequest(models.Model):
+    # УПРОЩЕННЫЕ СТАТУСЫ БЕЗ ОПЛАТЫ
     STATUS_CHOICES = [
-        ('pending', 'Ожидает оплаты'),
-        ('paid', 'Оплачено'),
+        ('new', 'Новый'),
+        ('in_progress', 'В обработке'),
         ('completed', 'Завершено')
     ]
 
     requester = models.ForeignKey(User, on_delete=models.CASCADE, related_name='brokers_sent_requests')
     broker = models.ForeignKey(User, on_delete=models.CASCADE, related_name='brokers_received_requests')
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='brokers_contact_requests', null=True, blank=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new')
     created_at = models.DateTimeField(auto_now_add=True)
-    payment_amount = models.DecimalField(max_digits=10, decimal_places=2, default=1.00)
-    transaction_id = models.CharField(max_length=100, blank=True)
-    is_consultation = models.BooleanField(default=False)  # Добавлено новое поле
+    # УДАЛЕНО: payment_amount, transaction_id
+    is_consultation = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Запрос #{self.id} ({self.get_status_display()})"

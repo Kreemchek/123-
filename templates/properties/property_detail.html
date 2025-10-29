@@ -812,7 +812,7 @@
                         {% if user.is_authenticated and user.user_type == 'client' %}
                            <a href="{% url 'properties:contact_broker' broker_id=property.broker.id property_id=property.id %}"
    class="btn-primary transition-colors">
-   <i class="bi bi-chat-left-text mr-2"></i> Написать (1 руб.)
+   <i class="bi bi-chat-left-text mr-2"></i> Написать брокеру
 </a>
                         {% elif not user.is_authenticated %}
                             <a href="{% url 'login' %}?next={{ request.path }}"
@@ -1097,9 +1097,8 @@ function checkUrlForNotifications() {
 
     // Уведомление об успешном создании объекта
     if (urlParams.get('creation_success') === '1') {
-        const price = urlParams.get('price') || '0';
         showGlobalMessage(
-            `🎉 Объект успешно создан! С вашего баланса списано ${price} ₽. Теперь заполните адрес объекта на карте.`,
+            '🎉 Объект успешно создан! Теперь заполните адрес объекта на карте.',
             'success'
         );
 
@@ -1359,7 +1358,7 @@ function initEditMap() {
                 }
             }));
             displaySearchResults(searchResults);
-        });
+    });
     }
 
     // Отображение результатов поиска

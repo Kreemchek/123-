@@ -401,7 +401,7 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
                     form.add_error('images', f"Изображение {idx + 1}: {error_message}")
                     return self.form_invalid(form)
 
-            # Остальной код создания объекта...
+            # Получаем тип размещения
             listing_type_id = self.request.session.get('selected_listing_type')
             if not listing_type_id:
                 form.add_error(None, "Тип размещения не выбран")
@@ -409,23 +409,7 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
 
             listing_type = ListingType.objects.get(id=listing_type_id)
 
-            if self.request.user.balance < listing_type.price:
-                form.add_error(None, "Недостаточно средств на балансе")
-                return self.form_invalid(form)
-
-            transaction_id = f"property_{uuid.uuid4()}"
-
-            payment = Payment.objects.create(
-                user=self.request.user,
-                amount=listing_type.price,
-                payment_method='balance',
-                status='completed',
-                description=f"Оплата размещения типа: {listing_type.name}",
-                transaction_id=transaction_id
-            )
-
-            self.request.user.balance -= listing_type.price
-            self.request.user.save()
+            # УБРАНО ВСЁ, что связано с платежами и списаниями
 
             self.object = form.save(commit=False)
             self.object.property_type = get_object_or_404(
@@ -466,14 +450,12 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
                     order=idx
                 )
 
-            # УДАЛЕНО: messages.success - больше не используем Django messages
-
             if 'selected_listing_type' in self.request.session:
                 del self.request.session['selected_listing_type']
 
             # Редирект с параметрами для уведомления через JavaScript
             redirect_url = reverse('properties:property-detail', kwargs={'pk': self.object.pk})
-            redirect_url += f'?creation_success=1&price={listing_type.price}'
+            redirect_url += f'?creation_success=1'
 
             return redirect(redirect_url)
 

@@ -250,7 +250,7 @@ class ListingTypeForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)
+        # Убрать user из kwargs, если он передается
+        kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         self.fields['listing_type'].queryset = ListingType.objects.all()
-        self.user = user

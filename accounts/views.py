@@ -67,6 +67,7 @@ def home_view(request):
     return render(request, 'home.html', context)
 
 
+# В RegisterView убираем начисление бонусных средств
 class RegisterView(CreateView):
     form_class = UserRegistrationForm
     template_name = 'accounts/register.html'
@@ -82,8 +83,8 @@ class RegisterView(CreateView):
             user = form.save(commit=False)
             user.is_active = False
             user.verification_token = ''.join(random.choices(string.ascii_letters + string.digits, k=50))
-            # Начисляем 100 рублей на основной баланс
-            user.balance = 100.00  # Или user.balance += 100.00, если хотим добавлять к существующему
+            # УБИРАЕМ начисление бонусных средств
+            # user.balance = 100.00
             user.save()
             self.send_verification_email(user)
             return redirect(self.success_url)
@@ -105,6 +106,10 @@ class RegisterView(CreateView):
         msg = EmailMultiAlternatives(subject, html_content, from_email, to)
         msg.content_subtype = "html"
         msg.send()
+
+
+
+
 
 
 class CompleteRegistrationView(LoginRequiredMixin, View):
@@ -441,7 +446,7 @@ class ContactRequestView(LoginRequiredMixin, CreateView):
         return super().dispatch(request, *args, **kwargs)
 
 
-
+# В MessageCreateView полностью переписываем метод form_valid
 class MessageCreateView(LoginRequiredMixin, CreateView):
     model = Message
     fields = ['text', 'attachment']
@@ -449,40 +454,11 @@ class MessageCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         contact_request = get_object_or_404(ContactRequest, pk=self.kwargs['pk'])
 
-        # Проверяем, нужно ли списывать средства за первое сообщение
-        if (contact_request.is_first_message_paid and
-                contact_request.requester == self.request.user and
-                not contact_request.messages.filter(sender=self.request.user).exists()):
-
-            if self.request.user.balance < 1:
-                return JsonResponse({'error': 'Недостаточно средств на балансе'}, status=400)
-
-            try:
-                with transaction.atomic():
-                    self.request.user.balance -= 1
-                    self.request.user.save()
-
-                    Payment.objects.create(
-                        user=self.request.user,
-                        amount=1,
-                        payment_method='balance',
-                        status='completed',
-                        description=f"Контакт с брокером {contact_request.broker.id} по объекту {contact_request.property.id if contact_request.property else 'консультация'}"
-                    )
-
-                    # Обновляем флаг после списания
-                    contact_request.is_first_message_paid = False
-                    contact_request.save()
-
-            except Exception as e:
-                return JsonResponse({'error': f'Ошибка списания средств: {str(e)}'}, status=400)
-
+        # УБИРАЕМ ВСЮ ЛОГИКУ СПИСАНИЯ СРЕДСТВ
         form.instance.contact_request = contact_request
         form.instance.sender = self.request.user
         self.object = form.save()
         return render(self.request, 'accounts/partials/message.html', {'message': self.object})
-
-
 
     def form_invalid(self, form):
         return JsonResponse({'errors': form.errors}, status=400)
@@ -782,6 +758,7 @@ class CompleteBrokerInfoView(LoginRequiredMixin, UpdateView):
         return form
 
 
+# В DirectContactBrokerConsultView убираем проверку баланса
 class DirectContactBrokerConsultView(LoginRequiredMixin, View):
     def get(self, request, pk):
         if request.user.user_type != User.UserType.CLIENT:
@@ -790,12 +767,12 @@ class DirectContactBrokerConsultView(LoginRequiredMixin, View):
 
         broker = get_object_or_404(User, pk=pk, user_type=User.UserType.BROKER)
 
-        # Проверяем баланс пользователя (но не списываем пока)
-        if request.user.balance < 1:
-            messages.error(request, "Недостаточно средств на балансе. Минимальная сумма консультации - 1 руб.")
-            return redirect('broker-detail', pk=pk)
+        # УБИРАЕМ проверку баланса
+        # if request.user.balance < 1:
+        #     messages.error(request, "Недостаточно средств на балансе. Минимальная сумма консультации - 1 руб.")
+        #     return redirect('broker-detail', pk=pk)
 
-        # Создаем запрос на консультацию без списания средств
+        # Создаем запрос на консультацию
         contact_request = ContactRequest.objects.create(
             requester=request.user,
             broker=broker,

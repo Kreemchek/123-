@@ -120,13 +120,8 @@
                     <div class="mt-4">
                         <a href="{% url 'direct_contact_broker_consult' pk=broker.user.id %}"
                            class="gradient-bg hover:opacity-90 text-white text-center py-2 px-4 rounded-lg transition-all block">
-                            Запросить консультацию (1 руб.)
+                            Запросить консультацию
                         </a>
-                        {% if user.balance < 1 %}
-                            <div class="mt-2 text-sm text-red-600">
-                                Недостаточно средств на балансе для консультации (требуется 1 руб.)
-                            </div>
-                        {% endif %}
                     </div>
                     {% endif %}
                 </div>
@@ -186,7 +181,7 @@
                                         {% elif property.price %}
                                             <span class="price gradient-text font-bold">{{ property.price|space_format }} ₽</span>
                                         {% else %}
-                                            <span class="price gradient-text font-bold">Цена не указана</span>
+                                            <span class="price gradient-text font-bold">Цена по запросу</span>
                                         {% endif %}
                                         <div class="flex items-center gap-2">
                                             <span class="area text-gray-600">{{ property.total_area }} м²</span>

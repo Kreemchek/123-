@@ -13,12 +13,6 @@
     {% endfor %}
 </div>
 {% endif %}
-    <div id="successPaymentNotification" class="fixed top-4 right-4 z-50 hidden">
-    <div class="bg-green-100 text-green-700 px-4 py-2 rounded-lg shadow-md flex items-center justify-between mb-2">
-        <span id="successPaymentMessage"></span>
-        <button onclick="this.parentElement.remove()">×</button>
-    </div>
-</div>
 
 <style>
     /* Стили для кастомного скроллбара */
@@ -246,13 +240,6 @@
             {% endfor %}
         </div>
     </div>
-{% if object.status == 'new' and request.user == object.requester and object.is_first_message_paid and not object.first_message_sent %}
-<div id="paymentNotification" class="bg-purple-100 text-purple-800 p-4 rounded-lg mb-4 mt-3">
-    <i class="fas fa-info-circle mr-2"></i>
-    С вашего счета будет списано 1 рубль после отправки первого сообщения.
-    Ваш текущий баланс: {{ request.user.balance }} руб.
-</div>
-{% endif %}
 
     <!-- Форма отзыва -->
     {% if object.status == 'completed' and not has_review and request.user == object.requester and not object.is_consultation %}
@@ -413,9 +400,6 @@
             const formData = new FormData(form);
             const btn = document.getElementById('submitBtn');
             const messagesContainer = document.querySelector('.chat-messages-container');
-            const paymentNotification = document.getElementById('paymentNotification');
-            const successNotification = document.getElementById('successPaymentNotification');
-            const successMessage = document.getElementById('successPaymentMessage');
 
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Отправка...';
@@ -434,15 +418,8 @@
                     messagesContainer.insertAdjacentHTML('beforeend', newMessageHtml);
                     scrollToBottom();
 
-                    if (paymentNotification) {
-                        paymentNotification.remove();
-                        successMessage.textContent = 'Сообщение успешно отправлено';
-                        successNotification.classList.remove('hidden');
-
-                        setTimeout(() => {
-                            successNotification.classList.add('hidden');
-                        }, 5000);
-                    }
+                    // Простое уведомление об успешной отправке
+                    alert('Сообщение успешно отправлено');
                 } else {
                     const errorData = await response.json();
                     alert(errorData.error || 'Ошибка при отправке сообщения');

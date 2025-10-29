@@ -36,14 +36,15 @@ class PropertyCreateWithSubscriptionCheck(LoginRequiredMixin, CreateView):
     template_name = 'properties/property_create_form.html'
 
     def form_valid(self, form):
-        if self.request.user.user_type == 'broker':
-            active_sub = Subscription.objects.filter(
-                user=self.request.user,
-                end_date__gte=timezone.now().date()
-            ).exists()
-
-            if not active_sub and form.cleaned_data.get('is_premium'):
-                return HttpResponseForbidden("Требуется активная подписка для премиум-объявлений")
+        # УБРАНА ПРОВЕРКА ПОДПИСКИ ДЛЯ ПРЕМИУМ-ОБЪЯВЛЕНИЙ
+        # if self.request.user.user_type == 'broker':
+        #     active_sub = Subscription.objects.filter(
+        #         user=self.request.user,
+        #         end_date__gte=timezone.now().date()
+        #     ).exists()
+        #
+        #     if not active_sub and form.cleaned_data.get('is_premium'):
+        #         return HttpResponseForbidden("Требуется активная подписка для премиум-объявлений")
 
         form.instance.user = self.request.user
         return super().form_valid(form)
@@ -118,6 +119,7 @@ class BrokerListView(ListView):
         # Добавляем параметры фильтрации в контекст для пагинации
         context['current_filters'] = self.request.GET.urlencode()
         return context
+
 class BrokerDetailView(DetailView):
     model = BrokerProfile
     template_name = 'brokers/broker_detail.html'
@@ -240,4 +242,3 @@ def delete_broker_favorite(request, favorite_id):
     else:
         messages.success(request, f'Брокер "{broker_name}" удален из избранного')
         return redirect('dashboard')
-

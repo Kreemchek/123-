@@ -191,7 +191,7 @@ class Favorite(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
-
+# В модели ContactRequest закомментируйте или удалите поля связанные с оплатой
 class ContactRequest(models.Model):
     STATUS_CHOICES = [
         ('new', 'Новый'),
@@ -201,19 +201,22 @@ class ContactRequest(models.Model):
 
     requester = models.ForeignKey(User, on_delete=models.CASCADE, related_name='accounts_sent_requests')
     broker = models.ForeignKey(User, on_delete=models.CASCADE, related_name='accounts_received_requests')
-    property = models.ForeignKey(Property, on_delete=models.CASCADE, null=True, blank=True, related_name='accounts_contact_requests' )
+    property = models.ForeignKey(Property, on_delete=models.CASCADE, null=True, blank=True,
+                                 related_name='accounts_contact_requests')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_consultation = models.BooleanField(default=False)
-    is_first_message_paid = models.BooleanField(
-        default=True,
-        verbose_name="Требуется оплата за первое сообщение"
-    )
-    first_message_sent = models.BooleanField(
-        default=False,
-        verbose_name="Первое сообщение отправлено"
-    )
+
+    # ЗАКОММЕНТИРУЙТЕ или УДАЛИТЕ эти поля
+    # is_first_message_paid = models.BooleanField(
+    #     default=True,
+    #     verbose_name="Требуется оплата за первое сообщение"
+    # )
+    # first_message_sent = models.BooleanField(
+    #     default=False,
+    #     verbose_name="Первое сообщение отправлено"
+    # )
 
     review = models.OneToOneField(
         'brokers.BrokerReview',
