@@ -3114,6 +3114,187 @@ a[href*="select-listing-type"]:hover {
         font-size: 11px !important;
     }
 }
+/* Анимация для чипсов фильтров при наведении */
+.chip {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    padding: 8px 10px;
+    border-radius: 10px;
+    font-size: 13px;
+    background: white;
+    color: #64748b;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid #e5e7eb;
+    z-index: 1;
+}
+
+.chip::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%);
+    transition: left 0.4s ease;
+    z-index: -1;
+}
+
+.chip:hover::before {
+    left: 0;
+}
+
+.chip:hover {
+    color: white;
+    border-color: transparent;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(123, 97, 255, 0.3);
+}
+
+.chip.active {
+    background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 15px rgba(123, 97, 255, 0.2);
+}
+
+.chip.active:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(123, 97, 255, 0.4);
+}
+
+/* Анимация для текста внутри чипсов */
+.chip span {
+    position: relative;
+    z-index: 2;
+    transition: color 0.3s ease;
+}
+
+/* Плавное изменение цвета текста при наведении */
+.chip:hover span {
+    color: white !important;
+}
+
+/* Анимация для иконок внутри чипсов */
+.chip i {
+    transition: all 0.3s ease;
+}
+
+.chip:hover i {
+    color: white !important;
+    transform: scale(1.1);
+}
+
+/* Улучшенная анимация для активных состояний */
+.filter-group .chip {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Градиентная обводка при фокусе */
+.chip:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(123, 97, 255, 0.1);
+}
+
+/* Анимация пульсации для активных чипсов */
+.chip.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%);
+    animation: pulse 2s infinite;
+    z-index: -1;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.8;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Улучшенные стили для мобильных чипсов */
+@media (max-width: 768px) {
+    .chip {
+        padding: 6px 8px;
+        font-size: 12px;
+    }
+
+    .chip:hover {
+        transform: translateY(-1px);
+    }
+}
+
+/* Специфичные стили для чипсов в фильтрах недвижимости */
+.properties-page .chip {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    padding: 8px 10px;
+    border-radius: 10px;
+    font-size: 13px;
+    background: white;
+    color: #64748b;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid #e5e7eb;
+    z-index: 1;
+}
+
+.properties-page .chip::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%);
+    transition: left 0.4s ease;
+    z-index: -1;
+}
+
+.properties-page .chip:hover::before {
+    left: 0;
+}
+
+.properties-page .chip:hover {
+    color: white;
+    border-color: transparent;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(123, 97, 255, 0.3);
+}
+
+.properties-page .chip.active {
+    background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 15px rgba(123, 97, 255, 0.2);
+}
+
+.properties-page .chip.active:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(123, 97, 255, 0.4);
+}
 </style>
 {% endblock %}
 
@@ -4095,83 +4276,61 @@ a[href*="select-listing-type"]:hover {
             <!-- Тип недвижимости -->
 <!-- Тип недвижимости -->
 
-
-<!-- Замените существующий блок "Тип недвижимости" на этот код -->
-<!-- Замените существующий блок "Тип недвижимости" на этот код -->
 <div class="filter-group" style="background: #f9fafb; border-radius: 12px; padding: 12px; margin-bottom: 12px; border: 1px solid #e5e7eb;">
     <h3 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-100">Тип недвижимости</h3>
-    <div class="checkbox-row" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px">
+    <div class="checkbox-row">
         <!-- Новостройка -->
-        <label class="chip {% if 'new_flat' in selected_property_types %}active{% endif %}"
-               style="cursor: pointer; padding: 8px 10px; border-radius: 10px; font-size: 13px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden;">
+        <label class="chip {% if 'new_flat' in selected_property_types %}active{% endif %}">
             <input type="checkbox" name="property_type" value="new_flat"
-                   {% if 'new_flat' in selected_property_types %}checked{% endif %}
-                   style="display: none;">
-            <span class="relative z-10">Новостройка</span>
-            <div class="chip-hover-gradient" style="position: absolute; inset: 0; background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%); opacity: 0; transition: opacity 0.2s ease; z-index: 1;"></div>
+                   {% if 'new_flat' in selected_property_types %}checked{% endif %}>
+            <span>Новостройка</span>
         </label>
 
         <!-- Вторичка -->
-        <label class="chip {% if 'resale_flat' in selected_property_types %}active{% endif %}"
-               style="cursor: pointer; padding: 8px 10px; border-radius: 10px; font-size: 13px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden;">
+        <label class="chip {% if 'resale_flat' in selected_property_types %}active{% endif %}">
             <input type="checkbox" name="property_type" value="resale_flat"
-                   {% if 'resale_flat' in selected_property_types %}checked{% endif %}
-                   style="display: none;">
-            <span class="relative z-10">Вторичка</span>
-            <div class="chip-hover-gradient" style="position: absolute; inset: 0; background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%); opacity: 0; transition: opacity 0.2s ease; z-index: 1;"></div>
+                   {% if 'resale_flat' in selected_property_types %}checked{% endif %}>
+            <span>Вторичка</span>
         </label>
 
         <!-- Дом -->
-        <label class="chip {% if 'house' in selected_property_types %}active{% endif %}"
-               style="cursor: pointer; padding: 8px 10px; border-radius: 10px; font-size: 13px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden;">
+        <label class="chip {% if 'house' in selected_property_types %}active{% endif %}">
             <input type="checkbox" name="property_type" value="house"
-                   {% if 'house' in selected_property_types %}checked{% endif %}
-                   style="display: none;">
-            <span class="relative z-10">Дом</span>
-            <div class="chip-hover-gradient" style="position: absolute; inset: 0; background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%); opacity: 0; transition: opacity 0.2s ease; z-index: 1;"></div>
+                   {% if 'house' in selected_property_types %}checked{% endif %}>
+            <span>Дом</span>
         </label>
 
         <!-- Нежилое помещение -->
-        <label class="chip {% if 'commercial' in selected_property_types %}active{% endif %}"
-               style="cursor: pointer; padding: 8px 10px; border-radius: 10px; font-size: 13px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden;">
+        <label class="chip {% if 'commercial' in selected_property_types %}active{% endif %}">
             <input type="checkbox" name="property_type" value="commercial"
-                   {% if 'commercial' in selected_property_types %}checked{% endif %}
-                   style="display: none;">
-            <span class="relative z-10">Нежилое помещение</span>
-            <div class="chip-hover-gradient" style="position: absolute; inset: 0; background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%); opacity: 0; transition: opacity 0.2s ease; z-index: 1;"></div>
+                   {% if 'commercial' in selected_property_types %}checked{% endif %}>
+            <span>Нежилое помещение</span>
         </label>
     </div>
 
     <h3 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-100" style="margin-top: 16px;">Вид размещения</h3>
-   <!-- В desktop фильтрах замените этот блок -->
-<div class="checkbox-row" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px">
-    <!-- Купить -->
-    <label class="chip {% if 'no' in selected_rental_types %}active{% endif %}"
-           style="cursor: pointer; padding: 8px 10px; border-radius: 10px; font-size: 13px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden;">
-        <input type="checkbox" name="rental_type" value="no"
-               {% if 'no' in selected_rental_types %}checked{% endif %}
-               style="display: none;">
-        <span class="relative z-10">Купить</span>
-    </label>
+    <div class="checkbox-row">
+        <!-- Купить -->
+        <label class="chip {% if 'no' in selected_rental_types %}active{% endif %}">
+            <input type="checkbox" name="rental_type" value="no"
+                   {% if 'no' in selected_rental_types %}checked{% endif %}>
+            <span>Купить</span>
+        </label>
 
-    <!-- Аренда помесячно -->
-    <label class="chip {% if 'monthly' in selected_rental_types %}active{% endif %}"
-           style="cursor: pointer; padding: 8px 10px; border-radius: 10px; font-size: 13px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden;">
-        <input type="checkbox" name="rental_type" value="monthly"
-               {% if 'monthly' in selected_rental_types %}checked{% endif %}
-               style="display: none;">
-        <span class="relative z-10">Аренда помесячно</span>
-    </label>
+        <!-- Аренда помесячно -->
+        <label class="chip {% if 'monthly' in selected_rental_types %}active{% endif %}">
+            <input type="checkbox" name="rental_type" value="monthly"
+                   {% if 'monthly' in selected_rental_types %}checked{% endif %}>
+            <span>Аренда помесячно</span>
+        </label>
 
-    <!-- Аренда посуточно -->
-    <label class="chip {% if 'daily' in selected_rental_types %}active{% endif %}"
-           style="cursor: pointer; padding: 8px 10px; border-radius: 10px; font-size: 13px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden;">
-        <input type="checkbox" name="rental_type" value="daily"
-               {% if 'daily' in selected_rental_types %}checked{% endif %}
-               style="display: none;">
-        <span class="relative z-10">Аренда посуточно</span>
-    </label>
-</div>
+        <!-- Аренда посуточно -->
+        <label class="chip {% if 'daily' in selected_rental_types %}active{% endif %}">
+            <input type="checkbox" name="rental_type" value="daily"
+                   {% if 'daily' in selected_rental_types %}checked{% endif %}>
+            <span>Аренда посуточно</span>
+        </label>
+    </div>
 </div>
 
                 <!-- Город и Метро -->

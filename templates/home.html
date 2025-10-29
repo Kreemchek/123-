@@ -72,7 +72,7 @@
 
 {% block content %}
 <style>
- /* Стили из variant_7.html */
+/* Стили из variant_7.html */
 :root {
     --bg: #0b0d12;
     --bg-soft: #0f1218;
@@ -424,13 +424,14 @@ body.home-page {
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
 }
 
-/* ИЗМЕНЕНИЕ: Увеличиваем область изображения */
+/* ИЗМЕНЕНИЕ: СДЕЛАЕМ ФОТО ЕЩЕ БОЛЬШЕ */
 .listing-card-compact .thumb {
-    aspect-ratio: 4/2.8; /* Более квадратное соотношение - больше места для фото */
+    aspect-ratio: 4/2; /* ЕЩЕ БОЛЬШЕ места для фото - почти квадратное */
     position: relative;
     overflow: hidden;
     width: 100%;
-    margin: 0; /* Убираем возможные отступы */
+    margin: 0;
+    flex-shrink: 0;
 }
 
 .listing-card-compact .thumb img {
@@ -473,58 +474,59 @@ body.home-page {
     z-index: 2;
 }
 
-/* ИЗМЕНЕНИЕ: Уменьшаем отступы в теле карточки */
+/* ИЗМЕНЕНИЕ: ЕЩЕ МЕНЬШЕ ОТСТУПОВ ДЛЯ ТЕКСТА */
 .listing-card-compact .body {
-    padding: 12px; /* Уменьшили с 16px до 12px */
+    padding: 8px 10px 10px; /* Минимальные отступы */
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+    min-height: 0;
 }
 
 .listing-card-compact .body strong {
-    font-size: 16px;
-    line-height: 1.4;
+    font-size: 14px; /* Еще меньше шрифт */
+    line-height: 1.2;
     display: block;
-    margin-bottom: 8px; /* Уменьшили с 12px до 8px */
+    margin-bottom: 4px; /* Минимальный отступ */
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    min-height: 44px;
+    min-height: 32px; /* Еще меньше высота */
     color: var(--text);
     font-weight: 700;
 }
 
-/* ИЗМЕНЕНИЕ: Уменьшаем отступы в мета-информации */
+/* ИЗМЕНЕНИЕ: СУПЕР КОМПАКТНАЯ МЕТА-ИНФОРМАЦИЯ */
 .meta-compact {
     display: flex;
     flex-direction: column;
-    gap: 6px; /* Уменьшили с 8px до 6px */
+    gap: 2px; /* Минимальные промежутки */
     color: var(--muted);
-    font-size: 14px;
-    margin-bottom: 12px; /* Уменьшили с 16px до 12px */
+    font-size: 12px; /* Еще меньше шрифт */
+    margin-bottom: 8px; /* Минимальный отступ снизу */
     flex-grow: 1;
 }
 
 .property-type {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 600;
     color: var(--text);
-    margin-bottom: 2px; /* Уменьшили отступ */
+    margin-bottom: 1px;
 }
 
 .property-details {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px; /* Уменьшили с 8px до 6px */
-    margin-bottom: 6px; /* Уменьшили с 8px до 6px */
+    gap: 3px; /* Минимальные промежутки */
+    margin-bottom: 3px;
 }
 
 .detail-item {
     background: rgba(124, 102, 255, 0.1);
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 12px;
+    padding: 2px 5px; /* Минимальные паддинги */
+    border-radius: 4px;
+    font-size: 10px; /* Еще меньше шрифт */
     font-weight: 600;
     color: var(--brand);
 }
@@ -532,38 +534,39 @@ body.home-page {
 .price-section {
     margin-top: auto;
     border-top: 1px solid rgba(0,0,0,0.1);
-    padding-top: 8px; /* Уменьшили с 12px до 8px */
+    padding-top: 4px; /* Минимальный отступ */
 }
 
 .price-compact {
     font-weight: 700;
-    font-size: 18px;
+    font-size: 14px; /* Еще меньше шрифт */
     color: var(--brand);
     text-align: left;
     width: 100%;
-    margin-bottom: 6px; /* Уменьшили с 8px до 6px */
+    margin-bottom: 2px;
 }
 
-/* ИЗМЕНЕНИЕ: Уменьшаем кнопку */
+/* ИЗМЕНЕНИЕ: МИНИМАЛЬНАЯ КНОПКА */
 .card-actions-compact {
     display: flex;
     justify-content: flex-end;
     margin-top: auto;
+    padding-top: 2px; /* Минимальный отступ */
 }
 
 .btn-compact {
     cursor: pointer;
     border: none;
-    padding: 8px 16px; /* Уменьшили с 10px 20px */
-    border-radius: 10px;
+    padding: 4px 10px; /* Минимальные паддинги */
+    border-radius: 6px; /* Меньше радиус */
     font-weight: 600;
     transition: .3s ease;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
-    min-height: 32px; /* Уменьшили высоту */
+    font-size: 11px; /* Еще меньше шрифт */
+    min-height: 24px; /* Минимальная высота */
 }
 
 .btn-primary-compact {
@@ -571,7 +574,7 @@ body.home-page {
     color: #fff;
     box-shadow: var(--glow);
     border: none;
-    padding: 8px 16px; /* Уменьшили с 10px 20px */
+    padding: 4px 10px;
 }
 
 .btn-primary-compact:hover {
