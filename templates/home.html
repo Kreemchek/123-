@@ -961,6 +961,42 @@ body.home-page {
 /* Utilities */
 .muted { color: var(--muted); }
 .link { text-decoration: none; color: inherit; display: block; }
+/* АНИМАЦИЯ АВТОПРОКРУТКИ */
+@keyframes smoothScroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+/* СТАНДАРТНАЯ СКОРОСТЬ ДЛЯ ДЕСКТОПОВ */
+.auto-scroll-track.continuous {
+    display: flex;
+    animation: smoothScroll 40s linear infinite;
+}
+
+/* УСКОРЕННАЯ ПРОКРУТКА ДЛЯ ПЛАНШЕТОВ */
+@media (max-width: 1200px) {
+    .auto-scroll-track.continuous {
+        animation-duration: 30s; /* Быстрее на планшетах */
+    }
+}
+
+/* ЕЩЕ БЫСТРЕЕ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ */
+@media (max-width: 768px) {
+    .auto-scroll-track.continuous {
+        animation-duration: 20s; /* Значительно быстрее на телефонах */
+    }
+}
+
+/* МАКСИМАЛЬНАЯ СКОРОСТЬ ДЛЯ ОЧЕНЬ МАЛЕНЬКИХ ЭКРАНОВ */
+@media (max-width: 480px) {
+    .auto-scroll-track.continuous {
+        animation-duration: 15s; /* Очень быстрая прокрутка */
+    }
+}
 </style>
 
 <!-- Hero -->
@@ -1312,5 +1348,6 @@ body.home-page {
             });
         }
     });
+
 </script>
 {% endblock %}
