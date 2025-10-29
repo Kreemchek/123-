@@ -712,20 +712,31 @@ def delete_request(request, pk):
     return redirect('dashboard')
 
 
+# accounts/views.py
 class CompleteBrokerInfoView(LoginRequiredMixin, UpdateView):
     form_class = BrokerProfileForm
     template_name = 'accounts/complete_broker_info.html'
     success_url = reverse_lazy('dashboard')
 
+    def dispatch(self, request, *args, **kwargs):
+        # Если пользователь не брокер, перенаправляем
+        if not request.user.is_broker:
+            return redirect('dashboard')
+
+        # Если профиль уже заполнен, перенаправляем
+        if hasattr(request.user, 'broker_profile') and self.is_profile_complete(request.user.broker_profile):
+            return redirect('dashboard')
+
+        return super().dispatch(request, *args, **kwargs)
+
     def get_object(self):
-        # Получаем или создаем профиль брокера с начальными значениями
         broker_profile, created = BrokerProfile.objects.get_or_create(
             user=self.request.user,
             defaults={
                 'experience': 0,
                 'about': '',
-                'services': [],  # Добавляем пустой список для услуг
-                'specializations': []  # Добавляем пустой список для специализации
+                'services': [],
+                'specializations': []
             }
         )
         return broker_profile
@@ -733,29 +744,25 @@ class CompleteBrokerInfoView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         broker_profile = form.save(commit=False)
         broker_profile.user = self.request.user
-
-        # Сохраняем выбранные услуги и специализации
         broker_profile.services = form.cleaned_data.get('services', [])
         broker_profile.specializations = form.cleaned_data.get('specializations', [])
-
         broker_profile.save()
 
-        # Обновляем пользователя
-        user = self.request.user
-        user.is_verified = True
-        user.save()
-
-        messages.success(self.request, 'Профиль брокера успешно обновлен!')
+        messages.success(self.request, 'Профиль брокера успешно заполнен! Теперь у вас есть доступ ко всем функциям.')
         return redirect(self.get_success_url())
 
     def form_invalid(self, form):
-        messages.error(self.request, 'Пожалуйста, исправьте ошибки в форме.')
+        messages.error(self.request, 'Пожалуйста, заполните все обязательные поля.')
         return super().form_invalid(form)
 
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.fields['experience'].required = True
-        return form
+    def is_profile_complete(self, broker_profile):
+        """Проверяет, заполнены ли все обязательные поля"""
+        return all([
+            broker_profile.experience is not None,
+            bool(broker_profile.about and broker_profile.about.strip()),
+            bool(broker_profile.services),
+            bool(broker_profile.specializations),
+        ])
 
 
 # В DirectContactBrokerConsultView убираем проверку баланса
