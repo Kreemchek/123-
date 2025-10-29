@@ -1,3 +1,4 @@
+
 {% extends 'base.html' %}
 {% load static %}
 
@@ -328,10 +329,10 @@ body.home-page {
     box-shadow: var(--shadow-1);
     margin-bottom: 40px;
     overflow: hidden;
-    max-width: 1240px; /* Ограничиваем ширину как у hero */
+    max-width: 1400px; /* УВЕЛИЧЕНО для большего контейнера */
     margin-left: auto;
     margin-right: auto;
-    width: calc(100% - clamp(16px, 4vw, 28px) * 2); /* Учитываем отступы как у hero */
+    width: calc(100% - clamp(16px, 4vw, 28px) * 2);
 }
 
 .section-header {
@@ -398,7 +399,7 @@ body.home-page {
 .slider-slide {
     min-width: 33.333%;
     flex-shrink: 0;
-    padding: 0 8px;
+    padding: 0 12px; /* УВЕЛИЧЕНО расстояние между карточками */
     box-sizing: border-box;
 }
 
@@ -467,13 +468,15 @@ body.home-page {
     border: 1px solid rgba(255, 255, 255, 0.6);
 }
 
-/* Изображение с градиентным оверлеем */
+/* ИЗМЕНЕНИЕ: ФОТО ЗАНИМАЕТ ВСЮ ШИРИНУ КОНТЕЙНЕРА КАРТОЧКИ */
 .listing-card-compact .thumb {
     aspect-ratio: 4/3;
     position: relative;
     overflow: hidden;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     margin: 0;
+    width: 100%;
+    height: 280px; /* ФИКСИРОВАННАЯ ВЫСОТА ДЛЯ ВСЕХ ФОТО */
 }
 
 .listing-card-compact .thumb img {
@@ -677,6 +680,10 @@ body.home-page {
         padding: 16px;
     }
 
+    .listing-card-compact .thumb {
+        height: 200px; /* УМЕНЬШЕНА ВЫСОТА ДЛЯ МОБИЛЬНЫХ */
+    }
+
     .property-title-compact {
         font-size: 16px;
         min-height: 42px;
@@ -710,7 +717,7 @@ body.home-page {
     }
 }
 
-/* Стили для карточек медиа (оставляем существующие, но улучшаем) */
+/* Стили для карточек медиа */
 .media-card-compact {
     border-radius: 20px;
     background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
@@ -751,10 +758,13 @@ body.home-page {
     z-index: 2;
 }
 
+/* ИЗМЕНЕНИЕ: ФОТО МЕДИА ТАКЖЕ ЗАНИМАЕТ ВСЮ ШИРИНУ */
 .media-card-compact .thumb {
     aspect-ratio: 4/3;
     position: relative;
     overflow: hidden;
+    width: 100%;
+    height: 220px; /* ФИКСИРОВАННАЯ ВЫСОТА ДЛЯ МЕДИА */
 }
 
 .media-card-compact .thumb img {
@@ -855,7 +865,7 @@ body.home-page {
 
     .slider-slide {
         min-width: 100%;
-        padding: 0 4px;
+        padding: 0 8px;
     }
 
     .listing-card-compact .body,
@@ -869,7 +879,11 @@ body.home-page {
         min-height: 42px;
     }
 
-    .meta-compact {
+    .media-card-compact .thumb {
+        height: 180px; /* УМЕНЬШЕНА ВЫСОТА ДЛЯ МОБИЛЬНЫХ */
+    }
+
+    .media-meta-compact {
         font-size: 13px;
     }
 
@@ -877,14 +891,9 @@ body.home-page {
         font-size: 16px;
     }
 
-    .btn-compact {
+    .btn-details-compact {
         padding: 8px 16px;
         font-size: 13px;
-    }
-
-    .detail-item {
-        font-size: 11px;
-        padding: 3px 6px;
     }
 }
 
@@ -899,14 +908,22 @@ body.home-page {
     }
 
     .slider-slide {
-        padding: 0 2px;
+        padding: 0 4px;
+    }
+
+    .listing-card-compact .thumb {
+        height: 160px; /* ЕЩЕ МЕНЬШЕ ДЛЯ ОЧЕНЬ МАЛЕНЬКИХ ЭКРАНОВ */
+    }
+
+    .media-card-compact .thumb {
+        height: 150px;
     }
 
     .price-compact {
         font-size: 15px;
     }
 
-    .btn-compact {
+    .btn-details-compact {
         padding: 8px 14px;
         font-size: 12px;
     }
