@@ -3274,6 +3274,50 @@ a[href*="select-listing-type"]:hover {
   color: white;
   transform: translateY(-2px);
 }
+/* 🌈 Градиентная подсветка для .chip при наведении */
+.properties-page .chip {
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+/* Градиентный фон */
+.properties-page .chip::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #7b61ff, #36d1dc, #10b981);
+  background-size: 200% 200%;
+  opacity: 0;
+  transition: opacity 0.4s ease, background-position 1s ease;
+  z-index: 0;
+}
+
+/* Плавное движение градиента */
+@keyframes chipGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* При наведении */
+.properties-page .chip:hover::before {
+  opacity: 1;
+  animation: chipGradient 3s ease infinite;
+}
+
+.properties-page .chip:hover {
+  color: #fff !important;
+  transform: translateY(-2px);
+}
+
+/* Текст поверх градиента */
+.properties-page .chip * {
+  position: relative;
+  z-index: 1;
+}
 
 </style>
 {% endblock %}
