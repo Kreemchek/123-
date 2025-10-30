@@ -4,9 +4,6 @@
 {% block extra_head %}
 <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css">
 <script src="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js"></script>
-      <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
 /* Основные стили карточек недвижимости */
 .property-card {
@@ -3225,183 +3222,103 @@ a[href*="select-listing-type"]:hover {
     font-weight: 600;
 }
 /* ---------- Градиентная анимация при наведении на .chip ---------- */
-
-.chip{
-  padding:8px 10px;
-  border-radius:10px;
-  border:1px solid var(--glass-border);
-  font-size:13px;
-  background:white;
-  color:var(--muted);
-  cursor:pointer;
-  transition: all 0.2s ease;
+.properties-page .chip {
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+  transition: color 0.3s ease, transform 0.2s ease;
 }
-.chip:hover{
-  border-color: #7b61ff;
-  color: #7b61ff;
+
+/* псевдоэлемент с градиентом */
+.properties-page .chip::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #7b61ff, #36d1dc, #10b981);
+  background-size: 200% 200%;
+  opacity: 0;
+  transition: opacity 0.4s ease, background-position 1.2s ease;
+  z-index: 0;
+  border-radius: inherit;
 }
-.chip.active{
-  background:linear-gradient(90deg,#3aa7ff22,#6f53ff22);
-  border:1px solid rgba(120,110,255,0.3);
-  color:#4c37d4
+
+/* эффект при наведении */
+.properties-page .chip:hover::before {
+  opacity: 1;
+  animation: chipGradient 4s ease-in-out infinite;
 }
-.checkbox-row{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px
+
+@keyframes chipGradient {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
-    :root{
-      --bg: #f8fafc; /* light background */
-      --panel: #ffffff; /* card background */
-      --muted: #64748b;
-      --text: #1e293b;
-      --accent-1: linear-gradient(135deg,#7b61ff 0%, #36d1dc 100%);
-      --glass: rgba(0,0,0,0.04);
-      --glass-2: rgba(0,0,0,0.02);
-      --glass-3: rgba(0,0,0,0.06);
-      --card-shadow: 0 4px 20px rgba(0,0,0,0.08);
-      --glass-border: rgba(0,0,0,0.08);
-      --success: #10b981;
-      --danger: #ef4444;
-      --glass-border-2: rgba(0,0,0,0.06);
-      --glass-highlight: rgba(0,0,0,0.02);
-    }
 
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      background: radial-gradient(1200px 600px at 10% 10%, rgba(55,102,255,0.04), transparent),
-                  radial-gradient(900px 450px at 95% 80%, rgba(54,209,220,0.03), transparent),
-                  var(--bg);
-      color:var(--text);
-      font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      padding:28px;
-    }
+/* текст поверх градиента */
+.properties-page .chip span,
+.properties-page .chip label,
+.properties-page .chip input,
+.properties-page .chip * {
+  position: relative;
+  z-index: 1;
+}
 
-    /* layout */
-    .shell{
-      max-width:1320px;
-      margin:0 auto;
-      display:grid;
-      grid-template-columns:320px 1fr;
-      gap:28px;
-      align-items:start;
-    }
+/* активный чип */
+.properties-page .chip.active::before,
+.properties-page .chip input:checked + label::before {
+  opacity: 1;
+  animation: chipGradient 6s ease-in-out infinite;
+}
+.properties-page .chip.active,
+.properties-page .chip:hover {
+  color: white;
+  transform: translateY(-2px);
+}
+/* 🌈 Градиентная подсветка для .chip при наведении */
+.properties-page .chip {
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
 
-    header.topbar{
-      grid-column:1 / -1;
-      display:flex;
-      gap:18px;
-      align-items:center;
-      justify-content:space-between;
-      margin-bottom:6px;
-    }
+/* Градиентный фон */
+.properties-page .chip::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #7b61ff, #36d1dc, #10b981);
+  background-size: 200% 200%;
+  opacity: 0;
+  transition: opacity 0.4s ease, background-position 1s ease;
+  z-index: 0;
+}
 
-    .brand{
-      display:flex;align-items:center;gap:12px
-    }
-    .logo{
-      width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#6f53ff,#2bd7db);
-      display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(77,52,255,0.15);
-      font-weight:800;color:white;font-family:Manrope;font-size:18px
-    }
-    .brand h1{font-size:18px;margin:0;color:var(--text)}
-    .brand p{margin:0;color:var(--muted);font-size:13px}
+/* Плавное движение градиента */
+@keyframes chipGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
 
-    /* top search */
-    .searchbar{
-      flex:1;max-width:820px;display:flex;align-items:center;gap:12px;background:white;
-      border-radius:12px;padding:10px 14px;border:1px solid var(--glass-border);
-      box-shadow: var(--card-shadow);
-    }
-    .searchbar input{flex:1;background:transparent;border:0;color:var(--text);font-size:15px;padding:10px;outline:none}
-    .search-actions{display:flex;gap:8px}
-    .btn{
-      background:white;
-      border:1px solid var(--glass-border);
-      padding:10px 14px;border-radius:10px;color:var(--muted);font-weight:600;cursor:pointer;font-size:14px;
-      transition: all 0.2s ease;
-    }
-    .btn:hover{
-      background:var(--glass-highlight);
-    }
-    .btn-accent{
-      background:var(--accent-1);border:0;color:white;padding:10px 16px;border-radius:12px;font-weight:700;box-shadow:0 6px 30px rgba(99,72,255,0.15);
-    }
-    .btn-accent:hover{
-      transform: translateY(-1px);
-      box-shadow:0 8px 35px rgba(99,72,255,0.2);
-    }
+/* При наведении */
+.properties-page .chip:hover::before {
+  opacity: 1;
+  animation: chipGradient 3s ease infinite;
+}
 
-    /* left filters */
-    aside.filters{
-      background:white;padding:18px;border-radius:16px;border:1px solid var(--glass-border-2);
-      position:sticky;top:28px;height:calc(100vh - 56px);overflow:auto;box-shadow:var(--card-shadow)
-    }
-    aside h2{font-size:16px;margin:0 0 10px 0;color:var(--text)}
-    .filter-group{background:var(--glass-highlight);border-radius:12px;padding:12px;margin-bottom:12px;border:1px solid var(--glass-border)}
-    label.field{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
-    select,input[type=text],input[type=number]{width:100%;padding:10px;border-radius:10px;border:1px solid var(--glass-border);background:white;color:var(--text);font-size:14px}
-    .two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-    .range{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-    .checkbox-row{display:flex;flex-wrap:wrap;gap:8px}
-    .chip{padding:8px 10px;border-radius:10px;border:1px solid var(--glass-border);font-size:13px;background:white;color:var(--muted);cursor:pointer;transition: all 0.2s ease;}
-    .chip:hover{
-      border-color: #7b61ff;
-      color: #7b61ff;
-    }
-    .chip.active{background:linear-gradient(90deg,#3aa7ff22,#6f53ff22);border:1px solid rgba(120,110,255,0.3);color:#4c37d4}
+.properties-page .chip:hover {
+  color: #fff !important;
+  transform: translateY(-2px);
+}
 
-    .filters-footer{display:flex;gap:8px;position:sticky;bottom:18px;padding-top:8px;background:linear-gradient(180deg, transparent, rgba(255,255,255,0.9));}
+/* Текст поверх градиента */
+.properties-page .chip * {
+  position: relative;
+  z-index: 1;
+}
 
-    /* main content */
-    main.content{min-height:60vh}
-    .map{
-      border-radius:16px;height:320px;background:linear-gradient(135deg, rgba(120,80,255,0.06), rgba(54,209,220,0.04));border:1px solid var(--glass-border);display:flex;flex-direction:column;overflow:hidden;position:relative;box-shadow:var(--card-shadow)
-    }
-    .map .placeholder{
-      display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;color:var(--muted);
-      background:repeating-linear-gradient(45deg, rgba(0,0,0,0.02) 0 2px, transparent 2px 6px);
-    }
-    .map .placeholder .title{font-size:18px;font-weight:700;color:var(--text)}
-    .map .controls{position:absolute;right:12px;top:12px;display:flex;flex-direction:column;gap:8px}
-    .map .pin{width:48px;height:48px;border-radius:12px;background:var(--accent-1);display:flex;align-items:center;justify-content:center;color:white;font-weight:800}
-
-    .listings{margin-top:18px;display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:18px}
-    .card{
-      border-radius:14px;padding:12px;background:white;border:1px solid var(--glass-border);box-shadow:var(--card-shadow);display:flex;gap:12px;align-items:flex-start;transition:transform .24s cubic-bezier(.2,.9,.3,1),box-shadow .24s
-    }
-    .card:hover{transform:translateY(-4px);box-shadow:0 15px 40px rgba(0,0,0,0.12)}
-    .thumb{width:150px;height:110px;border-radius:10px;flex-shrink:0;background-size:cover;background-position:center;border:1px solid rgba(0,0,0,0.06)}
-    .meta{flex:1;display:flex;flex-direction:column;gap:6px}
-    .meta .type{font-size:12px;color:var(--muted)}
-    .meta h3{margin:0;font-size:16px;color:var(--text)}
-    .meta .meta-row{display:flex;gap:10px;align-items:center;color:var(--muted);font-size:13px}
-    .price{font-weight:800;font-size:16px;color:#7b61ff}
-    .badge{padding:6px 8px;border-radius:8px;background:rgba(0,0,0,0.03);border:1px solid var(--glass-border);font-size:12px;color:var(--muted)}
-    .card .actions{display:flex;gap:8px;align-items:center}
-
-    footer.lic{grid-column:1 / -1;margin-top:18px;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;align-items:center}
-
-    /* tiny responsiveness */
-    @media (max-width:980px){
-      .shell{grid-template-columns:1fr;}
-      aside.filters{position:relative;height:auto}
-      header.topbar{flex-direction:column;align-items:flex-start;gap:12px}
-      .searchbar{max-width:100%}
-    }
-
-    /* micro interactions */
-    .pulse{animation:pulse 4s infinite}
-    @keyframes pulse{0%{transform:translateY(0)}50%{transform:translateY(-4px)}100%{transform:translateY(0)}}
-
-    /* nice scrollbar for filters */
-    aside.filters::-webkit-scrollbar{width:10px}
-    aside.filters::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.1);border-radius:10px;border:2px solid transparent;background-clip:padding-box}
-    aside.filters::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,0.2)}
 </style>
 {% endblock %}
 
@@ -3963,7 +3880,7 @@ a[href*="select-listing-type"]:hover {
         <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
         </svg>
-        <span class="text-lg font-semibold"></span>
+        <span class="text-lg font-semibold">Фильтры</span>
         {% if request.GET.search or request.GET.property_type or request.GET.rental_type or request.GET.location or request.GET.min_price or request.GET.max_price %}
         <span class="ml-3 bg-red-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">!</span>
         {% endif %}
@@ -4375,7 +4292,7 @@ a[href*="select-listing-type"]:hover {
 <aside class="w-full lg:w-80 flex-shrink-0 order-first hidden lg:block">
     <div class="bg-white rounded-lg shadow p-6 sticky-column">
 <button class="filter-toggle btn-primary mb-4 hidden lg:block">
-            <i class="bi bi-funnel"></i>
+            <i class="bi bi-funnel"></i> Фильтры
         </button>
         <div class="filter-sidebar lg:block" id="filter-sidebar">
             <form method="get" id="filter-form">
@@ -4385,22 +4302,82 @@ a[href*="select-listing-type"]:hover {
 
 
 <!-- Замените существующий блок "Тип недвижимости" на этот код -->
-      <div class="filter-group">
-        <label class="field">Тип недвижимости</label>
-        <div class="checkbox-row" style="margin-bottom:8px">
-          <div class="chip">Нежилое помещение</div>
-          <div class="chip">Дом</div>
-          <div class="chip">Новостройка</div>
-          <div class="chip">Вторичка</div>
-        </div>
+<!-- Замените существующий блок "Тип недвижимости" на этот код -->
+<div class="filter-group" style="background: #f9fafb; border-radius: 12px; padding: 12px; margin-bottom: 12px; border: 1px solid #e5e7eb;">
+    <h3 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-100">Тип недвижимости</h3>
+    <div class="checkbox-row" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px">
+        <!-- Новостройка -->
+        <label class="chip {% if 'new_flat' in selected_property_types %}active{% endif %}"
+               style="cursor: pointer; padding: 8px 10px; border-radius: 10px; font-size: 13px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden;">
+            <input type="checkbox" name="property_type" value="new_flat"
+                   {% if 'new_flat' in selected_property_types %}checked{% endif %}
+                   style="display: none;">
+            <span class="relative z-10">Новостройка</span>
+            <div class="chip-hover-gradient" style="position: absolute; inset: 0; background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%); opacity: 0; transition: opacity 0.2s ease; z-index: 1;"></div>
+        </label>
 
-        <label class="field">Вид размещения</label>
-        <div class="checkbox-row" style="margin-bottom:8px">
-          <div class="chip">Купить</div>
-          <div class="chip">Аренда помесячно</div>
-          <div class="chip">Аренда посуточно</div>
-        </div>
-      </div>
+        <!-- Вторичка -->
+        <label class="chip {% if 'resale_flat' in selected_property_types %}active{% endif %}"
+               style="cursor: pointer; padding: 8px 10px; border-radius: 10px; font-size: 13px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden;">
+            <input type="checkbox" name="property_type" value="resale_flat"
+                   {% if 'resale_flat' in selected_property_types %}checked{% endif %}
+                   style="display: none;">
+            <span class="relative z-10">Вторичка</span>
+            <div class="chip-hover-gradient" style="position: absolute; inset: 0; background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%); opacity: 0; transition: opacity 0.2s ease; z-index: 1;"></div>
+        </label>
+
+        <!-- Дом -->
+        <label class="chip {% if 'house' in selected_property_types %}active{% endif %}"
+               style="cursor: pointer; padding: 8px 10px; border-radius: 10px; font-size: 13px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden;">
+            <input type="checkbox" name="property_type" value="house"
+                   {% if 'house' in selected_property_types %}checked{% endif %}
+                   style="display: none;">
+            <span class="relative z-10">Дом</span>
+            <div class="chip-hover-gradient" style="position: absolute; inset: 0; background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%); opacity: 0; transition: opacity 0.2s ease; z-index: 1;"></div>
+        </label>
+
+        <!-- Нежилое помещение -->
+        <label class="chip {% if 'commercial' in selected_property_types %}active{% endif %}"
+               style="cursor: pointer; padding: 8px 10px; border-radius: 10px; font-size: 13px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden;">
+            <input type="checkbox" name="property_type" value="commercial"
+                   {% if 'commercial' in selected_property_types %}checked{% endif %}
+                   style="display: none;">
+            <span class="relative z-10">Нежилое помещение</span>
+            <div class="chip-hover-gradient" style="position: absolute; inset: 0; background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%); opacity: 0; transition: opacity 0.2s ease; z-index: 1;"></div>
+        </label>
+    </div>
+
+    <h3 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-blue-100" style="margin-top: 16px;">Вид размещения</h3>
+   <!-- В desktop фильтрах замените этот блок -->
+<div class="checkbox-row" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px">
+    <!-- Купить -->
+    <label class="chip {% if 'no' in selected_rental_types %}active{% endif %}"
+           style="cursor: pointer; padding: 8px 10px; border-radius: 10px; font-size: 13px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden;">
+        <input type="checkbox" name="rental_type" value="no"
+               {% if 'no' in selected_rental_types %}checked{% endif %}
+               style="display: none;">
+        <span class="relative z-10">Купить</span>
+    </label>
+
+    <!-- Аренда помесячно -->
+    <label class="chip {% if 'monthly' in selected_rental_types %}active{% endif %}"
+           style="cursor: pointer; padding: 8px 10px; border-radius: 10px; font-size: 13px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden;">
+        <input type="checkbox" name="rental_type" value="monthly"
+               {% if 'monthly' in selected_rental_types %}checked{% endif %}
+               style="display: none;">
+        <span class="relative z-10">Аренда помесячно</span>
+    </label>
+
+    <!-- Аренда посуточно -->
+    <label class="chip {% if 'daily' in selected_rental_types %}active{% endif %}"
+           style="cursor: pointer; padding: 8px 10px; border-radius: 10px; font-size: 13px; background: white; color: #64748b; transition: all 0.2s ease; border: 1px solid #e5e7eb; position: relative; overflow: hidden;">
+        <input type="checkbox" name="rental_type" value="daily"
+               {% if 'daily' in selected_rental_types %}checked{% endif %}
+               style="display: none;">
+        <span class="relative z-10">Аренда посуточно</span>
+    </label>
+</div>
+</div>
 
                 <!-- Город и Метро -->
                 <div class="filter-group" style="background: #f9fafb; border-radius: 12px; padding: 12px; margin-bottom: 12px; border: 1px solid #e5e7eb;">
@@ -6653,27 +6630,6 @@ function smoothChipTransition(chip) {
         chip.style.transform = '';
     }, 150);
 }
-    // Lightweight interactions: chip toggle, reset/apply placeholder
-    document.querySelectorAll('.chip').forEach(chip => {
-      chip.addEventListener('click', () => chip.classList.toggle('active'))
-    })
-
-    document.getElementById('resetBtn').addEventListener('click', ()=>{
-      document.querySelectorAll('input').forEach(i=>{
-        if(i.type === 'checkbox') i.checked = false; else i.value = ''
-      })
-      document.querySelectorAll('select').forEach(s=>s.selectedIndex = 0)
-      document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'))
-      alert('Фильтры сброшены (заглушка)')
-    })
-
-    document.getElementById('applyBtn').addEventListener('click', ()=>{
-      // collect some values for demo
-      const q = document.querySelector('.searchbar input').value || '—'
-      const city = document.querySelector('aside select').value || '—'
-      alert('Применены фильтры:\nПоиск: '+q+'\nГород: '+city+'\n(Это демонстрационная заглушка)')
-    })
-
 </script>
 
 {% endblock %}
