@@ -3318,7 +3318,39 @@ a[href*="select-listing-type"]:hover {
   position: relative;
   z-index: 1;
 }
+/* ПЕРЕОПРЕДЕЛЕНИЕ СТИЛЕЙ CHIP ИЗ BASE.HTML */
+.properties-page .filter-group .chip {
+    all: unset;
+    position: relative;
+    overflow: hidden;
+    z-index: 0;
+    padding: 8px 10px !important;
+    border-radius: 10px !important;
+    font-size: 13px !important;
+    background: white !important;
+    color: #64748b !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    border: 1px solid #e5e7eb !important;
+}
 
+/* Ваши градиентные стили с !important */
+.properties-page .filter-group .chip::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    border-radius: inherit !important;
+    background: linear-gradient(135deg, #7b61ff, #36d1dc, #10b981) !important;
+    background-size: 200% 200% !important;
+    opacity: 0 !important;
+    transition: opacity 0.4s ease !important;
+    z-index: 0 !important;
+}
+
+.properties-page .filter-group .chip:hover::before {
+    opacity: 1 !important;
+    animation: chipGradient 4s ease-in-out infinite !important;
+}
 </style>
 {% endblock %}
 
@@ -4292,7 +4324,7 @@ a[href*="select-listing-type"]:hover {
 <aside class="w-full lg:w-80 flex-shrink-0 order-first hidden lg:block">
     <div class="bg-white rounded-lg shadow p-6 sticky-column">
 <button class="filter-toggle btn-primary mb-4 hidden lg:block">
-            <i class="bi bi-funnel"></i> Фильтры
+            <i class="bi bi-funnel"></i>
         </button>
         <div class="filter-sidebar lg:block" id="filter-sidebar">
             <form method="get" id="filter-form">
