@@ -6653,6 +6653,27 @@ function smoothChipTransition(chip) {
         chip.style.transform = '';
     }, 150);
 }
+    // Lightweight interactions: chip toggle, reset/apply placeholder
+    document.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', () => chip.classList.toggle('active'))
+    })
+
+    document.getElementById('resetBtn').addEventListener('click', ()=>{
+      document.querySelectorAll('input').forEach(i=>{
+        if(i.type === 'checkbox') i.checked = false; else i.value = ''
+      })
+      document.querySelectorAll('select').forEach(s=>s.selectedIndex = 0)
+      document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'))
+      alert('Фильтры сброшены (заглушка)')
+    })
+
+    document.getElementById('applyBtn').addEventListener('click', ()=>{
+      // collect some values for demo
+      const q = document.querySelector('.searchbar input').value || '—'
+      const city = document.querySelector('aside select').value || '—'
+      alert('Применены фильтры:\nПоиск: '+q+'\nГород: '+city+'\n(Это демонстрационная заглушка)')
+    })
+
 </script>
 
 {% endblock %}
