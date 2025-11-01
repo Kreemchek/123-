@@ -42,6 +42,12 @@
         background-color: #f8f7ff;
     }
 
+    .checkbox-card.disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        background-color: #f9fafb;
+    }
+
     .checkbox-card input[type="checkbox"] {
         width: 1.25rem;
         height: 1.25rem;
@@ -165,6 +171,12 @@
         font-weight: 600;
     }
 
+    .selection-limit {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-top: 0.5rem;
+    }
+
     .btn-primary {
         background: linear-gradient(135deg, #7b61ff, #36d1dc);
         color: white;
@@ -177,10 +189,17 @@
         width: 100%;
     }
 
-    .btn-primary:hover {
+    .btn-primary:hover:not(:disabled) {
         background: linear-gradient(135deg, #6a50e6, #2bb7c2);
         transform: translateY(-2px);
         box-shadow: 0 4px 6px rgba(123, 97, 255, 0.3);
+    }
+
+    .btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
     }
 
     .gradient-icon {
@@ -189,6 +208,12 @@
         -webkit-text-fill-color: transparent;
         background-clip: text;
     }
+
+    .error-message {
+        color: #ef4444;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
 </style>
 
 <div class="registration-container">
@@ -196,7 +221,7 @@
         <i class="bi bi-person-badge mr-2 gradient-icon"></i>Профессиональная информация
     </h1>
 
-    <form method="post" class="space-y-8">
+    <form method="post" class="space-y-8" id="brokerForm">
         {% csrf_token %}
 
         <!-- Вывод общих ошибок формы -->
@@ -221,7 +246,8 @@
                        class="experience-input with-icon"
                        placeholder="Введите количество лет"
                        min="0"
-                       max="50">
+                       max="50"
+                       required>
             </div>
             {% if form.experience.errors %}
                 <div class="text-red-600 text-sm mt-1">
@@ -240,7 +266,8 @@
             <textarea name="{{ form.about.name }}"
                       class="about-textarea"
                       placeholder="Расскажите о себе, вашем опыте и профессиональных достижениях..."
-                      maxlength="1500">{{ form.about.value|default:'' }}</textarea>
+                      maxlength="1500"
+                      required>{{ form.about.value|default:'' }}</textarea>
             <div class="char-counter" id="charCounter">
                 <span id="charCount">0</span>/1500 символов
             </div>
@@ -257,9 +284,10 @@
         {% if 'services' in form.fields %}
         <div class="form-group">
             <h3 class="section-title">📋 {{ form.services.label }}</h3>
-            <div class="checkbox-grid">
+            <p class="selection-limit">Выберите хотя бы одну услугу</p>
+            <div class="checkbox-grid" id="servicesGrid">
                 {% for checkbox in form.services %}
-                <div class="checkbox-card" onclick="toggleCheckbox(this)">
+                <div class="checkbox-card" onclick="toggleService(this)">
                     {{ checkbox.tag }}
                     <span class="checkbox-label">{{ checkbox.choice_label }}</span>
                 </div>
@@ -274,6 +302,9 @@
                     {% endfor %}
                 </div>
             {% endif %}
+            <div class="error-message" id="servicesError" style="display: none;">
+                Пожалуйста, выберите хотя бы одну услугу
+            </div>
         </div>
         {% endif %}
 
@@ -281,9 +312,10 @@
         {% if 'specializations' in form.fields %}
         <div class="form-group">
             <h3 class="section-title">🎯 {{ form.specializations.label }}</h3>
-            <div class="checkbox-grid">
+            <p class="selection-limit">Выберите хотя бы одну специализацию</p>
+            <div class="checkbox-grid" id="specializationsGrid">
                 {% for checkbox in form.specializations %}
-                <div class="checkbox-card" onclick="toggleCheckbox(this)">
+                <div class="checkbox-card" onclick="toggleSpecialization(this)">
                     {{ checkbox.tag }}
                     <span class="checkbox-label">{{ checkbox.choice_label }}</span>
                 </div>
@@ -298,20 +330,92 @@
                     {% endfor %}
                 </div>
             {% endif %}
+            <div class="error-message" id="specializationsError" style="display: none;">
+                Пожалуйста, выберите хотя бы одну специализацию
+            </div>
         </div>
         {% endif %}
 
-        <button type="submit" class="btn-primary">
+        <button type="submit" class="btn-primary" id="submitBtn">
             Сохранить данные <i class="bi bi-check2 ml-2"></i>
         </button>
     </form>
 </div>
 
 <script>
-    function toggleCheckbox(card) {
+    let selectedServices = new Set();
+    let selectedSpecializations = new Set();
+
+    function toggleService(card) {
         const checkbox = card.querySelector('input[type="checkbox"]');
-        checkbox.checked = !checkbox.checked;
-        card.classList.toggle('selected', checkbox.checked);
+
+        if (checkbox.checked) {
+            // Если снимаем выбор
+            checkbox.checked = false;
+            selectedServices.delete(checkbox.value);
+            card.classList.remove('selected');
+        } else {
+            // Если выбираем
+            checkbox.checked = true;
+            selectedServices.add(checkbox.value);
+            card.classList.add('selected');
+        }
+
+        updateSubmitButton();
+        validateServices();
+    }
+
+    function toggleSpecialization(card) {
+        const checkbox = card.querySelector('input[type="checkbox"]');
+
+        if (checkbox.checked) {
+            // Если снимаем выбор
+            checkbox.checked = false;
+            selectedSpecializations.delete(checkbox.value);
+            card.classList.remove('selected');
+        } else {
+            // Если выбираем
+            checkbox.checked = true;
+            selectedSpecializations.add(checkbox.value);
+            card.classList.add('selected');
+        }
+
+        updateSubmitButton();
+        validateSpecializations();
+    }
+
+    function updateSubmitButton() {
+        const submitBtn = document.getElementById('submitBtn');
+        const hasServices = selectedServices.size > 0;
+        const hasSpecializations = selectedSpecializations.size > 0;
+
+        if (hasServices && hasSpecializations) {
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+            submitBtn.style.cursor = 'pointer';
+        } else {
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.6';
+            submitBtn.style.cursor = 'not-allowed';
+        }
+    }
+
+    function validateServices() {
+        const servicesError = document.getElementById('servicesError');
+        if (selectedServices.size === 0) {
+            servicesError.style.display = 'block';
+        } else {
+            servicesError.style.display = 'none';
+        }
+    }
+
+    function validateSpecializations() {
+        const specializationsError = document.getElementById('specializationsError');
+        if (selectedSpecializations.size === 0) {
+            specializationsError.style.display = 'block';
+        } else {
+            specializationsError.style.display = 'none';
+        }
     }
 
     // Счетчик символов для текстового поля
@@ -349,9 +453,20 @@
 
     // Initialize selected state on page load
     document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.checkbox-card').forEach(card => {
+        // Инициализация услуг
+        document.querySelectorAll('#servicesGrid .checkbox-card').forEach(card => {
             const checkbox = card.querySelector('input[type="checkbox"]');
             if (checkbox.checked) {
+                selectedServices.add(checkbox.value);
+                card.classList.add('selected');
+            }
+        });
+
+        // Инициализация специализаций
+        document.querySelectorAll('#specializationsGrid .checkbox-card').forEach(card => {
+            const checkbox = card.querySelector('input[type="checkbox"]');
+            if (checkbox.checked) {
+                selectedSpecializations.add(checkbox.value);
                 card.classList.add('selected');
             }
         });
@@ -368,6 +483,79 @@
             charCount.textContent = length;
             updateCounterStyle(length);
         }
+
+        // Обновить состояние кнопки отправки
+        updateSubmitButton();
+
+        // Валидировать поля при загрузке
+        validateServices();
+        validateSpecializations();
+    });
+
+    // Валидация формы перед отправкой
+    document.getElementById('brokerForm').addEventListener('submit', function(e) {
+        const experienceInput = document.querySelector('.experience-input');
+        const aboutTextarea = document.querySelector('.about-textarea');
+
+        let isValid = true;
+        let errorMessage = '';
+
+        // Проверка опыта
+        if (!experienceInput.value || experienceInput.value < 0) {
+            isValid = false;
+            errorMessage = 'Пожалуйста, укажите корректный опыт работы\n';
+            experienceInput.style.borderColor = '#ef4444';
+        } else {
+            experienceInput.style.borderColor = '';
+        }
+
+        // Проверка описания
+        if (!aboutTextarea.value.trim()) {
+            isValid = false;
+            errorMessage += 'Пожалуйста, заполните поле "О себе"\n';
+            aboutTextarea.style.borderColor = '#ef4444';
+        } else {
+            aboutTextarea.style.borderColor = '';
+        }
+
+        // Проверка услуг
+        if (selectedServices.size === 0) {
+            isValid = false;
+            errorMessage += 'Пожалуйста, выберите хотя бы одну услугу\n';
+            document.getElementById('servicesError').style.display = 'block';
+        } else {
+            document.getElementById('servicesError').style.display = 'none';
+        }
+
+        // Проверка специализаций
+        if (selectedSpecializations.size === 0) {
+            isValid = false;
+            errorMessage += 'Пожалуйста, выберите хотя бы одну специализацию';
+            document.getElementById('specializationsError').style.display = 'block';
+        } else {
+            document.getElementById('specializationsError').style.display = 'none';
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+            // Прокрутка к первой ошибке
+            const firstError = document.querySelector('.error-message[style="display: block;"]') ||
+                             document.querySelector('input[style*="border-color"]') ||
+                             document.querySelector('textarea[style*="border-color"]');
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            alert('Пожалуйста, исправьте следующие ошибки:\n\n' + errorMessage);
+        }
+    });
+
+    // Добавляем обработчики для сброса стилей ошибок при вводе
+    document.querySelector('.experience-input').addEventListener('input', function() {
+        this.style.borderColor = '';
+    });
+
+    document.querySelector('.about-textarea').addEventListener('input', function() {
+        this.style.borderColor = '';
     });
 </script>
 {% endblock %}

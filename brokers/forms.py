@@ -8,7 +8,7 @@ class BrokerProfileForm(forms.ModelForm):
         choices=BrokerProfile.SERVICES_CHOICES,
         widget=forms.CheckboxSelectMultiple,
         label='Услуги',
-        required=True,  # Сделать обязательным
+        required=True,
         coerce=str
     )
 
@@ -16,7 +16,7 @@ class BrokerProfileForm(forms.ModelForm):
         choices=BrokerProfile.SPECIALIZATION_CHOICES,
         widget=forms.CheckboxSelectMultiple,
         label='Специализация',
-        required=True,  # Сделать обязательным
+        required=True,
         coerce=str
     )
 
@@ -49,7 +49,7 @@ class BrokerProfileForm(forms.ModelForm):
                 choices=BrokerProfile.SERVICES_CHOICES,
                 widget=forms.CheckboxSelectMultiple,
                 label='Услуги',
-                required=False,
+                required=True,  # Оставляем обязательным
                 coerce=str
             )
 
@@ -58,7 +58,7 @@ class BrokerProfileForm(forms.ModelForm):
                 choices=BrokerProfile.SPECIALIZATION_CHOICES,
                 widget=forms.CheckboxSelectMultiple,
                 label='Специализация',
-                required=False,
+                required=True,  # Оставляем обязательным
                 coerce=str
             )
 

@@ -758,10 +758,10 @@ class CompleteBrokerInfoView(LoginRequiredMixin, UpdateView):
     def is_profile_complete(self, broker_profile):
         """Проверяет, заполнены ли все обязательные поля"""
         return all([
-            broker_profile.experience is not None,
+            broker_profile.experience is not None and broker_profile.experience >= 0,
             bool(broker_profile.about and broker_profile.about.strip()),
-            bool(broker_profile.services),
-            bool(broker_profile.specializations),
+            bool(broker_profile.services),  # Проверяем, что есть хотя бы одна услуга
+            bool(broker_profile.specializations),  # Проверяем, что есть хотя бы одна специализация
         ])
 
 
