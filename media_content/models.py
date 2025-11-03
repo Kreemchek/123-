@@ -84,20 +84,23 @@ class MediaItem(models.Model):
         vk_patterns = [
             r'(?:https?://)?(?:www\.)?vk\.com/video(-?\d+)_(\d+)',
             r'(?:https?://)?(?:www\.)?vk\.com/video\?z=video(-?\d+)_(\d+)',
-            r'(?:https?://)?(?:www\.)?vkvideo\.ru/video(-?\d+)_(\d+)',  # Добавлен vkvideo.ru
-            r'(?:https?://)?(?:www\.)?vk\.com/video_ext\.php\?oid=(-?\d+)&id=(\d+)'  # Для прямых ссылок
+            r'(?:https?://)?(?:www\.)?vkvideo\.ru/video(-?\d+)_(\d+)',
+            r'(?:https?://)?(?:www\.)?vk\.com/video_ext\.php\?oid=(-?\d+)&id=(\d+)'
         ]
         for pattern in vk_patterns:
             match = re.search(pattern, self.external_url)
             if match:
                 return {'type': 'vk', 'owner_id': match.group(1), 'video_id': match.group(2)}
 
-        # Rutube - исправленные регулярные выражения
+        # Rutube - обновленные регулярные выражения для поддержки шортсов
         rutube_patterns = [
             r'(?:https?://)?(?:www\.)?rutube\.ru/video/([a-f0-9]+)/',
             r'(?:https?://)?(?:www\.)?rutube\.ru/play/embed/([a-f0-9]+)',
-            r'(?:https?://)?(?:www\.)?rutube\.ru/video/([a-f0-9]+)',  # Без слеша в конце
-            r'(?:https?://)?(?:www\.)?rutube\.ru/video/([a-f0-9]+)/?\??'  # С возможными параметрами
+            r'(?:https?://)?(?:www\.)?rutube\.ru/video/([a-f0-9]+)',
+            r'(?:https?://)?(?:www\.)?rutube\.ru/video/([a-f0-9]+)/?\??',
+            # Шортсы Rutube
+            r'(?:https?://)?(?:www\.)?rutube\.ru/shorts/([a-f0-9]+)/',
+            r'(?:https?://)?(?:www\.)?rutube\.ru/shorts/([a-f0-9]+)'
         ]
         for pattern in rutube_patterns:
             match = re.search(pattern, self.external_url)
