@@ -176,10 +176,18 @@
                                     </div>
                                 {% elif video_data.type == 'rutube' %}
                                     <div class="external-video-container">
-                                        <iframe src="https://rutube.ru/play/embed/{{ video_data.id }}"
-                                                frameborder="0"
-                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                                allowfullscreen></iframe>
+                                        {% comment %} Для шортсов Rutube используем другой URL формат {% endcomment %}
+                                        {% if "shorts" in media_item.external_url %}
+                                            <iframe src="https://rutube.ru/play/embed/{{ video_data.id }}?p=Ib&pl=false"
+                                                    frameborder="0"
+                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                    allowfullscreen></iframe>
+                                        {% else %}
+                                            <iframe src="https://rutube.ru/play/embed/{{ video_data.id }}"
+                                                    frameborder="0"
+                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                    allowfullscreen></iframe>
+                                        {% endif %}
                                     </div>
                                 {% else %}
                                     <div class="text-center p-8 bg-gray-100 rounded-lg">
