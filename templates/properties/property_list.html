@@ -5072,7 +5072,6 @@ a[href*="select-listing-type"]:hover {
     </div>
 </body>
 
-
 <script>
 // Мобильное меню фильтров - основные функции
 function initMobileFilters() {
@@ -6589,6 +6588,124 @@ function smoothChipTransition(chip) {
         chip.style.transform = '';
     }, 150);
 }
+document.addEventListener('DOMContentLoaded', function() {
+    // Инициализация чипсов
+    initChips();
+});
+
+function initChips() {
+    const chips = document.querySelectorAll('.chip');
+
+    chips.forEach(chip => {
+        // Обработчик клика
+        chip.addEventListener('click', handleChipClick);
+
+        // Обработчик hover
+        chip.addEventListener('mouseenter', handleChipHover);
+        chip.addEventListener('mouseleave', handleChipLeave);
+
+        // Инициализация состояния
+        updateChipState(chip);
+    });
+}
+
+function handleChipClick(event) {
+    const chip = event.currentTarget;
+
+    // Переключаем активное состояние
+    chip.classList.toggle('active');
+
+    // Обновляем визуальное состояние
+    updateChipState(chip);
+
+    // Можно добавить логику для работы с формами
+    handleChipSelection(chip);
+}
+
+function handleChipHover(event) {
+    const chip = event.currentTarget;
+
+    if (!chip.classList.contains('active')) {
+        chip.style.borderColor = '#7b61ff';
+        chip.style.color = '#7b61ff';
+    }
+}
+
+function handleChipLeave(event) {
+    const chip = event.currentTarget;
+    updateChipState(chip);
+}
+
+function updateChipState(chip) {
+    if (chip.classList.contains('active')) {
+        // Активное состояние
+        chip.style.background = 'linear-gradient(90deg, #3aa7ff22, #6f53ff22)';
+        chip.style.border = '1px solid rgba(120, 110, 255, 0.3)';
+        chip.style.color = '#4c37d4';
+    } else {
+        // Неактивное состояние
+        chip.style.background = 'white';
+        chip.style.border = '1px solid rgba(0, 0, 0, 0.08)';
+        chip.style.color = '#64748b';
+    }
+}
+
+function handleChipSelection(chip) {
+    // Логика для работы с формами или данными
+    const chipText = chip.textContent.trim();
+    const isActive = chip.classList.contains('active');
+
+    console.log(`Чип "${chipText}" - ${isActive ? 'активен' : 'неактивен'}`);
+
+    // Пример: можно собирать выбранные значения
+    const selectedChips = Array.from(document.querySelectorAll('.chip.active'))
+        .map(activeChip => activeChip.textContent.trim());
+
+    console.log('Выбранные чипсы:', selectedChips);
+}
+
+// Дополнительные функции для управления чипсами
+function activateChip(chipText) {
+    // Активировать чип по тексту
+    const chips = document.querySelectorAll('.chip');
+    chips.forEach(chip => {
+        if (chip.textContent.trim() === chipText) {
+            chip.classList.add('active');
+            updateChipState(chip);
+        }
+    });
+}
+
+function deactivateChip(chipText) {
+    // Деактивировать чип по тексту
+    const chips = document.querySelectorAll('.chip');
+    chips.forEach(chip => {
+        if (chip.textContent.trim() === chipText) {
+            chip.classList.remove('active');
+            updateChipState(chip);
+        }
+    });
+}
+
+function getSelectedChips() {
+    // Получить все выбранные чипсы
+    return Array.from(document.querySelectorAll('.chip.active'))
+        .map(chip => chip.textContent.trim());
+}
+
+function clearAllChips() {
+    // Сбросить все чипсы
+    document.querySelectorAll('.chip').forEach(chip => {
+        chip.classList.remove('active');
+        updateChipState(chip);
+    });
+}
+
+// Пример использования API
+// activateChip('Новостройка');
+// deactivateChip('Дом');
+// console.log(getSelectedChips());
+// clearAllChips();
 </script>
 
 {% endblock %}
