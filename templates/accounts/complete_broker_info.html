@@ -55,6 +55,7 @@
         border-radius: 0.375rem;
         cursor: pointer;
         transition: all 0.2s ease;
+        pointer-events: none; /* Отключаем события мыши на самом чекбоксе */
     }
 
     .checkbox-card input[type="checkbox"]:checked {
@@ -287,10 +288,10 @@
             <p class="selection-limit">Выберите хотя бы одну услугу</p>
             <div class="checkbox-grid" id="servicesGrid">
                 {% for checkbox in form.services %}
-                <label class="checkbox-card">
+                <div class="checkbox-card" data-value="{{ checkbox.data.value }}">
                     {{ checkbox.tag }}
                     <span class="checkbox-label">{{ checkbox.choice_label }}</span>
-                </label>
+                </div>
                 {% empty %}
                 <p class="text-red-500">Нет доступных услуг</p>
                 {% endfor %}
@@ -315,10 +316,10 @@
             <p class="selection-limit">Выберите хотя бы одну специализацию</p>
             <div class="checkbox-grid" id="specializationsGrid">
                 {% for checkbox in form.specializations %}
-                <label class="checkbox-card">
+                <div class="checkbox-card" data-value="{{ checkbox.data.value }}">
                     {{ checkbox.tag }}
                     <span class="checkbox-label">{{ checkbox.choice_label }}</span>
-                </label>
+                </div>
                 {% empty %}
                 <p class="text-red-500">Нет доступных специализаций</p>
                 {% endfor %}
@@ -465,9 +466,26 @@
                 card.classList.add('selected');
             }
 
-            // Добавляем обработчик клика
+            // Добавляем обработчик клика на всю карточку
             card.addEventListener('click', function(e) {
-                e.preventDefault();
+                // Если клик был на самом чекбоксе, не обрабатываем здесь - пусть обрабатывается нативным способом
+                if (e.target.tagName === 'INPUT') {
+                    // Даем время нативного обработчика сработать
+                    setTimeout(() => {
+                        if (checkbox.checked) {
+                            selectedServices.add(checkbox.value);
+                            card.classList.add('selected');
+                        } else {
+                            selectedServices.delete(checkbox.value);
+                            card.classList.remove('selected');
+                        }
+                        updateSubmitButton();
+                        validateServices();
+                    }, 10);
+                    return;
+                }
+
+                // Если клик был на карточке (но не на чекбоксе)
                 toggleService(card);
             });
         });
@@ -480,9 +498,26 @@
                 card.classList.add('selected');
             }
 
-            // Добавляем обработчик клика
+            // Добавляем обработчик клика на всю карточку
             card.addEventListener('click', function(e) {
-                e.preventDefault();
+                // Если клик был на самом чекбоксе, не обрабатываем здесь - пусть обрабатывается нативным способом
+                if (e.target.tagName === 'INPUT') {
+                    // Даем время нативного обработчика сработать
+                    setTimeout(() => {
+                        if (checkbox.checked) {
+                            selectedSpecializations.add(checkbox.value);
+                            card.classList.add('selected');
+                        } else {
+                            selectedSpecializations.delete(checkbox.value);
+                            card.classList.remove('selected');
+                        }
+                        updateSubmitButton();
+                        validateSpecializations();
+                    }, 10);
+                    return;
+                }
+
+                // Если клик был на карточке (но не на чекбоксе)
                 toggleSpecialization(card);
             });
         });
