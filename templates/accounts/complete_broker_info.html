@@ -287,10 +287,10 @@
             <p class="selection-limit">Выберите хотя бы одну услугу</p>
             <div class="checkbox-grid" id="servicesGrid">
                 {% for checkbox in form.services %}
-                <div class="checkbox-card" onclick="toggleService(this)">
+                <label class="checkbox-card">
                     {{ checkbox.tag }}
                     <span class="checkbox-label">{{ checkbox.choice_label }}</span>
-                </div>
+                </label>
                 {% empty %}
                 <p class="text-red-500">Нет доступных услуг</p>
                 {% endfor %}
@@ -315,10 +315,10 @@
             <p class="selection-limit">Выберите хотя бы одну специализацию</p>
             <div class="checkbox-grid" id="specializationsGrid">
                 {% for checkbox in form.specializations %}
-                <div class="checkbox-card" onclick="toggleSpecialization(this)">
+                <label class="checkbox-card">
                     {{ checkbox.tag }}
                     <span class="checkbox-label">{{ checkbox.choice_label }}</span>
-                </div>
+                </label>
                 {% empty %}
                 <p class="text-red-500">Нет доступных специализаций</p>
                 {% endfor %}
@@ -349,16 +349,18 @@
     function toggleService(card) {
         const checkbox = card.querySelector('input[type="checkbox"]');
 
+        if (!checkbox) return;
+
+        // Переключаем состояние чекбокса
+        checkbox.checked = !checkbox.checked;
+
+        // Обновляем визуальное состояние
         if (checkbox.checked) {
-            // Если снимаем выбор
-            checkbox.checked = false;
-            selectedServices.delete(checkbox.value);
-            card.classList.remove('selected');
-        } else {
-            // Если выбираем
-            checkbox.checked = true;
             selectedServices.add(checkbox.value);
             card.classList.add('selected');
+        } else {
+            selectedServices.delete(checkbox.value);
+            card.classList.remove('selected');
         }
 
         updateSubmitButton();
@@ -368,16 +370,18 @@
     function toggleSpecialization(card) {
         const checkbox = card.querySelector('input[type="checkbox"]');
 
+        if (!checkbox) return;
+
+        // Переключаем состояние чекбокса
+        checkbox.checked = !checkbox.checked;
+
+        // Обновляем визуальное состояние
         if (checkbox.checked) {
-            // Если снимаем выбор
-            checkbox.checked = false;
-            selectedSpecializations.delete(checkbox.value);
-            card.classList.remove('selected');
-        } else {
-            // Если выбираем
-            checkbox.checked = true;
             selectedSpecializations.add(checkbox.value);
             card.classList.add('selected');
+        } else {
+            selectedSpecializations.delete(checkbox.value);
+            card.classList.remove('selected');
         }
 
         updateSubmitButton();
@@ -456,19 +460,31 @@
         // Инициализация услуг
         document.querySelectorAll('#servicesGrid .checkbox-card').forEach(card => {
             const checkbox = card.querySelector('input[type="checkbox"]');
-            if (checkbox.checked) {
+            if (checkbox && checkbox.checked) {
                 selectedServices.add(checkbox.value);
                 card.classList.add('selected');
             }
+
+            // Добавляем обработчик клика
+            card.addEventListener('click', function(e) {
+                e.preventDefault();
+                toggleService(card);
+            });
         });
 
         // Инициализация специализаций
         document.querySelectorAll('#specializationsGrid .checkbox-card').forEach(card => {
             const checkbox = card.querySelector('input[type="checkbox"]');
-            if (checkbox.checked) {
+            if (checkbox && checkbox.checked) {
                 selectedSpecializations.add(checkbox.value);
                 card.classList.add('selected');
             }
+
+            // Добавляем обработчик клика
+            card.addEventListener('click', function(e) {
+                e.preventDefault();
+                toggleSpecialization(card);
+            });
         });
 
         // Установить правильное значение для поля опыта
