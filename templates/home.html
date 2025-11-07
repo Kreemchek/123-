@@ -392,7 +392,7 @@ body.home-page {
 
 .auto-scroll-track.continuous {
     display: flex;
-    animation: smoothScroll 40s linear infinite;
+    animation: smoothScroll 25s linear infinite; /* УСКОРЕНО ДЛЯ ДЕСКТОПОВ */
 }
 
 /* ФИКС: СЛАЙДЫ - 3 КАРТОЧКИ В РЯД */
@@ -789,6 +789,11 @@ body.home-page {
     .section-block {
         width: calc(100% - 32px);
     }
+
+    /* УСКОРЕННАЯ ПРОКРУТКА ДЛЯ ПЛАНШЕТОВ */
+    .auto-scroll-track.continuous {
+        animation-duration: 20s !important; /* Быстрее на планшетах */
+    }
 }
 
 /* АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ - УМЕНЬШЕНЫ КАРТОЧКИ */
@@ -821,97 +826,118 @@ body.home-page {
         padding: 0 8px;
     }
 
+    /* УСКОРЕННАЯ ПРОКРУТКА ДЛЯ МОБИЛЬНЫХ */
+    .auto-scroll-track.continuous {
+        animation-duration: 15s !important; /* Значительно быстрее на телефонах */
+    }
+
     /* УМЕНЬШЕНЫ КАРТОЧКИ ОБЪЕКТОВ НА ТЕЛЕФОНЕ */
     .listing-card-compact {
         border-radius: 14px; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
-        transform: scale(0.95); /* УМЕНЬШЕНИЕ РАЗМЕРА КАРТОЧКИ */
+        transform: scale(0.92); /* УМЕНЬШЕНИЕ РАЗМЕРА КАРТОЧКИ */
         margin: 0 auto; /* ЦЕНТРИРОВАНИЕ */
+        width: 95%; /* УМЕНЬШЕНА ШИРИНА */
     }
 
     .listing-card-compact .thumb {
-        height: 180px; /* УМЕНЬШЕНА ВЫСОТА ДЛЯ МОБИЛЬНЫХ */
+        height: 160px !important; /* СИЛЬНО УМЕНЬШЕНА ВЫСОТА ДЛЯ МОБИЛЬНЫХ */
     }
 
     .listing-card-compact .body {
-        padding: 14px; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
+        padding: 12px !important; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
     }
 
     .listing-card-compact .body strong,
     .media-card-compact .body strong {
-        font-size: 15px;
-        min-height: 40px; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
+        font-size: 14px !important;
+        min-height: 38px !important; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
     }
 
     .property-title-compact {
-        font-size: 15px;
-        min-height: 40px;
+        font-size: 14px !important;
+        min-height: 38px !important;
     }
 
     .info-grid-compact {
-        grid-template-columns: 1fr;
-        gap: 8px; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
+        grid-template-columns: 1fr !important;
+        gap: 6px !important; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
     }
 
     .info-item-compact {
-        gap: 4px; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
+        gap: 4px !important; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
     }
 
     .info-icon-compact {
-        width: 24px; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
-        height: 24px;
+        width: 22px !important; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
+        height: 22px !important;
     }
 
     .info-icon-compact i {
-        font-size: 12px; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
+        font-size: 11px !important; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
     }
 
     .info-value-compact {
-        font-size: 12px; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
+        font-size: 11px !important; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
     }
 
     .info-label-compact {
-        font-size: 9px; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
+        font-size: 9px !important; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
     }
 
     .price-compact {
-        font-size: 16px; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
+        font-size: 15px !important; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
     }
 
     .btn-details-compact {
-        padding: 7px 12px; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
-        font-size: 12px; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
-        border-radius: 8px; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
+        padding: 6px 10px !important; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
+        font-size: 11px !important; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
+        border-radius: 8px !important; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
     }
 
     /* УМЕНЬШЕНЫ КАРТОЧКИ МЕДИА НА ТЕЛЕФОНЕ */
     .media-card-compact {
-        border-radius: 14px; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
-        transform: scale(0.95); /* УМЕНЬШЕНИЕ РАЗМЕРА КАРТОЧКИ */
+        border-radius: 14px !important; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
+        transform: scale(0.92); /* УМЕНЬШЕНИЕ РАЗМЕРА КАРТОЧКИ */
         margin: 0 auto; /* ЦЕНТРИРОВАНИЕ */
+        width: 95%; /* УМЕНЬШЕНА ШИРИНА */
     }
 
     .media-card-compact .thumb {
-        height: 160px; /* УМЕНЬШЕНА ВЫСОТА ДЛЯ МОБИЛЬНЫХ */
+        height: 140px !important; /* УМЕНЬШЕНА ВЫСОТА ДЛЯ МОБИЛЬНЫХ */
     }
 
     .media-card-compact .body {
-        padding: 12px; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
+        padding: 10px !important; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
     }
 
     .media-card-compact .body strong {
-        font-size: 14px; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
-        min-height: 38px; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
+        font-size: 13px !important; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
+        min-height: 36px !important; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
     }
 
     .media-meta-compact {
-        font-size: 12px; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
+        font-size: 11px !important; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
     }
 
     .thumb-overlay-compact {
-        bottom: 8px; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
-        right: 8px;
-        padding: 4px 8px; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
-        font-size: 10px; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
+        bottom: 6px !important; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
+        right: 6px !important;
+        padding: 3px 6px !important; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
+        font-size: 9px !important; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
+    }
+
+    .property-status-badge {
+        top: 8px !important;
+        right: 8px !important;
+        padding: 4px 8px !important;
+        font-size: 9px !important;
+    }
+
+    .hot-property-badge-compact {
+        top: 6px !important;
+        left: 6px !important;
+        padding: 3px 6px !important;
+        font-size: 8px !important;
     }
 }
 
@@ -929,72 +955,70 @@ body.home-page {
         padding: 0 4px;
     }
 
+    /* МАКСИМАЛЬНАЯ СКОРОСТЬ ДЛЯ ОЧЕНЬ МАЛЕНЬКИХ ЭКРАНОВ */
+    .auto-scroll-track.continuous {
+        animation-duration: 12s !important; /* Очень быстрая прокрутка */
+    }
+
     /* ЕЩЕ БОЛЬШЕ УМЕНЬШЕНЫ КАРТОЧКИ НА ОЧЕНЬ МАЛЕНЬКИХ ЭКРАНАХ */
     .listing-card-compact {
-        transform: scale(0.92); /* ЕЩЕ МЕНЬШЕ */
-        border-radius: 12px; /* ЕЩЕ МЕНЬШЕ */
+        transform: scale(0.88) !important; /* ЕЩЕ МЕНЬШЕ */
+        border-radius: 12px !important; /* ЕЩЕ МЕНЬШЕ */
+        width: 92% !important;
     }
 
     .listing-card-compact .thumb {
-        height: 150px; /* ЕЩЕ МЕНЬШЕ ДЛЯ ОЧЕНЬ МАЛЕНЬКИХ ЭКРАНОВ */
+        height: 140px !important; /* ЕЩЕ МЕНЬШЕ ДЛЯ ОЧЕНЬ МАЛЕНЬКИХ ЭКРАНОВ */
     }
 
     .media-card-compact {
-        transform: scale(0.92); /* ЕЩЕ МЕНЬШЕ */
-        border-radius: 12px; /* ЕЩЕ МЕНЬШЕ */
+        transform: scale(0.88) !important; /* ЕЩЕ МЕНЬШЕ */
+        border-radius: 12px !important; /* ЕЩЕ МЕНЬШЕ */
+        width: 92% !important;
     }
 
     .media-card-compact .thumb {
-        height: 140px; /* ЕЩЕ МЕНЬШЕ */
+        height: 120px !important; /* ЕЩЕ МЕНЬШЕ */
     }
 
     .price-compact {
-        font-size: 15px; /* ЕЩЕ МЕНЬШЕ */
+        font-size: 14px !important; /* ЕЩЕ МЕНЬШЕ */
     }
 
     .btn-details-compact {
-        padding: 6px 10px; /* ЕЩЕ МЕНЬШЕ */
-        font-size: 11px; /* ЕЩЕ МЕНЬШЕ */
+        padding: 5px 8px !important; /* ЕЩЕ МЕНЬШЕ */
+        font-size: 10px !important; /* ЕЩЕ МЕНЬШЕ */
     }
 }
 
 /* Utilities */
 .muted { color: var(--muted); }
 .link { text-decoration: none; color: inherit; display: block; }
-/* АНИМАЦИЯ АВТОПРОКРУТКИ */
-@keyframes smoothScroll {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(-100%);
-    }
-}
 
 /* СТАНДАРТНАЯ СКОРОСТЬ ДЛЯ ДЕСКТОПОВ */
 .auto-scroll-track.continuous {
     display: flex;
-    animation: smoothScroll 40s linear infinite;
+    animation: smoothScroll 25s linear infinite; /* УСКОРЕНО С 40s ДО 25s */
 }
 
 /* УСКОРЕННАЯ ПРОКРУТКА ДЛЯ ПЛАНШЕТОВ */
 @media (max-width: 1200px) {
     .auto-scroll-track.continuous {
-        animation-duration: 30s; /* Быстрее на планшетах */
+        animation-duration: 20s !important; /* Быстрее на планшетах */
     }
 }
 
 /* ЕЩЕ БЫСТРЕЕ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ */
 @media (max-width: 768px) {
     .auto-scroll-track.continuous {
-        animation-duration: 20s; /* Значительно быстрее на телефонах */
+        animation-duration: 15s !important; /* Значительно быстрее на телефонах */
     }
 }
 
 /* МАКСИМАЛЬНАЯ СКОРОСТЬ ДЛЯ ОЧЕНЬ МАЛЕНЬКИХ ЭКРАНОВ */
 @media (max-width: 480px) {
     .auto-scroll-track.continuous {
-        animation-duration: 15s; /* Очень быстрая прокрутка */
+        animation-duration: 12s !important; /* Очень быстрая прокрутка */
     }
 }
 </style>
