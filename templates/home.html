@@ -395,12 +395,64 @@ body.home-page {
     animation: smoothScroll 25s linear infinite; /* УСКОРЕНО ДЛЯ ДЕСКТОПОВ */
 }
 
-/* ФИКС: СЛАЙДЫ - 3 КАРТОЧКИ В РЯД */
+/* ИСПРАВЛЕНИЕ: АДАПТИВНАЯ ШИРИНА СЛАЙДОВ */
 .slider-slide {
-    min-width: 33.333%;
-    flex-shrink: 0;
-    padding: 0 12px; /* УВЕЛИЧЕНО расстояние между карточками */
+    flex: 0 0 auto;
+    padding: 0 12px;
     box-sizing: border-box;
+    width: 33.333%; /* 3 карточки в ряд на десктопе */
+}
+
+/* АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ */
+@media (max-width: 1200px) {
+    .slider-slide {
+        width: 50%; /* 2 карточки в ряд на планшетах */
+    }
+
+    .section-block {
+        width: calc(100% - 32px);
+    }
+
+    /* УСКОРЕННАЯ ПРОКРУТКА ДЛЯ ПЛАНШЕТОВ */
+    .auto-scroll-track.continuous {
+        animation-duration: 20s !important; /* Быстрее на планшетах */
+    }
+}
+
+/* АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ */
+@media (max-width: 768px) {
+    .slider-slide {
+        width: 85%; /* 1 карточка в ряд на мобильных с небольшими отступами */
+        padding: 0 8px;
+    }
+
+    .vertical-section {
+        margin-top: 40px;
+    }
+
+    .vertical-section h2 {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    .section-block {
+        padding: 20px;
+        width: calc(100% - 32px);
+    }
+
+    .section-header h3 {
+        font-size: 16px;
+    }
+
+    .slider-btn {
+        width: 28px;
+        height: 28px;
+    }
+
+    /* УСКОРЕННАЯ ПРОКРУТКА ДЛЯ МОБИЛЬНЫХ */
+    .auto-scroll-track.continuous {
+        animation-duration: 15s !important; /* Значительно быстрее на телефонах */
+    }
 }
 
 /* ОБНОВЛЕННЫЕ СТИЛИ ДЛЯ КАРТОЧЕК НА ГЛАВНОЙ СТРАНИЦЕ */
@@ -430,20 +482,6 @@ body.home-page {
         0 1px 0 rgba(255, 255, 255, 0.8) inset,
         0 -1px 0 rgba(0, 0, 0, 0.02) inset;
 }
-
-/* УДАЛЕНА ГРАДИЕНТНАЯ ЛИНИЯ */
-/* .listing-card-compact::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #7b61ff 0%, #36d1dc 50%, #7b61ff 100%);
-    background-size: 200% 100%;
-    animation: shimmer 3s ease-in-out infinite;
-    z-index: 2;
-} */
 
 /* Бейдж статуса */
 .property-status-badge {
@@ -697,20 +735,6 @@ body.home-page {
     color: inherit;
 }
 
-/* УДАЛЕНА ГРАДИЕНТНАЯ ЛИНИЯ ДЛЯ МЕДИА */
-/* .media-card-compact::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #7b61ff 0%, #36d1dc 50%, #7b61ff 100%);
-    background-size: 200% 100%;
-    animation: shimmer 3s ease-in-out infinite;
-    z-index: 2;
-} */
-
 /* ФОТО МЕДИА ТАКЖЕ ЗАНИМАЕТ ВСЮ ШИРИНУ */
 .media-card-compact .thumb {
     aspect-ratio: 4/3;
@@ -780,63 +804,13 @@ body.home-page {
     display: none !important;
 }
 
-/* АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ */
-@media (max-width: 1200px) {
-    .slider-slide {
-        min-width: 50%;
-    }
-
-    .section-block {
-        width: calc(100% - 32px);
-    }
-
-    /* УСКОРЕННАЯ ПРОКРУТКА ДЛЯ ПЛАНШЕТОВ */
-    .auto-scroll-track.continuous {
-        animation-duration: 20s !important; /* Быстрее на планшетах */
-    }
-}
-
 /* АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ - УМЕНЬШЕНЫ КАРТОЧКИ */
 @media (max-width: 768px) {
-    .vertical-section {
-        margin-top: 40px;
-    }
-
-    .vertical-section h2 {
-        font-size: 24px;
-        margin-bottom: 20px;
-    }
-
-    .section-block {
-        padding: 20px;
-        width: calc(100% - 32px);
-    }
-
-    .section-header h3 {
-        font-size: 16px;
-    }
-
-    .slider-btn {
-        width: 28px;
-        height: 28px;
-    }
-
-    .slider-slide {
-        min-width: 100%;
-        padding: 0 8px;
-    }
-
-    /* УСКОРЕННАЯ ПРОКРУТКА ДЛЯ МОБИЛЬНЫХ */
-    .auto-scroll-track.continuous {
-        animation-duration: 15s !important; /* Значительно быстрее на телефонах */
-    }
-
     /* УМЕНЬШЕНЫ КАРТОЧКИ ОБЪЕКТОВ НА ТЕЛЕФОНЕ */
     .listing-card-compact {
         border-radius: 14px; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
-        transform: scale(0.92); /* УМЕНЬШЕНИЕ РАЗМЕРА КАРТОЧКИ */
         margin: 0 auto; /* ЦЕНТРИРОВАНИЕ */
-        width: 95%; /* УМЕНЬШЕНА ШИРИНА */
+        width: 100%; /* ЗАНИМАЕТ ВСЮ ШИРИНУ СЛАЙДА */
     }
 
     .listing-card-compact .thumb {
@@ -897,9 +871,8 @@ body.home-page {
     /* УМЕНЬШЕНЫ КАРТОЧКИ МЕДИА НА ТЕЛЕФОНЕ */
     .media-card-compact {
         border-radius: 14px !important; /* ЕЩЕ МЕНЬШЕ ДЛЯ ТЕЛЕФОНА */
-        transform: scale(0.92); /* УМЕНЬШЕНИЕ РАЗМЕРА КАРТОЧКИ */
         margin: 0 auto; /* ЦЕНТРИРОВАНИЕ */
-        width: 95%; /* УМЕНЬШЕНА ШИРИНА */
+        width: 100%; /* ЗАНИМАЕТ ВСЮ ШИРИНУ СЛАЙДА */
     }
 
     .media-card-compact .thumb {
@@ -952,7 +925,8 @@ body.home-page {
     }
 
     .slider-slide {
-        padding: 0 4px;
+        padding: 0 6px;
+        width: 90%; /* Чуть меньше для очень маленьких экранов */
     }
 
     /* МАКСИМАЛЬНАЯ СКОРОСТЬ ДЛЯ ОЧЕНЬ МАЛЕНЬКИХ ЭКРАНОВ */
@@ -961,20 +935,8 @@ body.home-page {
     }
 
     /* ЕЩЕ БОЛЬШЕ УМЕНЬШЕНЫ КАРТОЧКИ НА ОЧЕНЬ МАЛЕНЬКИХ ЭКРАНАХ */
-    .listing-card-compact {
-        transform: scale(0.88) !important; /* ЕЩЕ МЕНЬШЕ */
-        border-radius: 12px !important; /* ЕЩЕ МЕНЬШЕ */
-        width: 92% !important;
-    }
-
     .listing-card-compact .thumb {
         height: 140px !important; /* ЕЩЕ МЕНЬШЕ ДЛЯ ОЧЕНЬ МАЛЕНЬКИХ ЭКРАНОВ */
-    }
-
-    .media-card-compact {
-        transform: scale(0.88) !important; /* ЕЩЕ МЕНЬШЕ */
-        border-radius: 12px !important; /* ЕЩЕ МЕНЬШЕ */
-        width: 92% !important;
     }
 
     .media-card-compact .thumb {
@@ -1305,7 +1267,7 @@ body.home-page {
     document.addEventListener('DOMContentLoaded', function() {
         // Инициализация слайдеров
         initSlider('hot-properties-track', '.prev-hot', '.next-hot');
-        initSlider('media-track', '.prev-media', '.next-media'); // Добавляем инициализацию для медиа
+        initSlider('media-track', '.prev-media', '.next-media');
 
         function initSlider(trackId, prevBtnSelector, nextBtnSelector) {
             const track = document.getElementById(trackId);
@@ -1329,21 +1291,16 @@ body.home-page {
                 track.style.animationPlayState = 'running';
             });
 
-            // Остановка автопрокрутки при ручном управлении (если кнопки есть)
-            const prevBtn = document.querySelector(prevBtnSelector);
-            const nextBtn = document.querySelector(nextBtnSelector);
+            // Остановка автопрокрутки при касании на мобильных
+            track.addEventListener('touchstart', function() {
+                track.style.animationPlayState = 'paused';
+            });
 
-            if (prevBtn && nextBtn) {
-                function stopAutoScroll() {
-                    track.style.animationPlayState = 'paused';
-                    setTimeout(() => {
-                        track.style.animationPlayState = 'running';
-                    }, 5000);
-                }
-
-                nextBtn.addEventListener('click', stopAutoScroll);
-                prevBtn.addEventListener('click', stopAutoScroll);
-            }
+            track.addEventListener('touchend', function() {
+                setTimeout(() => {
+                    track.style.animationPlayState = 'running';
+                }, 3000);
+            });
         }
 
         // Геолокация
