@@ -80,17 +80,25 @@ class MediaItem(models.Model):
             if match:
                 return {'type': 'youtube', 'id': match.group(1)}
 
-        # VK - исправленные регулярные выражения
+        # VK - улучшенные регулярные выражения
         vk_patterns = [
             r'(?:https?://)?(?:www\.)?vk\.com/video(-?\d+)_(\d+)',
             r'(?:https?://)?(?:www\.)?vk\.com/video\?z=video(-?\d+)_(\d+)',
             r'(?:https?://)?(?:www\.)?vkvideo\.ru/video(-?\d+)_(\d+)',
-            r'(?:https?://)?(?:www\.)?vk\.com/video_ext\.php\?oid=(-?\d+)&id=(\d+)'
+            r'(?:https?://)?(?:www\.)?vk\.com/video_ext\.php\?oid=(-?\d+)&id=(\d+)',
+            # Поддержка VK клипов
+            r'(?:https?://)?(?:www\.)?vk\.com/clip(-?\d+)_(\d+)',
+            r'(?:https?://)?(?:www\.)?vk\.com/video\?z=clip(-?\d+)_(\d+)'
         ]
         for pattern in vk_patterns:
             match = re.search(pattern, self.external_url)
             if match:
-                return {'type': 'vk', 'owner_id': match.group(1), 'video_id': match.group(2)}
+                return {
+                    'type': 'vk',
+                    'owner_id': match.group(1),
+                    'video_id': match.group(2),
+                    'is_clip': 'clip' in pattern
+                }
 
         # Rutube - обновленные регулярные выражения для поддержки шортсов
         rutube_patterns = [

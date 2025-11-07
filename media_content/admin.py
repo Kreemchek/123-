@@ -64,11 +64,15 @@ class MediaItemAdmin(admin.ModelAdmin):
                             '</div>'
                         )
                     elif video_data['type'] == 'vk':
+                        # Для VK клипов и видео
+                        badge_text = 'VK Clip' if video_data.get(
+                            'is_clip') or 'clip' in obj.external_url else 'VK Video'
                         return format_html(
                             '<div style="position: relative; width: 300px; height: 200px; background: #f0f0f0; border-radius: 8px; display: flex; align-items: center; justify-content: center;">'
                             '<i class="fab fa-vk" style="font-size: 48px; color: #4a76a8;"></i>'
-                            '<div style="position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.7); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">VK Video</div>'
-                            '</div>'
+                            '<div style="position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.7); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">{}</div>'
+                            '</div>',
+                            badge_text
                         )
                     elif video_data['type'] == 'rutube':
                         return format_html(
@@ -77,21 +81,70 @@ class MediaItemAdmin(admin.ModelAdmin):
                             '<div style="position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.7); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Rutube</div>'
                             '</div>'
                         )
+                    else:
+                        return format_html(
+                            '<div style="position: relative; width: 300px; height: 200px; background: #f0f0f0; border-radius: 8px; display: flex; align-items: center; justify-content: center;">'
+                            '<i class="fas fa-video" style="font-size: 48px; color: #666;"></i>'
+                            '<div style="position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.7); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Внешнее видео</div>'
+                            '</div>'
+                        )
 
             # Локальное видео
+            if obj.thumbnail_url:
+                return format_html(
+                    '<div style="position: relative; display: inline-block;">'
+                    '<img src="{}" width="300" style="border-radius: 8px;" />'
+                    '<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">'
+                    '<i class="fas fa-play-circle" style="font-size: 48px; color: white; text-shadow: 0 2px 8px rgba(0,0,0,0.7);"></i>'
+                    '</div>'
+                    '</div>',
+                    obj.thumbnail_url
+                )
+            else:
+                return format_html(
+                    '<div style="position: relative; width: 300px; height: 200px; background: #f0f0f0; border-radius: 8px; display: flex; align-items: center; justify-content: center;">'
+                    '<i class="fas fa-video" style="font-size: 48px; color: #999;"></i>'
+                    '<div style="position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.7); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Локальное видео</div>'
+                    '</div>'
+                )
+
+        elif obj.media_type == 'photo':
+            if obj.thumbnail_url:
+                return format_html('<img src="{}" width="300" style="border-radius: 8px;" />', obj.thumbnail_url)
+            elif obj.file_url:
+                return format_html('<img src="{}" width="300" style="border-radius: 8px;" />', obj.file_url)
+            else:
+                return format_html(
+                    '<div style="width: 300px; height: 200px; background: #f0f0f0; border-radius: 8px; display: flex; align-items: center; justify-content: center;">'
+                    '<i class="fas fa-image" style="font-size: 48px; color: #999;"></i>'
+                    '</div>'
+                )
+
+        elif obj.media_type == 'article':
+            if obj.thumbnail_url:
+                return format_html(
+                    '<div style="position: relative;">'
+                    '<img src="{}" width="300" style="border-radius: 8px;" />'
+                    '<div style="position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.7); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Статья</div>'
+                    '</div>',
+                    obj.thumbnail_url
+                )
+            else:
+                return format_html(
+                    '<div style="position: relative; width: 300px; height: 200px; background: #f0f0f0; border-radius: 8px; display: flex; align-items: center; justify-content: center;">'
+                    '<i class="fas fa-newspaper" style="font-size: 48px; color: #999;"></i>'
+                    '<div style="position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.7); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Статья</div>'
+                    '</div>'
+                )
+
+        elif obj.media_type == 'file':
             return format_html(
-                '<div class="relative">'
-                '<img src="{}" width="300" />'
-                '<div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">'
-                '<i class="fas fa-play-circle text-white text-4xl bg-black bg-opacity-50 rounded-full"></i>'
+                '<div style="width: 300px; height: 200px; background: #f0f0f0; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-direction: column;">'
+                '<i class="fas fa-file-alt" style="font-size: 48px; color: #999; margin-bottom: 16px;"></i>'
+                '<div style="background: rgba(0,0,0,0.7); color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Файл</div>'
                 '</div>'
-                '</div>',
-                obj.thumbnail_url or ''
             )
-        elif obj.media_type == 'article' and obj.thumbnail_url:
-            return format_html('<img src="{}" width="300" />', obj.thumbnail_url)
-        elif obj.media_file and obj.thumbnail_url:
-            return format_html('<img src="{}" width="300" />', obj.thumbnail_url)
+
         return "-"
 
     preview_media.short_description = 'Медиа'
