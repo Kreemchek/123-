@@ -578,16 +578,24 @@ body.home-page {
     flex-grow: 1;
 }
 
+/* ГОРИЗОНТАЛЬНАЯ СЕТКА ИНФОРМАЦИИ - КОМНАТЫ И МЕТРО РЯДОМ */
 .info-grid-compact {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px; /* УМЕНЬШЕН РАССТОЯНИЕ */
+    grid-template-columns: 1fr 1fr; /* Два равных столбца */
+    gap: 8px; /* Уменьшаем расстояние */
+    margin-bottom: 8px;
 }
 
+/* Убираем растягивание метро на всю ширину */
 .info-item-compact {
     display: flex;
     align-items: center;
     gap: 6px;
+}
+
+/* Убираем специальные стили для метро */
+.info-item-compact[style*="grid-column"] {
+    grid-column: unset !important;
 }
 
 .info-icon-compact {
