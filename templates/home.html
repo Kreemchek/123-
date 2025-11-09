@@ -643,12 +643,31 @@ body.home-page {
     line-height: 1.2;
 }
 
-/* Цена и кнопка - УМЕНЬШЕНЫ */
+/* Цена и кнопка - ПОДНЯТЫ ВЫШЕ ТОЛЬКО НА ПК */
+@media (min-width: 769px) {
+    .property-footer-compact {
+        padding-top: 8px; /* УМЕНЬШЕН ОТСТУП СВЕРХУ ТОЛЬКО НА ПК */
+        min-height: 50px; /* МИНИМАЛЬНАЯ ВЫСОТА ДЛЯ ВЫРАВНИВАНИЯ ТОЛЬКО НА ПК */
+    }
+
+    .price-section-compact {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .btn-details-compact {
+        height: fit-content; /* ВЫСОТА ПО СОДЕРЖИМОМУ ТОЛЬКО НА ПК */
+        align-self: center; /* ВЫРАВНИВАНИЕ ПО ЦЕНТРУ ТОЛЬКО НА ПК */
+    }
+}
+
+/* СТАНДАРТНЫЕ СТИЛИ ДЛЯ ВСЕХ УСТРОЙСТВ */
 .property-footer-compact {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-top: 12px; /* УМЕНЬШЕН ОТСТУП */
+    padding-top: 12px; /* СТАНДАРТНЫЙ ОТСТУП ДЛЯ МОБИЛЬНЫХ */
     border-top: 1px solid rgba(0, 0, 0, 0.05);
     margin-top: auto;
 }
@@ -658,7 +677,7 @@ body.home-page {
 }
 
 .price-compact {
-    font-size: 16px; /* УМЕНЬШЕН РАЗМЕР ШРИФТА */
+    font-size: 16px;
     font-weight: 800;
     color: #7b61ff;
     line-height: 1.2;
@@ -666,7 +685,7 @@ body.home-page {
 }
 
 .price-per-sqm-compact {
-    font-size: 9px; /* УМЕНЬШЕН РАЗМЕР ШРИФТА */
+    font-size: 9px;
     color: #64748b;
 }
 
