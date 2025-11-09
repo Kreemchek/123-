@@ -649,20 +649,13 @@ class ContactBrokerView(LoginRequiredMixin, View):
         if contact_request:
             return redirect('contact_request_detail', pk=contact_request.pk)
 
-        # Проверяем, был ли уже оплаченный запрос к этому брокеру по этому объекту
-        has_paid_request = Payment.objects.filter(
-            user=request.user,
-            description__contains=f"Контакт с брокером {broker_id} по объекту {property_id}",
-            status='completed'
-        ).exists()
-
-        # Создаем запрос
+        # Создаем запрос БЕЗ оплаты
         contact_request = ContactRequest.objects.create(
             requester=request.user,
             broker=broker_user,
             property_id=property_id,
-            status='new',
-            is_first_message_paid=not has_paid_request
+            status='new'
+            # УБРАНО: is_first_message_paid=not has_paid_request
         )
 
         return redirect('contact_request_detail', pk=contact_request.pk)
