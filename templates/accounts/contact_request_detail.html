@@ -242,9 +242,16 @@
     </div>
 
     <!-- Форма отзыва -->
-    {% if object.status == 'completed' and not has_review and request.user == object.requester and not object.is_consultation %}
+<!-- Форма отзыва -->
+{% if object.status == 'completed' and not has_review and request.user == object.requester %}
 <div class="bg-yellow-50 p-6 rounded-2xl mt-6">
-    <h3 class="text-xl font-bold mb-4">Оставьте отзыв о работе брокера</h3>
+    <h3 class="text-xl font-bold mb-4">
+        {% if object.property %}
+            Оставьте отзыв о работе брокера по объекту "{{ object.property.title }}"
+        {% else %}
+            Оставьте отзыв о консультации с брокером
+        {% endif %}
+    </h3>
     <form method="post" action="{% url 'submit_review' object.pk %}">
         {% csrf_token %}
         <div class="mb-4">
