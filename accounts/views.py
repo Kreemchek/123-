@@ -798,9 +798,9 @@ class SubmitReviewView(LoginRequiredMixin, View):
 
         # Проверка условий
         if not (
-            contact_request.status == 'completed'
-            and request.user == contact_request.requester
-            and not BrokerReview.objects.filter(contact_request=contact_request).exists()
+                contact_request.status == 'completed'
+                and request.user == contact_request.requester
+                and not BrokerReview.objects.filter(contact_request=contact_request).exists()
         ):
             return HttpResponseForbidden("Недостаточно прав для отправки отзыва")
 
@@ -813,17 +813,20 @@ class SubmitReviewView(LoginRequiredMixin, View):
             return redirect('contact_request_detail', pk=pk)
 
         try:
-            # Создаем отзыв
+            # Создаем отзыв, но НЕ одобряем автоматически
             review = BrokerReview.objects.create(
                 broker=broker_profile,
                 client=request.user,
                 contact_request=contact_request,
                 rating=rating,
                 comment=comment,
-                is_approved=True  # Если требуется модерация - установите False
+                is_approved=False  # Теперь по умолчанию False - требует модерации
             )
-            broker_profile.update_rating()
-            messages.success(request, "Отзыв успешно отправлен!")
+
+            # НЕ обновляем рейтинг брокера сразу - только после модерации
+            # broker_profile.update_rating()
+
+            messages.success(request, "Отзыв успешно отправлен на модерацию! Он будет опубликован после проверки.")
         except Exception as e:
             messages.error(request, f"Ошибка: {str(e)}")
 

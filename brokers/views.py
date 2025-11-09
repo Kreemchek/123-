@@ -129,50 +129,41 @@ class BrokerDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         broker = self.object
 
-        # Получаем отзывы
-        context['reviews'] = broker.reviews.filter(is_approved=True)
+        # ИЗМЕНИТЕ ЭТУ СТРОКУ - используйте approved_reviews вместо reviews
+        context['approved_reviews'] = broker.reviews.filter(is_approved=True).select_related('client')
 
-        # Фильтруем объекты в зависимости от типа пользователя
+        # Остальной код оставьте без изменений
         if self.request.user.is_authenticated:
             if self.request.user.is_admin or self.request.user.is_superuser:
-                # Администратор видит все объекты брокера
-                broker_properties = Property.objects.filter(
-                    broker=broker
-                )
+                broker_properties = Property.objects.filter(broker=broker)
             elif self.request.user.is_broker:
                 if self.request.user == broker.user:
-                    # Брокер видит только свои одобренные объекты
                     broker_properties = Property.objects.filter(
                         broker=broker,
                         is_approved=True
                     )
                 else:
-                    # Брокер не должен видеть объекты других брокеров
                     broker_properties = Property.objects.none()
             elif self.request.user.is_developer:
-                # Застройщик видит свои объекты
                 broker_properties = Property.objects.filter(
                     broker=broker,
                     developer=self.request.user
                 )
             else:
-                # Клиент видит все одобренные объекты брокера
                 broker_properties = Property.objects.filter(
                     broker=broker,
                     is_approved=True
                 )
         else:
-            # Неаутентифицированные пользователи видят одобренные объекты
             broker_properties = Property.objects.filter(
                 broker=broker,
                 is_approved=True
             )
 
-        context['broker_properties'] = broker_properties[:4]  # Только 4 объекта для превью
+        context['broker_properties'] = broker_properties[:4]
         context['is_admin'] = self.request.user.is_authenticated and (
                     self.request.user.is_admin or self.request.user.is_superuser)
 
-        # Проверка избранного
         is_favorite = False
         user = self.request.user
         if user.is_authenticated and not user.is_broker:

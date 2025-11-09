@@ -222,45 +222,46 @@
             </div>
 
             <!-- Секция "Отзывы" -->
-            <div class="animate-block bg-white rounded-xl shadow-sm p-6 border-2 border-gray-100">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
-                    <h3 class="text-xl font-bold text-gray-800">Отзывы ({{ reviews.count }})</h3>
-                    <div class="rating flex items-center gap-2">
-                        <span class="text-lg font-medium">{{ broker.rating|default:"-" }}/5</span>
-                        <div class="stars flex text-yellow-400">
+<!-- Секция "Отзывы" -->
+<div class="animate-block bg-white rounded-xl shadow-sm p-6 border-2 border-gray-100">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
+        <h3 class="text-xl font-bold text-gray-800">Отзывы ({{ approved_reviews.count }})</h3>
+        <div class="rating flex items-center gap-2">
+            <span class="text-lg font-medium">{{ broker.rating|default:"-" }}/5</span>
+            <div class="stars flex text-yellow-400">
+                {% for i in "12345" %}
+                    <i class="bi bi-star{% if i|add:0 <= broker.rating|default:0 %}-fill{% endif %} text-xl"></i>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="reviews-list space-y-6">
+        {% for review in approved_reviews|slice:":3" %}
+            <div class="review-item bg-gray-50 rounded-xl p-4 border-2 border-gray-100">
+                <div class="review-header flex justify-between items-start mb-3">
+                    <div>
+                        <h4 class="font-semibold text-gray-800">{{ review.client.first_name }}</h4>
+                        <p class="text-sm text-gray-500">{{ review.created_at|date:"d.m.Y" }}</p>
+                    </div>
+                    <div class="flex items-center gap-2 text-yellow-400">
+                        <div class="stars flex">
                             {% for i in "12345" %}
-                                <i class="bi bi-star{% if i|add:0 <= broker.rating|default:0 %}-fill{% endif %} text-xl"></i>
+                                <i class="fas fa-star{% if forloop.counter > review.rating %}-half-alt{% endif %}"></i>
                             {% endfor %}
                         </div>
+                        <span class="text-sm font-medium">({{ review.rating }}/5)</span>
                     </div>
                 </div>
-
-                <div class="reviews-list space-y-6">
-                    {% for review in reviews|slice:":3" %}
-                        <div class="review-item bg-gray-50 rounded-xl p-4 border-2 border-gray-100">
-                            <div class="review-header flex justify-between items-start mb-3">
-                                <div>
-                                    <h4 class="font-semibold text-gray-800">{{ review.client.first_name }}</h4>
-                                    <p class="text-sm text-gray-500">{{ review.created_at|date:"d.m.Y" }}</p>
-                                </div>
-                                <div class="flex items-center gap-2 text-yellow-400">
-                                    <div class="stars flex">
-                                        {% for i in "12345" %}
-                                            <i class="fas fa-star{% if forloop.counter > review.rating %}-half-alt{% endif %}"></i>
-                                        {% endfor %}
-                                    </div>
-                                    <span class="text-sm font-medium">({{ review.rating }}/5)</span>
-                                </div>
-                            </div>
-                            <p class="text-gray-600 leading-relaxed">{{ review.comment }}</p>
-                        </div>
-                    {% empty %}
-                        <div class="empty-state text-center py-6 text-gray-500">
-                            Отзывов пока нет
-                        </div>
-                    {% endfor %}
-                </div>
+                <p class="text-gray-600 leading-relaxed">{{ review.comment }}</p>
             </div>
+        {% empty %}
+            <div class="empty-state text-center py-6 text-gray-500">
+                Отзывов пока нет
+            </div>
+        {% endfor %}
+    </div>
+</div>
         </div>
     </div>
 </div>
