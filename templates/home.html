@@ -1161,31 +1161,7 @@ body.home-page {
                                     </div>
                                     {% endif %}
 
-                                    <!-- Площадь -->
-                                    {% if property.total_area %}
-                                    <div class="info-item-compact">
-                                        <div class="info-icon-compact area">
-                                            <i class="fas fa-arrows-alt"></i>
-                                        </div>
-                                        <div>
-                                            <div class="info-value-compact">{{ property.total_area|floatformat:"0" }} м²</div>
-                                            <div class="info-label-compact">Площадь</div>
-                                        </div>
-                                    </div>
-                                    {% endif %}
 
-                                    <!-- Этаж -->
-                                    {% if property.floor and property.total_floors %}
-                                    <div class="info-item-compact">
-                                        <div class="info-icon-compact">
-                                            <i class="fas fa-building"></i>
-                                        </div>
-                                        <div>
-                                            <div class="info-value-compact">{{ property.floor }}/{{ property.total_floors }}</div>
-                                            <div class="info-label-compact">Этаж</div>
-                                        </div>
-                                    </div>
-                                    {% endif %}
 
                                     <!-- Метро -->
                                     {% if property.metro_station and property.metro_station != "Не указано" %}
