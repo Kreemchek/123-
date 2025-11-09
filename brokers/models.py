@@ -3,6 +3,8 @@ from django.utils.translation import gettext_lazy as _
 from accounts.models import User
 from properties.models import Property
 from cloudinary.models import CloudinaryField
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 
 
 class BrokerProfile(models.Model):
@@ -95,11 +97,16 @@ class BrokerProfile(models.Model):
     active_properties.short_description = _('Активные объекты')
 
     def update_rating(self):
+        """Обновляет рейтинг брокера на основе одобренных отзывов"""
         approved_reviews = self.reviews.filter(is_approved=True)
+
         if approved_reviews.exists():
             avg_rating = approved_reviews.aggregate(models.Avg('rating'))['rating__avg']
-            self.rating = round(avg_rating, 1)
-            self.save()
+            self.rating = round(float(avg_rating), 2)  # Округляем до 2 знаков
+        else:
+            self.rating = 0.0
+
+        self.save(update_fields=['rating'])
 
     def get_services_display(self):
         """Возвращает отображаемые названия услуг"""
@@ -153,8 +160,35 @@ class BrokerReview(models.Model):
         ordering = ['-created_at']
         unique_together = ('contact_request',)
 
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # Обновляем рейтинг брокера при сохранении отзыва
+        if self.is_approved:
+            self.broker.update_rating()
+
+    def delete(self, *args, **kwargs):
+        broker = self.broker
+        super().delete(*args, **kwargs)
+        # Обновляем рейтинг брокера при удалении отзыва
+        broker.update_rating()
+
     def __str__(self):
         return f"Отзыв {self.client} для {self.broker} ({self.rating}/5)"
+
+
+
+# Сигналы для автоматического обновления рейтинга
+@receiver(post_save, sender=BrokerReview)
+def update_broker_rating_on_save(sender, instance, **kwargs):
+    """Обновляет рейтинг брокера при сохранении отзыва"""
+    if instance.is_approved:
+        instance.broker.update_rating()
+
+@receiver(post_delete, sender=BrokerReview)
+def update_broker_rating_on_delete(sender, instance, **kwargs):
+    """Обновляет рейтинг брокера при удалении отзыва"""
+    instance.broker.update_rating()
 
 
 class ContactRequest(models.Model):

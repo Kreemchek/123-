@@ -791,6 +791,7 @@ class DirectContactBrokerConsultView(LoginRequiredMixin, View):
         return redirect('contact_request_detail', pk=contact_request.pk)
 
 
+# accounts/views.py
 class SubmitReviewView(LoginRequiredMixin, View):
     def post(self, request, pk):
         contact_request = get_object_or_404(ContactRequest, pk=pk)
@@ -820,11 +821,8 @@ class SubmitReviewView(LoginRequiredMixin, View):
                 contact_request=contact_request,
                 rating=rating,
                 comment=comment,
-                is_approved=False  # Теперь по умолчанию False - требует модерации
+                is_approved=False  # Требует модерации
             )
-
-            # НЕ обновляем рейтинг брокера сразу - только после модерации
-            # broker_profile.update_rating()
 
             messages.success(request, "Отзыв успешно отправлен на модерацию! Он будет опубликован после проверки.")
         except Exception as e:
