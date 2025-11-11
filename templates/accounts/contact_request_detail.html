@@ -399,47 +399,45 @@
     }
 
     function setupMessageForm() {
-        const form = document.getElementById('messageForm');
-        if (!form) return;
+    const form = document.getElementById('messageForm');
+    if (!form) return;
 
-        form.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const formData = new FormData(form);
-            const btn = document.getElementById('submitBtn');
-            const messagesContainer = document.querySelector('.chat-messages-container');
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const formData = new FormData(form);
+        const btn = document.getElementById('submitBtn');
+        const messagesContainer = document.querySelector('.chat-messages-container');
 
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Отправка...';
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Отправка...';
 
-            try {
-                const response = await fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {'X-CSRFToken': '{{ csrf_token }}'}
-                });
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {'X-CSRFToken': '{{ csrf_token }}'}
+            });
 
-                if (response.ok) {
-                    form.reset();
-                    document.getElementById('fileName').textContent = '';
-                    const newMessageHtml = await response.text();
-                    messagesContainer.insertAdjacentHTML('beforeend', newMessageHtml);
-                    scrollToBottom();
-
-                    // Простое уведомление об успешной отправке
-                    alert('Сообщение успешно отправлено');
-                } else {
-                    const errorData = await response.json();
-                    alert(errorData.error || 'Ошибка при отправке сообщения');
-                }
-            } catch (error) {
-                console.error('Ошибка:', error);
-                alert('Произошла ошибка при отправке сообщения');
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Отправить сообщение';
+            if (response.ok) {
+                form.reset();
+                document.getElementById('fileName').textContent = '';
+                const newMessageHtml = await response.text();
+                messagesContainer.insertAdjacentHTML('beforeend', newMessageHtml);
+                scrollToBottom();
+                // Уведомление об успешной отправке убрано, сообщения просто доставляются
+            } else {
+                const errorData = await response.json();
+                alert(errorData.error || 'Ошибка при отправке сообщения');
             }
-        });
-    }
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Произошла ошибка при отправке сообщения');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Отправить сообщение';
+        }
+    });
+}
 
     document.addEventListener('DOMContentLoaded', () => {
         setupRatingStars();
