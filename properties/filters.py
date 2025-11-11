@@ -64,9 +64,8 @@ class PropertyFilter(FilterSet):
     min_total_floors = NumberFilter(field_name='total_floors', lookup_expr='gte')
     max_total_floors = NumberFilter(field_name='total_floors', lookup_expr='lte')
 
-    # Год постройки
-    min_construction_year = NumberFilter(field_name='construction_year', lookup_expr='gte')
-    max_construction_year = NumberFilter(field_name='construction_year', lookup_expr='lte')
+    min_construction_year = NumberFilter(field_name='delivery_year', lookup_expr='gte')
+    max_construction_year = NumberFilter(field_name='delivery_year', lookup_expr='lte')
 
     # Расстояние до центра
     min_distance_to_center = NumberFilter(method='filter_by_distance_to_center')

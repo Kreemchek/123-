@@ -3556,27 +3556,26 @@ a[href*="select-listing-type"]:hover {
                 </div>
             </div>
             {% endif %}
-
-            <!-- Фильтр по году постройки -->
-            {% if request.GET.min_construction_year or request.GET.max_construction_year %}
-            <div class="filter-card group" data-filter="construction_year">
-                <div class="filter-card-content" style="background: white; border: 1px solid #e5e7eb; border-radius: 0.75rem; padding: 0.75rem; position: relative; transition: all 0.2s ease;">
-                    <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                        <i class="bi bi-calendar-event text-sm md:text-base"></i>
-                    </div>
-                    <div class="filter-info">
-                        <span class="filter-label" style="color: #64748b; font-size: 0.75rem; line-height: 1;">Год постройки</span>
-                        <span class="filter-value" style="color: #374151; font-weight: 500; font-size: 0.875rem; line-height: 1.2;">
-                            {% if request.GET.min_construction_year %}от {{ request.GET.min_construction_year }}{% endif %}
-                            {% if request.GET.max_construction_year %}{% if request.GET.min_construction_year %} - {% else %}до {% endif %}{{ request.GET.max_construction_year }}{% endif %}
-                        </span>
-                    </div>
-                    <button type="button" onclick="removeFilter('construction_year')" class="filter-remove-btn" style="position: absolute; top: 0.25rem; right: 0.25rem; background: none; border: none; cursor: pointer; padding: 0.125rem; border-radius: 0.25rem; transition: all 0.2s ease; color: #64748b;">
-                        <i class="bi bi-x-lg text-xs md:text-sm"></i>
-                    </button>
-                </div>
-            </div>
-            {% endif %}
+<!-- В блоке applied-filters-container -->
+{% if request.GET.min_construction_year or request.GET.max_construction_year %}
+<div class="filter-card group" data-filter="construction_year">
+    <div class="filter-card-content" style="background: white; border: 1px solid #e5e7eb; border-radius: 0.75rem; padding: 0.75rem; position: relative; transition: all 0.2s ease;">
+        <div class="filter-icon" style="background: linear-gradient(135deg, #7b61ff, #36d1dc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            <i class="bi bi-calendar-event text-sm md:text-base"></i>
+        </div>
+        <div class="filter-info">
+            <span class="filter-label" style="color: #64748b; font-size: 0.75rem; line-height: 1;">Год постройки</span>
+            <span class="filter-value" style="color: #374151; font-weight: 500; font-size: 0.875rem; line-height: 1.2;">
+                {% if request.GET.min_construction_year %}от {{ request.GET.min_construction_year }}{% endif %}
+                {% if request.GET.max_construction_year %}{% if request.GET.min_construction_year %} - {% else %}до {% endif %}{{ request.GET.max_construction_year }}{% endif %}
+            </span>
+        </div>
+        <button type="button" onclick="removeFilter('construction_year')" class="filter-remove-btn" style="position: absolute; top: 0.25rem; right: 0.25rem; background: none; border: none; cursor: pointer; padding: 0.125rem; border-radius: 0.25rem; transition: all 0.2s ease; color: #64748b;">
+            <i class="bi bi-x-lg text-xs md:text-sm"></i>
+        </button>
+    </div>
+</div>
+{% endif %}
 
             <!-- Фильтр по отделке -->
             {% if request.GET.has_finishing %}
@@ -4423,28 +4422,27 @@ a[href*="select-listing-type"]:hover {
                     </div>
                 </div>
 
-                <!-- Год постройки и Чекбоксы -->
-                <div class="filter-group" style="background: #f9fafb; border-radius: 12px; padding: 12px; margin-bottom: 12px; border: 1px solid #e5e7eb;">
-                    <label class="field" style="display: block; font-size: 13px; color: #64748b; margin-bottom: 6px">Год постройки</label>
-                    <div class="two" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px">
-<input type="number" name="min_construction_year" value="{{ request.GET.min_construction_year }}" placeholder="От" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e5e7eb; background: white; color: #1e293b; font-size: 14px" />
-<input type="number" name="max_construction_year" value="{{ request.GET.max_construction_year }}" placeholder="До" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e5e7eb; background: white; color: #1e293b; font-size: 14px" />
-                    </div>
+<!-- Год постройки и Чекбоксы -->
+<div class="filter-group" style="background: #f9fafb; border-radius: 12px; padding: 12px; margin-bottom: 12px; border: 1px solid #e5e7eb;">
+    <label class="field" style="display: block; font-size: 13px; color: #64748b; margin-bottom: 6px">Год постройки</label>
+    <div class="two" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px">
+        <input type="number" name="min_construction_year" value="{{ request.GET.min_construction_year }}" placeholder="От" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e5e7eb; background: white; color: #1e293b; font-size: 14px" />
+        <input type="number" name="max_construction_year" value="{{ request.GET.max_construction_year }}" placeholder="До" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e5e7eb; background: white; color: #1e293b; font-size: 14px" />
+    </div>
 
-                    <div style="margin-top: 12px">
-                    <!-- Замените существующие чекбоксы на: -->
-<label class="checkbox-row" style="display: flex; align-items: center; margin-bottom: 8px">
-    <input type="checkbox" id="has_finishing" name="has_finishing" value="true"
-           {% if filter.form.has_finishing.value %}checked{% endif %} />
-    <span style="vertical-align: middle; color: #64748b">Только с отделкой</span>
-</label>
-<label class="checkbox-row" style="display: flex; align-items: center">
-    <input type="checkbox" id="is_delivered" name="is_delivered" value="true"
-           {% if filter.form.is_delivered.value %}checked{% endif %} />
-    <span style="vertical-align: middle; color: #64748b">Только сданные</span>
-</label>
-                    </div>
-                </div>
+    <div style="margin-top: 12px">
+        <label class="checkbox-row" style="display: flex; align-items: center; margin-bottom: 8px">
+            <input type="checkbox" id="has_finishing" name="has_finishing" value="true"
+                   {% if filter.form.has_finishing.value %}checked{% endif %} />
+            <span style="vertical-align: middle; color: #64748b">Только с отделкой</span>
+        </label>
+        <label class="checkbox-row" style="display: flex; align-items: center">
+            <input type="checkbox" id="is_delivered" name="is_delivered" value="true"
+                   {% if filter.form.is_delivered.value %}checked{% endif %} />
+            <span style="vertical-align: middle; color: #64748b">Только сданные</span>
+        </label>
+    </div>
+</div>
 
  <div class="filters-footer" style="display: flex; gap: 8px; position: sticky; bottom: 18px; padding-top: 8px; background: linear-gradient(180deg, transparent, rgba(255,255,255,0.9));">
                     <a href="?" class="btn" style="background: white; border: 1px solid #e5e7eb; padding: 10px 14px; border-radius: 10px; color: #64748b; font-weight: 600; cursor: pointer; font-size: 14px; transition: all 0.2s ease;">Сбросить</a>
@@ -5591,7 +5589,7 @@ function removeFilter(filterType, value = null) {
             params.delete('max_floor');
             break;
 
-        case 'construction_year':
+        case 'construction_year':  // ДОБАВЬТЕ ЭТОТ КЕЙС
             params.delete('min_construction_year');
             params.delete('max_construction_year');
             break;
