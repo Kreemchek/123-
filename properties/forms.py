@@ -98,6 +98,12 @@ class PropertyForm(forms.ModelForm):
         widget=forms.Textarea(attrs={'rows': 2}),
         help_text='Полный адрес объекта'
     )
+    images = forms.FileField(
+        required=False,
+        label='Дополнительные изображения',
+        widget=forms.FileInput(attrs={'multiple': True}),
+        help_text='Максимум 10 изображений'
+    )
 
     class Meta:
         model = Property
@@ -107,7 +113,7 @@ class PropertyForm(forms.ModelForm):
             'floor', 'total_floors', 'has_finishing', 'delivery_year',
             'is_delivered', 'living_area', 'total_area', 'metro_station',
             'is_rental', 'monthly_price', 'daily_price', 'construction_year',
-            'district', 'map_coordinates'
+            'district', 'map_coordinates', 'images'  # Добавлено images
         ]
         widgets = {
             'status': forms.HiddenInput(),
