@@ -1136,136 +1136,111 @@ body.home-page {
             <div class="auto-scroll-track continuous" id="hot-properties-track">
                 {% for property in hot_properties %}
                 <div class="slider-slide">
-<div class="listing-card-compact">
-    {% if property.is_hot %}
-    <div class="hot-property-badge-compact">🔥 Горячее</div>
-    {% endif %}
+                    <div class="listing-card-compact">
+                        {% if property.is_hot %}
+                        <div class="hot-property-badge-compact">🔥 Горячее</div>
+                        {% endif %}
 
-    <!-- Бейдж статуса -->
-    <div class="property-status-badge">
-        {% if property.is_rental == 'monthly' %}
-            <span style="color: #10b981;">Аренда</span>
-        {% elif property.is_rental == 'daily' %}
-            <span style="color: #f59e0b;">Посуточно</span>
-        {% else %}
-            <span style="color: #7b61ff;">Продажа</span>
-        {% endif %}
-    </div>
-
-    <div class="thumb">
-        {% if property.images.all %}
-            <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}">
-        {% else %}
-            <div style="display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; background: linear-gradient(135deg, #7c66ff, #30d0ff); font-size: 16px; text-align: center; padding: 16px;">
-                {{ property.title|truncatechars:30 }}
-            </div>
-        {% endif %}
-        <div class="image-overlay-compact"></div>
-    </div>
-
-    <div class="body">
-        <div class="property-header-compact">
-            <div class="property-type-compact">
-                {% if property.property_type == 'apartment' %}
-                    Квартира
-                {% elif property.property_type == 'house' %}
-                    Дом
-                {% elif property.property_type == 'commercial' %}
-                    Коммерческая
-                {% else %}
-                    Недвижимость
-                {% endif %}
-            </div>
-            <strong class="property-title-compact">{{ property.title }}</strong>
-        </div>
-
-        <div class="property-info-compact">
-            <div class="info-grid-compact">
-                <!-- Комнаты -->
-                {% if property.rooms %}
-                <div class="info-item-compact">
-                    <div class="info-icon-compact">
-                        <i class="fas fa-door-closed"></i>
-                    </div>
-                    <div>
-                        <div class="info-value-compact">{{ property.rooms }} комн.</div>
-                        <div class="info-label-compact">Комнаты</div>
-                    </div>
-                </div>
-                {% endif %}
-
-                <!-- Площадь -->
-                {% if property.total_area %}
-                <div class="info-item-compact">
-                    <div class="info-icon-compact area">
-                        <i class="fas fa-ruler-combined"></i>
-                    </div>
-                    <div>
-                        <div class="info-value-compact">{{ property.total_area }} м²</div>
-                        <div class="info-label-compact">Площадь</div>
-                    </div>
-                </div>
-                {% endif %}
-
-                <!-- Этаж -->
-                {% if property.floor %}
-                <div class="info-item-compact">
-                    <div class="info-icon-compact">
-                        <i class="fas fa-layer-group"></i>
-                    </div>
-                    <div>
-                        <div class="info-value-compact">{{ property.floor }}/{{ property.total_floors|default:"?" }}</div>
-                        <div class="info-label-compact">Этаж</div>
-                    </div>
-                </div>
-                {% endif %}
-
-                <!-- Метро -->
-                {% if property.metro_station and property.metro_station != "Не указано" %}
-                <div class="info-item-compact" style="grid-column: 1 / -1; margin-top: auto;">
-                    <div class="info-icon-compact metro">
-                        <i class="fas fa-subway"></i>
-                    </div>
-                    <div>
-                        <div class="info-value-compact metro-station-name">
-                            {{ property.metro_station|shorten_metro_name }}
+                        <!-- Бейдж статуса -->
+                        <div class="property-status-badge">
+                            {% if property.is_rental == 'monthly' %}
+                                <span style="color: #10b981;">Аренда</span>
+                            {% elif property.is_rental == 'daily' %}
+                                <span style="color: #f59e0b;">Посуточно</span>
+                            {% else %}
+                                <span style="color: #7b61ff;">Продажа</span>
+                            {% endif %}
                         </div>
-                        <div class="info-label-compact">Метро</div>
-                    </div>
-                </div>
-                {% endif %}
-            </div>
-        </div>
 
-        <!-- ФУТЕР С ЦЕНОЙ И КНОПКОЙ - ВСЕГДА ВНИЗУ -->
-        <div class="property-footer-compact">
-            <div class="price-section-compact">
-                <div class="price-compact">
-                    {% if property.is_rental == 'monthly' and property.monthly_price %}
-                        {{ property.monthly_price|floatformat:"0" }} ₽/мес
-                    {% elif property.is_rental == 'daily' and property.daily_price %}
-                        {{ property.daily_price|floatformat:"0" }} ₽/сут
-                    {% elif property.price %}
-                        {{ property.price|floatformat:"0" }} ₽
-                    {% else %}
-                        Цена не указана
-                    {% endif %}
-                </div>
-                {% if property.price and property.total_area %}
-                <div class="price-per-sqm-compact">
-                    {% widthratio property.price property.total_area 1 as price_per_sqm %}
-                    {{ price_per_sqm|floatformat:"0" }} ₽/м²
-                </div>
-                {% endif %}
-            </div>
-            <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}{% endif %}"
-               class="btn-details-compact">
-                <span>Подробнее</span>
-                <i class="fas fa-arrow-right"></i>
-            </a>
+                        <div class="thumb">
+                            {% if property.images.all %}
+                                <img src="{{ property.images.first.image.url }}" alt="{{ property.title }}">
+                            {% else %}
+                                <div style="display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; background: linear-gradient(135deg, #7c66ff, #30d0ff); font-size: 16px; text-align: center; padding: 16px;">
+                                    {{ property.title|truncatechars:30 }}
+                                </div>
+                            {% endif %}
+                            <div class="image-overlay-compact"></div>
+                        </div>
+
+                        <div class="body">
+                            <div class="property-header-compact">
+                                <div class="property-type-compact">
+                                    {% if property.property_type == 'apartment' %}
+                                        Квартира
+                                    {% elif property.property_type == 'house' %}
+                                        Дом
+                                    {% elif property.property_type == 'commercial' %}
+                                        Коммерческая
+                                    {% else %}
+                                        Недвижимость
+                                    {% endif %}
+                                </div>
+                                <strong class="property-title-compact">{{ property.title }}</strong>
+                            </div>
+
+                            <div class="property-info-compact">
+                                <div class="info-grid-compact">
+                                    <!-- Комнаты -->
+                                    {% if property.rooms %}
+                                    <div class="info-item-compact">
+                                        <div class="info-icon-compact">
+                                            <i class="fas fa-door-closed"></i>
+                                        </div>
+                                        <div>
+                                            <div class="info-value-compact">{{ property.rooms }} комн.</div>
+                                            <div class="info-label-compact">Комнаты</div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+
+
+                                 <!-- Метро -->
+{% if property.metro_station and property.metro_station != "Не указано" %}
+<div class="info-item-compact metro-compact" style="grid-column: 1 / -1;">
+    <div class="info-icon-compact metro">
+        <i class="fas fa-subway"></i>
+    </div>
+    <div style="min-width: 0; flex: 1;">
+        <div class="info-value-compact metro-value metro-station-name">
+            {{ property.metro_station }}
         </div>
+        <div class="info-label-compact">Метро</div>
     </div>
 </div>
+{% endif %}
+                                </div>
+                            </div>
+
+                            <div class="property-footer-compact">
+                                <div class="price-section-compact">
+                                    <div class="price-compact">
+                                        {% if property.is_rental == 'monthly' and property.monthly_price %}
+                                            {{ property.monthly_price|floatformat:"0" }} ₽/мес
+                                        {% elif property.is_rental == 'daily' and property.daily_price %}
+                                            {{ property.daily_price|floatformat:"0" }} ₽/сут
+                                        {% elif property.price %}
+                                            {{ property.price|floatformat:"0" }} ₽
+                                        {% else %}
+                                            Цена не указана
+                                        {% endif %}
+                                    </div>
+                                    {% if property.price and property.total_area %}
+                                    <div class="price-per-sqm-compact">
+                                        {% widthratio property.price property.total_area 1 as price_per_sqm %}
+                                        {{ price_per_sqm|floatformat:"0" }} ₽/м²
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <a href="{% if user.is_authenticated %}{% url 'properties:property-detail' property.id %}{% else %}{% url 'register' %}?next={% url 'properties:property-detail' property.id %}{% endif %}"
+                                   class="btn-details-compact">
+                                    <span>Подробнее</span>
+                                    <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 {% endfor %}
             </div>
