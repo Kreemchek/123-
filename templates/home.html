@@ -572,34 +572,30 @@ body.home-page {
     min-height: 39px; /* УМЕНЬШЕНА ВЫСОТА */
 }
 
-/* ОСНОВНАЯ ИНФОРМАЦИЯ - ОБНОВЛЕННАЯ СТРУКТУРА */
+/* Основная информация - УПРОЩЕНА */
 .property-info-compact {
-    margin-bottom: 12px;
-    flex-grow: 1; /* ЗАНИМАЕТ ВСЕ СВОБОДНОЕ ПРОСТРАНСТВО */
-    display: flex;
-    flex-direction: column;
+    margin-bottom: 12px; /* УМЕНЬШЕН ОТСТУП */
+    flex-grow: 1;
 }
 
-/* ГОРИЗОНТАЛЬНАЯ СЕТКА ИНФОРМАЦИИ */
+/* ГОРИЗОНТАЛЬНАЯ СЕТКА ИНФОРМАЦИИ - КОМНАТЫ И МЕТРО РЯДОМ */
 .info-grid-compact {
     display: grid;
     grid-template-columns: 1fr 1fr; /* Два равных столбца */
-    gap: 8px;
+    gap: 8px; /* Уменьшаем расстояние */
     margin-bottom: 8px;
-    flex-grow: 1; /* РАСТЯГИВАЕТСЯ НА ВСЮ ДОСТУПНУЮ ВЫСОТУ */
 }
 
+/* Убираем растягивание метро на всю ширину */
 .info-item-compact {
     display: flex;
     align-items: center;
     gap: 6px;
 }
 
-/* ФИКС ДЛЯ МЕТРО - ТЕПЕРЬ НЕ ВЛИЯЕТ НА ВЫСОТУ */
-.info-item-compact.metro-compact {
-    grid-column: 1 / -1 !important;
-    margin-top: auto; /* ПУШИТ МЕТРО ВНИЗ ВНУТРИ СЕТКИ */
-    min-width: 0; /* Важно для работы text-overflow */
+/* Убираем специальные стили для метро */
+.info-item-compact[style*="grid-column"] {
+    grid-column: unset !important;
 }
 
 .info-icon-compact {
@@ -641,13 +637,7 @@ body.home-page {
     line-height: 1.2;
 }
 
-.info-value-compact.metro-value {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/* ОГРАНИЧЕНИЕ ДЛЯ НАЗВАНИЙ МЕТРО */
+/* ОГРАНИЧЕНИЕ ДЛЯ НАЗВАНИЙ МЕТРО - максимум 2 слова */
 .metro-station-name {
     display: -webkit-box;
     -webkit-line-clamp: 1;
@@ -656,7 +646,6 @@ body.home-page {
     white-space: nowrap;
     text-overflow: ellipsis;
     max-width: 100%;
-    font-size: 11px !important; /* Еще меньше шрифт для метро */
 }
 
 .info-label-compact {
@@ -665,15 +654,33 @@ body.home-page {
     line-height: 1.2;
 }
 
-/* ОБНОВЛЕННЫЙ ФУТЕР КАРТОЧКИ - ВСЕГДА ВНИЗУ */
+/* Цена и кнопка - ПОДНЯТЫ ВЫШЕ ТОЛЬКО НА ПК */
+@media (min-width: 769px) {
+    .property-footer-compact {
+        padding-top: 8px; /* УМЕНЬШЕН ОТСТУП СВЕРХУ ТОЛЬКО НА ПК */
+        min-height: 50px; /* МИНИМАЛЬНАЯ ВЫСОТА ДЛЯ ВЫРАВНИВАНИЯ ТОЛЬКО НА ПК */
+    }
+
+    .price-section-compact {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .btn-details-compact {
+        height: fit-content; /* ВЫСОТА ПО СОДЕРЖИМОМУ ТОЛЬКО НА ПК */
+        align-self: center; /* ВЫРАВНИВАНИЕ ПО ЦЕНТРУ ТОЛЬКО НА ПК */
+    }
+}
+
+/* СТАНДАРТНЫЕ СТИЛИ ДЛЯ ВСЕХ УСТРОЙСТВ */
 .property-footer-compact {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-top: 12px;
+    padding-top: 12px; /* СТАНДАРТНЫЙ ОТСТУП ДЛЯ МОБИЛЬНЫХ */
     border-top: 1px solid rgba(0, 0, 0, 0.05);
-    margin-top: auto; /* ВАЖНО: ПРИЖИМАЕТ К НИЖНЕМУ КРАЮ */
-    flex-shrink: 0; /* НЕ СЖИМАЕТСЯ */
+    margin-top: auto;
 }
 
 .price-section-compact {
@@ -1015,7 +1022,6 @@ body.home-page {
         font-size: 10px !important;
     }
 }
-
 .slider-slide {
     flex: 0 0 auto;
     padding: 0 12px;
@@ -1023,7 +1029,6 @@ body.home-page {
     width: 30%; /* 4 карточки в ряд с отступами */
     aspect-ratio: 1/1; /* ДЕЛАЕМ КАРТОЧКУ КВАДРАТНОЙ */
 }
-
 /* Utilities */
 .muted { color: var(--muted); }
 .link { text-decoration: none; color: inherit; display: block; }
@@ -1053,6 +1058,28 @@ body.home-page {
     .auto-scroll-track.continuous {
         animation-duration: 12s !important;
     }
+}
+/* Добавьте эти стили в ваш CSS */
+.metro-station-name {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    font-size: 11px !important; /* Еще меньше шрифт для метро */
+}
+
+/* Дополнительное ограничение для очень длинных названий */
+.info-item-compact.metro-compact {
+    min-width: 0; /* Важно для работы text-overflow */
+}
+
+.info-value-compact.metro-value {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 </style>
 
