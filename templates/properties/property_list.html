@@ -3337,47 +3337,7 @@ a[href*="select-listing-type"]:hover {
     color: white;
     text-decoration: none;
 }
-@keyframes shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-}
 
-.property-card:hover {
-    transform: translateY(-8px);
-    box-shadow:
-        0 20px 40px rgba(0, 0, 0, 0.15),
-        0 1px 0 rgba(255, 255, 255, 0.8) inset,
-        0 -1px 0 rgba(0, 0, 0, 0.02) inset;
-}
-
-.property-action-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(123, 97, 255, 0.4);
-    color: white;
-    text-decoration: none;
-}
-
-/* Адаптивность для мобильных */
-@media (max-width: 768px) {
-    .listings {
-        grid-template-columns: 1fr !important;
-        gap: 12px !important;
-    }
-
-    .property-card {
-        margin: 0 8px;
-    }
-
-    .price-action-container {
-        flex-direction: column;
-        gap: 12px;
-        align-items: stretch;
-    }
-
-    .property-action-btn {
-        text-align: center;
-    }
-}
 </style>
 {% endblock %}
 
@@ -4802,8 +4762,20 @@ a[href*="select-listing-type"]:hover {
        <!-- Карточки объектов с новой структурой -->
 <!-- Карточки объектов -->
 <!-- Карточки объектов -->
-<!-- Карточки объектов -->
 <section class="listings" aria-label="Список объектов" style="margin-top: 18px; display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px;">
+<style>
+@media (max-width: 768px) {
+    .listings {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+}
+@media (min-width: 769px) and (max-width: 1024px) {
+    .listings {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
+    }
+}
+</style>
     {% if properties %}
         {% for property in properties %}
             <article class="property-card" style="
@@ -4818,9 +4790,6 @@ a[href*="select-listing-type"]:hover {
                 position: relative;
                 transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
                 backdrop-filter: blur(10px);
-                display: flex;
-                flex-direction: column;
-                height: 100%;
             ">
                 <!-- Градиентный акцент -->
                 <div class="card-accent" style="
@@ -4860,217 +4829,262 @@ a[href*="select-listing-type"]:hover {
                     {% endif %}
                 </div>
 
-                <!-- Контент карточки -->
-                <div class="card-content" style="
-                    display: flex;
-                    flex-direction: column;
-                    height: 100%;
-                    padding: 24px;
+                <!-- Изображение с градиентным оверлеем -->
+                <div class="image-container" style="
                     position: relative;
+                    height: 200px;
+                    overflow: hidden;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 ">
-                    <!-- Основной контент (занимает доступное пространство) -->
-                    <div class="property-main-content" style="flex: 1; margin-bottom: 16px;">
-                        <!-- Изображение -->
-                        <div class="property-image" style="
-                            width: 100%;
-                            height: 200px;
-                            border-radius: 12px;
-                            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
-                            margin-bottom: 16px;
-                            overflow: hidden;
-                            position: relative;
+                    <div class="property-image" style="
+                        width: 100%;
+                        height: 100%;
+                        background-image: url('{{ property.main_image.url }}');
+                        background-size: cover;
+                        background-position: center;
+                        transition: transform 0.6s ease;
+                    "></div>
+
+                    <!-- Градиентный оверлей -->
+                    <div class="image-overlay" style="
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: linear-gradient(
+                            to bottom,
+                            rgba(0, 0, 0, 0.1) 0%,
+                            transparent 30%,
+                            rgba(0, 0, 0, 0.15) 100%
+                        );
+                    "></div>
+
+                    <!-- Кнопка избранного -->
+
+                </div>
+                <!-- Контент карточки -->
+                <div class="card-content" style="padding: 24px;">
+                    <!-- Заголовок и тип -->
+                    <div class="property-header" style="margin-bottom: 16px;">
+                        <div class="property-type" style="
+                            font-size: 12px;
+                            font-weight: 600;
+                            text-transform: uppercase;
+                            letter-spacing: 0.5px;
+                            color: #7b61ff;
+                            margin-bottom: 6px;
                         ">
-                            {% if property.images.first %}
-                                <img src="{{ property.images.first.image.url }}"
-                                     alt="{{ property.title }}"
-                                     style="width: 100%; height: 100%; object-fit: cover;">
-                            {% else %}
-                                <div style="
-                                    width: 100%;
-                                    height: 100%;
+                            {{ property.get_property_type_display }}
+                        </div>
+                        <h3 class="property-title" style="
+                            margin: 0;
+                            font-size: 20px;
+                            font-weight: 700;
+                            line-height: 1.3;
+                            color: #1e293b;
+                            display: -webkit-box;
+                            -webkit-line-clamp: 2;
+                            -webkit-box-orient: vertical;
+                            overflow: hidden;
+                        ">
+                            {{ property.title }}
+                        </h3>
+                    </div>
+
+                    <!-- Основная информация -->
+                    <div class="property-info" style="margin-bottom: 20px;">
+                        <div class="info-grid" style="
+                            display: grid;
+                            grid-template-columns: repeat(2, 1fr);
+                            gap: 12px;
+                        ">
+                            <!-- Комнаты -->
+                            <div class="info-item" style="display: flex; align-items: center; gap: 8px;">
+                                <div class="info-icon" style="
+                                    width: 32px;
+                                    height: 32px;
+                                    border-radius: 8px;
+                                    background: rgba(123, 97, 255, 0.1);
                                     display: flex;
                                     align-items: center;
                                     justify-content: center;
-                                    background: linear-gradient(135deg, #7b61ff20, #36d1dc20);
-                                    color: #6b7280;
-                                    font-size: 14px;
                                 ">
-                                    <i class="bi bi-image" style="font-size: 32px;"></i>
+                                    <i class="bi bi-door-open" style="color: #7b61ff; font-size: 14px;"></i>
                                 </div>
-                            {% endif %}
-                        </div>
-
-                        <!-- Заголовок и описание -->
-                        <h3 style="
-                            font-size: 18px;
-                            font-weight: 700;
-                            color: #1f2937;
-                            margin: 0 0 8px 0;
-                            line-height: 1.3;
-                        ">{{ property.title }}</h3>
-
-                        <!-- Локация -->
-                        <div class="location" style="
-                            display: flex;
-                            align-items: center;
-                            gap: 6px;
-                            margin-bottom: 12px;
-                            color: #6b7280;
-                            font-size: 14px;
-                        ">
-                            <i class="bi bi-geo-alt" style="color: #7b61ff;"></i>
-                            <span>{{ property.location }}</span>
-                        </div>
-
-                        <!-- Характеристики -->
-                        <div class="property-features" style="
-                            display: flex;
-                            flex-wrap: wrap;
-                            gap: 8px;
-                            margin-bottom: 16px;
-                        ">
-                            {% if property.area %}
-                                <div class="feature" style="
-                                    display: flex;
-                                    align-items: center;
-                                    gap: 4px;
-                                    background: rgba(123, 97, 255, 0.1);
-                                    padding: 4px 8px;
-                                    border-radius: 6px;
-                                    font-size: 12px;
-                                    color: #7b61ff;
-                                ">
-                                    <i class="bi bi-arrows-fullscreen"></i>
-                                    <span>{{ property.area }} м²</span>
-                                </div>
-                            {% endif %}
-
-                            {% if property.rooms %}
-                                <div class="feature" style="
-                                    display: flex;
-                                    align-items: center;
-                                    gap: 4px;
-                                    background: rgba(54, 209, 220, 0.1);
-                                    padding: 4px 8px;
-                                    border-radius: 6px;
-                                    font-size: 12px;
-                                    color: #36d1dc;
-                                ">
-                                    <i class="bi bi-door-open"></i>
-                                    <span>{{ property.rooms }} комн.</span>
-                                </div>
-                            {% endif %}
-
-                            {% if property.floor %}
-                                <div class="feature" style="
-                                    display: flex;
-                                    align-items: center;
-                                    gap: 4px;
-                                    background: rgba(245, 158, 11, 0.1);
-                                    padding: 4px 8px;
-                                    border-radius: 6px;
-                                    font-size: 12px;
-                                    color: #f59e0b;
-                                ">
-                                    <i class="bi bi-building"></i>
-                                    <span>{{ property.floor }} этаж</span>
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <!-- Метро (если есть) -->
-                        {% if property.metro_stations.all %}
-                            <div class="metro-stations" style="margin-bottom: 16px;">
-                                {% for station in property.metro_stations.all %}
-                                    <div class="metro-station" style="
-                                        display: flex;
-                                        align-items: center;
-                                        gap: 6px;
-                                        padding: 6px 8px;
-                                        background: rgba(107, 114, 128, 0.05);
-                                        border-radius: 6px;
-                                        margin-bottom: 4px;
-                                        font-size: 12px;
-                                        color: #6b7280;
-                                    ">
-                                        <div class="metro-color" style="
-                                            width: 8px;
-                                            height: 8px;
-                                            border-radius: 50%;
-                                            background-color: {{ station.line_color|default:'#6b7280' }};
-                                        "></div>
-                                        <span>{{ station.name }}</span>
+                                <div>
+                                    <div class="info-value" style="font-size: 16px; font-weight: 700; color: #1e293b;">
+                                        {{ property.rooms }} комн.
                                     </div>
-                                {% endfor %}
+                                    <div class="info-label" style="font-size: 12px; color: #64748b;">Комнаты</div>
+                                </div>
                             </div>
-                        {% endif %}
+
+                            <!-- Площадь -->
+                            <div class="info-item" style="display: flex; align-items: center; gap: 8px;">
+                                <div class="info-icon" style="
+                                    width: 32px;
+                                    height: 32px;
+                                    border-radius: 8px;
+                                    background: rgba(54, 209, 220, 0.1);
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                ">
+                                    <i class="bi bi-arrows-fullscreen" style="color: #36d1dc; font-size: 14px;"></i>
+                                </div>
+                                <div>
+                                    <div class="info-value" style="font-size: 16px; font-weight: 700; color: #1e293b;">
+                                        {{ property.total_area }} м²
+                                    </div>
+                                    <div class="info-label" style="font-size: 12px; color: #64748b;">Площадь</div>
+                                </div>
+                            </div>
+
+                            <!-- Метро -->
+                            {% if property.metro_station and property.metro_station != "Не указано" %}
+                            <div class="info-item" style="display: flex; align-items: center; gap: 8px; grid-column: 1 / -1;">
+                                <div class="info-icon" style="
+                                    width: 32px;
+                                    height: 32px;
+                                    border-radius: 8px;
+                                    background: rgba(239, 68, 68, 0.1);
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                ">
+                                    <i class="bi bi-train-front" style="color: #ef4444; font-size: 14px;"></i>
+                                </div>
+                                <div>
+                                    <div class="info-value" style="font-size: 16px; font-weight: 700; color: #1e293b;">
+                                        {{ property.metro_station }}
+                                    </div>
+                                    <div class="info-label" style="font-size: 12px; color: #64748b;">Метро</div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
                     </div>
 
-                    <!-- Нижняя часть карточки - всегда внизу -->
+                    <!-- Цена и кнопка -->
                     <div class="property-footer" style="
-                        margin-top: auto;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
                         padding-top: 16px;
-                        border-top: 1px solid rgba(0, 0, 0, 0.06);
+                        border-top: 1px solid rgba(0, 0, 0, 0.05);
                     ">
-                        <div class="price-action-container" style="
-                            display: flex;
-                            justify-content: space-between;
-                            align-items: center;
-                            width: 100%;
-                        ">
-                            <!-- Цена -->
-                            <div class="property-price" style="
-                                font-size: 20px;
+                        <div class="price-section">
+                            <div class="price" style="
+                                font-size: 24px;
                                 font-weight: 800;
                                 color: #7b61ff;
                                 line-height: 1.2;
                             ">
-                                {% if property.is_rental == 'daily' %}
-                                    {{ property.price|space_format }} ₽/сут
-                                {% elif property.is_rental == 'monthly' %}
-                                    {{ property.price|space_format }} ₽/мес
+                                {% if property.is_rental == 'monthly' and property.monthly_price %}
+                                    {{ property.monthly_price|space_format }} ₽/мес
+                                {% elif property.is_rental == 'daily' and property.daily_price %}
+                                    {{ property.daily_price|space_format }} ₽/сут
                                 {% else %}
                                     {{ property.price|space_format }} ₽
                                 {% endif %}
                             </div>
-
-                            <!-- Кнопка -->
-                            <a href="{% url 'properties:property-detail' property.id %}"
-                               class="property-action-btn"
-                               style="
-                                    background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%);
-                                    color: white;
-                                    padding: 10px 20px;
-                                    border-radius: 12px;
-                                    text-decoration: none;
-                                    font-weight: 600;
-                                    font-size: 14px;
-                                    transition: all 0.3s ease;
-                                    box-shadow: 0 4px 15px rgba(123, 97, 255, 0.3);
-                                    white-space: nowrap;
-                               ">
-                                Подробнее
-                            </a>
+<div class="price-per-sqm" style="font-size: 12px; color: #64748b;">
+    {% if property.price and property.total_area %}
+        {% widthratio property.price property.total_area 1 as price_per_sqm %}
+        {{ price_per_sqm|floatformat:0|space_format }} ₽/м²
+    {% endif %}
+</div>
                         </div>
+
+                        <a href="{% url 'properties:property-detail' property.id %}"
+                           class="details-btn"
+                           style="
+                                padding: 12px 20px;
+                                background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%);
+                                color: white;
+                                border-radius: 12px;
+                                font-weight: 600;
+                                text-decoration: none;
+                                transition: all 0.3s ease;
+                                box-shadow: 0 4px 15px rgba(123, 97, 255, 0.3);
+                                display: flex;
+                                align-items: center;
+                                gap: 6px;
+                           "
+                           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(123, 97, 255, 0.4)';"
+                           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(123, 97, 255, 0.3)';">
+                            <span>Подробнее</span>
+                            <i class="bi bi-arrow-right-short" style="font-size: 16px;"></i>
+                        </a>
                     </div>
                 </div>
+
+                <!-- Ховер эффекты -->
+                <style>
+                    .property-card:hover {
+                        transform: translateY(-8px) scale(1.02);
+                        box-shadow:
+                            0 25px 50px rgba(0, 0, 0, 0.15),
+                            0 1px 0 rgba(255, 255, 255, 0.8) inset,
+                            0 -1px 0 rgba(0, 0, 0, 0.02) inset;
+                    }
+
+                    .property-card:hover .property-image {
+                        transform: scale(1.1);
+                    }
+
+                    .favorite-btn:hover {
+                        background: rgba(255, 255, 255, 1);
+                        transform: scale(1.1);
+                        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+                    }
+
+                    .favorite-btn:hover i {
+                        color: #ef4444 !important;
+                    }
+
+                    @keyframes shimmer {
+                        0% { background-position: -200% 0; }
+                        100% { background-position: 200% 0; }
+                    }
+                </style>
             </article>
         {% endfor %}
     {% else %}
-        <div class="empty-state" style="
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 60px 20px;
-            color: #6b7280;
-        ">
-            <i class="bi bi-search" style="font-size: 48px; margin-bottom: 16px; color: #d1d5db;"></i>
-            <h3 style="color: #374151; margin-bottom: 8px;">Объекты не найдены</h3>
-            <p>Попробуйте изменить параметры фильтрации</p>
+        <!-- Состояние при отсутствии объектов -->
+        <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+            <div style="
+                width: 120px;
+                height: 120px;
+                margin: 0 auto 24px;
+                background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 4px solid white;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            ">
+                <i class="bi bi-house-x" style="font-size: 48px; color: #94a3b8;"></i>
+            </div>
+            <h3 style="font-size: 24px; font-weight: 700; color: #1e293b; margin-bottom: 12px;">
+                {% if user.is_authenticated and user.is_broker %}
+                    У вас пока нет объектов
+                {% else %}
+                    Объекты не найдены
+                {% endif %}
+            </h3>
+            <p style="font-size: 16px; color: #64748b; max-width: 400px; margin: 0 auto; line-height: 1.5;">
+                {% if user.is_authenticated and user.is_broker %}
+                    Начните добавлять объекты, чтобы они отображались в вашем каталоге
+                {% else %}
+                    Попробуйте изменить параметры поиска или сбросить фильтры
+                {% endif %}
+            </p>
         </div>
     {% endif %}
 </section>
-
-
 
                 <!-- Пагинация -->
                 {% if is_paginated %}
