@@ -1059,6 +1059,28 @@ body.home-page {
         animation-duration: 12s !important;
     }
 }
+/* Добавьте эти стили в ваш CSS */
+.metro-station-name {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    font-size: 11px !important; /* Еще меньше шрифт для метро */
+}
+
+/* Дополнительное ограничение для очень длинных названий */
+.info-item-compact.metro-compact {
+    min-width: 0; /* Важно для работы text-overflow */
+}
+
+.info-value-compact.metro-value {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 </style>
 
 <!-- Hero -->
@@ -1201,18 +1223,20 @@ body.home-page {
 
 
 
-                                    <!-- Метро -->
-                                    {% if property.metro_station and property.metro_station != "Не указано" %}
-                                    <div class="info-item-compact" style="grid-column: 1 / -1;">
-                                        <div class="info-icon-compact metro">
-                                            <i class="fas fa-subway"></i>
-                                        </div>
-                                        <div>
-<div class="info-value-compact metro-station-name">{{ property.metro_station }}</div>
-                                            <div class="info-label-compact">Метро</div>
-                                        </div>
-                                    </div>
-                                    {% endif %}
+                                 <!-- Метро -->
+{% if property.metro_station and property.metro_station != "Не указано" %}
+<div class="info-item-compact metro-compact" style="grid-column: 1 / -1;">
+    <div class="info-icon-compact metro">
+        <i class="fas fa-subway"></i>
+    </div>
+    <div style="min-width: 0; flex: 1;">
+        <div class="info-value-compact metro-value metro-station-name">
+            {{ property.metro_station }}
+        </div>
+        <div class="info-label-compact">Метро</div>
+    </div>
+</div>
+{% endif %}
                                 </div>
                             </div>
 
