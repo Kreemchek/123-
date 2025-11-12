@@ -646,6 +646,18 @@ body.home-page {
     white-space: nowrap;
     text-overflow: ellipsis;
     max-width: 100%;
+    font-size: 11px !important; /* Еще меньше шрифт для метро */
+}
+
+/* Дополнительное ограничение для очень длинных названий */
+.info-item-compact.metro-compact {
+    min-width: 0; /* Важно для работы text-overflow */
+}
+
+.info-value-compact.metro-value {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .info-label-compact {
@@ -875,21 +887,26 @@ body.home-page {
         -webkit-line-clamp: 2 !important;
     }
 
-    /* УПРОЩЕННАЯ СЕТКА ИНФОРМАЦИИ */
+    /* ИСПРАВЛЕНИЕ: ГОРИЗОНТАЛЬНАЯ СЕТКА ДЛЯ МОБИЛЬНЫХ - 2 ЭЛЕМЕНТА В РЯД */
     .info-grid-compact {
-        grid-template-columns: 1fr !important; /* ОДИН СТОЛБЕЦ */
-        gap: 6px !important;
+        grid-template-columns: 1fr 1fr !important; /* ДВА СТОЛБЦА В РЯД */
+        gap: 8px !important;
     }
 
-    /* СКРЫВАЕМ МЕНЕЕ ВАЖНУЮ ИНФОРМАЦИЮ НА МОБИЛЬНЫХ */
+    /* ОСТАВЛЯЕМ ТОЛЬКО САМОЕ ВАЖНОЕ: КОМНАТЫ И МЕТРО */
     .info-item-compact:nth-child(n+3) {
         display: none !important; /* Скрываем все кроме первых двух элементов */
     }
 
-    /* ОСТАВЛЯЕМ ТОЛЬКО САМОЕ ВАЖНОЕ: КОМНАТЫ И ПЛОЩАДЬ */
+    /* ОСТАВЛЯЕМ ТОЛЬКО КОМНАТЫ И МЕТРО */
     .info-item-compact:first-child,
     .info-item-compact:nth-child(2) {
         display: flex !important;
+    }
+
+    /* УБИРАЕМ РАСТЯГИВАНИЕ МЕТРО НА ВСЮ ШИРИНУ */
+    .info-item-compact[style*="grid-column"] {
+        grid-column: unset !important;
     }
 
     .info-icon-compact {
@@ -1022,6 +1039,7 @@ body.home-page {
         font-size: 10px !important;
     }
 }
+
 .slider-slide {
     flex: 0 0 auto;
     padding: 0 12px;
@@ -1058,28 +1076,6 @@ body.home-page {
     .auto-scroll-track.continuous {
         animation-duration: 12s !important;
     }
-}
-/* Добавьте эти стили в ваш CSS */
-.metro-station-name {
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    max-width: 100%;
-    font-size: 11px !important; /* Еще меньше шрифт для метро */
-}
-
-/* Дополнительное ограничение для очень длинных названий */
-.info-item-compact.metro-compact {
-    min-width: 0; /* Важно для работы text-overflow */
-}
-
-.info-value-compact.metro-value {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 </style>
 
