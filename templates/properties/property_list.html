@@ -3278,6 +3278,65 @@ a[href*="select-listing-type"]:hover {
     transform: translateY(-2px) !important;
     border-color: transparent !important;
 }
+/* Добавьте эти стили в ваш CSS блок */
+
+/* Контейнер для контента карточки */
+.card-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 24px;
+    position: relative;
+}
+
+/* Основной контент, который занимает доступное пространство */
+.property-main-content {
+    flex: 1;
+    margin-bottom: 16px;
+}
+
+/* Нижняя часть карточки - всегда внизу */
+.property-footer {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* Контейнер цены и кнопки */
+.price-action-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+/* Стили для цены */
+.property-price {
+    font-size: 20px;
+    font-weight: 800;
+    color: #7b61ff;
+    line-height: 1.2;
+}
+
+/* Стили для кнопки */
+.property-action-btn {
+    background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(123, 97, 255, 0.3);
+}
+
+.property-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(123, 97, 255, 0.4);
+    color: white;
+    text-decoration: none;
+}
 </style>
 {% endblock %}
 
