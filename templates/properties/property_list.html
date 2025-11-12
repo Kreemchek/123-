@@ -5053,58 +5053,59 @@ a[href*="select-listing-type"]:hover {
                         </div>
                     </div>
 
-                    <!-- Цена и кнопка -->
-                    <div class="property-footer" style="
-                        display: flex;
-                        justify-content: space-between;
-                        align-items: center;
-                        padding-top: 16px;
-                        border-top: 1px solid rgba(0, 0, 0, 0.05);
-                    ">
-                        <div class="price-section">
-                            <div class="price" style="
-                                font-size: 24px;
-                                font-weight: 800;
-                                color: #7b61ff;
-                                line-height: 1.2;
-                            ">
-                                {% if property.is_rental == 'monthly' and property.monthly_price %}
-                                    {{ property.monthly_price|space_format }} ₽/мес
-                                {% elif property.is_rental == 'daily' and property.daily_price %}
-                                    {{ property.daily_price|space_format }} ₽/сут
-                                {% else %}
-                                    {{ property.price|space_format }} ₽
-                                {% endif %}
-                            </div>
-<div class="price-per-sqm" style="font-size: 12px; color: #64748b;">
-    {% if property.price and property.total_area %}
-        {% widthratio property.price property.total_area 1 as price_per_sqm %}
-        {{ price_per_sqm|floatformat:0|space_format }} ₽/м²
-    {% endif %}
-</div>
-                        </div>
+<!-- Цена и кнопка -->
+<div class="property-footer" style="
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    margin-top: auto; /* Это прижимает блок к низу */
+">
+    <div class="price-section">
+        <div class="price" style="
+            font-size: 24px;
+            font-weight: 800;
+            color: #7b61ff;
+            line-height: 1.2;
+        ">
+            {% if property.is_rental == 'monthly' and property.monthly_price %}
+                {{ property.monthly_price|space_format }} ₽/мес
+            {% elif property.is_rental == 'daily' and property.daily_price %}
+                {{ property.daily_price|space_format }} ₽/сут
+            {% else %}
+                {{ property.price|space_format }} ₽
+            {% endif %}
+        </div>
+        <div class="price-per-sqm" style="font-size: 12px; color: #64748b;">
+            {% if property.price and property.total_area %}
+                {% widthratio property.price property.total_area 1 as price_per_sqm %}
+                {{ price_per_sqm|floatformat:0|space_format }} ₽/м²
+            {% endif %}
+        </div>
+    </div>
 
-                        <a href="{% url 'properties:property-detail' property.id %}"
-                           class="details-btn"
-                           style="
-                                padding: 12px 20px;
-                                background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%);
-                                color: white;
-                                border-radius: 12px;
-                                font-weight: 600;
-                                text-decoration: none;
-                                transition: all 0.3s ease;
-                                box-shadow: 0 4px 15px rgba(123, 97, 255, 0.3);
-                                display: flex;
-                                align-items: center;
-                                gap: 6px;
-                           "
-                           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(123, 97, 255, 0.4)';"
-                           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(123, 97, 255, 0.3)';">
-                            <span>Подробнее</span>
-                            <i class="bi bi-arrow-right-short" style="font-size: 16px;"></i>
-                        </a>
-                    </div>
+    <a href="{% url 'properties:property-detail' property.id %}"
+       class="details-btn"
+       style="
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #7b61ff 0%, #36d1dc 100%);
+            color: white;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(123, 97, 255, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+       "
+       onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(123, 97, 255, 0.4)';"
+       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(123, 97, 255, 0.3)';">
+        <span>Подробнее</span>
+        <i class="bi bi-arrow-right-short" style="font-size: 16px;"></i>
+    </a>
+</div>
                 </div>
 
                 <!-- Ховер эффекты -->
