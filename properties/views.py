@@ -339,6 +339,7 @@ class PropertyDetailView(DetailView):
         return context
 
 
+# views.py
 class PropertyCreateView(LoginRequiredMixin, CreateView):
     model = Property
     form_class = PropertyForm
@@ -392,7 +393,7 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
             # Валидация дополнительных изображений
             additional_images = self.request.FILES.getlist('images')
             if len(additional_images) > 10:
-                form.add_error(None, "Максимальное количество изображений - 10")
+                form.add_error('images', "Максимальное количество изображений - 10")
                 return self.form_invalid(form)
 
             for idx, image in enumerate(additional_images):
@@ -408,8 +409,6 @@ class PropertyCreateView(LoginRequiredMixin, CreateView):
                 return self.form_invalid(form)
 
             listing_type = ListingType.objects.get(id=listing_type_id)
-
-            # УБРАНО ВСЁ, что связано с платежами и списаниями
 
             self.object = form.save(commit=False)
             self.object.property_type = get_object_or_404(
