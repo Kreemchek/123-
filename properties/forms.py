@@ -101,7 +101,7 @@ class PropertyForm(forms.ModelForm):
     images = forms.FileField(
         required=False,
         label='Дополнительные изображения',
-        widget=forms.FileInput(attrs={'multiple': True}),
+        widget=forms.ClearableFileInput(),
         help_text='Максимум 10 изображений'
     )
 
