@@ -26,10 +26,22 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          DJANGO_SECRET_KEY="${{ secrets.DJANGO_SECRET_KEY }}"
+          if [ -z "${DJANGO_SECRET_KEY}" ]; then
+            echo "Missing secret DJANGO_SECRET_KEY" >&2
+            exit 1
+          fi
+
+          DATABASE_URL="${{ secrets.DATABASE_URL }}"
+          # Fallback: use SpatiaLite on server (works with PointField) if Postgres creds are unknown
+          if [ -z "${DATABASE_URL}" ]; then
+            DATABASE_URL="spatialite:////home/wic/real_estate_portal/db.sqlite3"
+          fi
+
           cat > .env <<EOF
           DEBUG=False
-          SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}
-          DATABASE_URL=${{ secrets.DATABASE_URL }}
+          SECRET_KEY=${DJANGO_SECRET_KEY}
+          DATABASE_URL=${DATABASE_URL}
 
           CLOUDINARY_CLOUD_NAME=dqgwzhywm
           CLOUDINARY_API_KEY=164662831511784
@@ -87,6 +99,12 @@ jobs:
           ssh wic@89.169.168.72 <<'SSH'
           set -euo pipefail
           cd /home/wic/real_estate_portal
+
+          # Ensure SpatiaLite is available when using SQLite GIS backend
+          if grep -q '^DATABASE_URL=spatialite:' .env; then
+            sudo apt-get update
+            sudo apt-get install -y libsqlite3-mod-spatialite spatialite-bin
+          fi
 
           # Gunicorn config (порт 3000 под Caddy reverse_proxy)
           cat > gunicorn_config.py << 'EOF'
