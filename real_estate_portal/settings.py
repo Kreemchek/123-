@@ -289,9 +289,9 @@ STORAGES = {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        # Keep static collection robust for first boot.
-        # We can re-enable WhiteNoise compression/manifest later once assets are consistent.
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        # Use manifest storage so Django resolves hashed admin/static asset names
+        # (we deploy prebuilt `staticfiles/` with `staticfiles.json`).
+        "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
     },
 }
 
