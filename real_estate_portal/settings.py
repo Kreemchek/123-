@@ -227,11 +227,22 @@ if DATABASE_URL:
             }
         }
     elif scheme in {"sqlite", "spatialite"}:
-        db_path = (parsed.path or "").lstrip("/") or "db.sqlite3"
+        # NOTE: urlparse() represents `spatialite:////abs/path.db` as path='//abs/path.db'.
+        # We must preserve absolute paths (don't lstrip leading slashes), otherwise we end up
+        # creating BASE_DIR/'abs/path.db' which is incorrect.
+        raw_path = unquote(parsed.path or "")
+        if raw_path.startswith("//"):
+            # Normalize //abs/path.db -> /abs/path.db
+            normalized = "/" + raw_path.lstrip("/")
+            db_file = Path(normalized)
+        else:
+            # Treat as path relative to the project directory
+            normalized = raw_path.lstrip("/") or "db.sqlite3"
+            db_file = BASE_DIR / normalized
         DATABASES = {
             "default": {
                 "ENGINE": "django.contrib.gis.db.backends.spatialite",
-                "NAME": str(BASE_DIR / db_path),
+                "NAME": str(db_file),
             }
         }
     else:
