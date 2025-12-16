@@ -7,27 +7,87 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
 
-    - name: Deploy via SSH
-      uses: appleboy/ssh-action@master
-      with:
-        host: 89.169.168.72
-        username: wic
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H 89.169.168.72 >> ~/.ssh/known_hosts
+
+      - name: Create .env
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > .env <<EOF
+          DEBUG=False
+          SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}
+          DATABASE_URL=${{ secrets.DATABASE_URL }}
+
+          CLOUDINARY_CLOUD_NAME=dqgwzhywm
+          CLOUDINARY_API_KEY=164662831511784
+          CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}
+
+          YOOMONEY_ACCOUNT_ID=1105130
+          YOOMONEY_SECRET_KEY=${{ secrets.YOOMONEY_SECRET_KEY }}
+
+          EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+          EMAIL_HOST=smtp.yandex.ru
+          EMAIL_PORT=465
+          EMAIL_USE_SSL=True
+          EMAIL_HOST_USER=goldinpav@yandex.ru
+          EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_PASSWORD }}
+          DEFAULT_FROM_EMAIL=WinWinDeal <goldinpav@yandex.ru>
+
+          YANDEX_MAPS_API_KEY=${{ secrets.YANDEX_MAPS_API_KEY }}
+          YANDEX_GEOCODER_API_KEY=${{ secrets.YANDEX_GEOCODER_API_KEY }}
+          YANDEX_GEO_SUGGEST_API_KEY=${{ secrets.YANDEX_GEO_SUGGEST_API_KEY }}
+
+          CSRF_COOKIE_SECURE=True
+          SESSION_COOKIE_SECURE=True
+          # Включайте True только если HTTPS реально настроен
+          SECURE_SSL_REDIRECT=False
+
+          ALLOWED_HOSTS=89.169.168.72,localhost,127.0.0.1,winwindeal.ru,www.winwindeal.ru
+          CSRF_TRUSTED_ORIGINS=https://winwindeal.ru,https://www.winwindeal.ru
+          EOF
+          chmod 600 .env
+
+      - name: Sync project to server
+        shell: bash
+        run: |
+          set -euo pipefail
+          rsync -az --delete \
+            --exclude '.git/' \
+            --exclude 'venv/' \
+            --exclude '__pycache__/' \
+            --exclude '*.pyc' \
+            --exclude 'media/' \
+            --exclude 'staticfiles/' \
+            ./ wic@89.169.168.72:/home/wic/real_estate_portal/
+
+      - name: Upload .env
+        shell: bash
+        run: |
+          set -euo pipefail
+          scp .env wic@89.169.168.72:/home/wic/real_estate_portal/.env
+          ssh wic@89.169.168.72 "chmod 600 /home/wic/real_estate_portal/.env"
+
+      - name: Deploy on server
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh wic@89.169.168.72 <<'SSH'
+          set -euo pipefail
           cd /home/wic/real_estate_portal
 
-          # Принудительно обновляем до версии из GitHub
-          git fetch --all
-          git reset --hard origin/master
-          git clean -fd
-
-          echo "✅ Repository updated to latest version from GitHub"
-
-          # Всегда пересоздаем gunicorn config
+          # Gunicorn config (порт 3000 под Caddy reverse_proxy)
           cat > gunicorn_config.py << 'EOF'
           bind = "0.0.0.0:3000"
           workers = 3
@@ -35,80 +95,24 @@ jobs:
           errorlog = "-"
           accesslog = "-"
           EOF
-          echo "✅ Gunicorn config created/updated"
 
-          # Создаем .env файл построчно
-          echo "DEBUG=False" > .env
-          echo "SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
-
-          # Строка подключения к БД хранится в GitHub Secrets
-          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
-
-          echo "CLOUDINARY_CLOUD_NAME=dqgwzhywm" >> .env
-          echo "CLOUDINARY_API_KEY=164662831511784" >> .env
-          echo "CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}" >> .env
-
-          echo "YOOMONEY_ACCOUNT_ID=1105130" >> .env
-          echo "YOOMONEY_SECRET_KEY=test_evMMyWGLIawYaOMUELuBxzSO5XJbnaDcrJeulp2lX8w" >> .env
-
-          echo "EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend" >> .env
-          echo "EMAIL_HOST=smtp.yandex.ru" >> .env
-          echo "EMAIL_PORT=465" >> .env
-          echo "EMAIL_USE_SSL=True" >> .env
-          echo "EMAIL_HOST_USER=goldinpav@yandex.ru" >> .env
-          echo "EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_PASSWORD }}" >> .env
-          echo "DEFAULT_FROM_EMAIL=WinWinDeal <goldinpav@yandex.ru>" >> .env
-
-          echo "YANDEX_MAPS_API_KEY=3585e6f5-6323-4098-8a4d-b279da5b0c4f" >> .env
-          echo "YANDEX_GEOCODER_API_KEY=3585e6f5-6323-4098-8a4d-b279da5b0c4f" >> .env
-          echo "YANDEX_GEO_SUGGEST_API_KEY=7979f3d5-7f35-4fd8-893c-e5f1ecaeb3a4" >> .env
-
-          echo "CSRF_COOKIE_SECURE=True" >> .env
-          echo "SESSION_COOKIE_SECURE=True" >> .env
-          # Включайте True только если HTTPS реально настроен
-          echo "SECURE_SSL_REDIRECT=False" >> .env
-
-          echo "ALLOWED_HOSTS=89.169.168.72,localhost,127.0.0.1,192.168.1.98,winwindeal.ru,www.winwindeal.ru,winwindeal.store,www.winwindeal.store" >> .env
-          echo "CSRF_TRUSTED_ORIGINS=https://winwindeal.ru,https://www.winwindeal.ru" >> .env
-
-          # Защищаем .env файл
-          chmod 600 .env
-          chown wic:wic .env
-
-          echo "✅ Environment file created"
-
-          # Создаем виртуальное окружение если его нет
+          # venv + deps
           if [ ! -d "venv" ]; then
             python3 -m venv venv
-            echo "✅ Virtual environment created"
           fi
-
-          # Активируем виртуальное окружение и устанавливаем зависимости Python
-          source venv/bin/activate
-
-          # Обновляем pip и устанавливаем зависимости
+          . venv/bin/activate
           pip install --upgrade pip
           pip install -r requirements.txt
 
-          echo "✅ Python dependencies installed"
-
-          # Применяем миграции БД
+          # migrate + static
           python manage.py migrate --noinput
-
-          echo "✅ Database migrations applied"
-
-          # Сбор статики Django
           python manage.py collectstatic --noinput
 
-          echo "✅ Static files collected"
-
-          # Перезапускаем Gunicorn
+          # restart app
           sudo systemctl daemon-reload
           sudo systemctl restart real_estate_portal
 
-          echo "✅ Gunicorn restarted"
-
-          # Убираем Caddy-заглушку (204) и включаем проксирование на gunicorn:3000
+          # fix Caddy "204" stub -> reverse proxy
           sudo ufw allow 80/tcp || true
           sudo ufw allow 443/tcp || true
 
@@ -120,6 +124,6 @@ jobs:
           EOF
 
           sudo systemctl restart caddy || sudo systemctl restart caddy.service
-          echo "✅ Caddy configured/restarted"
 
           echo "✅✅✅ Deployment completed successfully!"
+          SSH
