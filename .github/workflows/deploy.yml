@@ -17,10 +17,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          SERVER_HOST="${{ secrets.SERVER_HOST }}"
+          if [ -z "${SERVER_HOST}" ]; then
+            echo "Missing secret SERVER_HOST (public IPv4 of VM)" >&2
+            exit 1
+          fi
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H 89.169.168.72 >> ~/.ssh/known_hosts
+          ssh-keyscan -H "${SERVER_HOST}" >> ~/.ssh/known_hosts
 
       - name: Create .env
         shell: bash
@@ -76,6 +81,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          SERVER_HOST="${{ secrets.SERVER_HOST }}"
+          SERVER_USER="${{ secrets.SERVER_USER }}"
+          if [ -z "${SERVER_USER}" ]; then SERVER_USER="wic"; fi
           rsync -az --delete \
             --exclude '.git/' \
             --exclude 'venv/' \
@@ -83,20 +91,26 @@ jobs:
             --exclude '*.pyc' \
             --exclude 'media/' \
             --exclude 'staticfiles/' \
-            ./ wic@89.169.168.72:/home/wic/real_estate_portal/
+            ./ "${SERVER_USER}@${SERVER_HOST}:/home/wic/real_estate_portal/"
 
       - name: Upload .env
         shell: bash
         run: |
           set -euo pipefail
-          scp .env wic@89.169.168.72:/home/wic/real_estate_portal/.env
-          ssh wic@89.169.168.72 "chmod 600 /home/wic/real_estate_portal/.env"
+          SERVER_HOST="${{ secrets.SERVER_HOST }}"
+          SERVER_USER="${{ secrets.SERVER_USER }}"
+          if [ -z "${SERVER_USER}" ]; then SERVER_USER="wic"; fi
+          scp .env "${SERVER_USER}@${SERVER_HOST}:/home/wic/real_estate_portal/.env"
+          ssh "${SERVER_USER}@${SERVER_HOST}" "chmod 600 /home/wic/real_estate_portal/.env"
 
       - name: Deploy on server
         shell: bash
         run: |
           set -euo pipefail
-          ssh wic@89.169.168.72 <<'SSH'
+          SERVER_HOST="${{ secrets.SERVER_HOST }}"
+          SERVER_USER="${{ secrets.SERVER_USER }}"
+          if [ -z "${SERVER_USER}" ]; then SERVER_USER="wic"; fi
+          ssh "${SERVER_USER}@${SERVER_HOST}" <<'SSH'
           set -euo pipefail
           cd /home/wic/real_estate_portal
 
