@@ -289,7 +289,9 @@ STORAGES = {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        # Manifest storage can fail on missing referenced admin assets in some environments.
+        # Use non-manifest storage for more robust deployments.
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
 
