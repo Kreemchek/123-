@@ -289,9 +289,9 @@ STORAGES = {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        # Manifest storage can fail on missing referenced admin assets in some environments.
-        # Use non-manifest storage for more robust deployments.
-        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+        # Keep static collection robust for first boot.
+        # We can re-enable WhiteNoise compression/manifest later once assets are consistent.
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }
 
