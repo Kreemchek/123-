@@ -5,15 +5,23 @@ from dotenv import load_dotenv
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
+from urllib.parse import urlparse, unquote
 
 load_dotenv()
 
-DEBUG = False
+def env_bool(name: str, default: bool = False) -> bool:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "y", "on"}
+
+# Debug must be controlled by env in production
+DEBUG = env_bool("DEBUG", False)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.append(str(BASE_DIR))
 
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-local-development-key-change-in-production-123456789')
 
 # Cloudinary configuration
 CLOUDINARY_STORAGE = {
@@ -60,15 +68,43 @@ cloudinary.config(
 handler500 = 'accounts.views.server_error'
 
 # Allowed hosts from environment
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '89.169.168.72,localhost,127.0.0.1,192.168.1.98,winwindeal.ru,www.winwindeal.ru,winwindeal.store,www.winwindeal.store').split(',')
+ALLOWED_HOSTS = [
+    h.strip()
+    for h in os.getenv(
+        'ALLOWED_HOSTS',
+        '89.169.168.72,localhost,127.0.0.1,192.168.1.98,winwindeal.ru,www.winwindeal.ru,winwindeal.store,www.winwindeal.store,winwindeal-test.loca.lt,sara-tea-promotion-pharmaceutical.trycloudflare.com,complement-constant-week-charged.trycloudflare.com,coming-designated-lights-previous.trycloudflare.com,levels-west-recruitment-mixing.trycloudflare.com,subcommittee-occupied-description-nil.trycloudflare.com,depending-tar-category-among.trycloudflare.com,divide-sentences-gps-clothing.trycloudflare.com',
+    ).split(',')
+    if h.strip()
+]
 
 CSRF_TRUSTED_ORIGINS = [
+    # Домены
     'https://winwindeal.ru',
     'https://www.winwindeal.ru',
+    'http://winwindeal.ru',
+    'http://www.winwindeal.ru',
     'https://winwindeal.store',
     'https://www.winwindeal.store',
+    'http://winwindeal.store',
+    'http://www.winwindeal.store',
+    # IP/туннели (если используются)
     'https://89.169.168.72',
+    'http://89.169.168.72',
+    'https://winwindeal-test.loca.lt',
+    'http://winwindeal-test.loca.lt',
+    'https://sara-tea-promotion-pharmaceutical.trycloudflare.com',
+    'https://complement-constant-week-charged.trycloudflare.com',
+    'https://coming-designated-lights-previous.trycloudflare.com',
+    'https://levels-west-recruitment-mixing.trycloudflare.com',
+    'https://subcommittee-occupied-description-nil.trycloudflare.com',
+    'https://tricks-entirely-retreat-reggae.trycloudflare.com',
+    'https://depending-tar-category-among.trycloudflare.com',
+    'https://divide-sentences-gps-clothing.trycloudflare.com',
 ]
+
+_csrf_env = os.getenv("CSRF_TRUSTED_ORIGINS")
+if _csrf_env:
+    CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_env.split(",") if o.strip()]
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -88,7 +124,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.gis',
+    'django.contrib.gis',  # Re-enabled for SpatiaLite
     'django_filters',
     'widget_tweaks',
     'channels',
@@ -98,6 +134,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -108,7 +145,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'accounts.middleware.ActivityLoggerMiddleware',
     'accounts.middleware.ProfileCompletionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'real_estate_portal.urls'
@@ -174,16 +210,45 @@ LOGGING = {
 WSGI_APPLICATION = 'real_estate_portal.wsgi.application'
 
 # Database configuration from environment
-DATABASES = {
-    'default': {
-        'ENGINE': os.getenv('DB_ENGINE', 'django.contrib.gis.db.backends.postgis'),
-        'NAME': os.getenv('DB_NAME', 'real_estate_db'),
-        'USER': os.getenv('DB_USER', 'real_estate_user'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'vladnext232'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', '5432'),
+DATABASE_URL = os.getenv("DATABASE_URL")
+if DATABASE_URL:
+    parsed = urlparse(DATABASE_URL)
+    scheme = (parsed.scheme or "").lower()
+    if scheme in {"postgres", "postgresql", "postgis"}:
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.contrib.gis.db.backends.postgis",
+                "NAME": unquote((parsed.path or "").lstrip("/")),
+                "USER": unquote(parsed.username or ""),
+                "PASSWORD": unquote(parsed.password or ""),
+                "HOST": parsed.hostname or "",
+                "PORT": str(parsed.port or ""),
+                "CONN_MAX_AGE": int(os.getenv("CONN_MAX_AGE", "60")),
+            }
+        }
+    elif scheme in {"sqlite", "spatialite"}:
+        db_path = (parsed.path or "").lstrip("/") or "db.sqlite3"
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.contrib.gis.db.backends.spatialite",
+                "NAME": str(BASE_DIR / db_path),
+            }
+        }
+    else:
+        # Unknown scheme: fall back to local SQLite/SpatiaLite
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.contrib.gis.db.backends.spatialite",
+                "NAME": BASE_DIR / "db.sqlite3",
+            }
+        }
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.contrib.gis.db.backends.spatialite",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
     }
-}
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -210,15 +275,23 @@ DECIMAL_SEPARATOR = '.'
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 WHITENOISE_MAX_AGE = 86400
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Static files settings
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Django 5+: use STORAGES instead of legacy DEFAULT_FILE_STORAGE/STATICFILES_STORAGE
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 AUTH_USER_MODEL = 'accounts.User'
 
@@ -232,7 +305,7 @@ EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.yandex.ru')
 EMAIL_PORT = int(os.getenv('EMAIL_PORT', 465))
 EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'True') == 'True'
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'goldinpav@yandex.ru')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'mglkpkdkfapyubfa')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'WinWinDeal <goldinpav@yandex.ru>')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -253,13 +326,9 @@ class OwnerAdminMixin:
         return qs.filter(creator=request.user)
 
 # Security settings from environment
-CSRF_COOKIE_SECURE = os.getenv('CSRF_COOKIE_SECURE', 'True') == 'True'
-SESSION_COOKIE_SECURE = os.getenv('SESSION_COOKIE_SECURE', 'True') == 'True'
-SECURE_SSL_REDIRECT = os.getenv('SECURE_SSL_REDIRECT', 'False') == 'True'
-
-if os.path.exists('package.json'):
-    with open('package.json', 'w') as f:
-        f.write('{"private": true, "scripts": {}}')
+CSRF_COOKIE_SECURE = env_bool("CSRF_COOKIE_SECURE", not DEBUG)
+SESSION_COOKIE_SECURE = env_bool("SESSION_COOKIE_SECURE", not DEBUG)
+SECURE_SSL_REDIRECT = env_bool("SECURE_SSL_REDIRECT", not DEBUG)
 
 # Static files finders
 STATICFILES_FINDERS = [
@@ -268,9 +337,9 @@ STATICFILES_FINDERS = [
 ]
 
 # Yandex APIs from environment
-YANDEX_MAPS_API_KEY = os.getenv('YANDEX_MAPS_API_KEY', '3585e6f5-6323-4098-8a4d-b279da5b0c4f')
-YANDEX_GEOCODER_API_KEY = os.getenv('YANDEX_GEOCODER_API_KEY', '3585e6f5-6323-4098-8a4d-b279da5b0c4f')
-YANDEX_GEO_SUGGEST_API_KEY = os.getenv('YANDEX_GEO_SUGGEST_API_KEY', '7979f3d5-7f35-4fd8-893c-e5f1ecaeb3a4')
+YANDEX_MAPS_API_KEY = os.getenv('YANDEX_MAPS_API_KEY', '')
+YANDEX_GEOCODER_API_KEY = os.getenv('YANDEX_GEOCODER_API_KEY', '')
+YANDEX_GEO_SUGGEST_API_KEY = os.getenv('YANDEX_GEO_SUGGEST_API_KEY', '')
 
 # WhiteNoise settings
 WHITENOISE_USE_FINDERS = True

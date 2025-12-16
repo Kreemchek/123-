@@ -7,15 +7,15 @@ services:
     volumes:
       - .:/app
     ports:
-        - "0.0.0.0:8000:8000"  # Разрешает доступ с любого IP
+      - "0.0.0.0:8000:8000"  # Разрешает доступ с любого IP
     depends_on:
       - db
     environment:
       - CSRF_TRUSTED_ORIGINS=http://localhost:8000,http://127.0.0.1:8000,http://192.168.1.98:8000
-      - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
-      - YOOMONEY_ACCOUNT_ID=1105130
-      - YOOMONEY_SECRET_KEY=test_evMMyWGLIawYaOMUELuBxzSO5XJbnaDcrJeulp2lX8w
-      - DEBUG=1
+      - DATABASE_URL=${DATABASE_URL:-postgres://postgres:postgres@db:5432/postgres}
+      - YOOMONEY_ACCOUNT_ID=${YOOMONEY_ACCOUNT_ID:-1105130}
+      - YOOMONEY_SECRET_KEY=${YOOMONEY_SECRET_KEY:-}
+      - DEBUG=${DEBUG:-1}
 
     dns:
       - 8.8.8.8

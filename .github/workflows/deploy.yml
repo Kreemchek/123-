@@ -40,12 +40,17 @@ jobs:
           # Создаем .env файл построчно
           echo "DEBUG=False" > .env
           echo "SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
-          echo "DATABASE_URL=postgres://real_estate_user:vladnext232@localhost:5432/real_estate_db" >> .env
+
+          # Строка подключения к БД хранится в GitHub Secrets
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+
           echo "CLOUDINARY_CLOUD_NAME=dqgwzhywm" >> .env
           echo "CLOUDINARY_API_KEY=164662831511784" >> .env
           echo "CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}" >> .env
+
           echo "YOOMONEY_ACCOUNT_ID=1105130" >> .env
           echo "YOOMONEY_SECRET_KEY=test_evMMyWGLIawYaOMUELuBxzSO5XJbnaDcrJeulp2lX8w" >> .env
+
           echo "EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend" >> .env
           echo "EMAIL_HOST=smtp.yandex.ru" >> .env
           echo "EMAIL_PORT=465" >> .env
@@ -53,13 +58,18 @@ jobs:
           echo "EMAIL_HOST_USER=goldinpav@yandex.ru" >> .env
           echo "EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_PASSWORD }}" >> .env
           echo "DEFAULT_FROM_EMAIL=WinWinDeal <goldinpav@yandex.ru>" >> .env
+
           echo "YANDEX_MAPS_API_KEY=3585e6f5-6323-4098-8a4d-b279da5b0c4f" >> .env
           echo "YANDEX_GEOCODER_API_KEY=3585e6f5-6323-4098-8a4d-b279da5b0c4f" >> .env
           echo "YANDEX_GEO_SUGGEST_API_KEY=7979f3d5-7f35-4fd8-893c-e5f1ecaeb3a4" >> .env
+
           echo "CSRF_COOKIE_SECURE=True" >> .env
           echo "SESSION_COOKIE_SECURE=True" >> .env
+          # Включайте True только если HTTPS реально настроен
           echo "SECURE_SSL_REDIRECT=False" >> .env
+
           echo "ALLOWED_HOSTS=89.169.168.72,localhost,127.0.0.1,192.168.1.98,winwindeal.ru,www.winwindeal.ru,winwindeal.store,www.winwindeal.store" >> .env
+          echo "CSRF_TRUSTED_ORIGINS=https://winwindeal.ru,https://www.winwindeal.ru" >> .env
 
           # Защищаем .env файл
           chmod 600 .env
@@ -97,5 +107,19 @@ jobs:
           sudo systemctl restart real_estate_portal
 
           echo "✅ Gunicorn restarted"
+
+          # Убираем Caddy-заглушку (204) и включаем проксирование на gunicorn:3000
+          sudo ufw allow 80/tcp || true
+          sudo ufw allow 443/tcp || true
+
+          cat << 'EOF' | sudo tee /etc/caddy/Caddyfile > /dev/null
+          winwindeal.ru, www.winwindeal.ru {
+              encode gzip
+              reverse_proxy 127.0.0.1:3000
+          }
+          EOF
+
+          sudo systemctl restart caddy || sudo systemctl restart caddy.service
+          echo "✅ Caddy configured/restarted"
 
           echo "✅✅✅ Deployment completed successfully!"
